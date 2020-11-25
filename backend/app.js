@@ -1,8 +1,12 @@
 const express = require('express');
-const monthPxxRoutes = require('./routes/monthPxx');
+const monthPxxRoutes = require('./routes/monthPxxRoutes');
+const pxxRoutes = require('./routes/pxxRoutes');
 const bodyParser = require('body-parser');
+const connectDB = require('./config/db');
 
 const app = express();
+
+connectDB();
 
 app.get('/', (req, res) => {
     res.send('API is running...');
@@ -18,5 +22,6 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 
 app.use('/api/monthdata', monthPxxRoutes);
+app.use('/api/pxx', pxxRoutes);
 
 module.exports = app;
