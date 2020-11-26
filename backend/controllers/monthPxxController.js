@@ -2,13 +2,6 @@ const Month = require('../models/monthModel');
 const asyncHandler = require('express-async-handler');
 const Date = require('../utils/dateFunction');
 
-/*
-Date.prototype.addMonth = function (months) {
-    this.setMonth(this.getMonth() + months);
-    return this;
-};
-*/
-
 // @desc    Get month configurations
 // @route   GET /api/monthdata
 // @access  Public
@@ -29,7 +22,7 @@ const getMonthPxxInfo = asyncHandler(async (req, res) => {
     searchDate.setDate(0);
     let numberOfMonths = req.query.numberofmonths;
     let endSearch = new Date(Number(req.query.searchdate));
-    endSearch.addMonth(Number(numberOfMonths));
+    endSearch.addMonth(Number(numberOfMonths)-1);
 
     const monthPxxInfo = await Month.find({ "firstDay": { 
         $gt: searchDate.toISOString().substring(0, 10),
