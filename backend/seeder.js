@@ -7,23 +7,22 @@ const connectDB = require('./config/db');
 
 const getMonthData = require('./data/monthData');
 const getPxxData = require('./data/pxxData');
-const getUserData = require('./data/userData');
+const {getUserData, getCDMData} = require('./data/userData');
 
 dotenv.config();
 connectDB();
 
 const importData = async () => {
 
-    const startDate = new Date('2020-11-11');
-    const endDate = new Date('2021-02-27');
-    const nbUsers = 10;
+    const startDate = new Date('2019-04-11');
+    const endDate = new Date('2022-02-27');
+    const nbUsers = 100;
+    const nbCdm = 10;
 
     // import default month data
-    const userData = getUserData(nbUsers);
+    const cdmData = getCDMData(nbCdm);
     const monthData = await getMonthData(startDate, endDate);
-    
-    //console.log("userData", userData);
-    //console.log('pxxData', pxxData);
+
     
     
     // DELETE ALL CURRENT DATA
@@ -44,12 +43,17 @@ const importData = async () => {
 
     try {
         const monthDataCreated = await Month.insertMany(monthData);
-    
-        const userDataCreated = await User.insertMany(userData);
         
-        //console.log('data', userDataCreated);
+        const cdmDataCreated = await User.insertMany(cdmData);
+        const cdmId = cdmDataCreated.map( x => x._id)
+        
+        const userData = getUserData(nbUsers, cdmId);
 
-        const pxxData = getPxxData(monthDataCreated, userDataCreated);
+        const userDataCreated = await User.insertMany(userData);
+
+        const userDataAllCreated = await User.find();
+
+        const pxxData = getPxxData(monthDataCreated, userDataAllCreated);
     
         await Pxx.insertMany(pxxData);
 

@@ -2,8 +2,82 @@ import axios from 'axios';
 import {
     PXX_LIST_REQUEST,
     PXX_LIST_SUCCESS,
-    PXX_LIST_FAIL
+    PXX_LIST_FAIL,
+    PXX_MY_TO_EDIT_REQUEST,
+    PXX_MY_TO_EDIT_FAIL,
+    PXX_MY_TO_EDIT_SUCCESS
 } from '../constants/pxxConstants';
+
+export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: PXX_MY_TO_EDIT_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const pxx = [];
+
+        //console.log('consultantId', consultantId);
+        //console.log('searchDate', searchDate);
+        const { data } = await axios.get(`/api/pxx/consultantId/${consultantId}/month/${searchDate}`, config);
+        //console.log(data);
+
+        pxx.push(data);
+
+        /*
+        const listUserPxx = [{
+                                userId: 'user1',
+                                monthId: 'month1',
+                                monthName: '2020/11',
+                                prodDay: 12,
+                                notProdDay: 4,
+                                leavingDay: 1,
+                                availableDay: 3,
+                                workingDay:21
+                            },{
+                                userId: 'user1',
+                                monthId: 'month2',
+                                monthName: '2020/12',
+                                prodDay: 12,
+                                notProdDay: 4,
+                                leavingDay: 1,
+                                availableDay: 3,
+                                workingDay:18
+                            },{
+                                userId: 'user1',
+                                monthId: 'month3',
+                                monthName: '2021/01',
+                                prodDay: 12,
+                                notProdDay: 4,
+                                leavingDay: 1,
+                                availableDay: 3,
+                                workingDay:21
+                            }];
+        */
+        dispatch({ type: PXX_MY_TO_EDIT_SUCCESS, payload: pxx });
+
+
+    } catch (error) {
+        dispatch({
+            type: PXX_MY_TO_EDIT_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+
+
+// TO DELETE //
 
 const transformListPxxToDisplay = (pxxData, pxxInfo) => {
 
@@ -18,8 +92,6 @@ const transformListPxxToDisplay = (pxxData, pxxInfo) => {
             tampon.push(listConsultant[incr]._id);
         }
     }
-    //console.log('listConsultant', listConsultant);
-
 
     const listPxx = [];
     for (let incr = 0; incr < listConsultant.length; incr++) {
@@ -53,13 +125,10 @@ const transformListPxxToDisplay = (pxxData, pxxInfo) => {
 
         for (let incrMonth = 0; incrMonth < pxxInfo.data.length; incrMonth++) {
 
-            //console.log(pxxData.data.filter( x => (x.name._id === listConsultant[incr]._id && x.month._id === pxxInfo.data[incrMonth]._id))[0]._id)
             let val = pxxData.data.filter(x => (x.name._id === listConsultant[incr]._id && x.month._id === pxxInfo.data[incrMonth]._id))[0];
             if (val.length > 1) {
                 throw new Error({ message: 'number of value can not be up to 1' })
             }
-            //pxx.push(val._id);
-            //pxx.push(pxxInfo.data[incrMonth]);
             pxx.push({
                 type: "day",
                 value: val.prodDay,
@@ -113,8 +182,6 @@ const transformPxxMonthInfoToDisplay = (pxxInfo) => {
         firstLine.push({ name:'', value:'' });
     }
 
-    //pxxMonthInfoList.push(firstLine);
-
     for (let incr = 0; incr < pxxInfo.data.length; incr++){
         secondLine.push({ name:'Prod', value: 'P'});
         secondLine.push({ name: 'Not Prod', value: 'NP'});
@@ -126,14 +193,23 @@ const transformPxxMonthInfoToDisplay = (pxxInfo) => {
     return pxxMonthInfoList;
 }
 
-export const getPxxList = (searchDate, numberOfMonth) => async (dispatch) => {
+export const getPxxList = (searchDate, numberOfMonth) => async (dispatch, getState) => {
 
     try {
 
         dispatch({ type: PXX_LIST_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers:{
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+        
         const pxxInfo = await axios.get(`/api/monthdata?searchdate=${searchDate}&numberofmonths=${numberOfMonth}`);
         const pxxMonthInfoList = transformPxxMonthInfoToDisplay(pxxInfo);
-        //console.log('pxxMonthInfoList', pxxMonthInfoList);
 
         let monthId = "";
         for (let incr = 0; incr < pxxInfo.data.length; incr++) {
@@ -143,15 +219,9 @@ export const getPxxList = (searchDate, numberOfMonth) => async (dispatch) => {
             monthId = monthId + '_' + pxxInfo.data[incr]._id;
         }
 
-        const pxxData = await axios.get(`/api/pxx/${monthId}`);
+        const pxxData = await axios.get(`/api/pxx/${monthId}`, config);
         const listPxx = transformListPxxToDisplay(pxxData, pxxInfo);
 
-        // console.log('listPxx', listPxx);
-        //console.log('pxxMonthInfoList', typeof pxxMonthInfoList, pxxMonthInfoList);
-        //console.log('pxxUserList',typeof listPxx, listPxx);
-        
-
-        //dispatch({ type: PXX_LIST_SUCCESS, payload: { pxxMonthInformation: pxxInfo.data, pxxUserList: listPxx } });
         dispatch({ type: PXX_LIST_SUCCESS, payload: { pxxMonthInformation: pxxMonthInfoList, pxxUserList: listPxx } });
 
 
