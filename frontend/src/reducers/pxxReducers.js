@@ -6,7 +6,11 @@ import {
     PXX_MY_TO_EDIT_REQUEST,
     PXX_MY_TO_EDIT_SUCCESS,
     PXX_MY_TO_EDIT_FAIL,
-    PXX_MY_TO_EDIT_RESET
+    PXX_MY_TO_EDIT_RESET,
+    PXX_UPDATE_REQUEST,
+    PXX_UPDATE_SUCCESS,
+    PXX_UPDATE_FAIL,
+    PXX_UPDATE_RESET
 } from '../constants/pxxConstants';
 
 export const pxxMyToEditReducer = (state= { pxx: [] }, action) => {
@@ -19,6 +23,21 @@ export const pxxMyToEditReducer = (state= { pxx: [] }, action) => {
             return { loading: false, error: action.payload };
         case PXX_MY_TO_EDIT_RESET:
             return { pxx: [] };
+        default:
+            return state ;
+    }
+};
+
+export const pxxUpdateReducer = (state= { }, action) => {
+    switch(action.type) {
+        case PXX_UPDATE_REQUEST:
+            return { loading: true };
+        case PXX_UPDATE_SUCCESS:
+            return { loading: false, success: true };
+        case PXX_UPDATE_FAIL:
+            return { loading: false, error: action.payload };
+        case PXX_UPDATE_RESET:
+            return {};
         default:
             return state ;
     }

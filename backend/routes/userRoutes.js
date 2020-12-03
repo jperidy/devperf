@@ -7,7 +7,8 @@ const {
     getUsers, 
     deleteUser, 
     getUserById, 
-    updateUser 
+    updateUser,
+    updateUserComment
 } = require('../controllers/userController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
@@ -17,7 +18,10 @@ const router = express.Router();
 router.route('/')
     .post(registerUser)
     .get(protect, admin, getUsers);
+
 router.post('/login', authUser);
+router.put('/comment', protect, updateUserComment);
+
 router.route('/profile')
     .get(protect, getUserProfile)
     .put(protect, updateUserProfile);

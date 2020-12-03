@@ -1,21 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import PxxComment from '../components/PxxComment';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import { getAllMyConsultants } from '../actions/consultantActions';
 
 const ConsultantSelector = ({ consultantFocus, setConsultantFocus }) => {
 
+    const dispatch = useDispatch();
 
     const consultantsMyList = useSelector(state => state.consultantsMyList);
     const { loading: loadingConsultantsMyList, error: errorConsultantsMyList, consultantsMy } = consultantsMyList;
 
+    
     const navigationConsultantHandler = (value) => {
         if (((consultantFocus + value) >= 0) && ((consultantFocus + value) < consultantsMy.length)) {
             setConsultantFocus(consultantFocus + value);
+            dispatch(getAllMyConsultants());
         }
     }
 
@@ -55,7 +59,9 @@ const ConsultantSelector = ({ consultantFocus, setConsultantFocus }) => {
                     </Row>
                     <Row className="my-3">
                         <Col>
-                            {<PxxComment comment={consultantsMy[consultantFocus].comment} />}
+                            {<PxxComment 
+                                comment={consultantsMy[consultantFocus].comment}
+                                consultantId={consultantsMy[consultantFocus]._id} />}
                         </Col>
                     </Row>
                 </>

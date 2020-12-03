@@ -1,16 +1,18 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { pxxListReducer } from './reducers/pxxReducers';
-import { userLoginReducer } from './reducers/userReducers';
+import { pxxListReducer, pxxUpdateReducer } from './reducers/pxxReducers';
+import { userLoginReducer, userUpdateCommentReducer } from './reducers/userReducers';
 import { consultantsMyListReducer } from './reducers/consultantReducers';
 import { pxxMyToEditReducer } from './reducers/pxxReducers';
 
 export const reducer = combineReducers({
     userLogin: userLoginReducer,
+    userUpdateComment: userUpdateCommentReducer,
+    consultantsMyList: consultantsMyListReducer,
     pxxList: pxxListReducer,
     pxxMyToEdit: pxxMyToEditReducer,
-    consultantsMyList: consultantsMyListReducer
+    pxxUpdate: pxxUpdateReducer
 }
 );
 

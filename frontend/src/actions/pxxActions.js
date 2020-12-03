@@ -5,7 +5,10 @@ import {
     PXX_LIST_FAIL,
     PXX_MY_TO_EDIT_REQUEST,
     PXX_MY_TO_EDIT_FAIL,
-    PXX_MY_TO_EDIT_SUCCESS
+    PXX_MY_TO_EDIT_SUCCESS,
+    PXX_UPDATE_REQUEST,
+    PXX_UPDATE_SUCCESS,
+    PXX_UPDATE_FAIL
 } from '../constants/pxxConstants';
 
 export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth) => async (dispatch, getState) => {
@@ -23,45 +26,20 @@ export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth
             }
         };
 
+        const functionDate = new Date(searchDate);
+        functionDate.setDate(1);
+        
         const pxx = [];
+        
+        for (let incr = 0; incr < numberOfMonth; incr++){
+            
+            const transformDate = functionDate.toISOString().substring(0,10);
+            //console.log("transformDate", transformDate);
+            const { data } = await axios.get(`/api/pxx/consultantId/${consultantId}/month/${transformDate}`, config);
+            pxx.push(data);
+            functionDate.setMonth(functionDate.getMonth()+1);
+        }
 
-        //console.log('consultantId', consultantId);
-        //console.log('searchDate', searchDate);
-        const { data } = await axios.get(`/api/pxx/consultantId/${consultantId}/month/${searchDate}`, config);
-        //console.log(data);
-
-        pxx.push(data);
-
-        /*
-        const listUserPxx = [{
-                                userId: 'user1',
-                                monthId: 'month1',
-                                monthName: '2020/11',
-                                prodDay: 12,
-                                notProdDay: 4,
-                                leavingDay: 1,
-                                availableDay: 3,
-                                workingDay:21
-                            },{
-                                userId: 'user1',
-                                monthId: 'month2',
-                                monthName: '2020/12',
-                                prodDay: 12,
-                                notProdDay: 4,
-                                leavingDay: 1,
-                                availableDay: 3,
-                                workingDay:18
-                            },{
-                                userId: 'user1',
-                                monthId: 'month3',
-                                monthName: '2021/01',
-                                prodDay: 12,
-                                notProdDay: 4,
-                                leavingDay: 1,
-                                availableDay: 3,
-                                workingDay:21
-                            }];
-        */
         dispatch({ type: PXX_MY_TO_EDIT_SUCCESS, payload: pxx });
 
 
@@ -75,6 +53,34 @@ export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth
     }
 };
 
+export const updatePxx = (pxx) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: PXX_UPDATE_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        await axios.put(`/api/pxx`, pxx, config);    
+
+        dispatch({ type: PXX_UPDATE_SUCCESS });
+
+    } catch (error) {
+        dispatch({
+            type: PXX_UPDATE_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
 
 
 // TO DELETE //

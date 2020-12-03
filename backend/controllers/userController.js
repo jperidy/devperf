@@ -178,4 +178,37 @@ const updateUser = asyncHandler(async(req,res) =>{
     }
 });
 
-module.exports = { authUser, getUserProfile, registerUser, updateUserProfile, getUsers, deleteUser, getUserById, updateUser };
+// @desc    Update user
+// @route   PUT /api/users/comment
+// @access  Private
+const updateUserComment = asyncHandler(async(req,res) =>{
+    
+    //console.log(req.body);
+    const user = await User.findById(req.body.consultantId); 
+    
+    if (user) {
+
+        user.comment = req.body.commentText;
+        const updateUser = await user.save();
+
+        res.status(200).json({
+            _id: updateUser._id,
+            comment: updateUser.comment
+        });
+    } else {
+        res.status(404).json({ message: 'User not found' });
+        throw new Error('User not found');
+    }
+});
+
+module.exports = { 
+    authUser, 
+    getUserProfile, 
+    registerUser, 
+    updateUserProfile, 
+    getUsers, 
+    deleteUser, 
+    getUserById, 
+    updateUser,
+    updateUserComment
+};
