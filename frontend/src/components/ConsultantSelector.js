@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { LinkContainer } from 'react-router-bootstrap';
 import PxxComment from '../components/PxxComment';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -7,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { getAllMyConsultants } from '../actions/consultantActions';
+import { Nav } from 'react-bootstrap';
 
 const ConsultantSelector = ({ consultantFocus, setConsultantFocus }) => {
 
@@ -38,9 +40,11 @@ const ConsultantSelector = ({ consultantFocus, setConsultantFocus }) => {
                             </Button>
                         </Col>
                         <Col className="text-center" xs={8}>
-                            <h4>
-                                {consultantsMy[consultantFocus].name} <i>({consultantsMy[consultantFocus].matricule})</i>
-                            </h4>
+                            <LinkContainer to={`/editconsultant/${consultantsMy[consultantFocus]._id}`}>
+                                <Nav.Link>
+                                <b>{consultantsMy[consultantFocus].name} <i>({consultantsMy[consultantFocus].matricule})</i></b>
+                                </Nav.Link>
+                            </LinkContainer>
                         </Col>
                         <Col className="text-center" xs={2}>
                             <Button

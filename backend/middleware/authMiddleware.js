@@ -36,4 +36,26 @@ const admin = (req, res, next) => {
     }
 }
 
-module.exports = { protect, admin };
+const empowered = asyncHandler(
+    async (req, res, next) => {
+        
+        if (req.user && req.body.consultantId) {
+            const consultantList = await User.find({cdmId: req.user._id}).select('_id');
+            const userIsEmpowered = consultantList.filter( x => x._id == req.body.consultantId);
+            //console.log('consultantList', consultantList);
+            //console.log('req.body.consultantId', req.body.consultantId);
+            //console.log('userIsEmpowered', userIsEmpowered);
+            if (userIsEmpowered.length > 0){
+                next();
+            } else {
+                res.status(403).json({message: 'not empowered to access these data'});
+                throw new Error('Not empowered to access these data');
+            }
+        } else {
+            res.status(401).json({message: 'not empowered to access these data'});
+            throw new Error('Not authorized, no token');
+        }
+    }
+) 
+
+module.exports = { protect, admin, empowered };

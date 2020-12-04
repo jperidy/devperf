@@ -8,14 +8,11 @@ import Loader from '../components/Loader';
 import PxxUserLine from '../components/PxxUserLine';
 import { getMyConsultantPxxToEdit } from '../actions/pxxActions';
 
-const PxxEditor = ({ consultantFocus }) => {
+const PxxEditor = ({ consultantFocus, searchDate, navigationMonthHandler }) => {
 
     const dispatch = useDispatch();
 
-    //const [searchDate, setSearchDate] = useState(Date.now()); //match.params.dateId
-    const [searchDate, setSearchDate] = useState(new Date(Date.now()));
-
-    const [numberOfMonth] = useState(3);
+    const [numberOfMonth] = useState(5);
 
     const consultantsMyList = useSelector(state => state.consultantsMyList);
     const { consultantsMy } = consultantsMyList;
@@ -30,12 +27,6 @@ const PxxEditor = ({ consultantFocus }) => {
         dispatch(getMyConsultantPxxToEdit(consultantId, searchDate, numberOfMonth));
 
     }, [dispatch, searchDate, numberOfMonth, consultantFocus, consultantsMy]);
-
-    const navigationMonthHandler = (value) => {
-        const navigationDate = new Date(searchDate);
-        navigationDate.setMonth(navigationDate.getMonth() + value);
-        setSearchDate(navigationDate);
-    }
 
     return (
         <>
@@ -65,12 +56,12 @@ const PxxEditor = ({ consultantFocus }) => {
                 ))
             )}
             <Row>
-                <Col className="text-center"></Col>
-                <Col className="text-center align-middle"></Col>
-                <Col className="text-center align-middle"></Col>
-                <Col className="text-center align-middle"></Col>
-                <Col className="text-center align-middle"></Col>
-                <Col className="text-center">
+                <Col xs={2} className="text-center"></Col>
+                <Col xs={2} className="text-center align-middle px-1"></Col>
+                <Col xs={2} className="text-center align-middle px-1"></Col>
+                <Col xs={2} className="text-center align-middle px-1"></Col>
+                <Col xs={2} className="text-center align-middle px-1"></Col>
+                <Col xs={2} className="text-center">
                     <Button
                         variant='primary'
                         size='sm'

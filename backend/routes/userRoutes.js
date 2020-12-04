@@ -10,7 +10,7 @@ const {
     updateUser,
     updateUserComment
 } = require('../controllers/userController');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect, admin, empowered } = require('../middleware/authMiddleware');
 
 
 const router = express.Router();
@@ -20,7 +20,7 @@ router.route('/')
     .get(protect, admin, getUsers);
 
 router.post('/login', authUser);
-router.put('/comment', protect, updateUserComment);
+router.put('/comment', protect, empowered, updateUserComment);
 
 router.route('/profile')
     .get(protect, getUserProfile)

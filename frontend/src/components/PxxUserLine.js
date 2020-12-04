@@ -52,8 +52,8 @@ const PxxUserLine = ({ data }) => {
     return (
         <>
             {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : (
-            <Row className="py-3">
-                <Col xs={2} className="text-center align-middle">{data.month.name} <i> ({workingDay} days)</i></Col>
+            <Row className="py-1">
+                <Col xs={2} className="text-center align-middle"><b>{data.month.name}</b><br/><i>({workingDay} days)</i></Col>
                 <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
                         <FormControl
@@ -63,7 +63,6 @@ const PxxUserLine = ({ data }) => {
                             step={0.5}
                             className="align-middle text-center p-0"
                             value={prodDayComponent}
-                            //onChange={(e) => changeHandler({ type:'prodDay', value: Number(e.target.value)})}
                             onChange={(e) => {
                                 setProdDayComponent(Number(e.target.value));
                                 setHasBeenModified(true);
