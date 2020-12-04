@@ -53,15 +53,15 @@ const PxxUserLine = ({ data }) => {
         <>
             {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : (
             <Row className="py-3">
-                <Col className="text-center align-middle">{data.month.name} <i> ({workingDay} days)</i></Col>
-                <Col className="text-center align-middle">
+                <Col xs={2} className="text-center align-middle">{data.month.name} <i> ({workingDay} days)</i></Col>
+                <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
                         <FormControl
                             type="number"
                             min={0}
                             max={data.workingDay}
                             step={0.5}
-                            className="align-middle text-center"
+                            className="align-middle text-center p-0"
                             value={prodDayComponent}
                             //onChange={(e) => changeHandler({ type:'prodDay', value: Number(e.target.value)})}
                             onChange={(e) => {
@@ -71,14 +71,14 @@ const PxxUserLine = ({ data }) => {
                         />
                     </InputGroup>
                 </Col>
-                <Col className="text-center align-middle">
+                <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
                         <FormControl
                             type="number"
                             min={0}
                             max={data.workingDay}
                             step={0.5}
-                            className="align-middle text-center"
+                            className="align-middle text-center p-0"
                             value={notProdDayComponent}
                             onChange={(e) => {
                                 setNotProdDayComponent(Number(e.target.value));
@@ -87,14 +87,14 @@ const PxxUserLine = ({ data }) => {
                         />
                     </InputGroup>
                 </Col>
-                <Col className="text-center align-middle">
+                <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
                         <FormControl
                             type="number"
                             min={0}
                             max={data.workingDay}
                             step={0.5}
-                            className="align-middle text-center"
+                            className="align-middle text-center p-0"
                             value={leavingDayComponent}
                             onChange={(e) => {
                                 setLeavingDayComponent(Number(e.target.value));
@@ -103,22 +103,22 @@ const PxxUserLine = ({ data }) => {
                         />
                     </InputGroup>
                 </Col>
-                <Col className="text-center align-middle">
+                <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
                         <FormControl
                             type="number"
                             min={0}
                             max={data.workingDay}
                             step={0.5}
-                            className="align-middle text-center"
+                            className="align-middle text-center p-0"
                             value={availableDayComponent}
                         />
                     </InputGroup>
                 </Col>
-                <Col className="text-center">
+                <Col xs={2} className="text-center">
                     <Button
                         type='submit'
-                        variant='primary'
+                        variant='outline-primary'
                         disabled={(submitButtonState && hasBeenModified) ? false : true}
                         onClick={() => clickButtonHandler()}
                     >Submit</Button>

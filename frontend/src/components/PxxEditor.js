@@ -42,13 +42,14 @@ const PxxEditor = ({ consultantFocus }) => {
 
             <Row>
                 <Col xs={2} className="text-center"></Col>
-                <Col xs={2} className="text-center align-middle"><b>Prod</b></Col>
-                <Col xs={2} className="text-center align-middle"><b>Not Prod</b></Col>
-                <Col xs={2} className="text-center align-middle"><b>Hollidays</b></Col>
-                <Col xs={2} className="text-center align-middle"><b>Availability</b></Col>
+                <Col xs={2} className="text-center align-middle px-1"><b>Prod</b></Col>
+                <Col xs={2} className="text-center align-middle px-1"><b>Not Prod</b></Col>
+                <Col xs={2} className="text-center align-middle px-1"><b>Hollidays</b></Col>
+                <Col xs={2} className="text-center align-middle px-1"><b>Availability</b></Col>
                 <Col xs={2} className="text-center">
                     <Button
-                        variant='secondary'
+                        variant='primary'
+                        size='sm'
                         onClick={() => navigationMonthHandler(-1)}
                     ><i className="fas fa-caret-up"></i>
                     </Button>
@@ -71,7 +72,8 @@ const PxxEditor = ({ consultantFocus }) => {
                 <Col className="text-center align-middle"></Col>
                 <Col className="text-center">
                     <Button
-                        variant='secondary'
+                        variant='primary'
+                        size='sm'
                         onClick={() => navigationMonthHandler(1)}
                     ><i className="fas fa-caret-down"></i>
                     </Button>

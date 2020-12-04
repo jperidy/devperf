@@ -16,6 +16,7 @@ import {
     USER_LOGIN_REQUEST,
     USER_LOGIN_SUCCESS,
     USER_LOGIN_FAIL,
+    USER_LOGOUT,
     USER_UPDATE_PROFILE_REQUEST,
     USER_UPDATE_PROFILE_SUCCESS,
     USER_UPDATE_PROFILE_FAIL,
@@ -60,6 +61,10 @@ export const login = (email, password) => async(dispatch) => {
     }
 };
 
+export const logout = () => (dispatch) => {
+    localStorage.removeItem('userInfo');
+    dispatch({type: USER_LOGOUT});
+};
 
 export const register = (name, email, password) => async(dispatch) => {
     try {
@@ -290,8 +295,6 @@ export const updateComment = (consultantId, commentText) => async(dispatch, getS
             }
         };
 
-        console.log('consultantId', consultantId);
-        console.log('commentText', commentText);
         await axios.put(`/api/users/comment`, {consultantId, commentText}, config);
 
         dispatch({ type: USER_UPDATE_COMMENT_SUCCESS });

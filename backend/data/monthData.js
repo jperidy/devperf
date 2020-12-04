@@ -1,4 +1,5 @@
 const axios = require('axios');
+const typeOfDay = require('../utils/typeOfDay');
 
 // functions
 Date.prototype.addDays = function (days) {
@@ -19,6 +20,7 @@ function clone(obj) {
     return copy;
 }
 
+/*
 function typeOfDay(day) {
     switch (day) {
         case 0:
@@ -39,6 +41,7 @@ function typeOfDay(day) {
             return 'working-day';
     }
 }
+*/
 
 // Configuration of start and end dates
 //const startDate = new Date('2020-11-11');
@@ -97,7 +100,7 @@ async function getMonthData(startDate, endDate) {
             //console.log('num', num);
             type = tableau[incr].days[iter].type;
 
-            if (data[num]) {
+            if (data[num] && (tableau[incr].days[iter].type === 'working-day')) {
                 tableau[incr].days[iter].type = 'non-working-day';
                 //console.log('Modified day: ', tableau[incr].days[iter]);
             }

@@ -1,6 +1,9 @@
 const Pxx = require('../models/pxxModel');
 const Month = require('../models/monthModel');
+const axios = require('axios');
 const asyncHandler = require('express-async-handler');
+const calculDayByType = require('../utils/calculDayByType')
+const typeOfDay = require('../utils/typeOfDay');
 
 
 // @desc    Get one pxx data
@@ -10,20 +13,63 @@ const getPxx = asyncHandler(async (req, res) => {
 
     const consultantId = req.params.id;
     const date = req.params.month;
-
     const firstDay = date;
-    //console.log(firstDay, consultantId);
 
-    const monthId = await Month.findOne({ firstDay: firstDay }).select('_id');
+    let month = await Month.findOne({ firstDay: firstDay }).select('_id days');
 
-    const pxxData = await Pxx.findOne({name: consultantId, month:monthId}).populate('month', 'name firstDay');
+    if (!month) {
+        const monthDate = new Date(firstDay);
+        const nextMonthDate = new Date(firstDay);
+        nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+        nextMonthDate.setDate(1);
+
+        const monthToCreate = {
+            name: monthDate.getFullYear().toString() + '/' + Number(monthDate.getMonth() + 1).toString(),
+            firstDay: firstDay,
+            days: []
+        };
+
+        // Collect all non-working-days from french government API
+        const { data } = await axios.get(`https://calendrier.api.gouv.fr/jours-feries/metropole/${monthDate.getFullYear().toString()}.json`);
+
+        for (let currentDay = new Date(firstDay); currentDay < nextMonthDate; currentDay.setDate(currentDay.getDate()+1)) {
+            const num = currentDay.toISOString().substring(0, 10);
+            const typeDay = typeOfDay(currentDay.getDay());
+            const isNonWorkingDay = data[num];
+            let type = '';
+            if (isNonWorkingDay && (typeDay === "working-day")) {
+                type = 'non-working-day';
+            } else {
+                type = typeDay;
+            }
+            monthToCreate.days.push({
+                num: num,
+                type: type
+            })
+        }
+        month = new Month(monthToCreate);
+        month = await month.save();
+    }
+
+    const pxxData = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
+
     if (pxxData) {
         res.status(200).json(pxxData);
     } else {
-        res.status(404).json({message: `Pxx for consultantID: ${consultantId} and month: ${firstDay} not found`});
-        //throw new Error(`Pxx for consultantID: ${consultantId} and month: ${firstDay} not found`);
-    }
 
+        const newPxx = new Pxx({
+            name: consultantId,
+            month: month._id,
+            prodDay: 0,
+            notProdDay: 0,
+            leavingDay: 0,
+            availableDay: calculDayByType(month.days, "working-day")
+        });
+        await newPxx.save(newPxx);
+        
+        const pxxCreated = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
+        res.status(200).json(pxxCreated);
+    }
 });
 
 // @desc    Update pxx data
@@ -31,11 +77,9 @@ const getPxx = asyncHandler(async (req, res) => {
 // @access  Private
 const updatePxx = asyncHandler(async (req, res) => {
 
-    //console.log('body', req.body);
     const pxx = await Pxx.findById(req.body._id);
-    //console.log('pxx', pxx.name);
 
-    if(pxx) {
+    if (pxx) {
         pxx.prodDay = req.body.prodDay;
         pxx.notProdDay = req.body.notProdDay;
         pxx.leavingDay = req.body.leavingDay;
@@ -43,7 +87,7 @@ const updatePxx = asyncHandler(async (req, res) => {
         const updatePxx = await pxx.save();
         res.status(200).json(updatePxx);
     } else {
-        res.status(404).json({message: 'Pxx not found. Please try later'});
+        res.status(404).json({ message: 'Pxx not found. Please try later' });
         throw new Error('Pxx not found. Please try later');
     }
 

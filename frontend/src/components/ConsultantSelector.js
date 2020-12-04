@@ -30,20 +30,22 @@ const ConsultantSelector = ({ consultantFocus, setConsultantFocus }) => {
                     <Row>
                         <Col className="text-center" xs={2}>
                             <Button
-                                variant='secondary'
+                                variant='primary'
+                                size='sm'
                                 onClick={() => navigationConsultantHandler(-1)}
                                 disabled={consultantFocus === 0}
                             ><i className="fas fa-caret-left"></i>
                             </Button>
                         </Col>
                         <Col className="text-center" xs={8}>
-                            <h3>
+                            <h4>
                                 {consultantsMy[consultantFocus].name} <i>({consultantsMy[consultantFocus].matricule})</i>
-                            </h3>
+                            </h4>
                         </Col>
                         <Col className="text-center" xs={2}>
                             <Button
-                                variant='secondary'
+                                variant='primary'
+                                size='sm'
                                 onClick={() => navigationConsultantHandler(1)}
                                 disabled={consultantFocus === consultantsMy.length - 1}
                             ><i className="fas fa-caret-right"></i>

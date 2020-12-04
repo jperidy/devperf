@@ -1,4 +1,6 @@
-function calculDayByType(days, type) {
+const calculDayByType = require('../utils/calculDayByType');
+
+/*function calculDayByType(days, type) {
     const nbDays = (days.map((day) => {
         if (day.type === type) {
             return 1;
@@ -8,6 +10,7 @@ function calculDayByType(days, type) {
     })).reduce((acc, item) => acc + item);
     return nbDays;
 };
+*/
 
 function getPxxData(monthInfo, users) {
 

@@ -35,7 +35,7 @@ const PxxComment = ({ comment, consultantId }) => {
                             onChange={(e) => setCommentText(e.target.value)}
                         />
                     </Form.Group>
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" type="submit" block>
                         Submit
                 </Button>
                 </Form>
