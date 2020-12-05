@@ -13,4 +13,14 @@ const getMyConsultants = asyncHandler(async (req, res) => {
     
 });
 
-module.exports = { getMyConsultants };
+// @desc    Get a consultant data by Id
+// @route   GET /api/consultants/:consultantId
+// @access  Private
+const getConsultant = asyncHandler(async (req, res) => {
+
+    const myConsultant = await User.findById(req.params.consultantId).select('-password');
+    res.json(myConsultant);
+    
+});
+
+module.exports = { getMyConsultants, getConsultant };

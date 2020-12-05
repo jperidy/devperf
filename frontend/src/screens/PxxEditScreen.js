@@ -9,11 +9,14 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { getAllMyConsultants } from '../actions/consultantActions';
 import { Container } from 'react-bootstrap';
+import { CONSULTANT_MY_RESET } from '../constants/consultantConstants';
 
 
 const PxxEditScreen = ({ history }) => {
 
     const dispatch = useDispatch();
+
+    dispatch({type: CONSULTANT_MY_RESET});
 
     const [consultantFocus, setConsultantFocus] = useState(0);
     const [searchDate, setSearchDate] = useState(new Date(Date.now()));

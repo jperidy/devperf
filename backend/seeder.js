@@ -14,10 +14,10 @@ connectDB();
 
 const importData = async () => {
 
-    const startDate = new Date('2019-04-11');
-    const endDate = new Date('2022-02-27');
-    const nbUsers = 100;
-    const nbCdm = 10;
+    const startDate = new Date('2019-10-11');
+    const endDate = new Date('2021-02-27');
+    const nbUsers = 20;
+    const nbCdm = 3;
 
     // import default month data
     const cdmData = getCDMData(nbCdm);

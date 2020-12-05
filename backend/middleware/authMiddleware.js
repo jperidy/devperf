@@ -39,11 +39,13 @@ const admin = (req, res, next) => {
 const empowered = asyncHandler(
     async (req, res, next) => {
         
-        if (req.user && req.body.consultantId) {
+        if (req.user && (req.body.consultantId || req.params.consultantId)) {
             const consultantList = await User.find({cdmId: req.user._id}).select('_id');
-            const userIsEmpowered = consultantList.filter( x => x._id == req.body.consultantId);
+            //const userIsEmpowered = consultantList.filter( x => x._id == req.body.consultantId);
+            const userIsEmpowered = consultantList.filter( x => [req.body.consultantId, req.params.consultantId].includes(x._id.toString()));
             //console.log('consultantList', consultantList);
             //console.log('req.body.consultantId', req.body.consultantId);
+            //console.log('[req.body.consultantId, req.params.consultantId]', [req.body.consultantId, req.params.consultantId]);
             //console.log('userIsEmpowered', userIsEmpowered);
             if (userIsEmpowered.length > 0){
                 next();

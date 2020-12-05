@@ -20,7 +20,7 @@ const pxxListConsultants = ({ consultantsMy, consultantFocus }) => {
 
             <tbody>
                 {consultantsMy.map((consultant, focus) => (
-                    <tr>
+                    <tr key={consultant._id}>
                         <td>{consultant.name}</td>
                         <td>{consultant.matricule}</td>
                         <td>{consultant.arrival}</td>

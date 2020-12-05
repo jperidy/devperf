@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import LoginScreen from './screens/LoginScreen';
 //import PxxListScreen from './screens/PxxListScreen'; >>>>>>>> à supprimer ou modifier
 import PxxEditScreen from './screens/PxxEditScreen';
+import ConsultantEditScreen from './screens/ConsultantEditScreen';
 
 const App = () => {
   return (
@@ -14,8 +15,8 @@ const App = () => {
       <main className='py-3'>
         <Container>
           <Route path='/login' component={LoginScreen} />
-          <Route path='/pxx' component={PxxEditScreen} exact />
-          {/* <Route path='/pxx/:userId/date/:dateId' component={PxxEditScreen} /> */}
+          <Route path='/pxx' component={PxxEditScreen} />
+          <Route path='/editconsultant/:id' component={ConsultantEditScreen} />
         </Container>
       </main>
       <Footer />

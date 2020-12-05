@@ -111,6 +111,7 @@ const PxxUserLine = ({ data }) => {
                             step={0.5}
                             className="align-middle text-center p-0"
                             value={availableDayComponent}
+                            disabled
                         />
                     </InputGroup>
                 </Col>

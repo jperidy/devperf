@@ -17,8 +17,8 @@ const PxxEditor = ({ consultantFocus, searchDate, navigationMonthHandler }) => {
     const consultantsMyList = useSelector(state => state.consultantsMyList);
     const { consultantsMy } = consultantsMyList;
 
-    const pxxMyToEditReducer = useSelector(state => state.pxxMyToEdit);
-    const { loading: loadingConsultantMyToEdit, error: errorConsultantMyToEdit, pxx } = pxxMyToEditReducer;
+    const pxxMyToEdit = useSelector(state => state.pxxMyToEdit);
+    const { loading: loadingConsultantMyToEdit, error: errorConsultantMyToEdit, pxx } = pxxMyToEdit;
 
     useEffect(() => {
 
@@ -50,7 +50,7 @@ const PxxEditor = ({ consultantFocus, searchDate, navigationMonthHandler }) => {
             {loadingConsultantMyToEdit ? <Loader /> : errorConsultantMyToEdit ? <Message variant="danger">{errorConsultantMyToEdit}</Message> : (
                 pxx.map((line) => (
                     <PxxUserLine
-                        key={line.monthId}
+                        key={line.month._id}
                         data={line}
                     />
                 ))

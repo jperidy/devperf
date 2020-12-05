@@ -28,7 +28,7 @@ const PxxComment = ({ comment, consultantId }) => {
             {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : (
                 <Form onSubmit={submitHandler}>
                     <Form.Group controlId='textarea'>
-                        <Form.Label>Comments</Form.Label>
+                        <Form.Label><b>Comments</b></Form.Label>
                         <Form.Control
                             as="textarea"
                             value={commentText}

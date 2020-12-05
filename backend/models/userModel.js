@@ -20,11 +20,15 @@ const userSchema = mongoose.Schema({
         required: true,
     },
     arrival: {
-        type: String,
-        required: true,
+        type: Date,
+        required: false,
+    },
+    valued: {
+        type: Date,
+        required: false,
     },
     leaving: {
-        type: String,
+        type: Date,
         required: false,
     },
     seniority: {

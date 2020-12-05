@@ -57,11 +57,11 @@ const ConsultantSelector = ({ consultantFocus, setConsultantFocus }) => {
                         </Col>
                     </Row>
                     <Row className="my-3">
-                        <Col className="text-left">Arrival: {consultantsMy[consultantFocus].arrival}</Col>
-                        <Col className="text-left">Leaving: {consultantsMy[consultantFocus].leaving}</Col>
+                        <Col className="text-left"><b>Arrival:</b> {consultantsMy[consultantFocus].arrival.substring(0,10)}</Col>
+                        <Col className="text-left"><b>Leaving:</b> {consultantsMy[consultantFocus].leaving.substring(0,10)}</Col>
                     </Row>
                     <Row className="my-3">
-                        <Col>Seniority: {consultantsMy[consultantFocus].seniority} years</Col>
+                        <Col><b>Seniority:</b> {consultantsMy[consultantFocus].seniority.substring(0,4)} years</Col>
                     </Row>
                     <Row className="my-3">
                         <Col>

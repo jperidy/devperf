@@ -3,13 +3,14 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { pxxListReducer, pxxUpdateReducer } from './reducers/pxxReducers';
 import { userLoginReducer, userUpdateCommentReducer } from './reducers/userReducers';
-import { consultantsMyListReducer } from './reducers/consultantReducers';
+import { consultantMyReducer, consultantsMyListReducer } from './reducers/consultantReducers';
 import { pxxMyToEditReducer } from './reducers/pxxReducers';
 
 export const reducer = combineReducers({
     userLogin: userLoginReducer,
     userUpdateComment: userUpdateCommentReducer,
     consultantsMyList: consultantsMyListReducer,
+    consultantMy: consultantMyReducer,
     pxxList: pxxListReducer,
     pxxMyToEdit: pxxMyToEditReducer,
     pxxUpdate: pxxUpdateReducer
