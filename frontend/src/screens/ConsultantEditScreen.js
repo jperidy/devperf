@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
@@ -68,9 +69,10 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     return (
         <>
-            <Button onClick={() => history.go(-1)}>
-                Go back
-            </Button>
+            <Link to={`/pxx`} className='btn btn-primary my-3'>
+                Go Back
+            </Link>
+
             <Form onSubmit={submitHandler}>
                 {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : (
                     <>
@@ -99,18 +101,29 @@ const ConsultantEditScreen = ({ history, match }) => {
                             </Col>
                             <Col>
                                 <Form.Group controlId='seniority'>
-                                    <Form.Label><b>Seniority</b></Form.Label>
+                                    <Form.Label><b>Seniority</b> <i>(years)</i></Form.Label>
                                     <Form.Control
                                         type='text'
                                         placeholder='Enter Matricule'
                                         value={seniority && seniority}
-                                        onChange={(e) => setSeniority(e.target.value)}
+                                        disabled
                                     ></Form.Control>
                                 </Form.Group>
                             </Col>
                         </Row>
 
                         <Row>
+                            <Col>
+                                <Form.Group controlId='valued'>
+                                    <Form.Label><b>Valued date</b></Form.Label>
+                                    <Form.Control
+                                        type='date'
+                                        value={valued && valued}
+                                        onChange={(e) => setValued(e.target.value)}
+                                    ></Form.Control>
+                                </Form.Group>
+                            </Col>
+
                             <Col>
                                 <Form.Group controlId='arrival'>
                                     <Form.Label><b>Arrival date</b></Form.Label>
@@ -124,16 +137,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                     ></Form.Control>
                                 </Form.Group>
                             </Col>
-                            <Col>
-                                <Form.Group controlId='valued'>
-                                    <Form.Label><b>Valued date</b></Form.Label>
-                                    <Form.Control
-                                        type='date'
-                                        value={valued && valued}
-                                        onChange={(e) => setValued(e.target.value)}
-                                    ></Form.Control>
-                                </Form.Group>
-                            </Col>
+                            
                             <Col>
                                 <Form.Group controlId='leaving'>
                                     <Form.Label><b>Leaving date</b></Form.Label>

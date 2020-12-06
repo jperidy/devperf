@@ -39,6 +39,7 @@ const PxxEditor = ({ consultantFocus, searchDate, navigationMonthHandler }) => {
                 <Col xs={2} className="text-center align-middle px-1"><b>Availability</b></Col>
                 <Col xs={2} className="text-center">
                     <Button
+                        className='btn btn-primary mb-3'
                         variant='primary'
                         size='sm'
                         onClick={() => navigationMonthHandler(-1)}
@@ -63,6 +64,7 @@ const PxxEditor = ({ consultantFocus, searchDate, navigationMonthHandler }) => {
                 <Col xs={2} className="text-center align-middle px-1"></Col>
                 <Col xs={2} className="text-center">
                     <Button
+                        className='btn btn-primary mt-3'
                         variant='primary'
                         size='sm'
                         onClick={() => navigationMonthHandler(1)}

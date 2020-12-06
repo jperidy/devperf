@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { updateComment } from '../actions/userActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+//import { getAllMyConsultants } from '../actions/consultantActions';
 
-const PxxComment = ({ comment, consultantId }) => {
+const PxxComment = ({ comment, consultantId, setCommentUpdated }) => {
 
     const dispatch = useDispatch();
 
@@ -21,6 +22,7 @@ const PxxComment = ({ comment, consultantId }) => {
 
     const submitHandler = () => {
         dispatch(updateComment(consultantId, commentText));
+        setCommentUpdated(true);
     };
 
     return (

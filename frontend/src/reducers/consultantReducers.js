@@ -2,6 +2,7 @@ import {
     CONSULTANTS_MY_DETAILS_REQUEST,
     CONSULTANTS_MY_DETAILS_SUCCESS,
     CONSULTANTS_MY_DETAILS_FAIL,
+    CONSULTANTS_MY_DETAILS_FOCUS,
     CONSULTANTS_MY_DETAILS_RESET,
     CONSULTANT_MY_REQUEST,
     CONSULTANT_MY_SUCCESS,
@@ -9,22 +10,28 @@ import {
     CONSULTANT_MY_RESET
 } from '../constants/consultantConstants';
 
-export const consultantsMyListReducer = (state = { loading: true, consultantsMy: [
-                                                    {
-                                                        name: '',
-                                                        matricule: '',
-                                                        arrival: '',
-                                                        leaving: '',
-                                                        seriority: '',
-                                                        comment: '' 
-                                                    }] }, action) => {
+export const consultantsMyListReducer = (state = {
+    loading: true, 
+    consultantsMy: [
+        {
+            name: '',
+            matricule: '',
+            arrival: '',
+            leaving: '',
+            seriority: '',
+            comment: ''
+        }],
+    focus: 0
+}, action) => {
     switch (action.type) {
         case CONSULTANTS_MY_DETAILS_REQUEST:
             return { ...state, loading: true };
         case CONSULTANTS_MY_DETAILS_SUCCESS:
-            return { loading: false, consultantsMy: action.payload };
+            return { ...state, loading: false, consultantsMy: action.payload };
         case CONSULTANTS_MY_DETAILS_FAIL:
-            return { loading: false, error: action.payload };
+            return { ...state, loading: false, error: action.payload };
+        case CONSULTANTS_MY_DETAILS_FOCUS:
+            return { ...state, focus: action.payload }
         case CONSULTANTS_MY_DETAILS_RESET:
             return { loading: true, consultantsMy: [
                                 {
@@ -34,7 +41,7 @@ export const consultantsMyListReducer = (state = { loading: true, consultantsMy:
                                     leaving: '',
                                     seriority: '',
                                     comment: '' 
-                                }] }
+                                }], focus: 0 }
         default:
             return state;
     }

@@ -1,5 +1,6 @@
 import {
     CONSULTANTS_MY_DETAILS_FAIL,
+    CONSULTANTS_MY_DETAILS_FOCUS,
     CONSULTANTS_MY_DETAILS_REQUEST,
     CONSULTANTS_MY_DETAILS_SUCCESS,
     CONSULTANT_MY_FAIL,
@@ -37,6 +38,10 @@ export const getAllMyConsultants = () => async (dispatch, getState) => {
     });
 }
 };
+
+export const setConsultantFocus = (focus) => async(dispatch) => {
+    dispatch({type: CONSULTANTS_MY_DETAILS_FOCUS, payload: focus});
+}
 
 export const getMyConsultant = (consultantId) => async (dispatch, getState) => {
 
