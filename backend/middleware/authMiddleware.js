@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 
 const protect = asyncHandler (async (req, res, next) => {
     
+    //console.log('middlewareProtect')
     let token;
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
         
@@ -12,7 +13,6 @@ const protect = asyncHandler (async (req, res, next) => {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             
             req.user = await User.findById(decoded.id).select('-password'); // we don't want to add password in the req
-
             next();
         } catch (error) {
             console.error(error);

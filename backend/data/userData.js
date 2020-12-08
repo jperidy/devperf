@@ -7,7 +7,6 @@ function getCDMData (nbCdm) {
 
         let arrival = new Date( 2019 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
         let leaving = new Date( 2023 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
-        let seniority = (Date.now() - arrival) / (1000*3600*24*365.25);
         cdm = {
             name: 'userCDM'+ matricule,
             matricule: 'matricule' + matricule,
@@ -16,8 +15,8 @@ function getCDMData (nbCdm) {
             arrival: arrival,
             valued: arrival,
             leaving: leaving,
-            seniority: seniority,
             isCDM: true,
+            isPartialTime:{ value: false, week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}], start: '', end: ''},
             isAdmin: false
         };
         listOfCdm.push(cdm);
@@ -50,6 +49,7 @@ function getUserData (nbUsers, cdmId) {
                 seniority: seniority,
                 isCDM: false,
                 isAdmin: true,
+                isPartialTime:{ value: false, week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}], start:'', end:''},
                 cdmId: cdmId[incr2]
             };
             numberOfAdmin--;
@@ -65,6 +65,7 @@ function getUserData (nbUsers, cdmId) {
                 seniority: seniority,
                 isCDM: false,
                 isAdmin: false,
+                isPartialTime:{ value: false, week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}], start:'', end:''},
                 cdmId: cdmId[incr2]
             };
         };

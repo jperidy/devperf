@@ -38,7 +38,7 @@ const PxxListConsultants = ({ history, consultantsMy }) => {
                         <td>{consultant.valued.substring(0,10)}</td>
                         <td>{consultant.arrival.substring(0,10)}</td>
                         <td>{consultant.leaving.substring(0,10)}</td>
-                        <td>{consultant.seniority.substring(0,4)} years</td>
+                        <td>//TODO// years</td>
                         <td>{consultant.comment}</td>
                         <td>
                             <Button className='btn btn-light p-1' onClick={() => onClickHandler(focus, consultant._id)}>

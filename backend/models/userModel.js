@@ -31,10 +31,6 @@ const userSchema = mongoose.Schema({
         type: Date,
         required: false,
     },
-    seniority: {
-        type: String,
-        required: false,
-    },
     cdmId: {
         type: mongoose.Schema.Types.ObjectId,
         required: false,
@@ -49,6 +45,17 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         required: true,
         default: false,
+    },
+    isPartialTime: {
+        value: { type: Boolean },
+        start: String,
+        end: String,
+        week: [
+            {
+                num: Number,
+                worked: Number
+            }
+        ]
     },
     comment: {
         type: String,

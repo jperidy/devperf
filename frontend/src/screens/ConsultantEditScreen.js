@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { getMyConsultant } from '../actions/consultantActions';
+import { getMyConsultant, updateMyConsultant } from '../actions/consultantActions';
+import { CONSULTANT_MY_UPDATE_RESET } from '../constants/consultantConstants';
 
 const ConsultantEditScreen = ({ history, match }) => {
 
@@ -21,12 +21,25 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [valued, setValued] = useState('');
     const [leaving, setLeaving] = useState('');
     const [seniority, setSeniority] = useState('');
+    const [isCDM, setIsCDM] = useState(false);
+    
+    const [partialTime, setPartialTime] = useState(false);
+    const [startPartialTime, setStartPartialTime] = useState(0);
+    const [endPartialTime, setEndPartialTime] = useState(0);
+    const [valueMonday, setValueMonday] = useState(1);
+    const [valueTuesday, setValueTuesday] = useState(1);
+    const [valueWednesday, setValueWednesday] = useState(1);
+    const [valueThursday, setValueThursday] = useState(1);
+    const [valueFriday, setValueFriday] = useState(1);
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const consultantMy = useSelector(state => state.consultantMy);
     const { loading, error, consultant } = consultantMy;
+
+    const consultantMyUpdate = useSelector(state => state.consultantMyUpdate);
+    const { loading:loadingUpdate, error:errorUpdate, success:successUpdate } = consultantMyUpdate;
 
     useEffect(() => {
 
@@ -36,17 +49,25 @@ const ConsultantEditScreen = ({ history, match }) => {
 
         if (!consultant || !consultant.name) {
             dispatch(getMyConsultant(consultantId));
-            //console.log('dispatch');
         }
 
         if (consultant && consultant.name && (!arrival || !leaving)) {
-            //console.log('setProps');
+            dispatch({type: CONSULTANT_MY_UPDATE_RESET});
             setName(consultant.name);
             setMatricule(consultant.matricule);
             setArrival(consultant.arrival.substring(0, 10));
             setValued(consultant.valued.substring(0, 10));
             setLeaving(consultant.leaving.substring(0, 10));
-            setSeniority(consultant.seniority.substring(0, 4));
+            setSeniority(((new Date(Date.now()) - new Date(consultant.arrival.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4));
+            setIsCDM(consultant.isCDM || false);
+            setPartialTime(consultant.isPartialTime.value);
+            setStartPartialTime(consultant.isPartialTime.start.substring(0,10) || consultant.arrival.substring(0, 10))
+            setEndPartialTime(consultant.isPartialTime.end.substring(0,10) || (new Date(Date.now())).toISOString().substring(0, 10))
+            setValueMonday(consultant.isPartialTime.week.filter(x => x.num === 1)[0].worked)
+            setValueTuesday(consultant.isPartialTime.week.filter(x => x.num === 2)[0].worked)
+            setValueWednesday(consultant.isPartialTime.week.filter(x => x.num === 3)[0].worked)
+            setValueThursday(consultant.isPartialTime.week.filter(x => x.num === 4)[0].worked)
+            setValueFriday(consultant.isPartialTime.week.filter(x => x.num === 5)[0].worked)
         }
 
     }, [
@@ -64,11 +85,43 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     const submitHandler = (e) => {
         e.preventDefault();
-        console.log('submitHandler');
+        const updatedUser = {
+            ...consultant,
+            name: name,
+            matricule: matricule,
+            arrival: arrival,
+            valued: valued,
+            leaving: leaving,
+            isCDM: isCDM,
+            isPartialTime: {
+                value: partialTime,
+                start: partialTime && startPartialTime,
+                end: partialTime && endPartialTime,
+                week: [
+                    { num: 1, worked: partialTime ? valueMonday : 1 },
+                    { num: 2, worked: partialTime ? valueTuesday : 1 },
+                    { num: 3, worked: partialTime ? valueWednesday : 1 },
+                    { num: 4, worked: partialTime ? valueThursday : 1 },
+                    { num: 5, worked: partialTime ? valueFriday : 1 }
+                ]
+            }
+        }
+        dispatch(updateMyConsultant(updatedUser));
+        
+    }
+
+    const changeValueDateHandler = (e) => {
+        setValued(e.substring(0, 10));
+        setSeniority(((new Date(Date.now()) - new Date(e.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4));
     }
 
     return (
         <>
+            {loadingUpdate ? <Loader /> 
+                                    : errorUpdate 
+                                    ? <Message variant='danger'>{errorUpdate}</Message> 
+                                    : successUpdate && <Message variant='success'>User updated</Message>}
+
             <Link to={`/pxx`} className='btn btn-primary my-3'>
                 Go Back
             </Link>
@@ -76,7 +129,7 @@ const ConsultantEditScreen = ({ history, match }) => {
             <Form onSubmit={submitHandler}>
                 {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : (
                     <>
-                        <Row>
+                        <Form.Row>
                             <Col>
                                 <Form.Group controlId='name'>
                                     <Form.Label><b>Name</b></Form.Label>
@@ -110,16 +163,16 @@ const ConsultantEditScreen = ({ history, match }) => {
                                     ></Form.Control>
                                 </Form.Group>
                             </Col>
-                        </Row>
+                        </Form.Row>
 
-                        <Row>
+                        <Form.Row>
                             <Col>
                                 <Form.Group controlId='valued'>
                                     <Form.Label><b>Valued date</b></Form.Label>
                                     <Form.Control
                                         type='date'
                                         value={valued && valued}
-                                        onChange={(e) => setValued(e.target.value)}
+                                        onChange={(e) => changeValueDateHandler(e.target.value)}
                                     ></Form.Control>
                                 </Form.Group>
                             </Col>
@@ -137,7 +190,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                     ></Form.Control>
                                 </Form.Group>
                             </Col>
-                            
+
                             <Col>
                                 <Form.Group controlId='leaving'>
                                     <Form.Label><b>Leaving date</b></Form.Label>
@@ -148,14 +201,139 @@ const ConsultantEditScreen = ({ history, match }) => {
                                     ></Form.Control>
                                 </Form.Group>
                             </Col>
-                        </Row>
-                        <Row>
+                        </Form.Row>
+
+                        <Form.Row>
+                            <Col>
+                                <Form.Group controlId="partialtime">
+                                    <Form.Check
+                                        type="checkbox"
+                                        label="Partial time"
+                                        checked={partialTime ? true : false}
+                                        onChange={(e) => {
+                                            setPartialTime(e.target.checked)
+                                            //console.log(e.target.checked);
+                                        }} />
+                                </Form.Group>
+                            </Col>
+                            {partialTime && (
+                                <>
+                                    <Col>
+                                        <Form.Group controlId='startpartialtime'>
+                                            <Form.Label>Start</Form.Label>
+                                            <Form.Control
+                                                type="Date"
+                                                value={startPartialTime}
+                                                onChange={(e) => setStartPartialTime(e.target.value.substring(0, 10))}
+                                            ></Form.Control>
+                                        </Form.Group>
+                                    </Col>
+
+                                    <Col>
+                                        <Form.Group controlId='endpartialtime'>
+                                            <Form.Label>End</Form.Label>
+                                            <Form.Control
+                                                type="Date"
+                                                value={endPartialTime}
+                                                onChange={(e) => setEndPartialTime(e.target.value.substring(0, 10))}
+                                            ></Form.Control>
+                                        </Form.Group>
+                                    </Col>
+                                </>   
+                            )}
+                        </Form.Row>
+
+                        {partialTime && (
+                            <Form.Row>
+                                <Col>
+                                    <Form.Group controlId='monday'>
+                                        <Form.Label><b>Monday</b></Form.Label>
+                                        <Form.Control
+                                            type='Number'
+                                            min={0}
+                                            max={1}
+                                            step={0.5}
+                                            value={Number(valueMonday)}
+                                            onChange={(e) => setValueMonday(e.target.value)}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId='tuesday'>
+                                        <Form.Label><b>Tuesday</b></Form.Label>
+                                        <Form.Control
+                                            type='Number'
+                                            min={0}
+                                            max={1}
+                                            step={0.5}
+                                            value={Number(valueTuesday)}
+                                            onChange={(e) => setValueTuesday(e.target.value)}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId='wendnesday'>
+                                        <Form.Label><b>Wendnesday</b></Form.Label>
+                                        <Form.Control
+                                            type='Number'
+                                            min={0}
+                                            max={1}
+                                            step={0.5}
+                                            value={Number(valueWednesday)}
+                                            onChange={(e) => setValueWednesday(e.target.value)}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId='thursday'>
+                                        <Form.Label><b>Thursday</b></Form.Label>
+                                        <Form.Control
+                                            type='Number'
+                                            min={0}
+                                            max={1}
+                                            step={0.5}
+                                            value={Number(valueThursday)}
+                                            onChange={(e) => setValueThursday(e.target.value)}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId='friday'>
+                                        <Form.Label><b>Friday</b></Form.Label>
+                                        <Form.Control
+                                            type='Number'
+                                            min={0}
+                                            max={1}
+                                            step={0.5}
+                                            value={Number(valueFriday)}
+                                            onChange={(e) => setValueFriday(e.target.value)}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                            </Form.Row>
+                        )}
+
+                        <Form.Row>
+                            <Col>
+                                <Form.Group controlId="iscdm">
+                                    <Form.Check
+                                        type="checkbox"
+                                        label="Is CDM"
+                                        checked={isCDM ? true : false}
+                                        onChange={(e) => {
+                                            setIsCDM(e.target.checked);
+                                        }} />
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+
+                        <Form.Row>
                             <Col>
                                 <Button type='submit' variat='primary'>
                                     Update
-                        </Button>
+                                </Button>
                             </Col>
-                        </Row>
+                        </Form.Row>
                     </>
                 )}
             </Form>

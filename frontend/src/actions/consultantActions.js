@@ -5,7 +5,10 @@ import {
     CONSULTANTS_MY_DETAILS_SUCCESS,
     CONSULTANT_MY_FAIL,
     CONSULTANT_MY_REQUEST,
-    CONSULTANT_MY_SUCCESS
+    CONSULTANT_MY_SUCCESS,
+    CONSULTANT_MY_UPDATE_FAIL,
+    CONSULTANT_MY_UPDATE_REQUEST,
+    CONSULTANT_MY_UPDATE_SUCCESS
 } from '../constants/consultantConstants';
 
 const axios = require('axios');
@@ -77,6 +80,39 @@ export const getMyConsultant = (consultantId) => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: CONSULTANT_MY_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+
+export const updateMyConsultant = (consultant) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_MY_UPDATE_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.put(`/api/consultants/${consultant._id}`, consultant, config);
+        if (!data) {
+            throw new Error('Error: your modification is not saved')
+        }
+
+        dispatch({ type: CONSULTANT_MY_UPDATE_SUCCESS });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_MY_UPDATE_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message
