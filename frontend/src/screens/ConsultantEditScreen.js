@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import Alertuser from '../components/AlertUser';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { getMyConsultant, updateMyConsultant } from '../actions/consultantActions';
@@ -15,6 +16,8 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     const dispatch = useDispatch();
 
+    const [showMissingInfoPartialTime, setShowMissingInfoPartialTime] = useState(false);
+
     const [name, setName] = useState('');
     const [matricule, setMatricule] = useState('');
     const [arrival, setArrival] = useState('');
@@ -24,8 +27,8 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [isCDM, setIsCDM] = useState(false);
     
     const [partialTime, setPartialTime] = useState(false);
-    const [startPartialTime, setStartPartialTime] = useState(0);
-    const [endPartialTime, setEndPartialTime] = useState(0);
+    const [startPartialTime, setStartPartialTime] = useState('');
+    const [endPartialTime, setEndPartialTime] = useState('');
     const [valueMonday, setValueMonday] = useState(1);
     const [valueTuesday, setValueTuesday] = useState(1);
     const [valueWednesday, setValueWednesday] = useState(1);
@@ -61,8 +64,8 @@ const ConsultantEditScreen = ({ history, match }) => {
             setSeniority(((new Date(Date.now()) - new Date(consultant.arrival.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4));
             setIsCDM(consultant.isCDM || false);
             setPartialTime(consultant.isPartialTime.value);
-            setStartPartialTime(consultant.isPartialTime.start.substring(0,10) || consultant.arrival.substring(0, 10))
-            setEndPartialTime(consultant.isPartialTime.end.substring(0,10) || (new Date(Date.now())).toISOString().substring(0, 10))
+            setStartPartialTime(consultant.isPartialTime.start.substring(0,10) ? consultant.isPartialTime.start.substring(0,10) : false)
+            setEndPartialTime(consultant.isPartialTime.end.substring(0,10) ? consultant.isPartialTime.end.substring(0,10) : false)
             setValueMonday(consultant.isPartialTime.week.filter(x => x.num === 1)[0].worked)
             setValueTuesday(consultant.isPartialTime.week.filter(x => x.num === 2)[0].worked)
             setValueWednesday(consultant.isPartialTime.week.filter(x => x.num === 3)[0].worked)
@@ -85,6 +88,21 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     const submitHandler = (e) => {
         e.preventDefault();
+
+        //console.log(startPartialTime);
+        //console.log(endPartialTime);
+        //console.log(partialTime, !startPartialTime, !endPartialTime)
+
+        if (partialTime && (
+                startPartialTime === 'false' 
+                || !startPartialTime
+                || endPartialTime === 'false'
+                || !endPartialTime
+        )) {
+            setShowMissingInfoPartialTime(true);            
+            return;
+        }
+
         const updatedUser = {
             ...consultant,
             name: name,
@@ -117,6 +135,14 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     return (
         <>
+            {showMissingInfoPartialTime && (
+                <Alertuser 
+                    header="Error: missing informations for partial time description"
+                    message="Please complete valid starting and ending dates"
+                    setShow={setShowMissingInfoPartialTime}
+                />
+            )}
+
             {loadingUpdate ? <Loader /> 
                                     : errorUpdate 
                                     ? <Message variant='danger'>{errorUpdate}</Message> 

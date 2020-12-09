@@ -77,7 +77,7 @@ const ConsultantSelector = () => {
                         <Col className="text-left"><b>Leaving:</b> {consultantsMy[focus].leaving.substring(0,10)}</Col>
                     </Row>
                     <Row className="my-3">
-                        <Col><b>Seniority:</b> //TODO// years</Col>
+                        <Col><b>Seniority:</b>**TODO// years**</Col>
                     </Row>
                     <Row className="my-3">
                         <Col>
