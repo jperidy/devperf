@@ -31,15 +31,26 @@ const Header = () => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ml-auto">
-                            <LinkContainer to='/pxx'>
-                                <Nav.Link>Edit My Pxx</Nav.Link>
-                            </LinkContainer>
+                            {userInfo && userInfo.isCDM && (
+                                <LinkContainer to='/pxx'>
+                                    <Nav.Link>Edit My Pxx</Nav.Link>
+                                </LinkContainer>
+                            )}
 
                             {userInfo ? (
                                 <NavDropdown title={userInfo.name || 'no user'} id="username">
                                     <LinkContainer to='/profile'>
                                         <NavDropdown.Item>Edit My Profil</NavDropdown.Item>
                                     </LinkContainer>
+
+                                    {userInfo.isAdmin && (
+                                        <>
+                                            <NavDropdown.Divider />
+                                            <LinkContainer to='/admin/consultants'>
+                                                <NavDropdown.Item>Manage Consultant</NavDropdown.Item>
+                                            </LinkContainer>
+                                        </>
+                                    )}
                                     
                                     <NavDropdown.Divider />
                                     <LinkContainer to='/login'>

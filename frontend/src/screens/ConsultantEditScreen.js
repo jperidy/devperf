@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
@@ -148,9 +147,13 @@ const ConsultantEditScreen = ({ history, match }) => {
                                     ? <Message variant='danger'>{errorUpdate}</Message> 
                                     : successUpdate && <Message variant='success'>User updated</Message>}
 
-            <Link to={`/pxx`} className='btn btn-primary my-3'>
+            <Button onClick={() => history.go(-1)}>
                 Go Back
-            </Link>
+            </Button>
+
+            {/* <Link to={`/pxx`} className='btn btn-primary my-3'>
+                Go Back
+            </Link> */}
 
             <Form onSubmit={submitHandler}>
                 {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : (
@@ -238,7 +241,6 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         checked={partialTime ? true : false}
                                         onChange={(e) => {
                                             setPartialTime(e.target.checked)
-                                            //console.log(e.target.checked);
                                         }} />
                                 </Form.Group>
                             </Col>
@@ -250,7 +252,11 @@ const ConsultantEditScreen = ({ history, match }) => {
                                             <Form.Control
                                                 type="Date"
                                                 value={startPartialTime}
-                                                onChange={(e) => setStartPartialTime(e.target.value.substring(0, 10))}
+                                                onChange={(e) => {
+                                                    setStartPartialTime(e.target.value.substring(0, 10));
+                                                    !endPartialTime && setEndPartialTime(e.target.value.substring(0, 10));
+                                                    (endPartialTime < e.target.value.substring(0, 10)) && setEndPartialTime(e.target.value.substring(0, 10));
+                                                }}
                                             ></Form.Control>
                                         </Form.Group>
                                     </Col>
@@ -261,7 +267,10 @@ const ConsultantEditScreen = ({ history, match }) => {
                                             <Form.Control
                                                 type="Date"
                                                 value={endPartialTime}
-                                                onChange={(e) => setEndPartialTime(e.target.value.substring(0, 10))}
+                                                min={startPartialTime || ''}
+                                                onChange={(e) => {
+                                                        setEndPartialTime(e.target.value.substring(0, 10))
+                                                    }}
                                             ></Form.Control>
                                         </Form.Group>
                                     </Col>

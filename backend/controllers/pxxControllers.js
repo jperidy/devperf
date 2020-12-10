@@ -1,5 +1,6 @@
 const Pxx = require('../models/pxxModel');
 const Month = require('../models/monthModel');
+const User = require('../models/userModel');
 const axios = require('axios');
 const asyncHandler = require('express-async-handler');
 const calculDayByType = require('../utils/calculDayByType')
@@ -18,6 +19,7 @@ const getPxx = asyncHandler(async (req, res) => {
     let month = await Month.findOne({ firstDay: firstDay }).select('_id days');
 
     if (!month) {
+
         const monthDate = new Date(firstDay);
         const nextMonthDate = new Date(firstDay);
         nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
@@ -33,6 +35,7 @@ const getPxx = asyncHandler(async (req, res) => {
         const { data } = await axios.get(`https://calendrier.api.gouv.fr/jours-feries/metropole/${monthDate.getFullYear().toString()}.json`);
 
         for (let currentDay = new Date(firstDay); currentDay < nextMonthDate; currentDay.setDate(currentDay.getDate()+1)) {
+
             const num = currentDay.toISOString().substring(0, 10);
             const typeDay = typeOfDay(currentDay.getDay());
             const isNonWorkingDay = data[num];
@@ -57,14 +60,39 @@ const getPxx = asyncHandler(async (req, res) => {
         res.status(200).json(pxxData);
     } else {
 
+        const userProfile = await User.findById(consultantId);
+        
+        let availableDay = 0;
+        // Apply partial time profil to consultant
+        if (userProfile.isPartialTime.value === true) {
+
+            const partiaTimeProfile = userProfile.isPartialTime.week;
+            const startPartialTime = userProfile.isPartialTime.start;
+            const endPartialTime = userProfile.isPartialTime.end;
+
+            for (let incrMonth = 0; incrMonth < month.days.length; incrMonth++) {
+                if (month.days[incrMonth].type === "working-day"){
+                    if (month.days[incrMonth].num >= startPartialTime && month.days[incrMonth].num <= endPartialTime) {
+                        availableDay += Number(partiaTimeProfile.filter(x => Number(x.num) === Number((new Date(month.days[incrMonth].num)).getDay()))[0].worked)
+                    } else {
+                        availableDay+=1;
+                    }
+                }
+            }
+
+        } else {
+            availableDay = calculDayByType(month.days, "working-day")
+        }
+
         const newPxx = new Pxx({
             name: consultantId,
             month: month._id,
             prodDay: 0,
             notProdDay: 0,
             leavingDay: 0,
-            availableDay: calculDayByType(month.days, "working-day")
+            availableDay: availableDay
         });
+
         await newPxx.save(newPxx);
         
         const pxxCreated = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');

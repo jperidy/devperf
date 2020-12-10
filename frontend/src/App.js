@@ -7,6 +7,7 @@ import LoginScreen from './screens/LoginScreen';
 //import PxxListScreen from './screens/PxxListScreen'; >>>>>>>> à supprimer ou modifier
 import PxxEditScreen from './screens/PxxEditScreen';
 import ConsultantEditScreen from './screens/ConsultantEditScreen';
+import ManageConsultantScreen from './screens/ManageConsultantScreen';
 
 const App = () => {
   return (
@@ -17,7 +18,8 @@ const App = () => {
           <Route path='/login' component={LoginScreen} />
           <Route path='/pxx' component={PxxEditScreen} exact />
           <Route path='/pxx/:id' component={PxxEditScreen} exact />
-          <Route path='/editconsultant/:id' component={ConsultantEditScreen} />
+          <Route path='/editconsultant/:id' component={ConsultantEditScreen} exact />
+          <Route path='/admin/consultants' component={ManageConsultantScreen} exact />
         </Container>
       </main>
       <Footer />

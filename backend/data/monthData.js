@@ -2,14 +2,18 @@ const axios = require('axios');
 const typeOfDay = require('../utils/typeOfDay');
 
 // functions
+/*
 Date.prototype.addDays = function (days) {
     this.setDate(this.getDate() + days);
     return this;
 };
+*/
+/*
 Date.prototype.addMonth = function (months) {
     this.setMonth(this.getMonth() + months);
     return this;
 };
+*/
 
 function clone(obj) {
     try {
@@ -51,7 +55,8 @@ function typeOfDay(day) {
 async function getMonthData(startDate, endDate) {
     
     startDate.setDate(1);
-    endDate.addMonth(1);
+    endDate.setMonth(endDate.getMonth() + 1);
+    //endDate.addMonth(1);
     endDate.setDate(1);
 
     const month = {
@@ -64,15 +69,20 @@ async function getMonthData(startDate, endDate) {
     let currentMonth = startDate.getMonth();
     let newMonth;
 
-    for (let currentDay = startDate; currentDay <= endDate; currentDay.addDays(1)) {
+    for (let currentDay = startDate; currentDay <= endDate; currentDay.setDate(currentDay.getDate() + 1)) {
+        
+        if(currentDay.toISOString().substring(0,10) == '2021-03-28') {
+            console.log(currentDay.toISOString().substring(0,10));
+        }
+
         newMonth = currentDay.getMonth();
 
-        if (newMonth == currentMonth) {
+        if (newMonth === currentMonth) {
 
             startDateTemp = currentDay.toISOString().substring(0, 10);
             month.days.push({ num: startDateTemp, type: typeOfDay(currentDay.getDay()) });
 
-        } else if ((newMonth == currentMonth + 1) || (newMonth === 0 && currentMonth === 11)) {
+        } else if ((newMonth === currentMonth + 1) || (newMonth === 0 && currentMonth === 11)) {
             tableau.push(clone(month));
             month.name = currentDay.getFullYear().toString() + '/' + Number(currentDay.getMonth() + 1).toString();
             month.firstDay = currentDay.toISOString().substring(0, 10);

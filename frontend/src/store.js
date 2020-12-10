@@ -3,20 +3,20 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { pxxListReducer, pxxUpdateReducer } from './reducers/pxxReducers';
 import { userLoginReducer, userUpdateCommentReducer } from './reducers/userReducers';
-import { consultantMyReducer, consultantsMyListReducer, consultantMyUpdateReducer } from './reducers/consultantReducers';
+import { consultantMyReducer, consultantsMyListReducer, consultantMyUpdateReducer, consultantsMyAdminListReducer } from './reducers/consultantReducers';
 import { pxxMyToEditReducer } from './reducers/pxxReducers';
 
 export const reducer = combineReducers({
     userLogin: userLoginReducer,
     userUpdateComment: userUpdateCommentReducer,
+    consultantsMyAdminList: consultantsMyAdminListReducer,
     consultantsMyList: consultantsMyListReducer,
     consultantMy: consultantMyReducer,
     consultantMyUpdate: consultantMyUpdateReducer,
     pxxList: pxxListReducer,
     pxxMyToEdit: pxxMyToEditReducer,
     pxxUpdate: pxxUpdateReducer
-}
-);
+});
 
 // space for store on local
 const userItemsFromStorage = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')) : null;

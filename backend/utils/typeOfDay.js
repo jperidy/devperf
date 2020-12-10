@@ -1,7 +1,7 @@
 function typeOfDay(day) {
     switch (day) {
         case 0:
-            return 'weed-end';
+            return 'weekend';
         case 1:
             return 'working-day';
         case 2:

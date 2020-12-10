@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import ConsultantSelector from '../components/ConsultantSelector';
 import PxxEditor from '../components/PxxEditor';
-import PxxListConsultants from '../components/PxxListConsultants';
+import ConsultantsTab from '../components/ConsultantsTab';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { getAllMyConsultants } from '../actions/consultantActions';
@@ -43,22 +43,6 @@ const PxxEditScreen = ({ history }) => {
             //console.log('dispatch reset');
         }
 
-        /*
-        if (match.params.id) {
-            if (consultantsMy) {
-                const currentConsultantId = consultantsMy.map(consultant => consultant._id);
-                setConsultantFocus(currentConsultantId.indexOf(match.params.id));
-                console.log('there is an id', currentConsultantId.indexOf(match.params.id));
-            } else {
-                setConsultantFocus(0);
-            }
-            //currentConsultantId.indexOf(match.params.id);
-        } else {
-            setConsultantFocus(0);
-            console.log('there is no id')
-        }
-        */
-
         dispatch(getAllMyConsultants());
 
     }, [history, dispatch, userInfo, consultant]);
@@ -71,7 +55,9 @@ const PxxEditScreen = ({ history }) => {
 
     return (
         <>
-            {loadingConsultantsMyList ? <Loader />
+            {!userInfo.isCDM ? <Message variant="warning">You need CDM right to access this menu !</Message> : 
+                consultantsMy.length === 0 ? <Message variant="info">You don't have CDMee yet</Message> :
+                loadingConsultantsMyList ? <Loader />
                 : errorConsultantsMyList
                     ? <Message variant='danger'>{errorConsultantsMyList}</Message>
                     : (
@@ -89,7 +75,7 @@ const PxxEditScreen = ({ history }) => {
                                 </Col>
                             </Row>
                             <Row className="pt-5">
-                                <PxxListConsultants
+                                <ConsultantsTab
                                     consultantsMy={consultantsMy}
                                     history={history}
                                 />

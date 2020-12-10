@@ -8,13 +8,14 @@ function getCDMData (nbCdm) {
         let arrival = new Date( 2019 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
         let leaving = new Date( 2023 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
         cdm = {
-            name: 'userCDM'+ matricule,
+            name: 'usercdm_'+ matricule,
             matricule: 'matricule' + matricule,
-            email: 'userCDM' + matricule + '@mail.com',
+            email: 'usercdm_' + matricule + '@mail.com',
             password: bcrypt.hashSync('123456', 10),
             arrival: arrival,
             valued: arrival,
             leaving: leaving,
+            practice: 'DET',
             isCDM: true,
             isPartialTime:{ value: false, week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}], start: '', end: ''},
             isAdmin: false
@@ -39,15 +40,16 @@ function getUserData (nbUsers, cdmId) {
         
         if (numberOfAdmin > 0) {
             user = {
-                name: 'user'+ matricule,
+                name: 'useradmincdm_'+ matricule,
                 matricule: 'matricule' + matricule,
-                email: 'user' + matricule + '@mail.com',
+                email: 'useradmincdm_' + matricule + '@mail.com',
                 password: bcrypt.hashSync('123456', 10),
                 arrival: arrival,
                 valued: arrival,
                 leaving: leaving,
                 seniority: seniority,
-                isCDM: false,
+                practice: 'DET',
+                isCDM: true,
                 isAdmin: true,
                 isPartialTime:{ value: false, week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}], start:'', end:''},
                 cdmId: cdmId[incr2]
@@ -55,14 +57,15 @@ function getUserData (nbUsers, cdmId) {
             numberOfAdmin--;
         } else {
             user = {
-                name: 'user'+ matricule,
+                name: 'user_'+ matricule,
                 matricule: 'matricule' + matricule,
-                email: 'user' + matricule + '@mail.com',
+                email: 'user_' + matricule + '@mail.com',
                 password: bcrypt.hashSync('123456', 10),
                 arrival: arrival,
                 valued: arrival,
                 leaving: leaving,
                 seniority: seniority,
+                practice: 'DET',
                 isCDM: false,
                 isAdmin: false,
                 isPartialTime:{ value: false, week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}], start:'', end:''},

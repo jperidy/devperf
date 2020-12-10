@@ -31,6 +31,10 @@ const userSchema = mongoose.Schema({
         type: Date,
         required: false,
     },
+    practice: {
+        type: String,
+        required: false
+    },
     cdmId: {
         type: mongoose.Schema.Types.ObjectId,
         required: false,

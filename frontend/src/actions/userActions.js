@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { CONSULTANTS_MY_DETAILS_RESET, CONSULTANT_MY_RESET } from '../constants/consultantConstants';
+import { PXX_LIST_RESET, PXX_MY_TO_EDIT_RESET, PXX_UPDATE_RESET } from '../constants/pxxConstants';
 import { 
 
     USER_REGISTER_REQUEST,
@@ -64,6 +66,11 @@ export const login = (email, password) => async(dispatch) => {
 export const logout = () => (dispatch) => {
     localStorage.removeItem('userInfo');
     dispatch({type: USER_LOGOUT});
+    dispatch({type: CONSULTANTS_MY_DETAILS_RESET});
+    dispatch({type: CONSULTANT_MY_RESET});
+    dispatch({type: PXX_LIST_RESET});
+    dispatch({type: PXX_MY_TO_EDIT_RESET});
+    dispatch({type: PXX_UPDATE_RESET});
 };
 
 export const register = (name, email, password) => async(dispatch) => {

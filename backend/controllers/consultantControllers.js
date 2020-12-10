@@ -4,6 +4,18 @@ const Pxx = require('../models/pxxModel');
 const asyncHandler = require('express-async-handler');
 const calculDayByType = require('../utils/calculDayByType');
 
+// @desc    Get all admin consultant data
+// @route   GET /api/admin/consultants
+// @access  Private, Admin
+const getAllPracticeConsultants = asyncHandler(async (req, res) => {
+
+    const myConsultants = await User.find({ practice: req.user.practice })
+                                                    .select('-password')
+                                                    .sort({'name': 1});
+    res.json(myConsultants);
+    
+});
+
 // @desc    Get my consultant data
 // @route   GET /api/consultants
 // @access  Private
@@ -75,10 +87,10 @@ const updateConsultant = asyncHandler(async (req, res) => {
                 const updatedConsultant = await myConsultant.save();
                 res.status(200).json(updatedConsultant);
             } catch (error) {
-                console.log('Error: updatePartialTimePxx fail');
+                console.log('Error: updatePartialTimePxx fail', error);
                 res.status(500).json({ message: 'Error: updatePartialTimePxx fail' });
             }
-        }
+        } 
 
         if ((partialTimeChange 
             || mondayChange 
@@ -95,11 +107,22 @@ const updateConsultant = asyncHandler(async (req, res) => {
                 const updatedConsultant = await myConsultant.save();
                 res.status(200).json(updatedConsultant);
             } catch (error) {
-                console.log('Error: resetPartialTimePxx fail');
+                console.log('Error: resetPartialTimePxx fail', error);
                 res.status(500).json({ message: 'Error: resetPartialTimePxx fail' });
             }
         }
         
+        if (!(partialTimeChange 
+            && mondayChange 
+            && tuesdayChange 
+            && wednesdayChange 
+            && thursdayChange 
+            && fridayChange
+            && startChange
+            && endChange)) {
+            
+            res.status(200).json({message: 'no modifications to pxx for the user'});
+        }
 
     } else {
         res.status(404).json({ message: 'Consultant not found. Please try later' });
@@ -143,22 +166,17 @@ const updatePartialTimePxx = async (consultantId, isPartialTime) => {
         // calculate all available days
         for (let incrDay = 0; incrDay < daysInfo.length; incrDay++) {
             if (daysInfo[incrDay].num >= firstDayPartial && daysInfo[incrDay].num <= endDayPartial) {
-                //console.log('  daysInfo.num >= firstDayPartiel and <= enDayPartial', daysInfo[incrDay].num, firstDayPartial, endDayPartial)
                 if(daysInfo[incrDay].type == 'working-day') {
                     const numberInTheWeek = Number((new Date(daysInfo[incrDay].num)).getDay());
                     const partialTime = isPartialTime.week.filter( x => Number(x.num) === numberInTheWeek)[0].worked;
-                    //console.log('partialTime', partialTime, 'numberInTheWeek', numberInTheWeek);
                     availableDay += Number(partialTime);
                 } 
             } else {
-                //console.log('! daysInfo.num >= firstDayPartiel and <= enDayPartial', daysInfo[incrDay].num, firstDayPartial, endDayPartial)
                 if(daysInfo[incrDay].type == 'working-day') {
                     availableDay += 1;
                 }
             }
         }
-
-        //console.log('availableDay', availableDay);
 
         // recalculate leaving days
         const initialLeavingDay = pxxData[incrPxx].leavingDay;
@@ -198,8 +216,6 @@ const updatePartialTimePxx = async (consultantId, isPartialTime) => {
 
     }
 
-    //console.log('data updated', pxxData);
-
     for (let incr = 0 ; incr < pxxData.length ; incr++) {
         pxxData[incr].save();
     }
@@ -207,7 +223,6 @@ const updatePartialTimePxx = async (consultantId, isPartialTime) => {
 }
 
 const resetPartialTimePxx = async (consultantId) => {
-    //console.log('reset partial time to implemant');
 
     const infoConsultant = await User.findById(consultantId);
     const initialPartialTime = infoConsultant.isPartialTime;
@@ -286,4 +301,4 @@ const resetPartialTimePxx = async (consultantId) => {
 
 }
 
-module.exports = { getMyConsultants, getConsultant, updateConsultant };
+module.exports = { getMyConsultants, getConsultant, updateConsultant, getAllPracticeConsultants };

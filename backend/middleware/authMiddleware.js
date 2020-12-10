@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
+const mongoose = require('mongoose');
 
 const protect = asyncHandler (async (req, res, next) => {
     
-    //console.log('middlewareProtect')
     let token;
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
         
@@ -36,17 +36,41 @@ const admin = (req, res, next) => {
     }
 }
 
+// is empowered to manage the request :
+//      - the CDM of the consultant
+//      - the admin of the same practice of the consultant
+
 const empowered = asyncHandler(
     async (req, res, next) => {
-        
+
+        let isEmpowered = false;
+
         if (req.user && (req.body.consultantId || req.params.consultantId)) {
             const consultantList = await User.find({cdmId: req.user._id}).select('_id');
-            //const userIsEmpowered = consultantList.filter( x => x._id == req.body.consultantId);
             const userIsEmpowered = consultantList.filter( x => [req.body.consultantId, req.params.consultantId].includes(x._id.toString()));
-            //console.log('consultantList', consultantList);
-            //console.log('req.body.consultantId', req.body.consultantId);
-            //console.log('[req.body.consultantId, req.params.consultantId]', [req.body.consultantId, req.params.consultantId]);
-            //console.log('userIsEmpowered', userIsEmpowered);
+            if (userIsEmpowered.length > 0){
+                isEmpowered = true;
+            } else {
+                const consultantIdPractice = await User.find({_id: {$in: [req.params.consultantId, req.body.consultantId]}}).select('practice');
+                if (consultantIdPractice[0].practice === req.user.practice) {
+                    isEmpowered = true;
+                }
+            }
+        } else {
+            res.status(400).json({message: 'Invalid request. Please contact your administrator.'});
+        }
+
+        if(isEmpowered) {
+            next();
+        } else {
+            res.status(403).json({message: 'not empowered to access these data'});
+            throw new Error('Not empowered to access these data');
+        }
+        
+        /*
+        if (req.user && (req.body.consultantId || req.params.consultantId)) {
+            const consultantList = await User.find({cdmId: req.user._id}).select('_id');
+            const userIsEmpowered = consultantList.filter( x => [req.body.consultantId, req.params.consultantId].includes(x._id.toString()));
             if (userIsEmpowered.length > 0){
                 next();
             } else {
@@ -57,6 +81,7 @@ const empowered = asyncHandler(
             res.status(401).json({message: 'not empowered to access these data'});
             throw new Error('Not authorized, no token');
         }
+        */
     }
 ) 
 

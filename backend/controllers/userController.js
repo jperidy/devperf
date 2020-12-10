@@ -18,12 +18,13 @@ const authUser = asyncHandler(async(req,res) =>{
             arrival: user.arrival,
             leaving: user.leaving,
             seniority: user.seniority,
+            practice: user.practice,
             isAdmin: user.isAdmin,
             isCDM: user.isCDM,
             token: generateToken(user._id),
         });
     } else {
-        res.status(401);
+        res.status(401).json({message: 'Invalid email or password'});
         throw new Error('Invalid email or password')
     }
 });

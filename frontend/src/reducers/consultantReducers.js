@@ -11,7 +11,12 @@ import {
     CONSULTANT_MY_UPDATE_REQUEST,
     CONSULTANT_MY_UPDATE_SUCCESS,
     CONSULTANT_MY_UPDATE_FAIL,
-    CONSULTANT_MY_UPDATE_RESET
+    CONSULTANT_MY_UPDATE_RESET,
+    CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST,
+    CONSULTANTS_ALL_ADMIN_DETAILS_SUCCESS,
+    CONSULTANTS_ALL_ADMIN_DETAILS_FAIL,
+    CONSULTANTS_ALL_ADMIN_DETAILS_FOCUS,
+    CONSULTANTS_ALL_ADMIN_DETAILS_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {
@@ -45,6 +50,45 @@ export const consultantsMyListReducer = (state = {
                                     leaving: '',
                                     seriority: '',
                                     comment: '' 
+                                }], focus: 0 }
+        default:
+            return state;
+    }
+};
+
+export const consultantsMyAdminListReducer = (state = {
+    loading: true, 
+    consultantsMyAdmin: [
+        {
+            name: '',
+            matricule: '',
+            arrival: '',
+            leaving: '',
+            seriority: '',
+            comment: '',
+            practice: ''
+        }],
+    focus: 0
+}, action) => {
+    switch (action.type) {
+        case CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST:
+            return { ...state, loading: true };
+        case CONSULTANTS_ALL_ADMIN_DETAILS_SUCCESS:
+            return { ...state, loading: false, consultantsMyAdmin: action.payload };
+        case CONSULTANTS_ALL_ADMIN_DETAILS_FAIL:
+            return { ...state, loading: false, error: action.payload };
+        case CONSULTANTS_ALL_ADMIN_DETAILS_FOCUS:
+            return { ...state, focus: action.payload }
+        case CONSULTANTS_ALL_ADMIN_DETAILS_RESET:
+            return { loading: true, consultantsMyAdmin: [
+                                {
+                                    name: '',
+                                    matricule: '',
+                                    arrival: '',
+                                    leaving: '',
+                                    seriority: '',
+                                    comment: '',
+                                    practice: ''
                                 }], focus: 0 }
         default:
             return state;
