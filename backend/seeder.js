@@ -42,20 +42,18 @@ const importData = async () => {
     // CREATE NEW DATASET
 
     try {
-        const monthDataCreated = await Month.insertMany(monthData);
+        //const monthDataCreated = await Month.insertMany(monthData);
         
         const cdmDataCreated = await User.insertMany(cdmData);
         const cdmId = cdmDataCreated.map( x => x._id)
-        
         const userData = getUserData(nbUsers, cdmId);
-
         const userDataCreated = await User.insertMany(userData);
 
-        const userDataAllCreated = await User.find();
+        //const userDataAllCreated = await User.find();
 
-        const pxxData = getPxxData(monthDataCreated, userDataAllCreated);
+        //const pxxData = getPxxData(monthDataCreated, userDataAllCreated);
     
-        await Pxx.insertMany(pxxData);
+        //await Pxx.insertMany(pxxData);
 
         console.log('Data imported')
         process.exit();

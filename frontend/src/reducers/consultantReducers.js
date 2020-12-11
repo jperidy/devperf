@@ -16,7 +16,11 @@ import {
     CONSULTANTS_ALL_ADMIN_DETAILS_SUCCESS,
     CONSULTANTS_ALL_ADMIN_DETAILS_FAIL,
     CONSULTANTS_ALL_ADMIN_DETAILS_FOCUS,
-    CONSULTANTS_ALL_ADMIN_DETAILS_RESET
+    CONSULTANTS_ALL_ADMIN_DETAILS_RESET,
+    CONSULTANT_CREATE_REQUEST,
+    CONSULTANT_CREATE_SUCCESS,
+    CONSULTANT_CREATE_FAIL,
+    CONSULTANT_CREATE_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {
@@ -119,6 +123,21 @@ export const consultantMyUpdateReducer = (state = {}, action) => {
         case CONSULTANT_MY_UPDATE_FAIL:
             return { loading: false, error: action.payload };
         case CONSULTANT_MY_UPDATE_RESET:
+            return { }
+        default:
+            return state;
+    }
+};
+
+export const consultantCreateReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_CREATE_REQUEST:
+            return { loading: true };
+        case CONSULTANT_CREATE_SUCCESS:
+            return { loading: false, consultant: action.payload };
+        case CONSULTANT_CREATE_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANT_CREATE_RESET:
             return { }
         default:
             return state;

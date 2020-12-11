@@ -4,12 +4,16 @@ const {
     getMyConsultants, 
     getConsultant, 
     updateConsultant, 
-    getAllPracticeConsultants
+    getAllPracticeConsultants,
+    createConsultant
 } = require('../controllers/consultantControllers');
 
 const router = express.Router();
 
-router.get('/', protect, getMyConsultants);
+router.route('/')
+    .get(protect, getMyConsultants)
+    .post(protect, admin, createConsultant);
+
 router.get('/practice', protect, admin, getAllPracticeConsultants);
 router.get('/:consultantId', protect, empowered, getConsultant);
 router.put('/:consultantId', protect, empowered, updateConsultant);

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllMyAdminConsultants } from '../actions/consultantActions';
 import ConsultantsTab from '../components/ConsultantsTab';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { CONSULTANT_MY_RESET } from '../constants/consultantConstants';
@@ -18,6 +20,11 @@ const ManageConsultantScreen = ({history}) => {
 
     const consultantMy = useSelector(state => state.consultantMy);
     const { consultant } = consultantMy;
+
+    const addConsultantHandler = () => {
+        console.log('AddConsultantHandler');
+        history.push('/admin/consultant/add');
+    }
 
     useEffect(() => {
 
@@ -41,6 +48,10 @@ const ManageConsultantScreen = ({history}) => {
 
     return (
         <>
+            <Button className="mb-3" onClick={() => addConsultantHandler()}>
+                <i className="fas fa-user-edit mr-2"></i>Add
+            </Button>
+
             {consultantsMyAdmin.length === 0 ? <Message variant='information'>You have not access to these information</Message> :
                 loading ? <Loader /> : error ? <Message variant="danger">{error}</Message> : (
                     <ConsultantsTab 

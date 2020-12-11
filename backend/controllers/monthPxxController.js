@@ -1,6 +1,8 @@
 const Month = require('../models/monthModel');
 const asyncHandler = require('express-async-handler');
 const Date = require('../utils/dateFunction');
+const axios = require('axios');
+const typeOfDay = require('../utils/typeOfDay');
 
 // @desc    Get month configurations
 // @route   GET /api/monthdata
@@ -47,4 +49,43 @@ const getMonthPxxInfo = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { getMonthPxxInfo };
+const createMonth = async (firstDay) => {
+
+    const monthDate = new Date(firstDay);
+    const nextMonthDate = new Date(firstDay);
+    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+    nextMonthDate.setDate(1);
+
+    const monthToCreate = {
+        name: monthDate.getFullYear().toString() + '/' + Number(monthDate.getMonth() + 1).toString(),
+        firstDay: firstDay,
+        days: []
+    };
+
+    // Collect all non-working-days from french government API
+    const { data } = await axios.get(`https://calendrier.api.gouv.fr/jours-feries/metropole/${monthDate.getFullYear().toString()}.json`);
+
+    for (let currentDay = new Date(firstDay); currentDay < nextMonthDate; currentDay.setDate(currentDay.getDate() + 1)) {
+
+        const num = currentDay.toISOString().substring(0, 10);
+        const typeDay = typeOfDay(currentDay.getDay());
+        const isNonWorkingDay = data[num];
+        let type = '';
+        if (isNonWorkingDay && (typeDay === "working-day")) {
+            type = 'non-working-day';
+        } else {
+            type = typeDay;
+        }
+        monthToCreate.days.push({
+            num: num,
+            type: type
+        })
+    }
+    let month = new Month(monthToCreate);
+    month = await month.save();
+
+    return month;
+};
+
+
+module.exports = { getMonthPxxInfo, createMonth };

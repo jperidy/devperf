@@ -3,7 +3,13 @@ import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { pxxListReducer, pxxUpdateReducer } from './reducers/pxxReducers';
 import { userLoginReducer, userUpdateCommentReducer } from './reducers/userReducers';
-import { consultantMyReducer, consultantsMyListReducer, consultantMyUpdateReducer, consultantsMyAdminListReducer } from './reducers/consultantReducers';
+import { 
+    consultantMyReducer, 
+    consultantsMyListReducer, 
+    consultantMyUpdateReducer, 
+    consultantsMyAdminListReducer,
+    consultantCreateReducer
+ } from './reducers/consultantReducers';
 import { pxxMyToEditReducer } from './reducers/pxxReducers';
 
 export const reducer = combineReducers({
@@ -13,6 +19,7 @@ export const reducer = combineReducers({
     consultantsMyList: consultantsMyListReducer,
     consultantMy: consultantMyReducer,
     consultantMyUpdate: consultantMyUpdateReducer,
+    consultantCreate: consultantCreateReducer,
     pxxList: pxxListReducer,
     pxxMyToEdit: pxxMyToEditReducer,
     pxxUpdate: pxxUpdateReducer

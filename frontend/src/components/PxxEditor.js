@@ -49,11 +49,11 @@ const PxxEditor = ({ consultantFocus, searchDate, navigationMonthHandler }) => {
             </Row>
 
             {loadingConsultantMyToEdit ? <Loader /> : errorConsultantMyToEdit ? <Message variant="danger">{errorConsultantMyToEdit}</Message> : (
-                pxx.map((line) => (
-                    <PxxUserLine
-                        key={line.month._id}
-                        data={line}
-                    />
+                pxx.map((line, key) => (
+                        <PxxUserLine
+                            key={key}
+                            data={line}
+                        />
                 ))
             )}
             <Row>

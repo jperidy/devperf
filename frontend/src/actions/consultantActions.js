@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
     CONSULTANTS_ALL_ADMIN_DETAILS_FAIL,
     CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST,
@@ -11,10 +12,12 @@ import {
     CONSULTANT_MY_SUCCESS,
     CONSULTANT_MY_UPDATE_FAIL,
     CONSULTANT_MY_UPDATE_REQUEST,
-    CONSULTANT_MY_UPDATE_SUCCESS
+    CONSULTANT_MY_UPDATE_SUCCESS,
+    CONSULTANT_CREATE_REQUEST,
+    CONSULTANT_CREATE_SUCCESS,
+    CONSULTANT_CREATE_FAIL
 } from '../constants/consultantConstants';
 
-const axios = require('axios');
 
 export const getAllMyAdminConsultants = () => async (dispatch, getState) => {
 
@@ -137,4 +140,33 @@ export const updateMyConsultant = (consultant) => async (dispatch, getState) => 
                 : error.message
         });
     }
+};
+
+export const createConsultant = (consultant) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_CREATE_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.post('/api/consultants', consultant, config);
+
+        dispatch({ type: CONSULTANT_CREATE_SUCCESS, payload: data });
+
+} catch (error) {
+    dispatch({
+        type: CONSULTANT_CREATE_FAIL,
+        payload: error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
+    });
+}
 };

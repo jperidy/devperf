@@ -4,8 +4,269 @@ const User = require('../models/userModel');
 const axios = require('axios');
 const asyncHandler = require('express-async-handler');
 const calculDayByType = require('../utils/calculDayByType')
-const typeOfDay = require('../utils/typeOfDay');
+//const typeOfDay = require('../utils/typeOfDay');
+const { createMonth } = require('./monthPxxController');
 
+
+const calculateAvailableDays = (userProfile, month) => {
+
+    const arrival = userProfile.arrival && userProfile.arrival.toISOString().substring(0, 10);
+    const leaving = userProfile.leaving && userProfile.leaving.toISOString().substring(0, 10);
+    const isPartialTime = userProfile.isPartialTime.value
+    const partiaTimeProfile = userProfile.isPartialTime.week;
+    const startPartialTime = userProfile.isPartialTime.start;
+    const endPartialTime = userProfile.isPartialTime.end;
+
+    let availableDay = 0;
+
+    for (let incrMonth = 0; incrMonth < month.days.length; incrMonth++) {
+
+        if (month.days[incrMonth].num >= arrival && (!leaving || month.days[incrMonth].num <= leaving)) {
+
+            if (month.days[incrMonth].type === "working-day") {
+
+                if (isPartialTime) {
+                    if (month.days[incrMonth].num >= startPartialTime && month.days[incrMonth].num <= endPartialTime) {
+                        availableDay += Number(partiaTimeProfile.filter(x => Number(x.num) === Number((new Date(month.days[incrMonth].num)).getDay()))[0].worked)
+                    } else {
+                        availableDay += 1;
+                    }
+                } else {
+                    availableDay += 1
+                }
+            }
+        }
+    }
+
+    return availableDay;
+}
+
+const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
+    //console.log('update Pxx script');
+
+    const consultantId = consultantInfo._id;
+
+    let firstDayPartial = new Date(isPartialTime.start);
+    firstDayPartial = firstDayPartial.toISOString().substring(0,10);
+    let endDayPartial = new Date(isPartialTime.end);
+    endDayPartial = endDayPartial.toISOString().substring(0,10);
+
+    const firstMonthDay = new Date(isPartialTime.start);
+    firstMonthDay.setDate(0);
+    const endDay = new Date(isPartialTime.end);
+
+    const monthData = await Month.find({
+        firstDay: {
+            $gte: firstMonthDay.toISOString().substring(0,10),
+            $lte: endDay.toISOString().substring(0,10)
+        }
+    });
+
+    const monthId = monthData.map( x => x._id);
+    const pxxData = await Pxx.find({ month: {$in: monthId}, name: consultantId})
+    //const userProfile = await User.findById(consultantId);
+
+    for (let incrPxx = 0; incrPxx < pxxData.length; incrPxx++) {
+        const idMonth = pxxData[incrPxx].month;
+        const monthInfo = monthData.filter( x => x._id.toString() === idMonth.toString())[0];
+        //const daysInfo = monthInfo.days;
+        let prodDay = 0;
+        let notProdDay = 0;
+        let leavingDay = 0;
+        let availableDay = 0;
+
+        // calculate all available days
+        availableDay = calculateAvailableDays(consultantInfo, monthInfo);
+
+        /*
+        for (let incrDay = 0; incrDay < daysInfo.length; incrDay++) {
+            if (daysInfo[incrDay].num >= firstDayPartial && daysInfo[incrDay].num <= endDayPartial) {
+                if(daysInfo[incrDay].type == 'working-day') {
+                    const numberInTheWeek = Number((new Date(daysInfo[incrDay].num)).getDay());
+                    const partialTime = isPartialTime.week.filter( x => Number(x.num) === numberInTheWeek)[0].worked;
+                    availableDay += Number(partialTime);
+                } 
+            } else {
+                if(daysInfo[incrDay].type == 'working-day') {
+                    availableDay += 1;
+                }
+            }
+        }
+        */
+
+        // recalculate leaving days
+        const initialLeavingDay = pxxData[incrPxx].leavingDay;
+        if (initialLeavingDay >= availableDay) {
+            leavingDay = availableDay;
+            availableDay = 0;
+        } else {
+            leavingDay = initialLeavingDay;
+            availableDay -= leavingDay;
+        }
+
+        // reacalculate prod days
+        const initialProdDay = pxxData[incrPxx].prodDay;
+        if(initialProdDay >= availableDay) {
+            prodDay = availableDay;
+            availableDay = 0;
+        } else {
+            prodDay = initialProdDay;
+            availableDay -= prodDay
+        }
+
+        // reacalculate not prod days
+        const initialNotProdDay = pxxData[incrPxx].notProdDay;
+        if(initialNotProdDay >= availableDay) {
+            notProdDay = availableDay;
+            availableDay = 0;
+        } else {
+            notProdDay = initialNotProdDay;
+            availableDay -= notProdDay
+        }
+
+
+        pxxData[incrPxx].prodDay = prodDay;
+        pxxData[incrPxx].notProdDay = notProdDay;
+        pxxData[incrPxx].leavingDay = leavingDay;
+        pxxData[incrPxx].availableDay = availableDay;
+
+    }
+
+    for (let incr = 0 ; incr < pxxData.length ; incr++) {
+        pxxData[incr].save();
+    }
+
+}
+
+const resetPartialTimePxx = async (consultantInfo) => {
+
+    const consultantId = consultantInfo._id;
+    const infoConsultant = await User.findById(consultantId);
+    const initialPartialTime = infoConsultant.isPartialTime;
+    const firstMonthDay = new Date(initialPartialTime.start);
+    firstMonthDay.setDate(0);
+    const endMonthDay = new Date(initialPartialTime.end);
+
+    const monthData = await Month.find({
+        firstDay: {
+            $gte: firstMonthDay.toISOString().substring(0, 10),
+            $lte: endMonthDay.toISOString().substring(0, 10)
+        }
+    });
+
+    const monthId = monthData.map(x => x._id);
+
+    const pxxData = await Pxx.find({ month: { $in: monthId }, name: consultantId });
+
+    let prodDay = 0;
+    let notProdDay = 0;
+    let leavingDay = 0;
+    let availableDay = 0;
+
+    for (let incrPxx = 0; incrPxx < pxxData.length; incrPxx++) {
+        const pxx = pxxData[incrPxx];
+        const idMonth = pxx.month;
+        const monthInfo = monthData.filter(x => x._id.toString() === idMonth.toString())[0];
+        
+        availableDay = calculateAvailableDays(consultantInfo, monthInfo)
+        
+        //const workingDay = calculDayByType(monthInfo.days, 'working-day');
+
+        const initialProdDay = Number(pxx.prodDay);
+        const initialNotProdDay = Number(pxx.notProdDay);
+        const initialLeavingDay = Number(pxx.leavingDay);
+
+        // recalculate available days
+        //availableDay = workingDay;
+
+
+        // recalculate leaving days
+        if (initialLeavingDay >= availableDay) {
+            leavingDay = availableDay;
+            availableDay = 0;
+        } else {
+            leavingDay = initialLeavingDay;
+            availableDay -= leavingDay;
+        }
+
+        // reacalculate prod days
+        if (initialProdDay >= availableDay) {
+            prodDay = availableDay;
+            availableDay = 0;
+        } else {
+            prodDay = initialProdDay;
+            availableDay -= prodDay
+        }
+
+        // reacalculate not prod days
+        if (initialNotProdDay >= availableDay) {
+            notProdDay = availableDay;
+            availableDay = 0;
+        } else {
+            notProdDay = initialNotProdDay;
+            availableDay -= notProdDay
+        }
+
+        pxxData[incrPxx].prodDay = prodDay;
+        pxxData[incrPxx].notProdDay = notProdDay;
+        pxxData[incrPxx].leavingDay = leavingDay;
+        pxxData[incrPxx].availableDay = availableDay;
+    }
+
+    for (let incr = 0; incr < pxxData.length; incr++) {
+        pxxData[incr].save();
+    }
+}
+
+const createPxx = async (userProfile, month) => {
+
+    const availableDay = calculateAvailableDays(userProfile, month );
+    
+    /*
+    const arrival = userProfile.arrival && userProfile.arrival.toISOString().substring(0, 10);
+    const leaving = userProfile.leaving && userProfile.leaving.toISOString().substring(0, 10);
+
+    let availableDay = 0;
+
+    const isPartialTime = userProfile.isPartialTime.value
+    const partiaTimeProfile = userProfile.isPartialTime.week;
+    const startPartialTime = userProfile.isPartialTime.start;
+    const endPartialTime = userProfile.isPartialTime.end;
+
+
+    for (let incrMonth = 0; incrMonth < month.days.length; incrMonth++) {
+
+        if (month.days[incrMonth].num >= arrival && (!leaving || month.days[incrMonth].num <= leaving)) {
+
+            if (month.days[incrMonth].type === "working-day") {
+
+                if (isPartialTime) {
+                    if (month.days[incrMonth].num >= startPartialTime && month.days[incrMonth].num <= endPartialTime) {
+                        availableDay += Number(partiaTimeProfile.filter(x => Number(x.num) === Number((new Date(month.days[incrMonth].num)).getDay()))[0].worked)
+                    } else {
+                        availableDay += 1;
+                    }
+                } else {
+                    availableDay += 1
+                }
+            }
+        }
+    }
+    */
+
+    const newPxx = new Pxx({
+        name: userProfile._id,
+        month: month._id,
+        prodDay: 0,
+        notProdDay: 0,
+        leavingDay: 0,
+        availableDay: availableDay
+    });
+
+    await newPxx.save(newPxx);
+
+    return newPxx;
+}
 
 // @desc    Get one pxx data
 // @route   GET /api/pxx/consultantId/:id/month/:month
@@ -16,85 +277,29 @@ const getPxx = asyncHandler(async (req, res) => {
     const date = req.params.month;
     const firstDay = date;
 
+    // Collect ou create month information
     let month = await Month.findOne({ firstDay: firstDay }).select('_id days');
-
     if (!month) {
-
-        const monthDate = new Date(firstDay);
-        const nextMonthDate = new Date(firstDay);
-        nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
-        nextMonthDate.setDate(1);
-
-        const monthToCreate = {
-            name: monthDate.getFullYear().toString() + '/' + Number(monthDate.getMonth() + 1).toString(),
-            firstDay: firstDay,
-            days: []
-        };
-
-        // Collect all non-working-days from french government API
-        const { data } = await axios.get(`https://calendrier.api.gouv.fr/jours-feries/metropole/${monthDate.getFullYear().toString()}.json`);
-
-        for (let currentDay = new Date(firstDay); currentDay < nextMonthDate; currentDay.setDate(currentDay.getDate()+1)) {
-
-            const num = currentDay.toISOString().substring(0, 10);
-            const typeDay = typeOfDay(currentDay.getDay());
-            const isNonWorkingDay = data[num];
-            let type = '';
-            if (isNonWorkingDay && (typeDay === "working-day")) {
-                type = 'non-working-day';
-            } else {
-                type = typeDay;
-            }
-            monthToCreate.days.push({
-                num: num,
-                type: type
-            })
-        }
-        month = new Month(monthToCreate);
-        month = await month.save();
+        month = await createMonth(firstDay);
     }
 
-    const pxxData = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
+    // Collect user information
+    const userProfile = await User.findById(consultantId);
+    const arrivalDate = userProfile.arrival.toISOString().substring(0,10);
+    const leavingDate = userProfile.leaving.toISOString().substring(0,10);
 
+
+    // Collect or create pxx
+    const pxxData = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
+    let returnPxx = null;
+    
+    
     if (pxxData) {
         res.status(200).json(pxxData);
+
     } else {
 
-        const userProfile = await User.findById(consultantId);
-        
-        let availableDay = 0;
-        // Apply partial time profil to consultant
-        if (userProfile.isPartialTime.value === true) {
-
-            const partiaTimeProfile = userProfile.isPartialTime.week;
-            const startPartialTime = userProfile.isPartialTime.start;
-            const endPartialTime = userProfile.isPartialTime.end;
-
-            for (let incrMonth = 0; incrMonth < month.days.length; incrMonth++) {
-                if (month.days[incrMonth].type === "working-day"){
-                    if (month.days[incrMonth].num >= startPartialTime && month.days[incrMonth].num <= endPartialTime) {
-                        availableDay += Number(partiaTimeProfile.filter(x => Number(x.num) === Number((new Date(month.days[incrMonth].num)).getDay()))[0].worked)
-                    } else {
-                        availableDay+=1;
-                    }
-                }
-            }
-
-        } else {
-            availableDay = calculDayByType(month.days, "working-day")
-        }
-
-        const newPxx = new Pxx({
-            name: consultantId,
-            month: month._id,
-            prodDay: 0,
-            notProdDay: 0,
-            leavingDay: 0,
-            availableDay: availableDay
-        });
-
-        await newPxx.save(newPxx);
-        
+        await createPxx(userProfile, month);
         const pxxCreated = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
         res.status(200).json(pxxCreated);
     }
@@ -121,67 +326,4 @@ const updatePxx = asyncHandler(async (req, res) => {
 
 });
 
-/*
-
-// @desc    Get one pxx data from consultant id
-// @route   GET /api/pxx/consultant/:id
-// @access  Private
-const getPxxFromConsultantId = asyncHandler(async (req, res) => {
-
-    const consultantId = req.params.id;
-    const { date, number } = req.body;
-    //console.log(req.body);
-
-    const startDate = new Date(date);
-    startDate.setDate(0);
-    //console.log(startDate);
-
-    const endDate = new Date(date);
-    endDate.setMonth(startDate.getMonth() + Number(number));
-    //console.log(endDate);
-
-    const monthId = await Month.find({ firstDay: { 
-        $gt: startDate.toISOString().substring(0, 10),
-        $lt: endDate.toISOString().substring(0, 10)
-    }})
-    .select('_id')
-    .sort({name: 1});
-    //console.log(monthId);
-
-    const pxxData = await Pxx.find({name: consultantId, month:{$in: monthId} }).populate('month', 'name firstDay');
-    if (pxxData) {
-        res.status(200).json(pxxData);
-    } else {
-        res.status(404);
-        throw new Error(`Pxx for for consultantID: ${consultantId} not found`);
-    }
-
-});
-
-*/
-
-/*
-// @desc    Get pxx data
-// @route   GET /api/pxx/:ids
-// @access  Public
-const getPxx = asyncHandler(async (req, res) => {
-
-    const searchMonthQuery = req.params.ids
-    const searchMonth = searchMonthQuery.split("_");
-
-    const pxxData = await Pxx.find({ month: {$in: searchMonth} })
-        .populate('month', 'name firstDay')
-        .populate('name', 'name matricule arrival leaving')
-        .sort({ name: 1, firstDay: 1 });
-
-    if (pxxData) {
-        res.status(200).json(pxxData);
-    } else {
-        res.status(404);
-        throw new Error('Pxx information not found');
-    }
-});
-
-*/
-
-module.exports = { getPxx, updatePxx };
+module.exports = { getPxx, updatePxx, calculateAvailableDays, resetPartialTimePxx, updatePartialTimePxx };
