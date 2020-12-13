@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllMyAdminConsultants } from '../actions/consultantActions';
 import ConsultantsTab from '../components/ConsultantsTab';
 import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { CONSULTANT_MY_RESET } from '../constants/consultantConstants';
@@ -22,7 +21,7 @@ const ManageConsultantScreen = ({history}) => {
     const { consultant } = consultantMy;
 
     const addConsultantHandler = () => {
-        console.log('AddConsultantHandler');
+        //console.log('AddConsultantHandler');
         history.push('/admin/consultant/add');
     }
 
@@ -44,7 +43,12 @@ const ManageConsultantScreen = ({history}) => {
 
         dispatch(getAllMyAdminConsultants());
         
-    },[dispatch, history, userInfo])
+    },[
+        dispatch, 
+        history, 
+        userInfo,
+        consultant
+    ])
 
     return (
         <>

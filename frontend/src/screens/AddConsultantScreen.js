@@ -33,7 +33,7 @@ const AddConsultantScreen = ({ history }) => {
     const { userInfo } = userLogin;
 
     const consultantCreate = useSelector(state => state.consultantCreate);
-    const { loading, error, consultant } = consultantCreate;
+    const { loading, consultant } = consultantCreate;
 
     useEffect(() => {
 
@@ -45,32 +45,14 @@ const AddConsultantScreen = ({ history }) => {
 
             history.push(`/editconsultant/${consultant._id}`);
             dispatch({type: CONSULTANT_CREATE_RESET});
-            //dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
-            /*
-            setValidateButton('Update');
-            setName(consultant.name);
-            setEmail(consultant.email);
-            setMatricule(consultant.matricule);
-            setArrival(consultant.arrival.substring(0, 10));
-            setValued(consultant.valued.substring(0, 10));
-            setLeaving(consultant.leaving.substring(0, 10));
-            setIsCDM(consultant.isCDM);
-            setPartialTime(consultant.isPartialTime.value);
-            setStartPartialTime(consultant.isPartialTime.start.substring(0, 10) ? consultant.isPartialTime.start.substring(0, 10) : false)
-            setEndPartialTime(consultant.isPartialTime.end.substring(0, 10) ? consultant.isPartialTime.end.substring(0, 10) : false)
-            setValueMonday(consultant.isPartialTime.week.filter(x => x.num === 1)[0].worked)
-            setValueTuesday(consultant.isPartialTime.week.filter(x => x.num === 2)[0].worked)
-            setValueWednesday(consultant.isPartialTime.week.filter(x => x.num === 3)[0].worked)
-            setValueThursday(consultant.isPartialTime.week.filter(x => x.num === 4)[0].worked)
-            setValueFriday(consultant.isPartialTime.week.filter(x => x.num === 5)[0].worked)
-            */
         }
 
     }, [
         dispatch,
         history,
         userInfo,
-        consultant
+        consultant,
+        loading
     ]);
 
     const submitHandler = (e) => {

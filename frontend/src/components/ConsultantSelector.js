@@ -23,12 +23,6 @@ const ConsultantSelector = () => {
 
     
     const navigationConsultantHandler = (value) => {
-        /*
-        if (((consultantFocus + value) >= 0) && ((consultantFocus + value) < consultantsMy.length)) {
-            setConsultantFocus(consultantFocus + value);
-            dispatch(getAllMyConsultants());
-        }
-        */
 
         if (((focus + value) >= 0) && ((focus + value) < consultantsMy.length)) {
             //setConsultantFocus(consultantFocus + value);

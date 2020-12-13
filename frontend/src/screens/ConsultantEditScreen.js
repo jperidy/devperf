@@ -7,7 +7,7 @@ import FormContainer from '../components/FormContainer';
 import Alertuser from '../components/AlertUser';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { getMyConsultant, updateMyConsultant } from '../actions/consultantActions';
+import { getAllCDM, getMyConsultant, updateMyConsultant } from '../actions/consultantActions';
 import { CONSULTANT_MY_UPDATE_RESET } from '../constants/consultantConstants';
 
 const ConsultantEditScreen = ({ history, match }) => {
@@ -20,6 +20,7 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     const [name, setName] = useState('');
     const [matricule, setMatricule] = useState('');
+    const [practice, setPractice] = useState('');
     const [cdm, setCdm] = useState('');
     const [arrival, setArrival] = useState('');
     const [valued, setValued] = useState('');
@@ -41,24 +42,32 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     const consultantMy = useSelector(state => state.consultantMy);
     const { loading, error, consultant } = consultantMy;
-
+    
     const consultantMyUpdate = useSelector(state => state.consultantMyUpdate);
     const { loading: loadingUpdate, error: errorUpdate, success: successUpdate } = consultantMyUpdate;
 
+    const consultantCDMList = useSelector(state => state.consultantCDMList);
+    const { error:errorCDM, cdmList } = consultantCDMList;
+    
     useEffect(() => {
-
+        
         if (!userInfo) {
             history.push('/login');
         }
-
+        
         if (!consultant || !consultant.name) {
             dispatch(getMyConsultant(consultantId));
         }
 
+        if (!cdmList && practice) {
+            dispatch(getAllCDM(consultant.practice));
+        }
+        
         if (consultant && consultant.name && (!arrival || !leaving)) {
             dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
             setName(consultant.name);
             setMatricule(consultant.matricule);
+            setPractice(consultant.practice);
             setCdm(consultant.cdmId ? consultant.cdmId : 'waiting affectation' );
             setArrival(consultant.arrival.substring(0, 10));
             setValued(consultant.valued ? consultant.valued.substring(0, 10) : '');
@@ -85,15 +94,13 @@ const ConsultantEditScreen = ({ history, match }) => {
         arrival,
         valued,
         leaving,
-        seniority
+        seniority,
+        cdmList,
+        practice
     ]);
 
     const submitHandler = (e) => {
         e.preventDefault();
-
-        //console.log(startPartialTime);
-        //console.log(endPartialTime);
-        //console.log(partialTime, !startPartialTime, !endPartialTime)
 
         if (partialTime && (
             startPartialTime === 'false'
@@ -109,14 +116,15 @@ const ConsultantEditScreen = ({ history, match }) => {
             ...consultant,
             name: name,
             matricule: matricule,
-            arrival: arrival,
-            valued: valued,
-            leaving: leaving,
+            arrival: new Date(arrival),
+            valued: new Date(valued),
+            leaving: leaving ? new Date(leaving) : null,
             isCDM: isCDM,
+            cdmId: cdm,
             isPartialTime: {
                 value: partialTime,
-                start: partialTime && startPartialTime,
-                end: partialTime && endPartialTime,
+                start: partialTime ? startPartialTime : '',
+                end: partialTime ? endPartialTime : '',
                 week: [
                     { num: 1, worked: partialTime ? valueMonday : 1 },
                     { num: 2, worked: partialTime ? valueTuesday : 1 },
@@ -126,6 +134,8 @@ const ConsultantEditScreen = ({ history, match }) => {
                 ]
             }
         }
+
+        //console.log(updatedUser);
         dispatch(updateMyConsultant(updatedUser));
 
     }
@@ -192,7 +202,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         type='text'
                                         placeholder='Enter Matricule'
                                         value={seniority && seniority}
-                                        disabled
+                                        readOnly
                                     ></Form.Control>
                                 </Form.Group>
                                 </Col>
@@ -200,13 +210,38 @@ const ConsultantEditScreen = ({ history, match }) => {
 
                             <Form.Row>
                                 <Col>
-                                    <Form.Group controlId='cdm'>
-                                        <Form.Label><b>CDM</b></Form.Label>
+                                    <Form.Group controlId='practice'>
+                                        <Form.Label><b>Practice</b></Form.Label>
                                         <Form.Control
                                             type='text'
-                                            placeholder='Please select CDM'
-                                            value={cdm && cdm}
+                                            placeholder='Enter Practice'
+                                            value={practice && practice}
+                                            readOnly
                                         ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                            </Form.Row>
+
+                            <Form.Row>
+                                <Col>
+                                    <Form.Group controlId='cdm'>
+                                        <Form.Label><b>CDM</b></Form.Label>
+                                        {!cdmList ? <Loader />
+                                            : errorCDM ? <Message variant='Danger'>No CDM found, please verify Practice</Message>
+                                                : (
+                                                    <Form.Control
+                                                        as='select'
+                                                        value={cdm}
+                                                        onChange={(e) => setCdm(e.target.value)}>
+                                                        {cdmList.map(x => (
+                                                            <option
+                                                                key={x._id}
+                                                                value={x._id}
+                                                            >{x.name}</option>
+                                                        ))}
+                                                    </Form.Control>
+                                                )}
+
                                     </Form.Group>
                                 </Col>
                             </Form.Row>

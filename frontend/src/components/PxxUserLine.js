@@ -23,6 +23,14 @@ const PxxUserLine = ({ data }) => {
 
     const pxxUpdate = useSelector(state => state.pxxUpdate);
     const { loading, error } = pxxUpdate;
+    
+    // Calculate firstday of current month to compare with firstDayMonth of displayed Pxx
+    let firstDayOfCurrentMonth = new Date(Date.now());
+    firstDayOfCurrentMonth.setDate(1);
+    firstDayOfCurrentMonth = firstDayOfCurrentMonth.toISOString().substring(0,10);
+    const firstdayPxxMonth = data.month.firstDay;
+    const editable = (firstdayPxxMonth >= firstDayOfCurrentMonth);
+
 
     useEffect(() => {
         const value = workingDay >= (prodDayComponent + notProdDayComponent + leavingDayComponent)
@@ -61,6 +69,7 @@ const PxxUserLine = ({ data }) => {
                             min={0}
                             max={data.workingDay}
                             step={0.5}
+                            disabled={!editable}
                             className="align-middle text-center p-0"
                             value={prodDayComponent}
                             onChange={(e) => {
@@ -77,6 +86,7 @@ const PxxUserLine = ({ data }) => {
                             min={0}
                             max={data.workingDay}
                             step={0.5}
+                            disabled={!editable}
                             className="align-middle text-center p-0"
                             value={notProdDayComponent}
                             onChange={(e) => {
@@ -93,6 +103,7 @@ const PxxUserLine = ({ data }) => {
                             min={0}
                             max={data.workingDay}
                             step={0.5}
+                            disabled={!editable}
                             className="align-middle text-center p-0"
                             value={leavingDayComponent}
                             onChange={(e) => {

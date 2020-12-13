@@ -1,9 +1,9 @@
 const User = require('../models/userModel');
-const Month = require('../models/monthModel');
-const Pxx = require('../models/pxxModel');
+//const Month = require('../models/monthModel');
+//const Pxx = require('../models/pxxModel');
 const asyncHandler = require('express-async-handler');
-const calculDayByType = require('../utils/calculDayByType');
-const { resetPartialTimePxx, updatePartialTimePxx } = require('./pxxControllers');
+//const calculDayByType = require('../utils/calculDayByType');
+const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
 
 
 // @desc    Create a consultant data by Id
@@ -62,9 +62,11 @@ const getConsultant = asyncHandler(async (req, res) => {
 // @access  Private, Embeded
 const updateConsultant = asyncHandler(async (req, res) => {
 
-    const consultantToUpdate = req.body
+    const consultantToUpdate = req.body;
+    console.log('consultantToUpdate', consultantToUpdate);
     let myConsultant = await User.findById(req.params.consultantId).select('-password');
-    
+    console.log('myConsultant', myConsultant);
+
     if(myConsultant) {
 
         const partialTimeChange = myConsultant.isPartialTime.value != consultantToUpdate.isPartialTime.value;
@@ -76,16 +78,30 @@ const updateConsultant = asyncHandler(async (req, res) => {
         const startChange = myConsultant.isPartialTime.start != consultantToUpdate.isPartialTime.start;
         const endChange = myConsultant.isPartialTime.end != consultantToUpdate.isPartialTime.end;
 
+        const arrivalChange = myConsultant.arrival != consultantToUpdate.arrival;
+        const leavingChange = myConsultant.leaving != consultantToUpdate.leaving;
+
+        //console.log('partialTimeChange', partialTimeChange);
+        //console.log('mondayChange', mondayChange);
+        //console.log('startChange', startChange, myConsultant.isPartialTime.start, consultantToUpdate.isPartialTime.start);
+        //console.log('endChange', endChange, myConsultant.isPartialTime.end, consultantToUpdate.isPartialTime.end);
+        //console.log('arrivalChange', arrivalChange, myConsultant.arrival, consultantToUpdate.arrival);
+        //console.log('leavingChange', leavingChange, myConsultant.leaving, consultantToUpdate.leaving);
+
+
         myConsultant.name = consultantToUpdate.name;
         myConsultant.matricule = consultantToUpdate.matricule;
+        myConsultant.cdmId = consultantToUpdate.cdmId;
         myConsultant.arrival = consultantToUpdate.arrival;
         myConsultant.valued = consultantToUpdate.valued;
         myConsultant.leaving = consultantToUpdate.leaving;
         myConsultant.isCDM = consultantToUpdate.isCDM;
         myConsultant.isPartialTime = consultantToUpdate.isPartialTime;
         
+        //const updatedConsultant = await myConsultant.save();
         
-        if ((partialTimeChange
+        // Partial time conditions change, we need to update existing Pxx with new partial time conditions
+        /*if ((partialTimeChange
             || mondayChange
             || tuesdayChange
             || wednesdayChange
@@ -94,23 +110,38 @@ const updateConsultant = asyncHandler(async (req, res) => {
             || startChange
             || endChange)
             && consultantToUpdate.isPartialTime.value) {
+        */
 
+        if (arrivalChange || leavingChange) {
             try {
-                // reset if modification on start or endDate
-                //console.log(startChange, endChange, partialTimeChange);
+                await resetAllPxx(myConsultant);
+            } catch (error) {
+                console.log('Error: resetAllPxx fail:', error);
+                res.status(500).json({message: 'Error: resetAllPxx fail'});
+            }
+        }
+
+        if (consultantToUpdate.isPartialTime.value &&
+            (mondayChange
+            || tuesdayChange
+            || wednesdayChange
+            || thursdayChange
+            || fridayChange
+            || startChange
+            || endChange)
+        ) {
+            try {
                 if (!partialTimeChange && (startChange || endChange)) {
                     await resetPartialTimePxx(myConsultant);
                 }
-
                 await updatePartialTimePxx(myConsultant, consultantToUpdate.isPartialTime);
-                const updatedConsultant = await myConsultant.save();
-                res.status(200).json(updatedConsultant);
             } catch (error) {
                 console.log('Error: updatePartialTimePxx fail', error);
                 res.status(500).json({ message: 'Error: updatePartialTimePxx fail' });
             }
         } 
 
+        // 
         if ((partialTimeChange 
             || mondayChange 
             || tuesdayChange 
@@ -123,14 +154,18 @@ const updateConsultant = asyncHandler(async (req, res) => {
             //console.log('reset Pxx script');
             try {
                 await resetPartialTimePxx(myConsultant);
-                const updatedConsultant = await myConsultant.save();
-                res.status(200).json(updatedConsultant);
+                //const updatedConsultant = await myConsultant.save();
+                //res.status(200).json(updatedConsultant);
             } catch (error) {
                 console.log('Error: resetPartialTimePxx fail', error);
                 res.status(500).json({ message: 'Error: resetPartialTimePxx fail' });
             }
         }
         
+        const updatedConsultant = await myConsultant.save();
+        res.status(200).json(updatedConsultant);
+        
+        /*
         if (!partialTimeChange 
             && !mondayChange 
             && !tuesdayChange 
@@ -140,8 +175,13 @@ const updateConsultant = asyncHandler(async (req, res) => {
             && !startChange
             && !endChange) {
             
-            res.status(200).json({message: 'no modifications to pxx for the user'});
+            res.status(200).json({updatedConsultant});
         }
+        */
+        
+
+        //await updatePartialTimePxx(myConsultant, consultantToUpdate.isPartialTime);
+        //res.status(200).json(updatedConsultant);
 
     } else {
         res.status(404).json({ message: 'Consultant not found. Please try later' });
@@ -150,4 +190,28 @@ const updateConsultant = asyncHandler(async (req, res) => {
     
 });
 
-module.exports = { getMyConsultants, getConsultant, updateConsultant, getAllPracticeConsultants, createConsultant };
+// @desc    Get the list of consultants that are CDM
+// @route   GET /api/consultants/cdm/:practice
+// @access  Private, Admin
+const getAllCDMData = asyncHandler(async (req, res) => {
+
+    console.log('getAllCDMData', req.params)
+    const practice = req.params.practice;
+    const CDMList = await User.find({practice: practice, isCDM: true}).select('_id name');
+    
+    if (CDMList) {
+        res.status(200).json(CDMList);
+    } else {
+        res.status(400).json({message: `CDM List not found for: ${practice}` });
+    }
+
+});
+
+module.exports = { 
+    getMyConsultants, 
+    getConsultant, 
+    updateConsultant, 
+    getAllPracticeConsultants, 
+    createConsultant,
+    getAllCDMData
+};

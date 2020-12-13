@@ -15,7 +15,10 @@ import {
     CONSULTANT_MY_UPDATE_SUCCESS,
     CONSULTANT_CREATE_REQUEST,
     CONSULTANT_CREATE_SUCCESS,
-    CONSULTANT_CREATE_FAIL
+    CONSULTANT_CREATE_FAIL,
+    CONSULTANT_CDM_LIST_REQUEST,
+    CONSULTANT_CDM_LIST_SUCCESS,
+    CONSULTANT_CDM_LIST_FAIL
 } from '../constants/consultantConstants';
 
 
@@ -164,6 +167,35 @@ export const createConsultant = (consultant) => async (dispatch, getState) => {
 } catch (error) {
     dispatch({
         type: CONSULTANT_CREATE_FAIL,
+        payload: error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
+    });
+}
+};
+
+export const getAllCDM = (practice) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_CDM_LIST_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.get(`/api/consultants/cdm/${practice}`, config);
+
+        dispatch({ type: CONSULTANT_CDM_LIST_SUCCESS, payload: data });
+
+} catch (error) {
+    dispatch({
+        type: CONSULTANT_CDM_LIST_FAIL,
         payload: error.response && error.response.data.message
             ? error.response.data.message
             : error.message

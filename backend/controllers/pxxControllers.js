@@ -42,7 +42,7 @@ const calculateAvailableDays = (userProfile, month) => {
 }
 
 const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
-    //console.log('update Pxx script');
+    console.log('updatePartialTimePxx');
 
     const consultantId = consultantInfo._id;
 
@@ -77,22 +77,6 @@ const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
 
         // calculate all available days
         availableDay = calculateAvailableDays(consultantInfo, monthInfo);
-
-        /*
-        for (let incrDay = 0; incrDay < daysInfo.length; incrDay++) {
-            if (daysInfo[incrDay].num >= firstDayPartial && daysInfo[incrDay].num <= endDayPartial) {
-                if(daysInfo[incrDay].type == 'working-day') {
-                    const numberInTheWeek = Number((new Date(daysInfo[incrDay].num)).getDay());
-                    const partialTime = isPartialTime.week.filter( x => Number(x.num) === numberInTheWeek)[0].worked;
-                    availableDay += Number(partialTime);
-                } 
-            } else {
-                if(daysInfo[incrDay].type == 'working-day') {
-                    availableDay += 1;
-                }
-            }
-        }
-        */
 
         // recalculate leaving days
         const initialLeavingDay = pxxData[incrPxx].leavingDay;
@@ -138,14 +122,91 @@ const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
 
 }
 
-const resetPartialTimePxx = async (consultantInfo) => {
+const recalculatePxx = ({ initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay }) => {
+    // recalculate available days
+    //availableDay = workingDay;
+    let prodDay = 0;
+    let notProdDay = 0;
+    let leavingDay = 0;
+    let availableDay = initialAvailableDay
+
+    // recalculate leaving days
+    if (initialLeavingDay >= availableDay) {
+        leavingDay = availableDay;
+        availableDay = 0;
+    } else {
+        leavingDay = initialLeavingDay;
+        availableDay -= leavingDay;
+    }
+
+    // reacalculate prod days
+    if (initialProdDay >= availableDay) {
+        prodDay = availableDay;
+        availableDay = 0;
+    } else {
+        prodDay = initialProdDay;
+        availableDay -= prodDay
+    }
+
+    // reacalculate not prod days
+    if (initialNotProdDay >= availableDay) {
+        notProdDay = availableDay;
+        availableDay = 0;
+    } else {
+        notProdDay = initialNotProdDay;
+        availableDay -= notProdDay
+    }
+
+    return { prodDay, notProdDay, leavingDay, availableDay }
+
+}
+
+const resetAllPxx = async (consultantInfo) => {
+    console.log('resetAllPxx');
 
     const consultantId = consultantInfo._id;
-    const infoConsultant = await User.findById(consultantId);
-    const initialPartialTime = infoConsultant.isPartialTime;
+    const pxxData = await Pxx.find({name: consultantId });
+
+    //let availableDay = 0;
+
+    for (let incrPxx = 0; incrPxx < pxxData.length; incrPxx++) {
+        const pxx = pxxData[incrPxx];
+        const idMonth = pxx.month;
+        const monthInfo = await Month.findById(idMonth);
+        //const monthInfo = monthData.filter(x => x._id.toString() === idMonth.toString())[0];
+        
+        const initialAvailableDay = calculateAvailableDays(consultantInfo, monthInfo);
+        const initialProdDay = Number(pxx.prodDay);
+        const initialNotProdDay = Number(pxx.notProdDay);
+        const initialLeavingDay = Number(pxx.leavingDay);
+
+        const { prodDay, notProdDay, leavingDay, availableDay } = recalculatePxx({initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay});
+
+        //console.log('init: ', initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay);
+        //console.log('calculate: ', prodDay, notProdDay, leavingDay, availableDay);
+
+        pxxData[incrPxx].prodDay = prodDay;
+        pxxData[incrPxx].notProdDay = notProdDay;
+        pxxData[incrPxx].leavingDay = leavingDay;
+        pxxData[incrPxx].availableDay = availableDay;
+    }
+
+    for (let incr = 0; incr < pxxData.length; incr++) {
+        pxxData[incr].save();
+    }
+
+}
+
+const resetPartialTimePxx = async (consultantInfo) => {
+    console.log('resetPartialTimePxx');
+
+    const consultantId = consultantInfo._id;
+    const consultantToModify = await User.findById(consultantId);
+    const initialPartialTime = consultantToModify.isPartialTime;
     const firstMonthDay = new Date(initialPartialTime.start);
     firstMonthDay.setDate(0);
     const endMonthDay = new Date(initialPartialTime.end);
+    
 
     const monthData = await Month.find({
         firstDay: {
@@ -158,54 +219,19 @@ const resetPartialTimePxx = async (consultantInfo) => {
 
     const pxxData = await Pxx.find({ month: { $in: monthId }, name: consultantId });
 
-    let prodDay = 0;
-    let notProdDay = 0;
-    let leavingDay = 0;
-    let availableDay = 0;
+    //let availableDay = 0;
 
     for (let incrPxx = 0; incrPxx < pxxData.length; incrPxx++) {
         const pxx = pxxData[incrPxx];
         const idMonth = pxx.month;
         const monthInfo = monthData.filter(x => x._id.toString() === idMonth.toString())[0];
         
-        availableDay = calculateAvailableDays(consultantInfo, monthInfo)
-        
-        //const workingDay = calculDayByType(monthInfo.days, 'working-day');
-
+        const initialAvailableDay = calculateAvailableDays(consultantInfo, monthInfo);
         const initialProdDay = Number(pxx.prodDay);
         const initialNotProdDay = Number(pxx.notProdDay);
         const initialLeavingDay = Number(pxx.leavingDay);
 
-        // recalculate available days
-        //availableDay = workingDay;
-
-
-        // recalculate leaving days
-        if (initialLeavingDay >= availableDay) {
-            leavingDay = availableDay;
-            availableDay = 0;
-        } else {
-            leavingDay = initialLeavingDay;
-            availableDay -= leavingDay;
-        }
-
-        // reacalculate prod days
-        if (initialProdDay >= availableDay) {
-            prodDay = availableDay;
-            availableDay = 0;
-        } else {
-            prodDay = initialProdDay;
-            availableDay -= prodDay
-        }
-
-        // reacalculate not prod days
-        if (initialNotProdDay >= availableDay) {
-            notProdDay = availableDay;
-            availableDay = 0;
-        } else {
-            notProdDay = initialNotProdDay;
-            availableDay -= notProdDay
-        }
+        const { prodDay, notProdDay, leavingDay, availableDay } = recalculatePxx({initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay});
 
         pxxData[incrPxx].prodDay = prodDay;
         pxxData[incrPxx].notProdDay = notProdDay;
@@ -326,4 +352,11 @@ const updatePxx = asyncHandler(async (req, res) => {
 
 });
 
-module.exports = { getPxx, updatePxx, calculateAvailableDays, resetPartialTimePxx, updatePartialTimePxx };
+module.exports = { 
+    getPxx, 
+    updatePxx, 
+    calculateAvailableDays,
+    resetAllPxx,
+    resetPartialTimePxx, 
+    updatePartialTimePxx 
+};

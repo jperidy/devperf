@@ -20,7 +20,11 @@ import {
     CONSULTANT_CREATE_REQUEST,
     CONSULTANT_CREATE_SUCCESS,
     CONSULTANT_CREATE_FAIL,
-    CONSULTANT_CREATE_RESET
+    CONSULTANT_CREATE_RESET,
+    CONSULTANT_CDM_LIST_REQUEST,
+    CONSULTANT_CDM_LIST_SUCCESS,
+    CONSULTANT_CDM_LIST_FAIL,
+    CONSULTANT_CDM_LIST_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {
@@ -139,6 +143,21 @@ export const consultantCreateReducer = (state = {}, action) => {
             return { loading: false, error: action.payload };
         case CONSULTANT_CREATE_RESET:
             return { }
+        default:
+            return state;
+    }
+};
+
+export const consultantCDMListReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_CDM_LIST_REQUEST:
+            return { loading: true };
+        case CONSULTANT_CDM_LIST_SUCCESS:
+            return { loading: false, cdmList: action.payload };
+        case CONSULTANT_CDM_LIST_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANT_CDM_LIST_RESET:
+            return {}
         default:
             return state;
     }
