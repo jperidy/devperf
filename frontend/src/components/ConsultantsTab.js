@@ -4,12 +4,12 @@ import Table from 'react-bootstrap/Table';
 import { setConsultantFocus } from '../actions/consultantActions';
 import Button from 'react-bootstrap/Button';
 
-const ConsultantsTab = ({ history, consultantsMy }) => {
+const ConsultantsTab = ({ history, consultantsMy, focusActive }) => {
 
     const dispatch = useDispatch();
 
     const onClickHandler = (focus, consultantId) => {
-        dispatch(setConsultantFocus(focus));
+        focusActive && dispatch(setConsultantFocus(focus));
         history.push(`/editconsultant/${consultantId}`);
     };
 
@@ -31,7 +31,7 @@ const ConsultantsTab = ({ history, consultantsMy }) => {
 
             <tbody>
                 {consultantsMy.map((consultant, focus) => (
-                    <tr key={consultant._id} onClick={() => dispatch(setConsultantFocus(focus))}>
+                    <tr key={consultant._id} onClick={() => focusActive && dispatch(setConsultantFocus(focus))}>
                         <td className='align-middle'>{consultant.name}</td>
                         <td className='align-middle'>{consultant.matricule}</td>
                         <td className='align-middle'>{consultant.practice}</td>

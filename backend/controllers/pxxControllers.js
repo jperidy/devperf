@@ -27,6 +27,7 @@ const calculateAvailableDays = (userProfile, month) => {
 
                 if (isPartialTime) {
                     if (month.days[incrMonth].num >= startPartialTime && month.days[incrMonth].num <= endPartialTime) {
+                        //console.log(new Date(month.days[incrMonth].num));
                         availableDay += Number(partiaTimeProfile.filter(x => Number(x.num) === Number((new Date(month.days[incrMonth].num)).getDay()))[0].worked)
                     } else {
                         availableDay += 1;

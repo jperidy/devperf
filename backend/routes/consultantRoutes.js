@@ -15,7 +15,7 @@ router.route('/')
     .get(protect, getMyConsultants)
     .post(protect, admin, createConsultant);
 
-router.route('/cdm/:practice').get(protect, admin, getAllCDMData);
+router.route('/cdm/:practice').get(protect, getAllCDMData);
 
 router.get('/practice', protect, admin, getAllPracticeConsultants);
 

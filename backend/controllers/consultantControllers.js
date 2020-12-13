@@ -14,7 +14,7 @@ const createConsultant = asyncHandler(async (req, res) => {
     const consultantToCreate = req.body;
     //Verify if consultant already exist
     const checkConsultantExist = await User.find({email: consultantToCreate.email}).select('email');
-    console.log(checkConsultantExist);
+    //console.log(checkConsultantExist);
     if (checkConsultantExist.length === 0) {
         const createdConsultant = await User.create(consultantToCreate);
         res.status(201).json(createdConsultant);
@@ -63,9 +63,9 @@ const getConsultant = asyncHandler(async (req, res) => {
 const updateConsultant = asyncHandler(async (req, res) => {
 
     const consultantToUpdate = req.body;
-    console.log('consultantToUpdate', consultantToUpdate);
+    //console.log('consultantToUpdate', consultantToUpdate);
     let myConsultant = await User.findById(req.params.consultantId).select('-password');
-    console.log('myConsultant', myConsultant);
+    //console.log('myConsultant', myConsultant);
 
     if(myConsultant) {
 
@@ -80,14 +80,6 @@ const updateConsultant = asyncHandler(async (req, res) => {
 
         const arrivalChange = myConsultant.arrival != consultantToUpdate.arrival;
         const leavingChange = myConsultant.leaving != consultantToUpdate.leaving;
-
-        //console.log('partialTimeChange', partialTimeChange);
-        //console.log('mondayChange', mondayChange);
-        //console.log('startChange', startChange, myConsultant.isPartialTime.start, consultantToUpdate.isPartialTime.start);
-        //console.log('endChange', endChange, myConsultant.isPartialTime.end, consultantToUpdate.isPartialTime.end);
-        //console.log('arrivalChange', arrivalChange, myConsultant.arrival, consultantToUpdate.arrival);
-        //console.log('leavingChange', leavingChange, myConsultant.leaving, consultantToUpdate.leaving);
-
 
         myConsultant.name = consultantToUpdate.name;
         myConsultant.matricule = consultantToUpdate.matricule;
@@ -192,7 +184,7 @@ const updateConsultant = asyncHandler(async (req, res) => {
 
 // @desc    Get the list of consultants that are CDM
 // @route   GET /api/consultants/cdm/:practice
-// @access  Private, Admin
+// @access  Private
 const getAllCDMData = asyncHandler(async (req, res) => {
 
     console.log('getAllCDMData', req.params)

@@ -78,6 +78,7 @@ const PxxEditScreen = ({ history }) => {
                                 <ConsultantsTab
                                     consultantsMy={consultantsMy}
                                     history={history}
+                                    focusActive={true}
                                 />
                             </Row>
                         </Container>

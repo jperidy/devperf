@@ -84,6 +84,8 @@ const ConsultantEditScreen = ({ history, match }) => {
             setValueFriday(consultant.isPartialTime.week.filter(x => x.num === 5)[0].worked)
         }
 
+        console.log('leaving', leaving)
+
     }, [
         dispatch,
         history,
@@ -96,7 +98,8 @@ const ConsultantEditScreen = ({ history, match }) => {
         leaving,
         seniority,
         cdmList,
-        practice
+        practice,
+        valued
     ]);
 
     const submitHandler = (e) => {
@@ -141,6 +144,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     }
 
     const changeValueDateHandler = (e) => {
+        console.log(e);
         setValued(e.substring(0, 10));
         setSeniority(((new Date(Date.now()) - new Date(e.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4));
     }
@@ -232,6 +236,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                     <Form.Control
                                                         as='select'
                                                         value={cdm}
+                                                        disabled={!userInfo.isAdmin}
                                                         onChange={(e) => setCdm(e.target.value)}>
                                                         {cdmList.map(x => (
                                                             <option
@@ -264,9 +269,10 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         <Form.Control
                                             type='date'
                                             value={arrival && arrival}
+                                            min={valued}
                                             onChange={(e) => {
                                                 setArrival(e.target.value);
-                                                console.log(e.target.value)
+                                                //console.log(e.target.value)
                                             }}
                                         ></Form.Control>
                                     </Form.Group>
@@ -276,10 +282,11 @@ const ConsultantEditScreen = ({ history, match }) => {
                                     <Form.Group controlId='leaving'>
                                         <Form.Label><b>Leaving date</b></Form.Label>
                                         <Form.Control
-                                            type='date'
-                                            value={leaving && leaving}
-                                            onChange={(e) => setLeaving(e.target.value)}
-                                        ></Form.Control>
+                                                type='date'
+                                                value={leaving && leaving}
+                                                min={arrival}
+                                                onChange={(e) => setLeaving(e.target.value)}
+                                            ></Form.Control>
                                     </Form.Group>
                                 </Col>
                             </Form.Row>
@@ -303,6 +310,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                 <Form.Label>Start</Form.Label>
                                                 <Form.Control
                                                     type="Date"
+                                                    min={arrival}
                                                     value={startPartialTime}
                                                     onChange={(e) => {
                                                         setStartPartialTime(e.target.value.substring(0, 10));

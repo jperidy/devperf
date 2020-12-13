@@ -61,6 +61,7 @@ const ManageConsultantScreen = ({history}) => {
                     <ConsultantsTab 
                         history={history}
                         consultantsMy={consultantsMyAdmin}
+                        focusActive={false}
                     />
             )}
         </>

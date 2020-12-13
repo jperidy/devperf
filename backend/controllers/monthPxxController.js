@@ -1,6 +1,6 @@
 const Month = require('../models/monthModel');
 const asyncHandler = require('express-async-handler');
-const Date = require('../utils/dateFunction');
+//const Date = require('../utils/dateFunction');
 const axios = require('axios');
 const typeOfDay = require('../utils/typeOfDay');
 
@@ -24,7 +24,8 @@ const getMonthPxxInfo = asyncHandler(async (req, res) => {
     searchDate.setDate(0);
     let numberOfMonths = req.query.numberofmonths;
     let endSearch = new Date(Number(req.query.searchdate));
-    endSearch.addMonth(Number(numberOfMonths)-1);
+    endSearch.setMonth(endSearch.getMonth() + Number(numberOfMonths) - 1)
+    //endSearch.addMonth(Number(numberOfMonths)-1);
 
     const monthPxxInfo = await Month.find({ "firstDay": { 
         $gt: searchDate.toISOString().substring(0, 10),
@@ -52,23 +53,30 @@ const getMonthPxxInfo = asyncHandler(async (req, res) => {
 const createMonth = async (firstDay) => {
 
     const monthDate = new Date(firstDay);
+    monthDate.setUTCHours(12);
+
     const nextMonthDate = new Date(firstDay);
-    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
-    nextMonthDate.setDate(1);
+    nextMonthDate.setUTCMonth(nextMonthDate.getUTCMonth() + 1);
+    nextMonthDate.setUTCDate(1);
+    nextMonthDate.setUTCHours(12);
 
     const monthToCreate = {
-        name: monthDate.getFullYear().toString() + '/' + Number(monthDate.getMonth() + 1).toString(),
+        name: monthDate.getUTCFullYear().toString() + '/' + Number(monthDate.getUTCMonth() + 1).toString(),
         firstDay: firstDay,
         days: []
     };
 
     // Collect all non-working-days from french government API
-    const { data } = await axios.get(`https://calendrier.api.gouv.fr/jours-feries/metropole/${monthDate.getFullYear().toString()}.json`);
+    const { data } = await axios.get(`https://calendrier.api.gouv.fr/jours-feries/metropole/${monthDate.getUTCFullYear().toString()}.json`);
 
-    for (let currentDay = new Date(firstDay); currentDay < nextMonthDate; currentDay.setDate(currentDay.getDate() + 1)) {
+    let currentDay = new Date(firstDay);
+    currentDay.setUTCHours(12);
+
+    for (currentDay; currentDay < nextMonthDate; currentDay.setUTCDate(currentDay.getUTCDate() + 1)) {
+        //console.log('currentDay: ', currentDay, ' - nextMonthDate: ', nextMonthDate);
 
         const num = currentDay.toISOString().substring(0, 10);
-        const typeDay = typeOfDay(currentDay.getDay());
+        const typeDay = typeOfDay(currentDay.getUTCDay());
         const isNonWorkingDay = data[num];
         let type = '';
         if (isNonWorkingDay && (typeDay === "working-day")) {
