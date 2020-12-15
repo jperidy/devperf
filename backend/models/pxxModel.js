@@ -4,7 +4,7 @@ const pxxSchema = mongoose.Schema({
     name: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'User'
+        ref: 'Consultant'
     },
     month: {
         type: mongoose.Schema.Types.ObjectId,

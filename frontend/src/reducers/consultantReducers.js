@@ -24,7 +24,11 @@ import {
     CONSULTANT_CDM_LIST_REQUEST,
     CONSULTANT_CDM_LIST_SUCCESS,
     CONSULTANT_CDM_LIST_FAIL,
-    CONSULTANT_CDM_LIST_RESET
+    CONSULTANT_CDM_LIST_RESET,
+    CONSULTANT_PRACTICE_LIST_REQUEST,
+    CONSULTANT_PRACTICE_LIST_SUCCESS,
+    CONSULTANT_PRACTICE_LIST_FAIL,
+    CONSULTANT_PRACTICE_LIST_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {
@@ -157,6 +161,21 @@ export const consultantCDMListReducer = (state = {}, action) => {
         case CONSULTANT_CDM_LIST_FAIL:
             return { loading: false, error: action.payload };
         case CONSULTANT_CDM_LIST_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const consultantPracticeListReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_PRACTICE_LIST_REQUEST:
+            return { loading: true };
+        case CONSULTANT_PRACTICE_LIST_SUCCESS:
+            return { loading: false, practiceList: action.payload };
+        case CONSULTANT_PRACTICE_LIST_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANT_PRACTICE_LIST_RESET:
             return {}
         default:
             return state;

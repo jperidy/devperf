@@ -20,7 +20,6 @@ const ConsultantSelector = () => {
 
     const consultantsMyList = useSelector(state => state.consultantsMyList);
     const { loading: loadingConsultantsMyList, error: errorConsultantsMyList, consultantsMy, focus } = consultantsMyList;
-
     
     const navigationConsultantHandler = (value) => {
 
@@ -69,9 +68,9 @@ const ConsultantSelector = () => {
                         </Col>
                     </Row>
                     <Row className="my-3">
-                        <Col className="text-left"><b>Arrival:</b> {consultantsMy[focus].arrival.substring(0,10)}</Col>
-                        <Col className="text-left"><b>Valued:</b> {consultantsMy[focus].valued.substring(0,10)}</Col>
-                        <Col className="text-left"><b>Leaving:</b> {consultantsMy[focus].leaving.substring(0,10)}</Col>
+                        <Col className="text-left"><b>Arrival:</b> {consultantsMy[focus].arrival && consultantsMy[focus].arrival.substring(0,10)}</Col>
+                        <Col className="text-left"><b>Valued:</b> {consultantsMy[focus].valued && consultantsMy[focus].valued.substring(0,10)}</Col>
+                        <Col className="text-left"><b>Leaving:</b> {consultantsMy[focus].leaving && consultantsMy[focus].leaving.substring(0,10)}</Col>
                     </Row>
                     <Row className="my-3">
                         <Col><b>Seniority:</b> { ((new Date(Date.now()) - new Date(consultantsMy[focus].arrival.substring(0,10))) / (1000*3600*24*365.25)).toString().substring(0,4)} years</Col>

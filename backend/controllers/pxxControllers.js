@@ -1,6 +1,7 @@
 const Pxx = require('../models/pxxModel');
 const Month = require('../models/monthModel');
-const User = require('../models/userModel');
+const Consultant = require('../models/consultantModel');
+//const User = require('../models/userModel');
 const axios = require('axios');
 const asyncHandler = require('express-async-handler');
 const calculDayByType = require('../utils/calculDayByType')
@@ -202,7 +203,7 @@ const resetPartialTimePxx = async (consultantInfo) => {
     console.log('resetPartialTimePxx');
 
     const consultantId = consultantInfo._id;
-    const consultantToModify = await User.findById(consultantId);
+    const consultantToModify = await Consultant.findById(consultantId);
     const initialPartialTime = consultantToModify.isPartialTime;
     const firstMonthDay = new Date(initialPartialTime.start);
     firstMonthDay.setDate(0);
@@ -248,38 +249,6 @@ const resetPartialTimePxx = async (consultantInfo) => {
 const createPxx = async (userProfile, month) => {
 
     const availableDay = calculateAvailableDays(userProfile, month );
-    
-    /*
-    const arrival = userProfile.arrival && userProfile.arrival.toISOString().substring(0, 10);
-    const leaving = userProfile.leaving && userProfile.leaving.toISOString().substring(0, 10);
-
-    let availableDay = 0;
-
-    const isPartialTime = userProfile.isPartialTime.value
-    const partiaTimeProfile = userProfile.isPartialTime.week;
-    const startPartialTime = userProfile.isPartialTime.start;
-    const endPartialTime = userProfile.isPartialTime.end;
-
-
-    for (let incrMonth = 0; incrMonth < month.days.length; incrMonth++) {
-
-        if (month.days[incrMonth].num >= arrival && (!leaving || month.days[incrMonth].num <= leaving)) {
-
-            if (month.days[incrMonth].type === "working-day") {
-
-                if (isPartialTime) {
-                    if (month.days[incrMonth].num >= startPartialTime && month.days[incrMonth].num <= endPartialTime) {
-                        availableDay += Number(partiaTimeProfile.filter(x => Number(x.num) === Number((new Date(month.days[incrMonth].num)).getDay()))[0].worked)
-                    } else {
-                        availableDay += 1;
-                    }
-                } else {
-                    availableDay += 1
-                }
-            }
-        }
-    }
-    */
 
     const newPxx = new Pxx({
         name: userProfile._id,
@@ -311,14 +280,14 @@ const getPxx = asyncHandler(async (req, res) => {
     }
 
     // Collect user information
-    const userProfile = await User.findById(consultantId);
-    const arrivalDate = userProfile.arrival.toISOString().substring(0,10);
-    const leavingDate = userProfile.leaving.toISOString().substring(0,10);
+    const userProfile = await Consultant.findById(consultantId);
+    //const arrivalDate = userProfile.arrival.toISOString().substring(0,10);
+    //const leavingDate = userProfile.leaving.toISOString().substring(0,10);
 
 
     // Collect or create pxx
     const pxxData = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
-    let returnPxx = null;
+    //let returnPxx = null;
     
     
     if (pxxData) {

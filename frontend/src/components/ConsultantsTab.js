@@ -35,11 +35,11 @@ const ConsultantsTab = ({ history, consultantsMy, focusActive }) => {
                         <td className='align-middle'>{consultant.name}</td>
                         <td className='align-middle'>{consultant.matricule}</td>
                         <td className='align-middle'>{consultant.practice}</td>
-                        <td className='align-middle'>{consultant.valued.substring(0,10)}</td>
+                        <td className='align-middle'>{consultant.valued ? consultant.valued.substring(0,10) : ''}</td>
                         <td className='align-middle'>{consultant.arrival ? consultant.arrival.substring(0,10) : ''}</td>
                         <td className='align-middle'>{consultant.leaving ? consultant.leaving.substring(0,10) : ''}</td>
                         <td className='align-middle'>{
-                                ((new Date(Date.now()) - new Date(consultant.valued.substring(0,10)))/(1000*3600*24*365.25)).toString().substring(0,4)
+                                consultant.valued ? ((new Date(Date.now()) - new Date(consultant.valued.substring(0,10)))/(1000*3600*24*365.25)).toString().substring(0,4) : 0
                             } years</td>
                         <td className='align-middle'>{consultant.comment}</td>
                         <td className='align-middle'>

@@ -1,87 +1,33 @@
 const bcrypt = require('bcryptjs');
 
-function getCDMData (nbCdm) {
-    let matricule = 1000;
-    const listOfCdm = []
-    for (let incr = 0 ; incr < nbCdm ; incr++) {
+function getUserData(consultants) {
+    //const numberOfUser = 3;
+    const listOfUser = [];
 
-        let arrival = new Date( 2019 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
-        let leaving = new Date( 2023 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
-        cdm = {
-            name: 'usercdm_'+ matricule,
-            matricule: 'matricule' + matricule,
-            email: 'usercdm_' + matricule + '@mail.com',
-            password: bcrypt.hashSync('123456', 10),
-            arrival: arrival,
-            valued: arrival,
-            leaving: leaving,
-            practice: 'DET',
-            isCDM: true,
-            isPartialTime:{ value: false, week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}], start: '', end: ''},
-            isAdmin: false
+    //console.log('consultants', consultants);
+    const consultantCdmProfil = consultants.filter( x => x.isCDM === true);
+    //console.log('consultantCdmProfil', consultantCdmProfil);
+
+    for (let incr = 0 ; incr < consultantCdmProfil.length ; incr++) {
+         
+        let userCDM = {
+            name: consultantCdmProfil[incr].name,
+            email: consultantCdmProfil[incr].email,
+            password : bcrypt.hashSync('123456', 10),
+            consultantProfil: consultantCdmProfil[incr]._id,
+            isCDM: consultantCdmProfil[incr].isCDM
         };
-        listOfCdm.push(cdm);
-        matricule++;
-    }
-    return listOfCdm;
-}
-
-function getUserData (nbUsers, cdmId) {
-    let numberOfAdmin = 1;
-    let matricule = 0;
-    const listOfUsers = []
-    let incr2 = 0;
-
-    for (let iter = 0 ; iter < nbUsers ; iter++){
-
-        let arrival = new Date( 2019 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
-        let leaving = new Date( 2023 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
-        let seniority = (Date.now() - arrival) / (1000*3600*24*365.25);
-        
-        if (numberOfAdmin > 0) {
-            user = {
-                name: 'useradmincdm_'+ matricule,
-                matricule: 'matricule' + matricule,
-                email: 'useradmincdm_' + matricule + '@mail.com',
-                password: bcrypt.hashSync('123456', 10),
-                arrival: arrival,
-                valued: arrival,
-                leaving: leaving,
-                seniority: seniority,
-                practice: 'DET',
-                isCDM: true,
-                isAdmin: true,
-                isPartialTime:{ value: false, week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}], start:'', end:''},
-                cdmId: cdmId[incr2]
-            };
-            numberOfAdmin--;
-        } else {
-            user = {
-                name: 'user_'+ matricule,
-                matricule: 'matricule' + matricule,
-                email: 'user_' + matricule + '@mail.com',
-                password: bcrypt.hashSync('123456', 10),
-                arrival: arrival,
-                valued: arrival,
-                leaving: leaving,
-                seniority: seniority,
-                practice: 'DET',
-                isCDM: false,
-                isAdmin: false,
-                isPartialTime:{ value: false, week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}], start:'', end:''},
-                cdmId: cdmId[incr2]
-            };
-        };
-        listOfUsers.push(user);
-        matricule++;
-        if( (incr2 + 1) < cdmId.length){
-            incr2++;
-        } else {
-            incr2 = 0;
-        }
+        listOfUser.push(userCDM);
     }
 
-    return listOfUsers;
+    // userCDM and ADMIN
+    if (listOfUser) {
+        listOfUser[0].isAdmin = true;
+    }
+
+    //console.log('listOfUser', listOfUser)
+
+    return listOfUser;
 }
 
-module.exports = {getUserData, getCDMData};
+module.exports = { getUserData };

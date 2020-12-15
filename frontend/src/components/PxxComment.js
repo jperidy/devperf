@@ -33,6 +33,7 @@ const PxxComment = ({ comment, consultantId, setCommentUpdated }) => {
                         <Form.Label><b>Comments</b></Form.Label>
                         <Form.Control
                             as="textarea"
+                            placeholder="Please enter a comment"
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                         />

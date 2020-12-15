@@ -6,7 +6,8 @@ const {
     updateConsultant, 
     getAllPracticeConsultants,
     createConsultant,
-    getAllCDMData
+    getAllCDMData,
+    getAllPracticesData
 } = require('../controllers/consultantControllers');
 
 const router = express.Router();
@@ -16,6 +17,8 @@ router.route('/')
     .post(protect, admin, createConsultant);
 
 router.route('/cdm/:practice').get(protect, getAllCDMData);
+
+router.get('/practicelist', protect, getAllPracticesData);
 
 router.get('/practice', protect, admin, getAllPracticeConsultants);
 

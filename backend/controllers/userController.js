@@ -14,13 +14,7 @@ const authUser = asyncHandler(async(req,res) =>{
             _id: user._id,
             name: user.name,
             email: user.email,
-            matricule: user.matricule,
-            arrival: user.arrival,
-            leaving: user.leaving,
-            seniority: user.seniority,
-            practice: user.practice,
             isAdmin: user.isAdmin,
-            isCDM: user.isCDM,
             token: generateToken(user._id),
         });
     } else {

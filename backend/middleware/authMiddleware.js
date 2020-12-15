@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const mongoose = require('mongoose');
+const Consultant = require('../models/consultantModel');
 
 const protect = asyncHandler (async (req, res, next) => {
     //console.log('start protect middleware');
@@ -11,9 +12,9 @@ const protect = asyncHandler (async (req, res, next) => {
         try {
             token = req.headers.authorization.split(' ')[1]; // delete of first keyword Bearer seperated with space with token
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            //console.log(decoded.id);
+            //console.log('decode.id', decoded.id);
             req.user = await User.findById(decoded.id).select('-password'); // we don't want to add password in the req
-            //console.log(req.user);
+            //console.log('req.user', req.user);
             next();
         } catch (error) {
             console.error(error);
@@ -49,13 +50,25 @@ const empowered = asyncHandler(
         let isEmpowered = false;
 
         if (req.user && (req.body.consultantId || req.params.consultantId)) {
-            const consultantList = await User.find({cdmId: req.user._id}).select('_id');
+            // Collect list of consultant managed by the login user
+            const consultantList = await Consultant.find({cdmId: req.user.consultantProfil}).select('_id');
+            //console.log('req.user', req.user);
+            //console.log('consultantList', consultantList);
+            //console.log('req.body.consultantId', req.body.consultantId);
+            //console.log('req.params.consultantId', req.params.consultantId);
+
+            // verify if the consultant we are looking to reach is in the list of those managed by the login user
             const userIsEmpowered = consultantList.filter( x => [req.body.consultantId, req.params.consultantId].includes(x._id.toString()));
             if (userIsEmpowered.length > 0){
                 isEmpowered = true;
-            } else {
-                const consultantIdPractice = await User.find({_id: {$in: [req.params.consultantId, req.body.consultantId]}}).select('practice');
-                if (consultantIdPractice[0].practice === req.user.practice) {
+            } 
+            // verify if user is admin of the practice
+            if(req.user.isAdmin) {
+                // verify the practice of current admin user
+                const userConsultantProfil = await Consultant.findById(req.user.consultantProfil).select('practice');
+                // collect the practice of consultant we want to reach
+                const consultantIdPractice = await Consultant.find({_id: {$in: [req.params.consultantId, req.body.consultantId]}}).select('practice');
+                if (consultantIdPractice[0].practice === userConsultantProfil.practice) {
                     isEmpowered = true;
                 }
             }

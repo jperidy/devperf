@@ -31,11 +31,11 @@ const Header = () => {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ml-auto">
-                            {userInfo && userInfo.isCDM && (
-                                <LinkContainer to='/pxx'>
-                                    <Nav.Link>Edit My Pxx</Nav.Link>
-                                </LinkContainer>
-                            )}
+
+                            <LinkContainer to='/pxx'>
+                                <Nav.Link>Edit My Pxx</Nav.Link>
+                            </LinkContainer>
+
 
                             {userInfo ? (
                                 <NavDropdown title={userInfo.name || 'no user'} id="username">

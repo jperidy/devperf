@@ -55,8 +55,7 @@ const PxxEditScreen = ({ history }) => {
 
     return (
         <>
-            {!userInfo.isCDM ? <Message variant="warning">You need CDM right to access this menu !</Message> : 
-                consultantsMy.length === 0 ? <Message variant="info">You don't have CDMee yet</Message> :
+            {consultantsMy.length === 0 ? <Message variant="info">You don't have CDMee yet</Message> :
                 loadingConsultantsMyList ? <Loader />
                 : errorConsultantsMyList
                     ? <Message variant='danger'>{errorConsultantsMyList}</Message>

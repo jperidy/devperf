@@ -1,10 +1,7 @@
-const User = require('../models/userModel');
-//const Month = require('../models/monthModel');
-//const Pxx = require('../models/pxxModel');
+const Consultant = require('../models/consultantModel');
 const asyncHandler = require('express-async-handler');
-//const calculDayByType = require('../utils/calculDayByType');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
-
+const { set } = require('mongoose');
 
 // @desc    Create a consultant data by Id
 // @route   POST /api/consultants
@@ -13,13 +10,12 @@ const createConsultant = asyncHandler(async (req, res) => {
 
     const consultantToCreate = req.body;
     //Verify if consultant already exist
-    const checkConsultantExist = await User.find({email: consultantToCreate.email}).select('email');
-    //console.log(checkConsultantExist);
+    const checkConsultantExist = await Consultant.find({email: consultantToCreate.email}).select('email');
     if (checkConsultantExist.length === 0) {
-        const createdConsultant = await User.create(consultantToCreate);
+        const createdConsultant = await Consultant.create(consultantToCreate);
         res.status(201).json(createdConsultant);
     } else {
-        res.status(409).json({message: 'user already exist'});
+        res.status(409).json({message: 'Consultant already exist'});
     }    
 });
 
@@ -28,8 +24,8 @@ const createConsultant = asyncHandler(async (req, res) => {
 // @access  Private, Admin
 const getAllPracticeConsultants = asyncHandler(async (req, res) => {
 
-    const myConsultants = await User.find({ practice: req.user.practice })
-                                                    .select('-password')
+    const userConsultantProfil = await Consultant.findById(req.user.consultantProfil).select('practice');
+    const myConsultants = await Consultant.find({ practice: userConsultantProfil.practice })
                                                     .sort({'name': 1});
     res.json(myConsultants);
     
@@ -40,8 +36,9 @@ const getAllPracticeConsultants = asyncHandler(async (req, res) => {
 // @access  Private
 const getMyConsultants = asyncHandler(async (req, res) => {
 
-    const myConsultants = await User.find({ cdmId: req.user._id })
-                                                    .select('-password')
+    //console.log(req.user);
+    //const myUser = await User.findById(req.user._id);
+    const myConsultants = await Consultant.find({ cdmId: req.user.consultantProfil })
                                                     .sort({'name': 1});
     res.json(myConsultants);
     
@@ -52,7 +49,7 @@ const getMyConsultants = asyncHandler(async (req, res) => {
 // @access  Private, Embeded
 const getConsultant = asyncHandler(async (req, res) => {
 
-    const myConsultant = await User.findById(req.params.consultantId).select('-password');
+    const myConsultant = await Consultant.findById(req.params.consultantId);
     res.json(myConsultant);
     
 });
@@ -63,9 +60,7 @@ const getConsultant = asyncHandler(async (req, res) => {
 const updateConsultant = asyncHandler(async (req, res) => {
 
     const consultantToUpdate = req.body;
-    //console.log('consultantToUpdate', consultantToUpdate);
-    let myConsultant = await User.findById(req.params.consultantId).select('-password');
-    //console.log('myConsultant', myConsultant);
+    let myConsultant = await Consultant.findById(req.params.consultantId);
 
     if(myConsultant) {
 
@@ -89,20 +84,6 @@ const updateConsultant = asyncHandler(async (req, res) => {
         myConsultant.leaving = consultantToUpdate.leaving;
         myConsultant.isCDM = consultantToUpdate.isCDM;
         myConsultant.isPartialTime = consultantToUpdate.isPartialTime;
-        
-        //const updatedConsultant = await myConsultant.save();
-        
-        // Partial time conditions change, we need to update existing Pxx with new partial time conditions
-        /*if ((partialTimeChange
-            || mondayChange
-            || tuesdayChange
-            || wednesdayChange
-            || thursdayChange
-            || fridayChange
-            || startChange
-            || endChange)
-            && consultantToUpdate.isPartialTime.value) {
-        */
 
         if (arrivalChange || leavingChange) {
             try {
@@ -143,11 +124,8 @@ const updateConsultant = asyncHandler(async (req, res) => {
             || startChange
             || endChange ) 
             && !consultantToUpdate.isPartialTime.value) {
-            //console.log('reset Pxx script');
             try {
                 await resetPartialTimePxx(myConsultant);
-                //const updatedConsultant = await myConsultant.save();
-                //res.status(200).json(updatedConsultant);
             } catch (error) {
                 console.log('Error: resetPartialTimePxx fail', error);
                 res.status(500).json({ message: 'Error: resetPartialTimePxx fail' });
@@ -156,25 +134,7 @@ const updateConsultant = asyncHandler(async (req, res) => {
         
         const updatedConsultant = await myConsultant.save();
         res.status(200).json(updatedConsultant);
-        
-        /*
-        if (!partialTimeChange 
-            && !mondayChange 
-            && !tuesdayChange 
-            && !wednesdayChange 
-            && !thursdayChange 
-            && !fridayChange
-            && !startChange
-            && !endChange) {
-            
-            res.status(200).json({updatedConsultant});
-        }
-        */
-        
-
-        //await updatePartialTimePxx(myConsultant, consultantToUpdate.isPartialTime);
-        //res.status(200).json(updatedConsultant);
-
+ 
     } else {
         res.status(404).json({ message: 'Consultant not found. Please try later' });
         throw new Error('Consultant not found. Please try later');
@@ -187,14 +147,32 @@ const updateConsultant = asyncHandler(async (req, res) => {
 // @access  Private
 const getAllCDMData = asyncHandler(async (req, res) => {
 
-    console.log('getAllCDMData', req.params)
+    //console.log('getAllCDMData', req.params)
     const practice = req.params.practice;
-    const CDMList = await User.find({practice: practice, isCDM: true}).select('_id name');
+    const CDMList = await Consultant.find({practice: practice, isCDM: true}).select('_id name');
     
     if (CDMList) {
         res.status(200).json(CDMList);
     } else {
         res.status(400).json({message: `CDM List not found for: ${practice}` });
+    }
+
+});
+
+// @desc    Get the list of registered Practices
+// @route   GET /api/consultants/practice
+// @access  Private
+const getAllPracticesData = asyncHandler(async (req, res) => {
+
+    //const practice = req.params.practice;
+    let practiceListAll = await Consultant.find().select('practice');
+    practiceListAll = practiceListAll.map( x => x.practice);
+    const practiceUniqueList = [...new Set(practiceListAll)];
+    
+    if (practiceUniqueList) {
+        res.status(200).json(practiceUniqueList);
+    } else {
+        res.status(400).json({message: `Practice List not found for: ${practice}` });
     }
 
 });
@@ -205,5 +183,6 @@ module.exports = {
     updateConsultant, 
     getAllPracticeConsultants, 
     createConsultant,
-    getAllCDMData
+    getAllCDMData,
+    getAllPracticesData
 };

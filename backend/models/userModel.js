@@ -6,10 +6,6 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    matricule: {
-        type: String,
-        required: true
-    },
     email: {
         type: String,
         required: true,
@@ -19,51 +15,14 @@ const userSchema = mongoose.Schema({
         type: String,
         required: false,
     },
-    arrival: {
-        type: Date,
-        required: false,
-    },
-    valued: {
-        type: Date,
-        required: false,
-    },
-    leaving: {
-        type: Date,
-        required: false,
-    },
-    practice: {
-        type: String,
-        required: false
-    },
-    cdmId: {
+    consultantProfil: {
         type: mongoose.Schema.Types.ObjectId,
-        required: false,
-        ref:'User'
-    },
-    isCDM: {
-        type: Boolean,
-        required: true,
-        default: false
+        ref: 'Consultant'
     },
     isAdmin: {
         type: Boolean,
         required: true,
         default: false,
-    },
-    isPartialTime: {
-        value: { type: Boolean },
-        start: String,
-        end: String,
-        week: [
-            {
-                num: Number,
-                worked: Number
-            }
-        ]
-    },
-    comment: {
-        type: String,
-        default: 'Please enter your comment',
     }
 }, {
     timestamps: true,
