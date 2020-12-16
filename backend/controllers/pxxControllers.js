@@ -44,7 +44,7 @@ const calculateAvailableDays = (userProfile, month) => {
 }
 
 const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
-    console.log('updatePartialTimePxx');
+    //console.log('updatePartialTimePxx');
 
     const consultantId = consultantInfo._id;
 
@@ -164,7 +164,7 @@ const recalculatePxx = ({ initialProdDay, initialNotProdDay, initialLeavingDay, 
 }
 
 const resetAllPxx = async (consultantInfo) => {
-    console.log('resetAllPxx');
+    //console.log('resetAllPxx');
 
     const consultantId = consultantInfo._id;
     const pxxData = await Pxx.find({name: consultantId });

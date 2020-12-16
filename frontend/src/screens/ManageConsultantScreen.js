@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllMyAdminConsultants } from '../actions/consultantActions';
+import { deleteConsultant, getAllMyAdminConsultants } from '../actions/consultantActions';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
@@ -20,6 +20,9 @@ const ManageConsultantScreen = ({ history }) => {
     const consultantMy = useSelector(state => state.consultantMy);
     const { consultant } = consultantMy;
 
+    const consultantDelete = useSelector(state => state.consultantDelete);
+    const { success: successConsultantDelete } = consultantDelete;
+
     const addConsultantHandler = () => {
         //console.log('AddConsultantHandler');
         history.push('/admin/consultant/add');
@@ -27,32 +30,37 @@ const ManageConsultantScreen = ({ history }) => {
 
     useEffect(() => {
 
-        if (!userInfo) {
+        if (userInfo && userInfo.isAdmin) {
+            dispatch(getAllMyAdminConsultants());
+        } else {
             history.push('/login');
         }
-
-        if (!userInfo.isAdmin) {
-            history.push('/');
-        }
-
+        
         // initialisation of consultantMy selector
         if (consultant && consultant._id) {
             dispatch({ type: CONSULTANT_MY_RESET });
             //console.log('dispatch reset');
         }
 
-        dispatch(getAllMyAdminConsultants());
 
     }, [
         dispatch,
         history,
         userInfo,
-        consultant
+        consultant,
+        successConsultantDelete
     ]);
 
-    const onClickHandler = (focus, consultantId) => {
+    const onClickEditHandler = (consultantId) => {
         history.push(`/editconsultant/${consultantId}`);
     };
+
+    const onClickDeleteHandler = (consultant) => {
+        console.log('delete consultant');
+        if (window.confirm(`Are you sure to delete user: ${consultant.name} ?`)) {
+            dispatch(deleteConsultant(consultant._id));
+        }
+    }
 
     return (
         <>
@@ -74,7 +82,7 @@ const ManageConsultantScreen = ({ history }) => {
                                 <th className='align-middle text-light'>Arrival</th>
                                 <th className='align-middle text-light'>Leaving</th>
                                 <th className='align-middle text-light'>Seniority</th>
-                                <th className='align-middle text-light'>Comment</th>
+                                <th className='align-middle text-light'></th>
                                 <th className='align-middle text-light'></th>
                             </tr>
                         </thead>
@@ -91,10 +99,14 @@ const ManageConsultantScreen = ({ history }) => {
                                     <td className='align-middle'>{
                                         consultant.valued ? ((new Date(Date.now()) - new Date(consultant.valued.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4) : 0
                                     } years</td>
-                                    <td className='align-middle'>{consultant.comment}</td>
                                     <td className='align-middle'>
-                                        <Button className='btn btn-light p-1' onClick={() => onClickHandler(focus, consultant._id)}>
+                                        <Button className='btn btn-primary p-1' onClick={() => onClickEditHandler(consultant._id)}>
                                             <i className="fas fa-user-edit"></i>
+                                        </Button>
+                                    </td>
+                                    <td className='align-middle'>
+                                        <Button  className='btn btn-danger p-1' onClick={() => onClickDeleteHandler(consultant)}>
+                                        <i className="fas fa-user-times"></i>
                                         </Button>
                                     </td>
                                 </tr>

@@ -21,7 +21,10 @@ import {
     CONSULTANT_CDM_LIST_FAIL,
     CONSULTANT_PRACTICE_LIST_REQUEST,
     CONSULTANT_PRACTICE_LIST_FAIL,
-    CONSULTANT_PRACTICE_LIST_SUCCESS
+    CONSULTANT_PRACTICE_LIST_SUCCESS,
+    CONSULTANT_DELETE_REQUEST,
+    CONSULTANT_DELETE_FAIL,
+    CONSULTANT_DELETE_SUCCESS
 } from '../constants/consultantConstants';
 
 
@@ -170,6 +173,35 @@ export const createConsultant = (consultant) => async (dispatch, getState) => {
 } catch (error) {
     dispatch({
         type: CONSULTANT_CREATE_FAIL,
+        payload: error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
+    });
+}
+};
+
+export const deleteConsultant = (consultantId) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_DELETE_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        await axios.delete(`/api/consultants/${consultantId}`, config);
+
+        dispatch({ type: CONSULTANT_DELETE_SUCCESS });
+
+} catch (error) {
+    dispatch({
+        type: CONSULTANT_DELETE_FAIL,
         payload: error.response && error.response.data.message
             ? error.response.data.message
             : error.message

@@ -28,7 +28,11 @@ import {
     CONSULTANT_PRACTICE_LIST_REQUEST,
     CONSULTANT_PRACTICE_LIST_SUCCESS,
     CONSULTANT_PRACTICE_LIST_FAIL,
-    CONSULTANT_PRACTICE_LIST_RESET
+    CONSULTANT_PRACTICE_LIST_RESET,
+    CONSULTANT_DELETE_REQUEST,
+    CONSULTANT_DELETE_SUCCESS,
+    CONSULTANT_DELETE_FAIL,
+    CONSULTANT_DELETE_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {
@@ -107,7 +111,7 @@ export const consultantsMyAdminListReducer = (state = {
     }
 };
 
-export const consultantMyReducer = (state = { loading: true, consultant: {} }, action) => {
+export const consultantMyReducer = (state = { consultant: {} }, action) => {
     switch (action.type) {
         case CONSULTANT_MY_REQUEST:
             return { ...state, loading: true };
@@ -116,7 +120,7 @@ export const consultantMyReducer = (state = { loading: true, consultant: {} }, a
         case CONSULTANT_MY_FAIL:
             return { loading: false, error: action.payload };
         case CONSULTANT_MY_RESET:
-            return { loading: true, consultant: {} }
+            return { consultant: {} }
         default:
             return state;
     }
@@ -142,10 +146,25 @@ export const consultantCreateReducer = (state = {}, action) => {
         case CONSULTANT_CREATE_REQUEST:
             return { loading: true };
         case CONSULTANT_CREATE_SUCCESS:
-            return { loading: false, consultant: action.payload };
+            return { loading: false, success: true, consultantCreated: action.payload };
         case CONSULTANT_CREATE_FAIL:
             return { loading: false, error: action.payload };
         case CONSULTANT_CREATE_RESET:
+            return { }
+        default:
+            return state;
+    }
+};
+
+export const consultantDeleteReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_DELETE_REQUEST:
+            return { loading: true };
+        case CONSULTANT_DELETE_SUCCESS:
+            return { loading: false, success: true };
+        case CONSULTANT_DELETE_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANT_DELETE_RESET:
             return { }
         default:
             return state;

@@ -165,17 +165,17 @@ const AddConsultantScreen = ({ history }) => {
                             </Form.Group>
                         </Col>
                     </Form.Row>
-                        <Form.Group controlId='email'>
-                                <Form.Label><b>Email Address</b></Form.Label>
-                                <Form.Control
-                                    type='email'
-                                    placeholder='Enter email'
-                                    value={email && email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                ></Form.Control>
-                            </Form.Group>
+                    
                     <Form.Row>
-
+                        <Form.Group controlId='email'>
+                            <Form.Label><b>Email Address</b></Form.Label>
+                            <Form.Control
+                                type='email'
+                                placeholder='Enter email'
+                                value={email && email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            ></Form.Control>
+                        </Form.Group>
                     </Form.Row>
 
                     <Form.Row>

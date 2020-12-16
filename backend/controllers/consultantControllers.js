@@ -19,6 +19,23 @@ const createConsultant = asyncHandler(async (req, res) => {
     }    
 });
 
+// @desc    Delete a consultant
+// @route   DELETE /api/consultants/:id
+// @access  Private, Admin
+const deleteConsultant = asyncHandler(async (req, res) => {
+
+    const consultant = await Consultant.findById(req.params.consultantId);
+
+    if (consultant) {
+        await consultant.remove()
+        res.json({ message: 'Consultant removed: ' + req.params.consultantId });
+    } else {
+        res.status(404).json({message: 'Consultant not found: ' + req.params.consultantId});
+        throw new Error('Consultant not found: ' + req.params.consultantId);
+    }
+
+});
+
 // @desc    Get all admin consultant data
 // @route   GET /api/admin/consultants
 // @access  Private, Admin
@@ -183,6 +200,7 @@ module.exports = {
     updateConsultant, 
     getAllPracticeConsultants, 
     createConsultant,
+    deleteConsultant,
     getAllCDMData,
     getAllPracticesData
 };

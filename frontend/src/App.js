@@ -21,7 +21,8 @@ const App = () => {
           <Route path='/pxx/:id' component={PxxEditScreen} exact />
           <Route path='/editconsultant/:id' component={ConsultantEditScreen} exact />
           <Route path='/admin/consultants' component={ManageConsultantScreen} exact />
-          <Route path='/admin/consultant/add' component={AddConsultantScreen} exact />
+          <Route path='/admin/consultant/add' component={ConsultantEditScreen} exact />
+          {/* <Route path='/admin/consultant/add' component={AddConsultantScreen} exact /> */}
         </Container>
       </main>
       <Footer />
