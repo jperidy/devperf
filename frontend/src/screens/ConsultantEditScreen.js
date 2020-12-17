@@ -67,35 +67,61 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     useEffect(() => {
 
-        if (!userInfo) {
+        // only admin level 0 and 1 are authorized to manage consultants
+        if (userInfo && !(userInfo.adminLevel <= 1)) {
             history.push('/login');
         }
         
+        // If consultant is created we pass in editing mode
         if (successCreate && valueEditType === 'create') {
             const idcreated = consultantCreated._id;
             dispatch({ type: CONSULTANT_CREATE_RESET });
             history.push(`/editconsultant/${idcreated}`);
         }
         
-        if ((valueEditType === 'edit') && (!consultant || !consultant.name) && !loading) {
+        // In edit mode we want to load the consultant informations
+        if ((valueEditType === 'edit') && !loading && (!consultant || !consultant.name)) {
             dispatch(getMyConsultant(consultantId));
         }
 
-        if (!practiceList && !loadingPractice) {
+        // Only in admin Level 0 access we can modify consultant Practice
+        if (userInfo && (userInfo.adminLevel === 0) && !practiceList && ! loadingPractice) {
             dispatch(getAllPractice());
         }
-        if (practiceList && !practice) {
+        // Charge default practice for admin Level 0 user
+        if (!practice && userInfo && practiceList && !practice) {
             setPractice(practiceList[0]);
         }
+
+        // set default Practice if admin Level > 0
+        if (!practice && userInfo && userInfo.adminLevel > 0) {
+            setPractice(userInfo.consultantProfil.practice)
+        }
+
+        // Charge default data for cdm in the current practice
+        if (practice && !cdmList && !loadingCDM) {
+            dispatch(getAllCDM(practice));
+        }
+
+        /*
         //console.log(practiceList, practice, !cdmList)
         if (practiceList && !loadingPractice && practice && !cdmList && !loadingCDM)  {
             dispatch(getAllCDM(practice));
         }
-        if (cdmList && !cdm) {
+        */
+        
+        // Associate a default value for CDM
+        if (!cdm && cdmList) {
             setCdm(cdmList[0]);
         }
 
-        if (consultant && consultant.name && name === '') {
+        // When editing you need to charge consultant to edit values
+        if (
+            (valueEditType === 'edit') && consultant && (
+                (consultant.name && name === '')
+                || (consultant.email && email === '')
+                || (consultant.matricule && matricule === '')
+            )) {
             dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
             setName(consultant.name);
             setEmail(consultant.email);
@@ -124,6 +150,8 @@ const ConsultantEditScreen = ({ history, match }) => {
         consultant,
         consultantId,
         name,
+        email,
+        matricule,
         cdm,
         arrival,
         valued,
@@ -208,10 +236,10 @@ const ConsultantEditScreen = ({ history, match }) => {
     }
 
     const goBackHandler = () => {
+        history.go(-1);
         dispatch({type: CONSULTANT_MY_RESET});
         dispatch({ type: CONSULTANT_CREATE_RESET });
         dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
-        history.go(-1);
     }
 
     return (
@@ -304,7 +332,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         <Form.Control
                                             as='select'
                                             value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ""}
-                                            disabled={userInfo && !userInfo.isAdmin}
+                                            disabled={userInfo && !(userInfo.adminLevel === 0)}
                                             onChange={(e) => {
                                                 setPractice(e.target.value)
                                                 //console.log('e.target.value', e.target.value)
@@ -325,7 +353,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                         )}
                                             </Form.Control>
                                 )}
-                                {userInfo.isAdmin && (
+                                {(userInfo.adminLevel === 0) && (
                                     <InputGroup.Append>
                                         <Button 
                                             className='btn-primary' 
@@ -344,7 +372,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                 <Form.Control 
                                     as='select'
                                     value={cdm && cdm}
-                                    disabled={userInfo && !userInfo.isAdmin}
+                                    disabled={userInfo && !(userInfo.adminLevel <= 1)}
                                     onChange={ (e) => setCdm(e.target.value) }
                                     required
                                 >

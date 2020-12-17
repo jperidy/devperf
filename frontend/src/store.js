@@ -11,13 +11,14 @@ import {
     consultantCreateReducer,
     consultantCDMListReducer,
     consultantPracticeListReducer,
-    consultantDeleteReducer
+    consultantDeleteReducer,
+    consultantUpdateCommentReducer
  } from './reducers/consultantReducers';
 import { pxxMyToEditReducer } from './reducers/pxxReducers';
 
 export const reducer = combineReducers({
     userLogin: userLoginReducer,
-    userUpdateComment: userUpdateCommentReducer,
+    consultantUpdateComment: consultantUpdateCommentReducer,
     consultantsMyAdminList: consultantsMyAdminListReducer,
     consultantsMyList: consultantsMyListReducer,
     consultantMy: consultantMyReducer,

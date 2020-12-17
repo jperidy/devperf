@@ -29,9 +29,19 @@ const protect = asyncHandler (async (req, res, next) => {
     }
 });
 
-const admin = (req, res, next) => {
+const adminLevelZero = (req, res, next) => {
     //console.log('start admin middleware');
-    if(req.user && req.user.isAdmin) {
+    if(req.user && (req.user.adminLevel === 0)) {
+        next(); // if user is admin we can continue :)
+    } else {
+        res.status(401);
+        throw new Error('Not authorized as an admin');
+    }
+}
+
+const adminLevelOne = (req, res, next) => {
+    //console.log('start admin middleware');
+    if(req.user && (req.user.adminLevel <= 1)) {
         next(); // if user is admin we can continue :)
     } else {
         res.status(401);
@@ -49,13 +59,14 @@ const empowered = asyncHandler(
 
         let isEmpowered = false;
 
+        //console.log('req.user', req.user);
+        //console.log('req.body', req.body);
+        //console.log('req.body.consultantId', req.body.consultantId);
+        //console.log('req.params.consultantId', req.params.consultantId);
         if (req.user && (req.body.consultantId || req.params.consultantId)) {
             // Collect list of consultant managed by the login user
             const consultantList = await Consultant.find({cdmId: req.user.consultantProfil}).select('_id');
-            //console.log('req.user', req.user);
             //console.log('consultantList', consultantList);
-            //console.log('req.body.consultantId', req.body.consultantId);
-            //console.log('req.params.consultantId', req.params.consultantId);
 
             // verify if the consultant we are looking to reach is in the list of those managed by the login user
             const userIsEmpowered = consultantList.filter( x => [req.body.consultantId, req.params.consultantId].includes(x._id.toString()));
@@ -63,7 +74,7 @@ const empowered = asyncHandler(
                 isEmpowered = true;
             } 
             // verify if user is admin of the practice
-            if(req.user.isAdmin) {
+            if(req.user.adminLevel <= 1) {
                 // verify the practice of current admin user
                 const userConsultantProfil = await Consultant.findById(req.user.consultantProfil).select('practice');
                 // collect the practice of consultant we want to reach
@@ -85,4 +96,4 @@ const empowered = asyncHandler(
     }
 ) 
 
-module.exports = { protect, admin, empowered };
+module.exports = { protect, adminLevelOne, adminLevelZero, empowered };

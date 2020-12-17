@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { updateComment } from '../actions/userActions';
+import { updateComment } from '../actions/consultantActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 //import { getAllMyConsultants } from '../actions/consultantActions';
@@ -13,8 +13,8 @@ const PxxComment = ({ comment, consultantId, setCommentUpdated }) => {
 
     const [commentText, setCommentText] = useState(comment);
 
-    const userUpdateComment = useSelector(state => state.userUpdateComment);
-    const { loading, error } = userUpdateComment;
+    const consultantUpdateComment = useSelector(state => state.consultantUpdateComment);
+    const { loading, error } = consultantUpdateComment;
 
     useEffect(() => {
         setCommentText(comment);

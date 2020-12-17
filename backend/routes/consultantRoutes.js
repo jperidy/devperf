@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, admin, empowered } = require('../middleware/authMiddleware');
+const { protect, adminLevelOne, adminLevelZero, empowered } = require('../middleware/authMiddleware');
 const { 
     getMyConsultants, 
     getConsultant, 
@@ -8,26 +8,28 @@ const {
     createConsultant,
     getAllCDMData,
     getAllPracticesData,
-    deleteConsultant
+    deleteConsultant,
+    updateConsultantComment
 } = require('../controllers/consultantControllers');
 
 const router = express.Router();
 
 router.route('/')
     .get(protect, getMyConsultants)
-    .post(protect, admin, createConsultant);
+    .post(protect, adminLevelOne, createConsultant);
 
 
 router.route('/cdm/:practice').get(protect, getAllCDMData);
 
 router.get('/practicelist', protect, getAllPracticesData);
 
-router.get('/practice', protect, admin, getAllPracticeConsultants);
+router.get('/practice', protect, adminLevelOne, getAllPracticeConsultants);
 
 router.route('/:consultantId')
     .get(protect, empowered, getConsultant)
     .put(protect, empowered, updateConsultant)
-    .delete(protect, admin, deleteConsultant);
+    .delete(protect, adminLevelOne, deleteConsultant);
 
+router.put('/comment/:consultantId', protect, empowered, updateConsultantComment);
    
 module.exports = router;

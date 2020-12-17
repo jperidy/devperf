@@ -15,7 +15,7 @@ const authUser = asyncHandler(async(req,res) =>{
             _id: user._id,
             name: user.name,
             email: user.email,
-            isAdmin: user.isAdmin,
+            adminLevel: user.adminLevel,
             consultantProfil: user.consultantProfil,
             token: generateToken(user._id),
         });
@@ -50,7 +50,7 @@ const registerUser = asyncHandler(async(req,res) =>{
             _id: user._id,
             name: user.name,
             email: user.email,
-            isAdmin: user.isAdmin,
+            adminLevel: user.adminLevel,
             token: generateToken(user._id)
         });
     } else {
@@ -71,7 +71,7 @@ const getUserProfile = asyncHandler(async(req,res) =>{
             _id: user._id,
             name: user.name,
             email: user.email,
-            isAdmin: user.isAdmin,
+            adminLevel: user.adminLevel,
         })
     } else {
         res.status(404);
@@ -98,7 +98,7 @@ const updateUserProfile = asyncHandler(async(req,res) =>{
         _id: updateUser._id,
         name: updateUser.name,
         email: updateUser.email,
-        isAdmin: updateUser.isAdmin,
+        adminLevel: updateUser.adminLevel,
         token: generateToken(updateUser._id),
     });
 
@@ -160,7 +160,7 @@ const updateUser = asyncHandler(async(req,res) =>{
     if (user) {
         user.name = req.body.name || user.name; // in the case if you do not change the name
         user.email = req.body.email || user.email;
-        user.isAdmin = req.body.isAdmin; // || user.isAdmin;
+        user.adminLevel = req.body.adminLevel; // || user.adminLevel;
     
         const updateUser = await user.save();
 
@@ -168,32 +168,9 @@ const updateUser = asyncHandler(async(req,res) =>{
             _id: updateUser._id,
             name: updateUser.name,
             email: updateUser.email,
-            isAdmin: updateUser.isAdmin
+            adminLevel: updateUser.adminLevel
         });} else {
         res.status(404);
-        throw new Error('User not found');
-    }
-});
-
-// @desc    Update user
-// @route   PUT /api/users/comment
-// @access  Private
-const updateUserComment = asyncHandler(async(req,res) =>{
-    
-    //console.log(req.body);
-    const user = await User.findById(req.body.consultantId); 
-    
-    if (user) {
-
-        user.comment = req.body.commentText;
-        const updateUser = await user.save();
-
-        res.status(200).json({
-            _id: updateUser._id,
-            comment: updateUser.comment
-        });
-    } else {
-        res.status(404).json({ message: 'User not found' });
         throw new Error('User not found');
     }
 });
@@ -206,6 +183,5 @@ module.exports = {
     getUsers, 
     deleteUser, 
     getUserById, 
-    updateUser,
-    updateUserComment
+    updateUser
 };

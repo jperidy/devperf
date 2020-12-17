@@ -19,6 +19,10 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Consultant'
     },
+    adminLevel: {
+        type: Number,
+        required: true
+    },
     isAdmin: {
         type: Boolean,
         required: true,

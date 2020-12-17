@@ -1,7 +1,7 @@
 const express = require('express');
 const { getPxx, updatePxx } = require('../controllers/pxxControllers');
 const router = express.Router();
-const { protect, admin } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 
 router.put('/', protect, updatePxx );
 router.get('/consultantId/:id/month/:month', protect, getPxx);

@@ -194,6 +194,29 @@ const getAllPracticesData = asyncHandler(async (req, res) => {
 
 });
 
+// @desc    Update user
+// @route   PUT /api/consultants/comment
+// @access  Private
+const updateConsultantComment = asyncHandler(async(req,res) =>{
+    
+    //console.log('req.params.id', req.params.consultantId);
+    const consultant = await Consultant.findById(req.params.consultantId); 
+    //console.log('consultant', consultant);
+    if (consultant) {
+
+        consultant.comment = req.body.commentText;
+        const updateUser = await consultant.save();
+
+        res.status(200).json({
+            _id: updateUser._id,
+            comment: updateUser.comment
+        });
+    } else {
+        res.status(404).json({ message: 'User not found' });
+        throw new Error('User not found');
+    }
+});
+
 module.exports = { 
     getMyConsultants, 
     getConsultant, 
@@ -202,5 +225,6 @@ module.exports = {
     createConsultant,
     deleteConsultant,
     getAllCDMData,
-    getAllPracticesData
+    getAllPracticesData,
+    updateConsultantComment
 };

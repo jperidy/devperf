@@ -286,32 +286,3 @@ export const updateUser = (user) => async(dispatch, getState) => {
     }
 };
 
-export const updateComment = (consultantId, commentText) => async(dispatch, getState) => {
-    try {
-
-        dispatch({
-            type: USER_UPDATE_COMMENT_REQUEST,
-        });
-
-        const { userLogin: { userInfo } } = getState();
-
-        const config = {
-            headers:{
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${userInfo.token}`
-            }
-        };
-
-        await axios.put(`/api/users/comment`, {consultantId, commentText}, config);
-
-        dispatch({ type: USER_UPDATE_COMMENT_SUCCESS });
-
-    } catch (error) {
-        dispatch({
-            type: USER_UPDATE_COMMENT_FAIL,
-            payload: error.response && error.response.data.message
-                ? error.response.data.message
-                : error.message
-        });
-    }
-};

@@ -17,8 +17,10 @@ const ManageConsultantScreen = ({ history }) => {
     const consultantsMyAdminList = useSelector(state => state.consultantsMyAdminList);
     const { loading, error, consultantsMyAdmin } = consultantsMyAdminList;
 
+    /*
     const consultantMy = useSelector(state => state.consultantMy);
     const { consultant } = consultantMy;
+    */
 
     const consultantDelete = useSelector(state => state.consultantDelete);
     const { success: successConsultantDelete } = consultantDelete;
@@ -30,24 +32,25 @@ const ManageConsultantScreen = ({ history }) => {
 
     useEffect(() => {
 
-        if (userInfo && userInfo.isAdmin) {
+        if (userInfo && (userInfo.adminLevel <= 1)) {
             dispatch(getAllMyAdminConsultants());
         } else {
             history.push('/login');
         }
         
+        /*
         // initialisation of consultantMy selector
         if (consultant && consultant._id) {
             dispatch({ type: CONSULTANT_MY_RESET });
             //console.log('dispatch reset');
         }
+        */
 
 
     }, [
         dispatch,
         history,
         userInfo,
-        consultant,
         successConsultantDelete
     ]);
 

@@ -32,7 +32,11 @@ import {
     CONSULTANT_DELETE_REQUEST,
     CONSULTANT_DELETE_SUCCESS,
     CONSULTANT_DELETE_FAIL,
-    CONSULTANT_DELETE_RESET
+    CONSULTANT_DELETE_RESET,
+    CONSULTANT_UPDATE_COMMENT_REQUEST,
+    CONSULTANT_UPDATE_COMMENT_SUCCESS,
+    CONSULTANT_UPDATE_COMMENT_FAIL,
+    CONSULTANT_UPDATE_COMMENT_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {
@@ -195,6 +199,21 @@ export const consultantPracticeListReducer = (state = {}, action) => {
         case CONSULTANT_PRACTICE_LIST_FAIL:
             return { loading: false, error: action.payload };
         case CONSULTANT_PRACTICE_LIST_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const consultantUpdateCommentReducer = (state = { }, action) => {
+    switch (action.type) {
+        case CONSULTANT_UPDATE_COMMENT_REQUEST:
+            return { loading: true };
+        case CONSULTANT_UPDATE_COMMENT_SUCCESS:
+            return { loading: false, success: true };
+        case CONSULTANT_UPDATE_COMMENT_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANT_UPDATE_COMMENT_RESET:
             return {}
         default:
             return state;

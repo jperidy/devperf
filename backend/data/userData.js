@@ -15,14 +15,17 @@ function getUserData(consultants) {
             email: consultantCdmProfil[incr].email,
             password : bcrypt.hashSync('123456', 10),
             consultantProfil: consultantCdmProfil[incr]._id,
-            isCDM: consultantCdmProfil[incr].isCDM
+            isCDM: consultantCdmProfil[incr].isCDM,
+            adminLevel: 2
         };
         listOfUser.push(userCDM);
     }
 
     // userCDM and ADMIN
-    if (listOfUser) {
-        listOfUser[0].isAdmin = true;
+    if (listOfUser && listOfUser.length >= 3) {
+        listOfUser[0].adminLevel = 0; // Super Admin
+        listOfUser[1].adminLevel = 1; // Practice Admin
+        listOfUser[2].adminLevel = 2; // Cdm Admin
     }
 
     //console.log('listOfUser', listOfUser)

@@ -43,11 +43,20 @@ const Header = () => {
                                         <NavDropdown.Item>Edit My Profil</NavDropdown.Item>
                                     </LinkContainer>
 
-                                    {userInfo.isAdmin && (
+                                    {(userInfo.adminLevel <= 1) && (
                                         <>
                                             <NavDropdown.Divider />
                                             <LinkContainer to='/admin/consultants'>
                                                 <NavDropdown.Item>Manage Consultant</NavDropdown.Item>
+                                            </LinkContainer>
+                                        </>
+                                    )}
+
+                                    {(userInfo.adminLevel === 0) && (
+                                        <>
+                                            <NavDropdown.Divider />
+                                            <LinkContainer to='/admin/users'>
+                                                <NavDropdown.Item>Manage Users</NavDropdown.Item>
                                             </LinkContainer>
                                         </>
                                     )}
