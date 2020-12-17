@@ -25,6 +25,7 @@ const authUser = asyncHandler(async(req,res) =>{
     }
 });
 
+/*
 // @desc    Register a new user
 // @route   POST /api/users
 // @access  Public
@@ -58,7 +59,9 @@ const registerUser = asyncHandler(async(req,res) =>{
         throw new Error('Invalid user data');
     }
 });
+*/
 
+/*
 // @desc    get user profile
 // @route   GET /api/users/profile
 // @access  Private
@@ -107,17 +110,19 @@ const updateUserProfile = asyncHandler(async(req,res) =>{
         throw new Error('User not found');
     }
 });
+*/
 
 // @desc    get all users
 // @route   GET /api/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async(req,res) =>{
     
-    const users = await User.find({});
+    const users = await User.find({}).populate('consultantProfil').select('-password');
     res.json(users);
     
 });
 
+/*
 // @desc    Delete user
 // @route   DELETE /api/users/:id
 // @access  Private/Admin
@@ -134,7 +139,9 @@ const deleteUser = asyncHandler(async(req,res) =>{
     }
     
 });
+*/
 
+/*
 // @desc    get user by Id
 // @route   GET /api/users/:id
 // @access  Private/Admin
@@ -149,7 +156,9 @@ const getUserById = asyncHandler(async(req,res) =>{
     }
     
 });
+*/
 
+/*
 // @desc    Update user
 // @route   PUT /api/users/:id
 // @access  Private/Admin
@@ -174,14 +183,15 @@ const updateUser = asyncHandler(async(req,res) =>{
         throw new Error('User not found');
     }
 });
+*/
 
 module.exports = { 
     authUser, 
-    getUserProfile, 
-    registerUser, 
-    updateUserProfile, 
+    //getUserProfile, 
+    //registerUser, 
+    //updateUserProfile, 
     getUsers, 
-    deleteUser, 
-    getUserById, 
-    updateUser
+    //deleteUser, 
+    //getUserById, 
+    //updateUser
 };

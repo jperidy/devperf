@@ -68,7 +68,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     useEffect(() => {
 
         // only admin level 0 and 1 are authorized to manage consultants
-        if (userInfo && !(userInfo.adminLevel <= 1)) {
+        if (userInfo && !(userInfo.adminLevel <= 2)) {
             history.push('/login');
         }
         
@@ -102,13 +102,6 @@ const ConsultantEditScreen = ({ history, match }) => {
         if (practice && !cdmList && !loadingCDM) {
             dispatch(getAllCDM(practice));
         }
-
-        /*
-        //console.log(practiceList, practice, !cdmList)
-        if (practiceList && !loadingPractice && practice && !cdmList && !loadingCDM)  {
-            dispatch(getAllCDM(practice));
-        }
-        */
         
         // Associate a default value for CDM
         if (!cdm && cdmList) {
@@ -372,7 +365,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                 <Form.Control 
                                     as='select'
                                     value={cdm && cdm}
-                                    disabled={userInfo && !(userInfo.adminLevel <= 1)}
+                                    disabled={userInfo && !(userInfo.adminLevel <= 2)}
                                     onChange={ (e) => setCdm(e.target.value) }
                                     required
                                 >

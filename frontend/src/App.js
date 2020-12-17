@@ -4,11 +4,10 @@ import Container from 'react-bootstrap/Container';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import LoginScreen from './screens/LoginScreen';
-//import PxxListScreen from './screens/PxxListScreen'; >>>>>>>> à supprimer ou modifier
 import PxxEditScreen from './screens/PxxEditScreen';
 import ConsultantEditScreen from './screens/ConsultantEditScreen';
 import ManageConsultantScreen from './screens/ManageConsultantScreen';
-import AddConsultantScreen from './screens/AddConsultantScreen';
+import ManageUsersScreen from './screens/manageUsersScreen';
 
 const App = () => {
   return (
@@ -21,8 +20,8 @@ const App = () => {
           <Route path='/pxx/:id' component={PxxEditScreen} exact />
           <Route path='/editconsultant/:id' component={ConsultantEditScreen} exact />
           <Route path='/admin/consultants' component={ManageConsultantScreen} exact />
+          <Route path='/admin/users' component={ManageUsersScreen} exact />
           <Route path='/admin/consultant/add' component={ConsultantEditScreen} exact />
-          {/* <Route path='/admin/consultant/add' component={AddConsultantScreen} exact /> */}
         </Container>
       </main>
       <Footer />

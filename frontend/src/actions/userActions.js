@@ -73,6 +73,7 @@ export const logout = () => (dispatch) => {
     dispatch({type: PXX_UPDATE_RESET});
 };
 
+/*
 export const register = (name, email, password) => async(dispatch) => {
     try {
         dispatch({
@@ -110,7 +111,9 @@ export const register = (name, email, password) => async(dispatch) => {
         });
     }
 };
+*/
 
+/*
 export const getUserDetails = (id) => async(dispatch, getState) => {
     try {
         dispatch({
@@ -143,7 +146,9 @@ export const getUserDetails = (id) => async(dispatch, getState) => {
         });
     }
 };
+*/
 
+/*
 export const updateUserProfile = (user) => async(dispatch, getState) => {
     try {
 
@@ -189,6 +194,7 @@ export const updateUserProfile = (user) => async(dispatch, getState) => {
         });
     }
 };
+*/
 
 export const listUsers = () => async(dispatch, getState) => {
     try {
@@ -222,6 +228,7 @@ export const listUsers = () => async(dispatch, getState) => {
     }
 };
 
+/*
 export const DeleteUser = (id) => async(dispatch, getState) => {
     try {
 
@@ -252,7 +259,9 @@ export const DeleteUser = (id) => async(dispatch, getState) => {
         });
     }
 };
+*/
 
+/*
 export const updateUser = (user) => async(dispatch, getState) => {
     try {
 
@@ -285,4 +294,4 @@ export const updateUser = (user) => async(dispatch, getState) => {
         });
     }
 };
-
+*/

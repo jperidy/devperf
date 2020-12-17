@@ -5,7 +5,6 @@ import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { CONSULTANT_MY_RESET } from '../constants/consultantConstants';
 
 const ManageConsultantScreen = ({ history }) => {
 
@@ -25,11 +24,6 @@ const ManageConsultantScreen = ({ history }) => {
     const consultantDelete = useSelector(state => state.consultantDelete);
     const { success: successConsultantDelete } = consultantDelete;
 
-    const addConsultantHandler = () => {
-        //console.log('AddConsultantHandler');
-        history.push('/admin/consultant/add');
-    }
-
     useEffect(() => {
 
         if (userInfo && (userInfo.adminLevel <= 1)) {
@@ -37,14 +31,6 @@ const ManageConsultantScreen = ({ history }) => {
         } else {
             history.push('/login');
         }
-        
-        /*
-        // initialisation of consultantMy selector
-        if (consultant && consultant._id) {
-            dispatch({ type: CONSULTANT_MY_RESET });
-            //console.log('dispatch reset');
-        }
-        */
 
 
     }, [
@@ -53,6 +39,11 @@ const ManageConsultantScreen = ({ history }) => {
         userInfo,
         successConsultantDelete
     ]);
+
+    const addConsultantHandler = () => {
+        //console.log('AddConsultantHandler');
+        history.push('/admin/consultant/add');
+    }
 
     const onClickEditHandler = (consultantId) => {
         history.push(`/editconsultant/${consultantId}`);
@@ -91,7 +82,7 @@ const ManageConsultantScreen = ({ history }) => {
                         </thead>
 
                         <tbody>
-                            {consultantsMyAdmin.map((consultant, focus) => (
+                            {consultantsMyAdmin.map((consultant) => (
                                 <tr key={consultant._id}>
                                     <td className='align-middle'>{consultant.name}</td>
                                     <td className='align-middle'>{consultant.matricule}</td>
