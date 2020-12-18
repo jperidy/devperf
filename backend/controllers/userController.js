@@ -81,7 +81,9 @@ const getUserProfile = asyncHandler(async(req,res) =>{
         throw new Error('User not found');
     }
 });
+*/
 
+/*
 // @desc    Update user profile
 // @route   PUT /api/users/profile
 // @access  Private
@@ -122,10 +124,10 @@ const getUsers = asyncHandler(async(req,res) =>{
     
 });
 
-/*
+
 // @desc    Delete user
 // @route   DELETE /api/users/:id
-// @access  Private/Admin
+// @access  Private/AdminLevelZero
 const deleteUser = asyncHandler(async(req,res) =>{
     
     const user = await User.findById(req.params.id);
@@ -139,51 +141,44 @@ const deleteUser = asyncHandler(async(req,res) =>{
     }
     
 });
-*/
 
-/*
+
+
 // @desc    get user by Id
 // @route   GET /api/users/:id
-// @access  Private/Admin
+// @access  Private/AdminLevelZero
 const getUserById = asyncHandler(async(req,res) =>{
     
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findById(req.params.id).populate('consultantProfil').select('-password');
     if(user) {
         res.json(user);
     } else {
         res.status(404);
         throw new Error('User not found');
     }
-    
 });
-*/
 
-/*
+
 // @desc    Update user
 // @route   PUT /api/users/:id
-// @access  Private/Admin
+// @access  Private/AdminLevelOne
 const updateUser = asyncHandler(async(req,res) =>{
     
-    const user = await User.findById(req.params.id); // with protect middleware we had _id in the req
+    const user = await User.findById(req.params.id);
     
     if (user) {
-        user.name = req.body.name || user.name; // in the case if you do not change the name
-        user.email = req.body.email || user.email;
-        user.adminLevel = req.body.adminLevel; // || user.adminLevel;
-    
+        user.name = req.body.name; // in the case if you do not change the name
+        user.email = req.body.email;
+        user.adminLevel = req.body.adminLevel;
+        user.consultantProfil = req.body.consultantProfil;
         const updateUser = await user.save();
-
-        res.json({
-            _id: updateUser._id,
-            name: updateUser.name,
-            email: updateUser.email,
-            adminLevel: updateUser.adminLevel
-        });} else {
+        res.json({updateUser});
+    } else {
         res.status(404);
         throw new Error('User not found');
     }
 });
-*/
+
 
 module.exports = { 
     authUser, 
@@ -191,7 +186,7 @@ module.exports = {
     //registerUser, 
     //updateUserProfile, 
     getUsers, 
-    //deleteUser, 
-    //getUserById, 
-    //updateUser
+    deleteUser, 
+    getUserById, 
+    updateUser
 };

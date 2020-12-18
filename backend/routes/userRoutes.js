@@ -5,17 +5,22 @@ const {
     //getUserProfile, 
     //updateUserProfile, 
     getUsers, 
-    //deleteUser, 
-    //getUserById, 
-    //updateUser
+    deleteUser, 
+    getUserById, 
+    updateUser
 } = require('../controllers/userController');
 const { protect, adminLevelOne, adminLevelZero, empowered } = require('../middleware/authMiddleware');
 
 
 const router = express.Router();
 
-router.route('/').get(protect, adminLevelZero, getUsers);
+router.route('/').get(protect, adminLevelOne, getUsers);
 router.post('/login', authUser);
+//router.route('/profile').get(protect, getUserProfile)
+router.route('/:id')
+    .delete(protect, adminLevelZero, deleteUser)
+    .get(protect, adminLevelOne, getUserById)
+    .put(protect, adminLevelOne, updateUser);
 
 /*
 router.route('/')

@@ -9,6 +9,7 @@ const {
     getAllCDMData,
     getAllPracticesData,
     deleteConsultant,
+    getAllConsultantByPractice,
     updateConsultantComment
 } = require('../controllers/consultantControllers');
 
@@ -24,6 +25,7 @@ router.route('/cdm/:practice').get(protect, getAllCDMData);
 router.get('/practicelist', protect, getAllPracticesData);
 
 router.get('/practice', protect, adminLevelOne, getAllPracticeConsultants);
+router.get('/practice/:practice', protect, adminLevelOne, getAllConsultantByPractice);
 
 router.route('/:consultantId')
     .get(protect, empowered, getConsultant)

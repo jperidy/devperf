@@ -189,7 +189,7 @@ const getAllPracticesData = asyncHandler(async (req, res) => {
     if (practiceUniqueList) {
         res.status(200).json(practiceUniqueList);
     } else {
-        res.status(400).json({message: `Practice List not found for: ${practice}` });
+        res.status(400).json({message: `Practice List not found` });
     }
 
 });
@@ -217,6 +217,22 @@ const updateConsultantComment = asyncHandler(async(req,res) =>{
     }
 });
 
+// @desc    Get the list of consultant in a Practice
+// @route   GET /api/consultants/practice/:practice
+// @access  Private/AdminLevelOne
+const getAllConsultantByPractice = asyncHandler(async (req, res) => {
+
+    const practice = req.params.practice;
+    let consultants = await Consultant.find({practice: practice}).select('_id name practice matricule');
+
+    if (consultants) {
+        res.status(200).json(consultants);
+    } else {
+        res.status(400).json({message: `No consultants found for practice: ${practice}` });
+    }
+
+});
+
 module.exports = { 
     getMyConsultants, 
     getConsultant, 
@@ -226,5 +242,6 @@ module.exports = {
     deleteConsultant,
     getAllCDMData,
     getAllPracticesData,
-    updateConsultantComment
+    updateConsultantComment,
+    getAllConsultantByPractice
 };

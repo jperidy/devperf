@@ -3,9 +3,9 @@ import { CONSULTANTS_MY_DETAILS_RESET, CONSULTANT_MY_RESET } from '../constants/
 import { PXX_LIST_RESET, PXX_MY_TO_EDIT_RESET, PXX_UPDATE_RESET } from '../constants/pxxConstants';
 import { 
 
-    USER_REGISTER_REQUEST,
-    USER_REGISTER_SUCCESS,
-    USER_REGISTER_FAIL,
+    //USER_REGISTER_REQUEST,
+    //USER_REGISTER_SUCCESS,
+    //USER_REGISTER_FAIL,
     USER_DELETE_REQUEST, 
     USER_DELETE_SUCCESS,
     USER_DELETE_FAIL,
@@ -19,15 +19,12 @@ import {
     USER_LOGIN_SUCCESS,
     USER_LOGIN_FAIL,
     USER_LOGOUT,
-    USER_UPDATE_PROFILE_REQUEST,
-    USER_UPDATE_PROFILE_SUCCESS,
-    USER_UPDATE_PROFILE_FAIL,
+    //USER_UPDATE_PROFILE_REQUEST,
+    //USER_UPDATE_PROFILE_SUCCESS,
+    //USER_UPDATE_PROFILE_FAIL,
     USER_UPDATE_REQUEST,
     USER_UPDATE_SUCCESS,
-    USER_UPDATE_FAIL,
-    USER_UPDATE_COMMENT_REQUEST,
-    USER_UPDATE_COMMENT_SUCCESS,
-    USER_UPDATE_COMMENT_FAIL
+    USER_UPDATE_FAIL
 } from "../constants/userConstants";
 
 
@@ -113,7 +110,6 @@ export const register = (name, email, password) => async(dispatch) => {
 };
 */
 
-/*
 export const getUserDetails = (id) => async(dispatch, getState) => {
     try {
         dispatch({
@@ -146,7 +142,6 @@ export const getUserDetails = (id) => async(dispatch, getState) => {
         });
     }
 };
-*/
 
 /*
 export const updateUserProfile = (user) => async(dispatch, getState) => {
@@ -228,8 +223,8 @@ export const listUsers = () => async(dispatch, getState) => {
     }
 };
 
-/*
-export const DeleteUser = (id) => async(dispatch, getState) => {
+
+export const deleteUser = (id) => async(dispatch, getState) => {
     try {
 
         dispatch({
@@ -259,9 +254,8 @@ export const DeleteUser = (id) => async(dispatch, getState) => {
         });
     }
 };
-*/
 
-/*
+
 export const updateUser = (user) => async(dispatch, getState) => {
     try {
 
@@ -278,12 +272,9 @@ export const updateUser = (user) => async(dispatch, getState) => {
             }
         };
 
-        console.log('user', user);
-        const { data } = await axios.put(`/api/users/${user._id}`, user, config);
-        console.log('data', data);
+        await axios.put(`/api/users/${user._id}`, user, config);
 
         dispatch({ type: USER_UPDATE_SUCCESS });
-        dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
 
     } catch (error) {
         dispatch({
@@ -294,4 +285,3 @@ export const updateUser = (user) => async(dispatch, getState) => {
         });
     }
 };
-*/

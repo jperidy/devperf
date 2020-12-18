@@ -27,7 +27,10 @@ import {
     CONSULTANT_DELETE_SUCCESS,
     CONSULTANT_UPDATE_COMMENT_REQUEST,
     CONSULTANT_UPDATE_COMMENT_SUCCESS,
-    CONSULTANT_UPDATE_COMMENT_FAIL
+    CONSULTANT_UPDATE_COMMENT_FAIL,
+    CONSULTANT_ALL_PRACTICE_REQUEST,
+    CONSULTANT_ALL_PRACTICE_SUCCESS,
+    CONSULTANT_ALL_PRACTICE_FAIL
 } from '../constants/consultantConstants';
 
 
@@ -295,6 +298,34 @@ export const updateComment = (consultantId, commentText) => async(dispatch, getS
     } catch (error) {
         dispatch({
             type: CONSULTANT_UPDATE_COMMENT_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const getAllConsultantByPractice = (practice) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_ALL_PRACTICE_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.get(`/api/consultants/practice/${practice}`, config);
+
+        dispatch({ type: CONSULTANT_ALL_PRACTICE_SUCCESS, payload: data });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_ALL_PRACTICE_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

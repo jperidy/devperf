@@ -23,10 +23,11 @@ const userSchema = mongoose.Schema({
         type: Number,
         required: true
     },
-    isAdmin: {
-        type: Boolean,
-        required: true,
-        default: false,
+    status: {
+        type: String,
+        required:true,
+        enum: ['Waiting approval', 'validated', 'refused'],
+        default: 'Waiting approval'
     }
 }, {
     timestamps: true,

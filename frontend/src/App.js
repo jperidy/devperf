@@ -8,6 +8,7 @@ import PxxEditScreen from './screens/PxxEditScreen';
 import ConsultantEditScreen from './screens/ConsultantEditScreen';
 import ManageConsultantScreen from './screens/ManageConsultantScreen';
 import ManageUsersScreen from './screens/manageUsersScreen';
+import UserEditScreen from './screens/UserEditScreen';
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
           <Route path='/editconsultant/:id' component={ConsultantEditScreen} exact />
           <Route path='/admin/consultants' component={ManageConsultantScreen} exact />
           <Route path='/admin/users' component={ManageUsersScreen} exact />
+          <Route path='/admin/edituser/:id' component={UserEditScreen} exact />
           <Route path='/admin/consultant/add' component={ConsultantEditScreen} exact />
         </Container>
       </main>

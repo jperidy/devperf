@@ -2,7 +2,7 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { pxxListReducer, pxxUpdateReducer } from './reducers/pxxReducers';
-import { userLoginReducer, userListReducer } from './reducers/userReducers';
+import { userLoginReducer, userListReducer, userDeleteReducer, userDetailsReducer, userUpdateReducer } from './reducers/userReducers';
 import { 
     consultantMyReducer, 
     consultantsMyListReducer, 
@@ -12,13 +12,17 @@ import {
     consultantCDMListReducer,
     consultantPracticeListReducer,
     consultantDeleteReducer,
-    consultantUpdateCommentReducer
+    consultantUpdateCommentReducer,
+    consultantAllPracticeReducer
  } from './reducers/consultantReducers';
 import { pxxMyToEditReducer } from './reducers/pxxReducers';
 
 export const reducer = combineReducers({
     userLogin: userLoginReducer,
     userList: userListReducer,
+    userDetails: userDetailsReducer,
+    userUpdate: userUpdateReducer,
+    userDelete: userDeleteReducer,
     consultantUpdateComment: consultantUpdateCommentReducer,
     consultantsMyAdminList: consultantsMyAdminListReducer,
     consultantsMyList: consultantsMyListReducer,
@@ -28,6 +32,7 @@ export const reducer = combineReducers({
     consultantDelete: consultantDeleteReducer,
     consultantCDMList: consultantCDMListReducer,
     consultantPracticeList: consultantPracticeListReducer,
+    consultantAllPractice: consultantAllPracticeReducer,
     pxxList: pxxListReducer,
     pxxMyToEdit: pxxMyToEditReducer,
     pxxUpdate: pxxUpdateReducer
