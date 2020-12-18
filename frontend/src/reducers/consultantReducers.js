@@ -119,6 +119,7 @@ export const consultantsMyAdminListReducer = (state = {
     }
 };
 
+/*
 export const consultantMyReducer = (state = { consultant: {} }, action) => {
     switch (action.type) {
         case CONSULTANT_MY_REQUEST:
@@ -129,6 +130,22 @@ export const consultantMyReducer = (state = { consultant: {} }, action) => {
             return { loading: false, error: action.payload };
         case CONSULTANT_MY_RESET:
             return { consultant: {} }
+        default:
+            return state;
+    }
+};
+*/
+
+export const consultantMyReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_MY_REQUEST:
+            return { loading: true };
+        case CONSULTANT_MY_SUCCESS:
+            return { loading: false, consultant: action.payload };
+        case CONSULTANT_MY_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANT_MY_RESET:
+            return {}
         default:
             return state;
     }

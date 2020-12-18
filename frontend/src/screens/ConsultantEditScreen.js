@@ -5,17 +5,23 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import FormContainer from '../components/FormContainer';
+import Alert from 'react-bootstrap/Alert';
 //import Alertuser from '../components/AlertUser';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { 
-    createConsultant, 
-    getAllCDM, 
-    getAllPractice, 
-    getMyConsultant, 
-    updateMyConsultant 
+import {
+    createConsultant,
+    getAllCDM,
+    getAllPractice,
+    getMyConsultant,
+    updateMyConsultant
 } from '../actions/consultantActions';
-import { CONSULTANT_CREATE_RESET, CONSULTANT_MY_RESET, CONSULTANT_MY_UPDATE_RESET } from '../constants/consultantConstants';
+import {
+    CONSULTANT_CREATE_RESET,
+    //CONSULTANT_CREATE_RESET, 
+    //CONSULTANT_MY_RESET, 
+    CONSULTANT_MY_UPDATE_RESET
+} from '../constants/consultantConstants';
 
 const ConsultantEditScreen = ({ history, match }) => {
 
@@ -44,6 +50,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [valueFriday, setValueFriday] = useState(1);
 
     const [addPractice, setAddPractice] = useState(false);
+    const [message, setMessage] = useState('');
 
     const valueEditType = match.params.id ? 'edit' : 'create';
 
@@ -60,62 +67,55 @@ const ConsultantEditScreen = ({ history, match }) => {
     const { loading: loadingCreate, error: errorCreate, success: successCreate, consultantCreated } = consultantCreate;
 
     const consultantCDMList = useSelector(state => state.consultantCDMList);
-    const { loading:loadingCDM, error: errorCDM, cdmList } = consultantCDMList;
+    const { loading: loadingCDM, error: errorCDM, cdmList } = consultantCDMList;
 
     const consultantPracticeList = useSelector(state => state.consultantPracticeList);
     const { loading: loadingPractice, error: errorPractice, practiceList } = consultantPracticeList;
 
     useEffect(() => {
-
         // only admin level 0 and 1 are authorized to manage consultants
         if (userInfo && !(userInfo.adminLevel <= 2)) {
             history.push('/login');
         }
-        
-        // If consultant is created we pass in editing mode
-        if (successCreate && valueEditType === 'create') {
-            const idcreated = consultantCreated._id;
-            dispatch({ type: CONSULTANT_CREATE_RESET });
-            history.push(`/editconsultant/${idcreated}`);
-        }
-        
+    }, [history, userInfo]);
+
+    useEffect(() => {
         // In edit mode we want to load the consultant informations
-        if ((valueEditType === 'edit') && !loading && (!consultant || !consultant.name)) {
+        if ((valueEditType === 'edit') && !loading && (!consultant || consultant._id !== consultantId)) {
             dispatch(getMyConsultant(consultantId));
         }
+    }, [dispatch, valueEditType, loading, consultant, consultantId]);
 
+    useEffect(() => {
+        if (valueEditType === 'edit' && successUpdate) {
+            dispatch(getMyConsultant(consultantId));
+            dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
+        }
+    }, [dispatch, successUpdate, consultantId, valueEditType]);
+
+    useEffect(() => {
         // Only in admin Level 0 access we can modify consultant Practice
-        if (userInfo && (userInfo.adminLevel === 0) && !practiceList && ! loadingPractice) {
+        if (userInfo && (userInfo.adminLevel === 0) && !practiceList) {
             dispatch(getAllPractice());
         }
-        // Charge default practice for admin Level 0 user
-        if (!practice && userInfo && practiceList && !practice) {
-            setPractice(practiceList[0]);
-        }
+    }, [dispatch, userInfo, practiceList]);
 
-        // set default Practice if admin Level > 0
-        if (!practice && userInfo && userInfo.adminLevel > 0) {
-            setPractice(userInfo.consultantProfil.practice)
+    useEffect(() => {
+        // Load default data for cdm in the current practice
+        if (practice) {
+            dispatch(getAllCDM(practice));
         }
-
-        // Charge default data for cdm in the current practice
+        /*
         if (practice && !cdmList && !loadingCDM) {
             dispatch(getAllCDM(practice));
         }
-        
-        // Associate a default value for CDM
-        if (!cdm && cdmList) {
-            setCdm(cdmList[0]);
-        }
+        */
+    }, [dispatch, practice]);
 
+    useEffect(() => {
         // When editing you need to charge consultant to edit values
-        if (
-            (valueEditType === 'edit') && consultant && (
-                (consultant.name && name === '')
-                || (consultant.email && email === '')
-                || (consultant.matricule && matricule === '')
-            )) {
-            dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
+        if (valueEditType === 'edit' && consultant) {
+            //dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
             setName(consultant.name);
             setEmail(consultant.email);
             setMatricule(consultant.matricule);
@@ -135,32 +135,47 @@ const ConsultantEditScreen = ({ history, match }) => {
             setValueThursday(consultant.isPartialTime.week.filter(x => x.num === 4)[0].worked)
             setValueFriday(consultant.isPartialTime.week.filter(x => x.num === 5)[0].worked)
         }
+    }, [consultant, valueEditType]);
+
+    useEffect(() => {
+
+        // Charge default practice for admin Level 0 user
+        if (!addPractice && !practice && userInfo && practiceList && !practice) {
+            setPractice(practiceList[0]);
+        }
+        // set default Practice if admin Level > 0
+        if (!addPractice && !practice && userInfo && userInfo.adminLevel > 0) {
+            setPractice(userInfo.consultantProfil.practice);
+        }
 
     }, [
-        dispatch,
-        history,
         userInfo,
-        consultant,
-        consultantId,
-        name,
-        email,
-        matricule,
-        cdm,
-        arrival,
-        valued,
-        leaving,
-        seniority,
-        cdmList,
         practice,
-        valued,
-        valueEditType,
         practiceList,
-        successCreate,
-        loading,
-        consultantCreated,
-        loadingPractice,
-        loadingCDM
+        cdm,
+        cdmList,
+        addPractice
     ]);
+
+    useEffect(() => {
+        if (errorUpdate) {
+            setMessage({ message: errorUpdate, type: 'danger' });
+            dispatch({ type: CONSULTANT_MY_UPDATE_RESET })
+        }
+        if (successUpdate) {
+            setMessage({ message: 'Consultant updated', type: 'success' });
+            dispatch({ type: CONSULTANT_MY_UPDATE_RESET })
+        }
+        if (errorCreate) {
+            setMessage({ message: errorCreate, type: 'danger' });
+            dispatch({ type: CONSULTANT_CREATE_RESET })
+        }
+        if (successCreate) {
+            setMessage({ message: 'Consultant created', type: 'success' });
+            history.push(`/editconsultant/${consultantCreated._id}`);
+            dispatch({ type: CONSULTANT_CREATE_RESET })
+        }
+    }, [dispatch, history, errorUpdate, successUpdate, successCreate, errorCreate, consultantCreated]);
 
     const submitHandler = (e) => {
         e.preventDefault();
@@ -217,7 +232,6 @@ const ConsultantEditScreen = ({ history, match }) => {
                     ]
                 }
             }
-            //console.log('consultant to create', consultant);
             dispatch(createConsultant(consultant));
         }
     }
@@ -230,20 +244,23 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     const goBackHandler = () => {
         history.go(-1);
-        dispatch({type: CONSULTANT_MY_RESET});
-        dispatch({ type: CONSULTANT_CREATE_RESET });
-        dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
+        //dispatch({type: CONSULTANT_MY_RESET});
+        //dispatch({ type: CONSULTANT_CREATE_RESET });
+        //dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
     }
 
     return (
         <>
-            {(loadingUpdate || loadingCreate) ? <Loader />
-                : (errorUpdate || errorCreate)
-                    ? <Message variant='danger'>{errorUpdate || errorCreate}</Message>
-                    : (successUpdate || successCreate) &&
-                    <Message variant='success'>
-                        User {valueEditType === 'create' ? "created" : "updated"}
-                    </Message>}
+            {message && message.message && (
+
+                <Alert variant={message.type} onClose={() => setMessage({})} dismissible>
+                    <Alert.Heading>Notification</Alert.Heading>
+                    <p>
+                        {message.message}
+                    </p>
+                </Alert>
+
+            )}
 
             <Button className='mb-3' onClick={() => goBackHandler()}>
                 Go Back
@@ -313,46 +330,46 @@ const ConsultantEditScreen = ({ history, match }) => {
                             <Form.Group controlId='practice'>
                                 <Form.Label><b>Practice</b></Form.Label>
                                 <InputGroup>
-                                {addPractice ? (
-                                    <Form.Control
-                                        type='text'
-                                        placeholder='Enter Practice'
-                                        value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ''}
-                                        onChange={(e) => setPractice(e.target.value)}
-                                        required
-                                    ></Form.Control>
-                                    ) : (
+                                    {addPractice ? (
                                         <Form.Control
-                                            as='select'
-                                            value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ""}
-                                            disabled={userInfo && !(userInfo.adminLevel === 0)}
-                                            onChange={(e) => {
-                                                setPractice(e.target.value)
-                                                //console.log('e.target.value', e.target.value)
-                                                dispatch(getAllCDM(e.target.value))
-                                            }}
+                                            type='text'
+                                            placeholder='Enter Practice'
+                                            value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ''}
+                                            onChange={(e) => setPractice(e.target.value)}
                                             required
-                                        >
-                                                {!practiceList ? <option value={practice && practice}>{practice}</option> 
+                                        ></Form.Control>
+                                    ) : (
+                                            <Form.Control
+                                                as='select'
+                                                value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ""}
+                                                disabled={userInfo && !(userInfo.adminLevel === 0)}
+                                                onChange={(e) => {
+                                                    setPractice(e.target.value)
+                                                    //console.log('e.target.value', e.target.value)
+                                                    //dispatch(getAllCDM(e.target.value))
+                                                }}
+                                                required
+                                            >
+                                                {!practiceList ? <option value={practice && practice}>{practice}</option>
                                                     : errorPractice ? <Message variant='Danger'>No Practice found</Message>
                                                         : (
                                                             practiceList.map(x => (
                                                                 <option
                                                                     key={x}
                                                                     value={x}
-                                                                    disabled={x==='-' ? true : false}
+                                                                    disabled={x === '-' ? true : false}
                                                                 >{x}</option>
                                                             ))
                                                         )}
                                             </Form.Control>
-                                )}
-                                {(userInfo.adminLevel === 0) && (
-                                    <InputGroup.Append>
-                                        <Button 
-                                            className='btn-primary' 
-                                            onClick={(e) => setAddPractice(!addPractice)}>{addPractice ? 'Back' : 'Add' }</Button>                   
-                                    </InputGroup.Append>
-                                )}
+                                        )}
+                                    {(userInfo.adminLevel === 0) && (
+                                        <InputGroup.Append>
+                                            <Button
+                                                className='btn-primary'
+                                                onClick={(e) => setAddPractice(!addPractice)}>{addPractice ? 'Back' : 'Add'}</Button>
+                                        </InputGroup.Append>
+                                    )}
                                 </InputGroup>
                             </Form.Group>
                         </Col>
@@ -362,23 +379,24 @@ const ConsultantEditScreen = ({ history, match }) => {
                         <Col>
                             <Form.Group controlId='cdm'>
                                 <Form.Label><b>CDM</b></Form.Label>
-                                <Form.Control 
+                                <Form.Control
                                     as='select'
-                                    value={cdm && cdm}
+                                    value={cdm ? cdm : 'default'}
                                     disabled={userInfo && !(userInfo.adminLevel <= 2)}
-                                    onChange={ (e) => setCdm(e.target.value) }
+                                    onChange={(e) => setCdm(e.target.value)}
                                     required
                                 >
-                                        {!cdmList ? 'No cdm' 
-                                            : errorCDM ? <Message variant='danger'>No CDM found, please verify Practice</Message>
-                                                : cdmList.length && (
-                                                    cdmList.map(x => (
-                                                        <option
-                                                            key={x._id}
-                                                            value={x._id}
-                                                        >{x.name}</option>
-                                                    ))
-                                                )}
+                                    <option value='default'>Please Select</option>
+                                    {!cdmList ? 'No cdm'
+                                        : errorCDM ? <Message variant='danger'>No CDM found, please verify Practice</Message>
+                                            : cdmList.length && (
+                                                cdmList.map(x => (
+                                                    <option
+                                                        key={x._id}
+                                                        value={x._id}
+                                                    >{x.name}</option>
+                                                ))
+                                            )}
                                 </Form.Control>
 
                             </Form.Group>
@@ -426,7 +444,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                             </Form.Group>
                         </Col>
                     </Form.Row>
-                    
+
                     <Form.Row>
                         <Col>
                             <Form.Group controlId="partialtime">
@@ -562,8 +580,11 @@ const ConsultantEditScreen = ({ history, match }) => {
 
                     <Form.Row>
                         <Col>
-                            <Button type='submit' variat='primary'>
-                                {valueEditType === 'create' ? "Create" : "Update"}
+                            <Button 
+                                type='submit' 
+                                variant='primary'
+                                disabled= {!name || !email || !matricule || !practice || !cdm || !valued || !arrival} 
+                            >{valueEditType === 'create' ? "Create" : "Update"}
                             </Button>
                         </Col>
                     </Form.Row>

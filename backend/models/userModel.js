@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema({
     status: {
         type: String,
         required:true,
-        enum: ['Waiting approval', 'validated', 'refused'],
+        enum: ['Waiting approval', 'Validated', 'Refused'],
         default: 'Waiting approval'
     }
 }, {

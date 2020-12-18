@@ -167,10 +167,11 @@ const updateUser = asyncHandler(async(req,res) =>{
     const user = await User.findById(req.params.id);
     
     if (user) {
-        user.name = req.body.name; // in the case if you do not change the name
+        user.name = req.body.name;
         user.email = req.body.email;
         user.adminLevel = req.body.adminLevel;
         user.consultantProfil = req.body.consultantProfil;
+        user.status = req.body.status;
         const updateUser = await user.save();
         res.json({updateUser});
     } else {

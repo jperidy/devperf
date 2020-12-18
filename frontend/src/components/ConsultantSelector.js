@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 import PxxComment from '../components/PxxComment';
@@ -21,14 +21,25 @@ const ConsultantSelector = () => {
     const consultantsMyList = useSelector(state => state.consultantsMyList);
     const { loading: loadingConsultantsMyList, error: errorConsultantsMyList, consultantsMy, focus } = consultantsMyList;
     
+    /*
+    useEffect(() => {
+        if (commentUpdated) {
+            dispatch(getAllMyConsultants());
+            setCommentUpdated(false);
+        }
+    }, [dispatch, commentUpdated, focus])
+    */
+
     const navigationConsultantHandler = (value) => {
 
         if (((focus + value) >= 0) && ((focus + value) < consultantsMy.length)) {
             //setConsultantFocus(consultantFocus + value);
             dispatch(setConsultantFocus(focus+value));
+            
             if(commentUpdated) {
                 dispatch(getAllMyConsultants());
             }
+            
         }
     }
 

@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
+//import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
 import FormContainer from '../components/FormContainer';
 import { getUserDetails, updateUser } from '../actions/userActions';
 import { getAllConsultantByPractice } from '../actions/consultantActions';
+import { USER_UPDATE_RESET } from '../constants/userConstants';
 
 const UserEditScreen = ({ match, history }) => {
 
@@ -19,6 +20,7 @@ const UserEditScreen = ({ match, history }) => {
     const [practice, setPractice] = useState('');
     const [linkConsultant, setLinkConsultant] = useState('');
     const [adminLevel, setAdminLevel] = useState('');
+    const [status, setStatus] = useState('');
 
     const [message, setMessage] = useState('');
 
@@ -59,6 +61,7 @@ const UserEditScreen = ({ match, history }) => {
             setPractice(user.consultantProfil.practice);
             setLinkConsultant(user.consultantProfil._id);
             setAdminLevel(user.adminLevel);
+            setStatus(user.status)
         }
 
     }, [user]);
@@ -76,9 +79,10 @@ const UserEditScreen = ({ match, history }) => {
         }
         if (successUpdate) {
             setMessage({ message: 'User profil updated', type: 'success' });
+            dispatch({type: USER_UPDATE_RESET});
         }
 
-    }, [error, errorConsultantAllPractice, errorUpdate, successUpdate]);
+    }, [dispatch, error, errorConsultantAllPractice, errorUpdate, successUpdate]);
 
     useEffect(() => {
 
@@ -101,9 +105,11 @@ const UserEditScreen = ({ match, history }) => {
             name: name,
             email: email,
             consultantProfil: linkConsultant,
-            adminLevel: adminLevel
+            adminLevel: adminLevel,
+            status: status
         };
         //console.log('update user to implement:', updatedUser)
+        //console.log('updateUser', updatedUser)
         dispatch(updateUser(updatedUser));
 
     };
@@ -196,33 +202,24 @@ const UserEditScreen = ({ match, history }) => {
                     <Form.Group controlId='status'>
                         <Form.Label><b>Account Status</b></Form.Label>
                         <Form.Control
-                            type='status'
-                            value=''
-                            min={0}
-                            max={3}
-                            onChange={(e) => setAdminLevel(e.target.value)}
+                            as='select'
+                            placeholder='Select status for account'
+                            value={status && status}
+                            onChange={(e) => setStatus(e.target.value)}
                             required
-                        ></Form.Control>
+                        >
+                            <option value='Waiting approval'>Waiting approval</option>
+                            <option value='Validated'>Validated</option>
+                            <option value='Refused'>Refused</option>
+                        </Form.Control>
                     </Form.Group>
 
-                    <Form.Row className='text-center'>
-                        <Col>
-                            <Button type='submit' variant='primary'>
-                                Update
-                            </Button>
-                        </Col>
-                        <Col>
-                            <Button type='submit' variant='success'>
-                                Accept
-                            </Button>
-                        </Col>
-                        <Col>
-                            <Button type='submit' variant='danger'>
-                                Refuse
-                            </Button>
-                        </Col>
-                    </Form.Row>
-                    
+
+                    <Button type='submit' variant='primary'>
+                        Update
+                    </Button>
+
+
                 </Form>
             </FormContainer>
 

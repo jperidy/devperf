@@ -103,7 +103,16 @@ const ManageUsersScreen = ({ history }) => {
                             <td className='align-middle'>{user.consultantProfil.matricule && user.consultantProfil.matricule}</td>
                             <td className='align-middle text-center'>{user.consultantProfil.practice && user.consultantProfil.practice}</td>
                             <td className='align-middle text-center'>{user.createdAt && user.createdAt.toString().substring(0,10)}</td>
-                            <td className='align-middle text-center'>{user.status && user.status}</td>
+                            <td className='align-middle text-center'>
+                                {
+                                    user.status && user.status === 'Waiting approval' ?
+                                        <i className="far fa-clock" style={{color: 'orange'}}></i>
+                                        : user.status === 'Validated' ?
+                                            <i className="fas fa-check-circle" style={{color: 'green'}} ></i>
+                                            : user.status === 'Refused' ?
+                                            <i className="fas fa-times" style={{color: 'red'}}></i> : 'unknown'
+                                
+                                }</td>
                             <td className='align-middle text-center'>{user.adminLevel && user.adminLevel}</td>
                             <td className='align-middle'>
                                 <Button className='btn btn-primary p-1' onClick={() => onClickEditHandler(user._id)}>

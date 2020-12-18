@@ -38,7 +38,7 @@ const PxxEditScreen = ({ history }) => {
         }
 
         // initialisation of consultantMy selector
-        if (consultant._id) {
+        if (consultant && consultant._id) {
             dispatch({ type: CONSULTANT_MY_RESET });
             //console.log('dispatch reset');
         }

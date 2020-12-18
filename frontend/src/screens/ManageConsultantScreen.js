@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteConsultant, getAllMyAdminConsultants } from '../actions/consultantActions';
+import { CONSULTANT_DELETE_RESET } from '../constants/consultantConstants';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
@@ -32,13 +33,16 @@ const ManageConsultantScreen = ({ history }) => {
             history.push('/login');
         }
 
-
     }, [
-        dispatch,
-        history,
-        userInfo,
-        successConsultantDelete
+        dispatch, history, userInfo,
     ]);
+
+    useEffect(() => {
+        if (successConsultantDelete) {
+            dispatch(getAllMyAdminConsultants());
+            dispatch({type: CONSULTANT_DELETE_RESET});
+        }
+    }, [dispatch, successConsultantDelete]);
 
     const addConsultantHandler = () => {
         //console.log('AddConsultantHandler');
