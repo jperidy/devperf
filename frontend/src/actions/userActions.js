@@ -3,9 +3,9 @@ import { CONSULTANTS_MY_DETAILS_RESET, CONSULTANT_MY_RESET } from '../constants/
 import { PXX_LIST_RESET, PXX_MY_TO_EDIT_RESET, PXX_UPDATE_RESET } from '../constants/pxxConstants';
 import { 
 
-    //USER_REGISTER_REQUEST,
-    //USER_REGISTER_SUCCESS,
-    //USER_REGISTER_FAIL,
+    USER_REGISTER_REQUEST,
+    USER_REGISTER_SUCCESS,
+    USER_REGISTER_FAIL,
     USER_DELETE_REQUEST, 
     USER_DELETE_SUCCESS,
     USER_DELETE_FAIL,
@@ -24,7 +24,8 @@ import {
     //USER_UPDATE_PROFILE_FAIL,
     USER_UPDATE_REQUEST,
     USER_UPDATE_SUCCESS,
-    USER_UPDATE_FAIL
+    USER_UPDATE_FAIL,
+    USER_REGISTER_RESET
 } from "../constants/userConstants";
 
 
@@ -63,6 +64,7 @@ export const login = (email, password) => async(dispatch) => {
 export const logout = () => (dispatch) => {
     localStorage.removeItem('userInfo');
     dispatch({type: USER_LOGOUT});
+    dispatch({type: USER_REGISTER_RESET});
     dispatch({type: CONSULTANTS_MY_DETAILS_RESET});
     dispatch({type: CONSULTANT_MY_RESET});
     dispatch({type: PXX_LIST_RESET});
@@ -70,7 +72,6 @@ export const logout = () => (dispatch) => {
     dispatch({type: PXX_UPDATE_RESET});
 };
 
-/*
 export const register = (name, email, password) => async(dispatch) => {
     try {
         dispatch({
@@ -108,7 +109,6 @@ export const register = (name, email, password) => async(dispatch) => {
         });
     }
 };
-*/
 
 export const getUserDetails = (id) => async(dispatch, getState) => {
     try {

@@ -9,7 +9,7 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { getAllMyConsultants } from '../actions/consultantActions';
 import { Container } from 'react-bootstrap';
-import { CONSULTANT_MY_RESET } from '../constants/consultantConstants';
+//import { CONSULTANT_MY_RESET } from '../constants/consultantConstants';
 
 
 const PxxEditScreen = ({ history }) => {
@@ -45,7 +45,7 @@ const PxxEditScreen = ({ history }) => {
     useEffect(() => {
         // Effect to start loading my consultants and then to update every time focus change
         dispatch(getAllMyConsultants());
-    }, [focus])
+    }, [dispatch, focus])
 
     const navigationMonthHandler = (value) => {
         const navigationDate = new Date(searchDate);
@@ -58,7 +58,8 @@ const PxxEditScreen = ({ history }) => {
             <Container>
                 {loadingConsultantsMyList ? <Loader /> :
                     errorConsultantsMyList ? <Message variant='danger'>{errorConsultantsMyList}</Message>
-                        : consultantsMy && (
+                        : !consultantsMy || consultantsMy.length === 0 ? 
+                            <Message variant='info'>You don't have consultant to edit yet</Message> : (
                             <>
                                 <Row>
                                     <Col xs={12} md={4}>

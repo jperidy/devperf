@@ -35,7 +35,7 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
                 <Col xs={2} className="text-center"></Col>
                 <Col xs={2} className="text-center align-middle px-1"><b>Prod</b></Col>
                 <Col xs={2} className="text-center align-middle px-1"><b>Not Prod</b></Col>
-                <Col xs={2} className="text-center align-middle px-1"><b>Hollidays</b></Col>
+                <Col xs={2} className="text-center align-middle px-1"><b>Holidays</b></Col>
                 <Col xs={2} className="text-center align-middle px-1"><b>Availability</b></Col>
                 <Col xs={2} className="text-center">
                     <Button

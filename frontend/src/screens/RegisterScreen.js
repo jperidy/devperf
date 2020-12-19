@@ -5,25 +5,29 @@ import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import FormContainer from '../components/FormContainer';
-import { login } from '../actions/userActions'
+import { register } from '../actions/userActions'
 
-const LoginScreen = ({ location, history }) => {
+const RegisterScreen = ({ location, history }) => {
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
     const [message, setMessage] = useState(null);
 
     const dispatch = useDispatch();
-    const userLogin = useSelector(state => state.userLogin);
-    const { loading, error, userInfo } = userLogin;
+
+    const userRegister = useSelector(state => state.userRegister);
+    const { loading, error, userInfo } = userRegister;
 
     const redirect = location.search ? location.search.split('=')[1] : '/';
 
     useEffect(() => {
         if(userInfo) {
             history.push(redirect);
-            // If user is authenticate, there is no seach and user is redirect to home page
+            // If user is authenticate, there is no search and user is redirect to home page
         }
-    });
+    }, [history, userInfo, redirect]);
 
     const submitHandler = (e) => {
         const form = e.currentTarget;
@@ -32,18 +36,32 @@ const LoginScreen = ({ location, history }) => {
             setMessage('Please check your information');
         } else {
             e.preventDefault(); // to avoid page to refresh
-            // Dispatch Login
-            dispatch(login(email, password));
+            // Dispatch Register
+            setMessage(null); // to reinitialize the message before testing
+            if (password !== confirmPassword) {
+                setMessage('Passwords do not match')
+            } else {
+                dispatch(register(name, email, password));
+            }
         }
     };
 
     return (
         <FormContainer>
-            <h1>Sign In</h1>
+            <h1>Sign Up</h1>
             {message && <Message variant='danger'>{message}</Message>}
             {error && <Message variant='danger'>{error}</Message>}
             {loading && <Loader />}
             <Form onSubmit={submitHandler}>
+                <Form.Group controlId='name'>
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                        type='name'
+                        placeholder='Enter Name'
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    ></Form.Control>
+                </Form.Group>
                 <Form.Group controlId='email'>
                     <Form.Label>Email Adress</Form.Label>
                     <Form.Control
@@ -62,16 +80,28 @@ const LoginScreen = ({ location, history }) => {
                         onChange={(e) => setPassword(e.target.value)}
                     ></Form.Control>
                 </Form.Group>
+                <Form.Group controlId='confirm-password'>
+                    <Form.Label>Confirm Password</Form.Label>
+                    <Form.Control
+                        type='password'
+                        placeholder='Confirm password'
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    ></Form.Control>
+                </Form.Group>
 
                 <Button type='submit' variat='primary'>
-                    Sign In
+                    Register
                 </Button>
 
                 <Row className='py-3'>
                     <Col>
-                        New Customer ? <Link to={redirect ? 
-                                `/register?reditect=${redirect}`
-                                : '/register'}>Register</Link>
+                        Have an account ? 
+                        <Link to={redirect ? 
+                            `/login?reditect=${redirect}`
+                        : '/login'}>
+                            Login
+                        </Link>
                     </Col>
                 </Row>
             </Form>
@@ -79,4 +109,4 @@ const LoginScreen = ({ location, history }) => {
     );
 };
 
-export default LoginScreen;
+export default RegisterScreen;

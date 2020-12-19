@@ -1,7 +1,7 @@
 const express = require('express');
 const { 
     authUser, 
-    //registerUser, 
+    registerUser, 
     //getUserProfile, 
     //updateUserProfile, 
     getUsers, 
@@ -14,7 +14,9 @@ const { protect, adminLevelOne, adminLevelZero, empowered } = require('../middle
 
 const router = express.Router();
 
-router.route('/').get(protect, adminLevelOne, getUsers);
+router.route('/')
+    .get(protect, adminLevelOne, getUsers)
+    .post(registerUser);
 router.post('/login', authUser);
 //router.route('/profile').get(protect, getUserProfile)
 router.route('/:id')

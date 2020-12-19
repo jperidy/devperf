@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/userModel.js');
+const Consultant = require('../models/consultantModel');
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -11,21 +12,24 @@ const authUser = asyncHandler(async(req,res) =>{
     const user = await User.findOne({ email }).populate({ path:'consultantProfil', select:'practice' });
     //console.log(user);
     if(user && (await user.matchPassword(password))) {
-        res.json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            adminLevel: user.adminLevel,
-            consultantProfil: user.consultantProfil,
-            token: generateToken(user._id),
-        });
+        if(user.status === 'Validated') {
+            res.json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                adminLevel: user.adminLevel,
+                consultantProfil: user.consultantProfil,
+                token: generateToken(user._id),
+            });
+        } else {
+            res.status(401).json({message: 'your account is not validated yet'})
+        }
     } else {
         res.status(401).json({message: 'Invalid email or password'});
         throw new Error('Invalid email or password')
     }
 });
 
-/*
 // @desc    Register a new user
 // @route   POST /api/users
 // @access  Public
@@ -39,10 +43,21 @@ const registerUser = asyncHandler(async(req,res) =>{
         throw new Error('User already exists')
     }
 
+    // try to associate registered user to consultant profil
+    const consultantProfilExist = await Consultant.findOne({ email });
+    let consultantProfil = 0;
+    //console.log('consultantProfilExist', consultantProfilExist);
+    if (consultantProfilExist) {
+        consultantProfil = consultantProfilExist._id;
+    } 
+
     const user = await User.create({
         name,
         email,
-        password
+        password,
+        consultantProfil: consultantProfil || null,
+        adminLevel: 10,
+        status: 'Waiting approval'
     });
 
     if (user) {
@@ -51,7 +66,9 @@ const registerUser = asyncHandler(async(req,res) =>{
             _id: user._id,
             name: user.name,
             email: user.email,
+            consultantProfil: user.consultantProfil,
             adminLevel: user.adminLevel,
+            status: 'Waiting approval',
             token: generateToken(user._id)
         });
     } else {
@@ -59,7 +76,6 @@ const registerUser = asyncHandler(async(req,res) =>{
         throw new Error('Invalid user data');
     }
 });
-*/
 
 /*
 // @desc    get user profile
@@ -184,7 +200,7 @@ const updateUser = asyncHandler(async(req,res) =>{
 module.exports = { 
     authUser, 
     //getUserProfile, 
-    //registerUser, 
+    registerUser, 
     //updateUserProfile, 
     getUsers, 
     deleteUser, 

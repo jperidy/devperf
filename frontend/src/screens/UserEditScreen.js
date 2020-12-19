@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup'
 //import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
 import FormContainer from '../components/FormContainer';
@@ -108,8 +109,6 @@ const UserEditScreen = ({ match, history }) => {
             adminLevel: adminLevel,
             status: status
         };
-        //console.log('update user to implement:', updatedUser)
-        //console.log('updateUser', updatedUser)
         dispatch(updateUser(updatedUser));
 
     };
@@ -169,22 +168,28 @@ const UserEditScreen = ({ match, history }) => {
 
                     <Form.Group controlId='consultantProfil'>
                         <Form.Label><b>Linked Consultant Profil</b></Form.Label>
-                        <Form.Control
-                            as='select'
-                            placeholder='Enter consultant to link'
-                            value={linkConsultant && linkConsultant}
-                            onChange={(e) => setLinkConsultant(e.target.value)}
-                            required
-                        >
-                            {consultants && consultants.map(
-                                x => (
-                                    <option
-                                        key={x._id}
-                                        value={x._id}
-                                    >{x.name}</option>
-                                )
-                            )}
-                        </Form.Control>
+                        <InputGroup>
+                            <Form.Control
+                                as='select'
+                                placeholder='Enter consultant to link'
+                                value={linkConsultant && linkConsultant}
+                                onChange={(e) => setLinkConsultant(e.target.value)}
+                                required
+                            >
+                                {consultants && consultants.map(
+                                    x => (
+                                        <option
+                                            key={x._id}
+                                            value={x._id}
+                                        >{x.name}</option>
+                                    )
+                                )}
+                            </Form.Control>
+                            <InputGroup.Append>
+                                <Button onClick={() => history.push(`/editconsultant/${linkConsultant}`)}>Edit user</Button>
+                            </InputGroup.Append>
+                        </InputGroup>
+
                     </Form.Group>
 
                     <Form.Group controlId='adminLevel'>
