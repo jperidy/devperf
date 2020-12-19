@@ -1,11 +1,9 @@
 const Pxx = require('../models/pxxModel');
 const Month = require('../models/monthModel');
 const Consultant = require('../models/consultantModel');
-//const User = require('../models/userModel');
 const axios = require('axios');
 const asyncHandler = require('express-async-handler');
-const calculDayByType = require('../utils/calculDayByType')
-//const typeOfDay = require('../utils/typeOfDay');
+const calculDayByType = require('../utils/calculDayByType');
 const { createMonth } = require('./monthPxxController');
 
 
@@ -322,11 +320,78 @@ const updatePxx = asyncHandler(async (req, res) => {
 
 });
 
+// @desc    Get TACE data between start and end dates
+// @route   GET /api/pxx/chart/prod/start/:start/end/:end
+// @access  Private
+const getProdChart = asyncHandler(async (req, res) => {
+    
+    //`/api/products?keyword=${keyword}&pageNumber=${pageNumber}`
+    //keyword = req.query.keyword 
+
+    const start = '2021-01-01'
+    const end = '2021-03-01'
+    const practice = 'DET'
+
+    const searchPractice = practice ? {practice: practice} : '';
+
+    const month = await Month.find({ 
+        firstDay: {
+            $gte: '2021-01-01',
+            $lte: '2021-03-01'
+    }});
+
+    const consultant = await Consultant.find({...searchPractice});
+    const consultantId = consultant.map( x => x._id);
+    //console.log('consultant', consultant);
+    
+
+    const data = [];
+
+    for (let incr = 0; incr < month.length; incr++) {
+        const pxxMonth = await Pxx.find({
+            'month': month[incr]._id,
+            'name': {$in: consultantId}
+        }).populate('month');
+        const prodDay = pxxMonth.map(x => x.prodDay);
+        const notProdDay = pxxMonth.map(x => x.notProdDay);
+        const leavingDay = pxxMonth.map(x => x.leavingDay);
+        const availableDay = pxxMonth.map(x => x.availableDay);
+
+        const totalProdDay = prodDay.reduce((acc, item) => acc + item, 0);
+        const totalNotProdDay = notProdDay.reduce((acc, item) => acc + item, 0);
+        const totalLeavingDay = leavingDay.reduce((acc, item) => acc + item, 0);
+        const totalAvailableDay = availableDay.reduce((acc, item) => acc + item, 0);
+
+        //console.log(month[incr])
+        const workingDay = (month[incr].days.filter(x => x.type === 'working-day')).length;
+        //console.log(workingDay)
+
+        const monthCalcule = {
+            month: {firstDay: month[incr].firstDay, workingDay, _id: month[incr]._id},
+            totalProdDay,
+            totalNotProdDay,
+            totalLeavingDay,
+            totalAvailableDay,
+            totalETP: (totalAvailableDay+totalLeavingDay+totalNotProdDay+totalProdDay)/workingDay
+        }
+
+        data.push(monthCalcule);
+    }
+
+    if (data) {
+        res.status(200).json(data);
+    } else {
+        res.status(400).json({message: 'not data found'});
+    }
+
+})
+
 module.exports = { 
     getPxx, 
     updatePxx, 
     calculateAvailableDays,
     resetAllPxx,
     resetPartialTimePxx, 
-    updatePartialTimePxx 
+    updatePartialTimePxx,
+    getProdChart
 };
