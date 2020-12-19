@@ -17,19 +17,20 @@ const PxxEditScreen = ({ history }) => {
     const dispatch = useDispatch();
 
 
-    const consultantMy = useSelector(state => state.consultantMy);
-    const { consultant } = consultantMy;
-
-
-    //const [consultantFocus, setConsultantFocus] = useState(-1);
-
-    const [searchDate, setSearchDate] = useState(new Date(Date.now()));
-
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const consultantsMyList = useSelector(state => state.consultantsMyList);
     const { loading: loadingConsultantsMyList, error: errorConsultantsMyList, consultantsMy, focus } = consultantsMyList;
+
+    /*
+    const consultantMy = useSelector(state => state.consultantMy);
+    const { consultant } = consultantMy;
+    */
+
+    const [searchDate, setSearchDate] = useState(new Date(Date.now()));
+    //const [focus, setFocus] = useState(0);
+
 
     useEffect(() => {
 
@@ -37,15 +38,14 @@ const PxxEditScreen = ({ history }) => {
             history.push('/login');
         }
 
-        // initialisation of consultantMy selector
-        if (consultant && consultant._id) {
-            dispatch({ type: CONSULTANT_MY_RESET });
-            //console.log('dispatch reset');
-        }
 
+    }, [history, userInfo]);
+
+
+    useEffect(() => {
+        // Effect to start loading my consultants and then to update every time focus change
         dispatch(getAllMyConsultants());
-
-    }, [history, dispatch, userInfo, consultant]);
+    }, [focus])
 
     const navigationMonthHandler = (value) => {
         const navigationDate = new Date(searchDate);
@@ -55,34 +55,42 @@ const PxxEditScreen = ({ history }) => {
 
     return (
         <>
-            {consultantsMy.length === 0 ? <Message variant="info">You don't have CDMee yet</Message> :
-                loadingConsultantsMyList ? <Loader />
-                : errorConsultantsMyList
-                    ? <Message variant='danger'>{errorConsultantsMyList}</Message>
-                    : (
-                        <Container>
-                            <Row>
-                                <Col xs={12} md={4}>
-                                    <ConsultantSelector />
-                                </Col>
-                                <Col xs={12} md={8}>
-                                    <PxxEditor
-                                        consultantFocus={focus}
-                                        searchDate={searchDate}
-                                        navigationMonthHandler={navigationMonthHandler}
+            <Container>
+                {loadingConsultantsMyList ? <Loader /> :
+                    errorConsultantsMyList ? <Message variant='danger'>{errorConsultantsMyList}</Message>
+                        : consultantsMy && (
+                            <>
+                                <Row>
+                                    <Col xs={12} md={4}>
+                                        <ConsultantSelector
+                                            consultantsMy={consultantsMy}
+                                            focus={focus}
+                                            //setFocus={setFocus}
+                                        />
+                                    </Col>
+
+                                    <Col xs={12} md={8}>
+                                        <PxxEditor
+                                            consultantsMy={consultantsMy}
+                                            consultantFocus={focus}
+                                            searchDate={searchDate}
+                                            navigationMonthHandler={navigationMonthHandler}
+                                        />
+                                    </Col>
+                                </Row>
+
+                                <Row className="pt-5">
+                                    <ConsultantsTab
+                                        consultantsMy={consultantsMy}
+                                        history={history}
+                                        //setFocus={setFocus}
+                                        focusActive={true}
                                     />
-                                </Col>
-                            </Row>
-                            <Row className="pt-5">
-                                <ConsultantsTab
-                                    consultantsMy={consultantsMy}
-                                    history={history}
-                                    focusActive={true}
-                                />
-                            </Row>
-                        </Container>
-                    )
-            }
+                                </Row>
+                            </>
+                        )}
+            </Container>
+
         </>
     )
 }

@@ -67,7 +67,7 @@ const PxxUserLine = ({ data }) => {
                         <FormControl
                             type="number"
                             min={0}
-                            max={data.workingDay}
+                            max={workingDay - notProdDayComponent - leavingDayComponent}
                             step={0.5}
                             disabled={!editable}
                             className="align-middle text-center p-0"
@@ -84,7 +84,7 @@ const PxxUserLine = ({ data }) => {
                         <FormControl
                             type="number"
                             min={0}
-                            max={data.workingDay}
+                            max={workingDay - prodDayComponent - leavingDayComponent}
                             step={0.5}
                             disabled={!editable}
                             className="align-middle text-center p-0"
@@ -101,7 +101,7 @@ const PxxUserLine = ({ data }) => {
                         <FormControl
                             type="number"
                             min={0}
-                            max={data.workingDay}
+                            max={workingDay - prodDayComponent - notProdDayComponent}
                             step={0.5}
                             disabled={!editable}
                             className="align-middle text-center p-0"
@@ -118,7 +118,7 @@ const PxxUserLine = ({ data }) => {
                         <FormControl
                             type="number"
                             min={0}
-                            max={data.workingDay}
+                            max={workingDay}
                             step={0.5}
                             className="align-middle text-center p-0"
                             value={availableDayComponent}

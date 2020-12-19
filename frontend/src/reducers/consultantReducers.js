@@ -1,3 +1,4 @@
+import Message from '../components/Message';
 import {
     CONSULTANTS_MY_DETAILS_REQUEST,
     CONSULTANTS_MY_DETAILS_SUCCESS,
@@ -43,6 +44,7 @@ import {
     CONSULTANT_ALL_PRACTICE_RESET
 } from '../constants/consultantConstants';
 
+/*
 export const consultantsMyListReducer = (state = {
     loading: true, 
     consultantsMy: [
@@ -75,6 +77,24 @@ export const consultantsMyListReducer = (state = {
                                     seriority: '',
                                     comment: '' 
                                 }], focus: 0 }
+        default:
+            return state;
+    }
+};
+*/
+
+export const consultantsMyListReducer = (state = {focus: 0}, action) => {
+    switch (action.type) {
+        case CONSULTANTS_MY_DETAILS_REQUEST:
+            return { ...state, loading: true };
+        case CONSULTANTS_MY_DETAILS_SUCCESS:
+            return { ...state, loading: false, consultantsMy: action.payload };
+        case CONSULTANTS_MY_DETAILS_FAIL:
+            return { ...state, loading: false, error: action.payload };
+        case CONSULTANTS_MY_DETAILS_FOCUS:
+            return { ...state, focus: action.payload }
+        case CONSULTANTS_MY_DETAILS_RESET:
+            return { focus: 0 }
         default:
             return state;
     }

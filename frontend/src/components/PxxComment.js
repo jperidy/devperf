@@ -22,7 +22,7 @@ const PxxComment = ({ comment, consultantId, setCommentUpdated }) => {
 
     const submitHandler = () => {
         dispatch(updateComment(consultantId, commentText));
-        setCommentUpdated(true);
+        //setCommentUpdated(true);
     };
 
     return (

@@ -10,6 +10,7 @@ const ConsultantsTab = ({ history, consultantsMy, focusActive }) => {
 
     const onClickHandler = (focus, consultantId) => {
         focusActive && dispatch(setConsultantFocus(focus));
+        //focusActive && setFocus(focus);
         history.push(`/editconsultant/${consultantId}`);
     };
 

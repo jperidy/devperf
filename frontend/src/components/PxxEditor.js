@@ -8,25 +8,25 @@ import Loader from '../components/Loader';
 import PxxUserLine from '../components/PxxUserLine';
 import { getMyConsultantPxxToEdit } from '../actions/pxxActions';
 
-const PxxEditor = ({ consultantFocus, searchDate, navigationMonthHandler }) => {
+const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonthHandler }) => {
 
     const dispatch = useDispatch();
 
     const [numberOfMonth] = useState(5);
 
-    const consultantsMyList = useSelector(state => state.consultantsMyList);
-    const { consultantsMy } = consultantsMyList;
 
     const pxxMyToEdit = useSelector(state => state.pxxMyToEdit);
     const { loading: loadingConsultantMyToEdit, error: errorConsultantMyToEdit, pxx } = pxxMyToEdit;
 
+    let consultantId = consultantsMy[consultantFocus]._id;
+    
     useEffect(() => {
 
-        let consultantId = consultantsMy[consultantFocus]._id;
-
+        // Effect when loading component and each time entry parameters change
         dispatch(getMyConsultantPxxToEdit(consultantId, searchDate, numberOfMonth));
+ 
 
-    }, [dispatch, searchDate, numberOfMonth, consultantFocus, consultantsMy]);
+    }, [dispatch, searchDate, numberOfMonth, consultantId]);
 
     return (
         <>
@@ -77,4 +77,4 @@ const PxxEditor = ({ consultantFocus, searchDate, navigationMonthHandler }) => {
     )
 }
 
-export default PxxEditor
+export default PxxEditor;
