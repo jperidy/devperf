@@ -10,6 +10,7 @@ import ManageConsultantScreen from './screens/ManageConsultantScreen';
 import ManageUsersScreen from './screens/manageUsersScreen';
 import UserEditScreen from './screens/UserEditScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import DashboardScreen from './screens/DashboardScreen';
 
 const App = () => {
   return (
@@ -17,8 +18,9 @@ const App = () => {
       <Header />
       <main className='py-3'>
         <Container>
-          <Route path='/login' component={LoginScreen} />
-          <Route path='/register' component={RegisterScreen} />
+          <Route path='/' component={DashboardScreen} exact />
+          <Route path='/login' component={LoginScreen} exact />
+          <Route path='/register' component={RegisterScreen} exact />
           <Route path='/pxx' component={PxxEditScreen} exact />
           <Route path='/pxx/:id' component={PxxEditScreen} exact />
           <Route path='/editconsultant/:id' component={ConsultantEditScreen} exact />

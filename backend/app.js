@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 
 const monthPxxRoutes = require('./routes/monthPxxRoutes');
 const pxxRoutes = require('./routes/pxxRoutes');
@@ -9,6 +10,10 @@ const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
 
 const app = express();
+
+if (process.env.NODE_ENV === 'development' ) {
+    app.use(morgan('dev'));
+}
 
 connectDB();
 

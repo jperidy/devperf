@@ -10,7 +10,11 @@ import {
     PXX_UPDATE_REQUEST,
     PXX_UPDATE_SUCCESS,
     PXX_UPDATE_FAIL,
-    PXX_UPDATE_RESET
+    PXX_UPDATE_RESET,
+    PXX_TACE_REQUEST,
+    PXX_TACE_SUCCESS,
+    PXX_TACE_FAIL,
+    PXX_TACE_RESET
 } from '../constants/pxxConstants';
 
 export const pxxMyToEditReducer = (state= { pxx: [] }, action) => {
@@ -42,6 +46,24 @@ export const pxxUpdateReducer = (state= { }, action) => {
             return state ;
     }
 };
+
+export const pxxTACEReducer = (state= {}, action) => {
+    switch(action.type) {
+        case PXX_TACE_REQUEST:
+            return { loading: true, success: false };
+        case PXX_TACE_SUCCESS:
+            return { loading: false, success: true, tace: action.payload };
+        case PXX_TACE_FAIL:
+            return { loading: false, error: action.payload };
+        case PXX_TACE_RESET:
+            return {};
+        default:
+            return state ;
+    }
+};
+
+
+
 
 // TO DELETE //
 

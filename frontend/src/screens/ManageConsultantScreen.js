@@ -17,11 +17,6 @@ const ManageConsultantScreen = ({ history }) => {
     const consultantsMyAdminList = useSelector(state => state.consultantsMyAdminList);
     const { loading, error, consultantsMyAdmin } = consultantsMyAdminList;
 
-    /*
-    const consultantMy = useSelector(state => state.consultantMy);
-    const { consultant } = consultantMy;
-    */
-
     const consultantDelete = useSelector(state => state.consultantDelete);
     const { success: successConsultantDelete } = consultantDelete;
 

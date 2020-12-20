@@ -328,16 +328,19 @@ const getProdChart = asyncHandler(async (req, res) => {
     //`/api/products?keyword=${keyword}&pageNumber=${pageNumber}`
     //keyword = req.query.keyword 
 
-    const start = '2021-01-01'
-    const end = '2021-03-01'
-    const practice = 'DET'
+    console.log(req.query);
+    const start = req.query.start; // '2021-01-01'
+    const end = req.query.end; //'2021-03-01'
+    
+    //const monthQuery = req.query.month;
+    const practice = req.query.practice; //'DET'
 
     const searchPractice = practice ? {practice: practice} : '';
 
     const month = await Month.find({ 
         firstDay: {
-            $gte: '2021-01-01',
-            $lte: '2021-03-01'
+            $gte: start,
+            $lte: end
     }});
 
     const consultant = await Consultant.find({...searchPractice});
@@ -347,35 +350,37 @@ const getProdChart = asyncHandler(async (req, res) => {
 
     const data = [];
 
-    for (let incr = 0; incr < month.length; incr++) {
-        const pxxMonth = await Pxx.find({
-            'month': month[incr]._id,
-            'name': {$in: consultantId}
-        }).populate('month');
-        const prodDay = pxxMonth.map(x => x.prodDay);
-        const notProdDay = pxxMonth.map(x => x.notProdDay);
-        const leavingDay = pxxMonth.map(x => x.leavingDay);
-        const availableDay = pxxMonth.map(x => x.availableDay);
-
-        const totalProdDay = prodDay.reduce((acc, item) => acc + item, 0);
-        const totalNotProdDay = notProdDay.reduce((acc, item) => acc + item, 0);
-        const totalLeavingDay = leavingDay.reduce((acc, item) => acc + item, 0);
-        const totalAvailableDay = availableDay.reduce((acc, item) => acc + item, 0);
-
-        //console.log(month[incr])
-        const workingDay = (month[incr].days.filter(x => x.type === 'working-day')).length;
-        //console.log(workingDay)
-
-        const monthCalcule = {
-            month: {firstDay: month[incr].firstDay, workingDay, _id: month[incr]._id},
-            totalProdDay,
-            totalNotProdDay,
-            totalLeavingDay,
-            totalAvailableDay,
-            totalETP: (totalAvailableDay+totalLeavingDay+totalNotProdDay+totalProdDay)/workingDay
+    if (month) {
+        for (let incr = 0; incr < month.length; incr++) {
+            const pxxMonth = await Pxx.find({
+                'month': month[incr]._id,
+                'name': {$in: consultantId}
+            }).populate('month');
+            const prodDay = pxxMonth.map(x => x.prodDay);
+            const notProdDay = pxxMonth.map(x => x.notProdDay);
+            const leavingDay = pxxMonth.map(x => x.leavingDay);
+            const availableDay = pxxMonth.map(x => x.availableDay);
+    
+            const totalProdDay = prodDay.reduce((acc, item) => acc + item, 0);
+            const totalNotProdDay = notProdDay.reduce((acc, item) => acc + item, 0);
+            const totalLeavingDay = leavingDay.reduce((acc, item) => acc + item, 0);
+            const totalAvailableDay = availableDay.reduce((acc, item) => acc + item, 0);
+            const totalTACE = totalProdDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
+            const workingDay = (month[incr].days.filter(x => x.type === 'working-day')).length;
+            const totalETP = (totalAvailableDay+totalLeavingDay+totalNotProdDay+totalProdDay)/workingDay;
+    
+            const monthCalcule = {
+                month: {firstDay: month[incr].firstDay, workingDay, _id: month[incr]._id},
+                totalProdDay,
+                totalNotProdDay,
+                totalLeavingDay,
+                totalAvailableDay,
+                totalTACE,
+                totalETP
+            }
+    
+            data.push(monthCalcule);
         }
-
-        data.push(monthCalcule);
     }
 
     if (data) {
@@ -383,7 +388,6 @@ const getProdChart = asyncHandler(async (req, res) => {
     } else {
         res.status(400).json({message: 'not data found'});
     }
-
 })
 
 module.exports = { 
