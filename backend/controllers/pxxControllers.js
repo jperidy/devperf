@@ -366,6 +366,7 @@ const getProdChart = asyncHandler(async (req, res) => {
             const totalLeavingDay = leavingDay.reduce((acc, item) => acc + item, 0);
             const totalAvailableDay = availableDay.reduce((acc, item) => acc + item, 0);
             const totalTACE = totalProdDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
+            const totalLeaving = totalLeavingDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
             const workingDay = (month[incr].days.filter(x => x.type === 'working-day')).length;
             const totalETP = (totalAvailableDay+totalLeavingDay+totalNotProdDay+totalProdDay)/workingDay;
     
@@ -376,6 +377,7 @@ const getProdChart = asyncHandler(async (req, res) => {
                 totalLeavingDay,
                 totalAvailableDay,
                 totalTACE,
+                totalLeaving,
                 totalETP
             }
     

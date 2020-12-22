@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteConsultant, getAllMyAdminConsultants } from '../actions/consultantActions';
 import { CONSULTANT_DELETE_RESET } from '../constants/consultantConstants';
@@ -6,16 +6,29 @@ import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import Pagination from 'react-bootstrap/Pagination';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
 
-const ManageConsultantScreen = ({ history }) => {
+const ManageConsultantScreen = ({ history, match }) => {
 
     const dispatch = useDispatch();
+
+    // pagination configuration
+    //const pageNumber = match.params.pageNumber || 1;
+    //const keyword = match.params.keyword || '';
+    const [pageSize, setPageSize] = useState(10);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [keyword, setKeyword] = useState('');
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const consultantsMyAdminList = useSelector(state => state.consultantsMyAdminList);
-    const { loading, error, consultantsMyAdmin } = consultantsMyAdminList;
+    const { loading, error, consultantsMyAdmin, pages, page, count } = consultantsMyAdminList;
 
     const consultantDelete = useSelector(state => state.consultantDelete);
     const { success: successConsultantDelete } = consultantDelete;
@@ -23,24 +36,21 @@ const ManageConsultantScreen = ({ history }) => {
     useEffect(() => {
 
         if (userInfo && (userInfo.adminLevel <= 1)) {
-            dispatch(getAllMyAdminConsultants());
+            dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize));
         } else {
             history.push('/login');
         }
 
-    }, [
-        dispatch, history, userInfo,
-    ]);
+    }, [dispatch, history, userInfo, pageNumber, pageSize, keyword]);
 
     useEffect(() => {
         if (successConsultantDelete) {
-            dispatch(getAllMyAdminConsultants());
+            dispatch(getAllMyAdminConsultants('', pageNumber, pageSize));
             dispatch({type: CONSULTANT_DELETE_RESET});
         }
-    }, [dispatch, successConsultantDelete]);
+    }, [dispatch, successConsultantDelete, pageNumber, pageSize]);
 
     const addConsultantHandler = () => {
-        //console.log('AddConsultantHandler');
         history.push('/admin/consultant/add');
     }
 
@@ -57,11 +67,58 @@ const ManageConsultantScreen = ({ history }) => {
 
     return (
         <>
-            <Button className="mb-3" onClick={() => addConsultantHandler()}>
-                <i className="fas fa-user-edit mr-2"></i>Add
-            </Button>
+            <Row>
 
-            {consultantsMyAdmin.length === 0 ? <Message variant='information'>You have not access to these information</Message> :
+                <Col xs={6} md={2} className='align-middle'>
+                    <Button className="mb-3" onClick={() => addConsultantHandler()} block>
+                        <i className="fas fa-user-edit mr-2"></i>Add
+                    </Button>
+                </Col>
+
+                <Col xs={6} md={2}>
+                    <InputGroup>
+                        <FormControl
+                            type='text'
+                            className="mb-3"
+                            placeholder='Search name'
+                            value={keyword && keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                        ></FormControl>
+                    </InputGroup>
+                </Col>
+
+                <Col xs={6} md={4}>
+                    <Form.Control 
+                        plaintext 
+                        readOnly 
+                        value={count ? `${count} consultants found` : '0 consultant found'} />
+                </Col>
+                
+                <Col xs={6} md={2}>
+                    <InputGroup>
+                        <FormControl
+                            as='select'
+                            id='number-c'
+                            className="mb-3"
+                            value={pageSize && pageSize}
+                            onChange={(e) => setPageSize(e.target.value)}
+                        >
+                            {[5,10,15,20,50].map(x => (
+                                <option
+                                    key={x}
+                                    value={x}
+                                >{x} / page</option>
+                                                            ))}
+                        </FormControl>
+                    </InputGroup>
+                </Col>
+                
+                
+
+
+            </Row>
+
+            {consultantsMyAdmin && consultantsMyAdmin.length === 0 ? <Message variant='information'>You have not access to these information</Message> :
                 loading ? <Loader /> : error ? <Message variant="danger">{error}</Message> : (
 
 
@@ -81,7 +138,7 @@ const ManageConsultantScreen = ({ history }) => {
                         </thead>
 
                         <tbody>
-                            {consultantsMyAdmin.map((consultant) => (
+                            {consultantsMyAdmin && consultantsMyAdmin.map((consultant) => (
                                 <tr key={consultant._id}>
                                     <td className='align-middle'>{consultant.name}</td>
                                     <td className='align-middle'>{consultant.matricule}</td>
@@ -108,6 +165,31 @@ const ManageConsultantScreen = ({ history }) => {
                     </Table>
 
                 )}
+
+                <Pagination>
+                    <Pagination.Prev
+                        onClick={() => setPageNumber(page - 1)}
+                        disabled={page===1}
+                    />
+                    {[...Array(pages).keys()].map(x => (
+                        
+                        <Pagination.Item
+                            key={x+1}
+                            active={x + 1 === page}
+                            onClick={() => {
+                                dispatch(getAllMyAdminConsultants('', x + 1, pageSize));
+                                setPageNumber(x+1);
+                            }}
+                        >{x + 1}</Pagination.Item>
+                        
+                    ))}
+                    <Pagination.Next
+                        onClick={() => setPageNumber(page + 1)}
+                        disabled={page===pages}
+                    />
+                </Pagination>
+                            
+                
         </>
     )
 }

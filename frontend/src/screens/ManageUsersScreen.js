@@ -100,8 +100,8 @@ const ManageUsersScreen = ({ history }) => {
                     {users && users.map((user) => (
                         <tr key={user._id}>
                             <td className='align-middle'><b>{user.name && user.name}</b></td>
-                            <td className='align-middle'>{user.consultantProfil.matricule && user.consultantProfil.matricule}</td>
-                            <td className='align-middle text-center'>{user.consultantProfil.practice && user.consultantProfil.practice}</td>
+                            <td className='align-middle'>{user.consultantProfil && user.consultantProfil.matricule}</td>
+                            <td className='align-middle text-center'>{user.consultantProfil && user.consultantProfil.practice}</td>
                             <td className='align-middle text-center'>{user.createdAt && user.createdAt.toString().substring(0,10)}</td>
                             <td className='align-middle text-center'>
                                 {

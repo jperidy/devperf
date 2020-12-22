@@ -34,13 +34,14 @@ import {
 } from '../constants/consultantConstants';
 
 
-export const getAllMyAdminConsultants = () => async (dispatch, getState) => {
+export const getAllMyAdminConsultants = (keyword='', pageNumber='', pageSize='15') => async (dispatch, getState) => {
 
     try {
 
         dispatch({ type: CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST });
 
         const { userLogin: { userInfo } } = getState();
+        const userPractice = userInfo.consultantProfil.practice;
 
         const config = {
             headers: {
@@ -49,7 +50,7 @@ export const getAllMyAdminConsultants = () => async (dispatch, getState) => {
             }
         };
 
-        const { data } = await axios.get('/api/consultants/practice', config);        
+        const { data } = await axios.get(`/api/consultants/admin/consultants?practice=${userPractice}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);        
         dispatch({ type: CONSULTANTS_ALL_ADMIN_DETAILS_SUCCESS, payload: data });
 
 } catch (error) {
@@ -319,9 +320,10 @@ export const getAllConsultantByPractice = (practice) => async (dispatch, getStat
             }
         };
 
-        const { data } = await axios.get(`/api/consultants/practice/${practice}`, config);
+        const { data } = await axios.get(`/api/consultants/admin/consultants?practice=${practice}&keyword=&pageNumber=&pageSize=`, config);
+        //const { data } = await axios.get(`/api/consultants/practice/${practice}`, config);
 
-        dispatch({ type: CONSULTANT_ALL_PRACTICE_SUCCESS, payload: data });
+        dispatch({ type: CONSULTANT_ALL_PRACTICE_SUCCESS, payload: data.consultants });
 
     } catch (error) {
         dispatch({

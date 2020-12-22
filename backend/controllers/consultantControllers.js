@@ -1,7 +1,7 @@
 const Consultant = require('../models/consultantModel');
 const asyncHandler = require('express-async-handler');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
-const { set } = require('mongoose');
+//const { set } = require('mongoose');
 
 // @desc    Create a consultant data by Id
 // @route   POST /api/consultants
@@ -36,6 +36,7 @@ const deleteConsultant = asyncHandler(async (req, res) => {
 
 });
 
+/*
 // @desc    Get all admin consultant data
 // @route   GET /api/admin/consultants
 // @access  Private, Admin
@@ -47,6 +48,56 @@ const getAllPracticeConsultants = asyncHandler(async (req, res) => {
     res.json(myConsultants);
     
 });
+*/
+
+// @desc    Get the list of consultant in a Practice
+// @route   GET /api/consultants/practice/:practice
+// @access  Private/AdminLevelOne
+const getAllConsultants = asyncHandler(async (req, res) => {
+    
+    const pageSize = Number(req.query.pageSize);
+    const page = Number(req.query.pageNumber) || 1; // by default on page 1
+    const keyword = req.query.keyword ? {
+        name: {
+            $regex: req.query.keyword,
+            $options: 'i'
+        }
+    } : {};
+    
+    const practice = req.query.practice;
+
+    const count = await Consultant.countDocuments({ ...keyword });
+
+    //const practice = req.params.practice;
+    let consultants = await Consultant.find({...keyword, practice: practice})
+            .sort({'name': 1})
+            .limit(pageSize).skip(pageSize * (page - 1));
+
+    if (consultants) {
+        res.status(200).json({consultants, page, pages: Math.ceil(count/pageSize), count});
+    } else {
+        res.status(400).json({message: `No consultants found for practice: ${practice}` });
+    }
+
+});
+
+/*
+// @desc    Get the list of consultant in a Practice
+// @route   GET /api/consultants/practice/:practice
+// @access  Private/AdminLevelOne
+const getAllConsultantByPractice = asyncHandler(async (req, res) => {
+    
+    const practice = req.params.practice;
+    let consultants = await Consultant.find({practice: practice}).sort({'name': 1});
+
+    if (consultants) {
+        res.status(200).json(consultants);
+    } else {
+        res.status(400).json({message: `No consultants found for practice: ${practice}` });
+    }
+
+});
+*/
 
 // @desc    Get my consultant data
 // @route   GET /api/consultants
@@ -217,31 +268,18 @@ const updateConsultantComment = asyncHandler(async(req,res) =>{
     }
 });
 
-// @desc    Get the list of consultant in a Practice
-// @route   GET /api/consultants/practice/:practice
-// @access  Private/AdminLevelOne
-const getAllConsultantByPractice = asyncHandler(async (req, res) => {
 
-    const practice = req.params.practice;
-    let consultants = await Consultant.find({practice: practice}).select('_id name practice matricule');
-
-    if (consultants) {
-        res.status(200).json(consultants);
-    } else {
-        res.status(400).json({message: `No consultants found for practice: ${practice}` });
-    }
-
-});
 
 module.exports = { 
     getMyConsultants, 
     getConsultant, 
-    updateConsultant, 
-    getAllPracticeConsultants, 
+    updateConsultant,
+    getAllConsultants,
+    //getAllPracticeConsultants, 
     createConsultant,
     deleteConsultant,
     getAllCDMData,
     getAllPracticesData,
     updateConsultantComment,
-    getAllConsultantByPractice
+    //getAllConsultantByPractice
 };

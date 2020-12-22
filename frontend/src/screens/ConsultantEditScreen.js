@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup'
+import InputGroup from 'react-bootstrap/InputGroup';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import FormContainer from '../components/FormContainer';
 import Alert from 'react-bootstrap/Alert';
-//import Alertuser from '../components/AlertUser';
-import Loader from '../components/Loader';
 import Message from '../components/Message';
 import {
     createConsultant,
@@ -61,16 +59,16 @@ const ConsultantEditScreen = ({ history, match }) => {
     const { loading, consultant } = consultantMy;
 
     const consultantMyUpdate = useSelector(state => state.consultantMyUpdate);
-    const { loading: loadingUpdate, error: errorUpdate, success: successUpdate } = consultantMyUpdate;
+    const { error: errorUpdate, success: successUpdate } = consultantMyUpdate;
 
     const consultantCreate = useSelector(state => state.consultantCreate);
-    const { loading: loadingCreate, error: errorCreate, success: successCreate, consultantCreated } = consultantCreate;
+    const { error: errorCreate, success: successCreate, consultantCreated } = consultantCreate;
 
     const consultantCDMList = useSelector(state => state.consultantCDMList);
-    const { loading: loadingCDM, error: errorCDM, cdmList } = consultantCDMList;
+    const { error: errorCDM, cdmList } = consultantCDMList;
 
     const consultantPracticeList = useSelector(state => state.consultantPracticeList);
-    const { loading: loadingPractice, error: errorPractice, practiceList } = consultantPracticeList;
+    const { error: errorPractice, practiceList } = consultantPracticeList;
 
     useEffect(() => {
         // only admin level 0 and 1 are authorized to manage consultants
@@ -120,7 +118,7 @@ const ConsultantEditScreen = ({ history, match }) => {
             setEmail(consultant.email);
             setMatricule(consultant.matricule);
             setPractice(consultant.practice);
-            setCdm(consultant.cdmId ? consultant.cdmId : 'waiting affectation');
+            setCdm(consultant.cdmId ? consultant.cdmId : ''); //'waiting affectation'
             setArrival(consultant.arrival.substring(0, 10));
             setValued(consultant.valued ? consultant.valued.substring(0, 10) : '');
             setLeaving(consultant.leaving ? consultant.leaving.substring(0, 10) : '');
@@ -335,7 +333,10 @@ const ConsultantEditScreen = ({ history, match }) => {
                                             type='text'
                                             placeholder='Enter Practice'
                                             value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ''}
-                                            onChange={(e) => setPractice(e.target.value)}
+                                            onChange={(e) => {
+                                                setPractice(e.target.value);
+                                                setCdm('');
+                                            }}
                                             required
                                         ></Form.Control>
                                     ) : (
