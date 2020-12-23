@@ -23,7 +23,9 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
     useEffect(() => {
 
         // Effect when loading component and each time entry parameters change
-        dispatch(getMyConsultantPxxToEdit(consultantId, searchDate, numberOfMonth));
+        if(!loadingConsultantMyToEdit) {
+            dispatch(getMyConsultantPxxToEdit(consultantId, searchDate, numberOfMonth));
+        }
  
 
     }, [dispatch, searchDate, numberOfMonth, consultantId]);

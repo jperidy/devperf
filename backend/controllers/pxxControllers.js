@@ -425,7 +425,8 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
                 grade: x.name.grade,
                 practice: x.name.practice,
                 quality: x.name.quality,
-                availableDay: x.availableDay
+                availableDay: x.availableDay,
+                comment: x.name.comment
             }))
             //console.log('pxxAvailable', pxxAvailable)
     

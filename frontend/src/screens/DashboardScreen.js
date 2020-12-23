@@ -10,16 +10,18 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 const DashboardScreen = ({ history }) => {
 
     const dispatch = useDispatch();
 
     // initialization of default constants
-    const duration = 2;
+    const duration = 3;
     let startDefault = new Date(Date.now());
     startDefault.setUTCDate(1);
-    startDefault.setUTCMonth(startDefault.getUTCMonth() - duration);
+    startDefault.setUTCMonth(startDefault.getUTCMonth());
     startDefault = startDefault.toISOString().substring(0, 10);
 
     let endDefault = new Date(Date.now());
@@ -32,6 +34,7 @@ const DashboardScreen = ({ history }) => {
     const [end, setEnd] = useState(endDefault);
 
     const [focus, setFocus] = useState('');
+    const [skill, setSkill] = useState('');
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -131,11 +134,25 @@ const DashboardScreen = ({ history }) => {
                 )}
             </Row>
 
-            {['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior Manager', 'Director', 'Partner'].map((grade, gradVal) => (
+            <Row className='mt-5'>
+                <Col xs={6} md={2}>
+                    <InputGroup>
+                        <FormControl
+                            type='text'
+                            className="mb-3"
+                            placeholder='Search skills'
+                            value={skill && skill}
+                            onChange={(e) => setSkill(e.target.value)}
+                        ></FormControl>
+                    </InputGroup>
+                </Col>
+            </Row>
+
+            {['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'].map((grade, gradVal) => (
                 
                 <div key={gradVal}>
 
-                    <Row className='mt-5'>
+                    <Row className='mt-3'>
                         <Col>
                             <h5>{grade} availabilities</h5>
                         </Col>
@@ -150,17 +167,24 @@ const DashboardScreen = ({ history }) => {
                                         <Card.Body>
                                             {x.availabilities.map((y, yVal) => (
                                                 y.grade === grade && (
-                                                    <Form.Control
+                                                    <OverlayTrigger
                                                         key={yVal}
-                                                        plaintext
-                                                        readOnly
-                                                        id={y.name}
-                                                        value={y.availableDay.toString() + ' - ' + y.name} 
-                                                        onFocus={(e) => {
-                                                            setFocus(e.target.id)
-                                                            console.log(e.target.id)
-                                                        }}
-                                                    />
+                                                        placement="bottom"
+                                                        overlay={<Tooltip id="button-tooltip-2">{y.comment ? y.comment : 'no comment'}</Tooltip>}
+                                                    >
+                                                        <Form.Control
+                                                            className="px-2"
+                                                            plaintext
+                                                            readOnly
+                                                            id={y.name}
+                                                            value={y.availableDay.toString() + ' : ' + y.name}
+                                                            style={(y.name === focus) ? {background: '#464277', color: 'white'} : {color: 'black'}}
+                                                            onFocus={(e) => {
+                                                                setFocus(e.target.id)
+                                                                console.log(e.target.id)
+                                                            }}
+                                                        />
+                                                    </OverlayTrigger>
                                                 )
                                             ))}
                                         </Card.Body>
