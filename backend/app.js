@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const path = require('path');
 
 const monthPxxRoutes = require('./routes/monthPxxRoutes');
 const pxxRoutes = require('./routes/pxxRoutes');
@@ -17,10 +18,6 @@ if (process.env.NODE_ENV === 'development' ) {
 
 connectDB();
 
-app.get('/', (req, res) => {
-    res.send('API is running...');
-});
-
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -34,5 +31,18 @@ app.use('/api/users', userRoutes);
 app.use('/api/monthdata', monthPxxRoutes);
 app.use('/api/pxx', pxxRoutes);
 app.use('/api/consultants', consultantRoutes);
+
+// static route for developpement access to build repository
+const __dir = path.resolve();
+//console.log(process)
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dir, '/frontend/build')));
+    // default request for route for request not describe above
+    app.get('*', (req, res) => res.sendFile(path.resolve(__dir, 'frontend', 'build', 'index.html')))
+} else {
+    app.get('/', (req, res) => {
+        res.send('API is running...');
+    });
+}
 
 module.exports = app;
