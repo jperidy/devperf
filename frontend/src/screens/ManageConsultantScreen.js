@@ -45,10 +45,10 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     useEffect(() => {
         if (successConsultantDelete) {
-            dispatch(getAllMyAdminConsultants('', pageNumber, pageSize));
+            dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize));
             dispatch({type: CONSULTANT_DELETE_RESET});
         }
-    }, [dispatch, successConsultantDelete, pageNumber, pageSize]);
+    }, [dispatch, successConsultantDelete, keyword, pageNumber, pageSize]);
 
     const addConsultantHandler = () => {
         history.push('/admin/consultant/add');
@@ -69,8 +69,8 @@ const ManageConsultantScreen = ({ history, match }) => {
         <>
             <Row>
 
-                <Col xs={6} md={2} className='align-middle'>
-                    <Button className="mb-3" onClick={() => addConsultantHandler()} block>
+                <Col xs={6} md={4}>
+                    <Button className="mb-3" onClick={() => addConsultantHandler()}>
                         <i className="fas fa-user-edit mr-2"></i>Add
                     </Button>
                 </Col>
@@ -112,9 +112,6 @@ const ManageConsultantScreen = ({ history, match }) => {
                         </FormControl>
                     </InputGroup>
                 </Col>
-                
-                
-
 
             </Row>
 
@@ -177,7 +174,7 @@ const ManageConsultantScreen = ({ history, match }) => {
                             key={x+1}
                             active={x + 1 === page}
                             onClick={() => {
-                                dispatch(getAllMyAdminConsultants('', x + 1, pageSize));
+                                dispatch(getAllMyAdminConsultants(keyword, x + 1, pageSize));
                                 setPageNumber(x+1);
                             }}
                         >{x + 1}</Pagination.Item>

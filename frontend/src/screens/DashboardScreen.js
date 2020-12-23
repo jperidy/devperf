@@ -5,10 +5,11 @@ import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import { Link } from 'react-router-dom';
-import { getTace } from '../actions/pxxActions';
+import { getTace, getAvailabilities } from '../actions/pxxActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { Card } from 'react-bootstrap';
+import Form from 'react-bootstrap/Form';
+import Card from 'react-bootstrap/Card';
 
 const DashboardScreen = ({ history }) => {
 
@@ -30,11 +31,16 @@ const DashboardScreen = ({ history }) => {
     const [start, setStart] = useState(startDefault);
     const [end, setEnd] = useState(endDefault);
 
+    const [focus, setFocus] = useState('');
+
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const pxxTACE = useSelector(state => state.pxxTACE);
     const { loading: loadingTACE, error: errorTACE, tace } = pxxTACE;
+
+    const pxxAvailabilities = useSelector(state => state.pxxAvailabilities);
+    const { loading: loadingAvailabilities, error: errorAvailabilities, availabilities } = pxxAvailabilities;
 
 
     useEffect(() => {
@@ -49,6 +55,13 @@ const DashboardScreen = ({ history }) => {
     useEffect(() => {
         if (!loadingTACE) {
             dispatch(getTace(practice, start, end));
+        }
+    // eslint-disable-next-line
+    }, [dispatch, practice, start, end])
+
+    useEffect(() => {
+        if (!loadingAvailabilities) {
+            dispatch(getAvailabilities(practice, start, end));
         }
     // eslint-disable-next-line
     }, [dispatch, practice, start, end])
@@ -117,12 +130,48 @@ const DashboardScreen = ({ history }) => {
                     ))
                 )}
             </Row>
-            <Row className='mt-5'>
-                <Col>
-                        <h5>Other Dashboards to build</h5>
-                        (consodispo, etc.)
-                </Col>
-            </Row>
+
+            {['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior Manager', 'Director', 'Partner'].map((grade, gradVal) => (
+                
+                <div key={gradVal}>
+
+                    <Row className='mt-5'>
+                        <Col>
+                            <h5>{grade} availabilities</h5>
+                        </Col>
+                    </Row>
+
+                    <Row className='mt-3'>
+                        {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
+                            availabilities && availabilities.map((x, xVal) => (
+                                <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
+                                    <Card className='my-3 p-3 rounded' >
+                                        <Card.Header as="h5">{x.month.firstDay.toString().substring(0, 7)}</Card.Header>
+                                        <Card.Body>
+                                            {x.availabilities.map((y, yVal) => (
+                                                y.grade === grade && (
+                                                    <Form.Control
+                                                        key={yVal}
+                                                        plaintext
+                                                        readOnly
+                                                        id={y.name}
+                                                        value={y.availableDay.toString() + ' - ' + y.name} 
+                                                        onFocus={(e) => {
+                                                            setFocus(e.target.id)
+                                                            console.log(e.target.id)
+                                                        }}
+                                                    />
+                                                )
+                                            ))}
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            ))
+                        )}
+                    </Row>
+                </div>
+            ))}
+
         </>
     )
 }

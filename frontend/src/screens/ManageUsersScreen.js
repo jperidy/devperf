@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Table from 'react-bootstrap/Table'
+import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
+import Pagination from 'react-bootstrap/Pagination';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
 //import Message from '../components/Message';
 import { deleteUser, listUsers } from '../actions/userActions';
 
@@ -10,13 +16,17 @@ const ManageUsersScreen = ({ history }) => {
 
     const dispatch = useDispatch();
 
-    const [message, setMessage] = useState({})
+    const [message, setMessage] = useState({});
+
+    const [pageSize, setPageSize] = useState(10);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [keyword, setKeyword] = useState('');
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const userList = useSelector(state  => state.userList);
-    const {users} = userList;
+    const {users, pages, page, count} = userList;
 
     const userDelete = useSelector(state  => state.userDelete);
     const {error, success} = userDelete;
@@ -25,12 +35,12 @@ const ManageUsersScreen = ({ history }) => {
     useEffect(() => {
 
         if (userInfo && (userInfo.adminLevel === 0)) {
-            dispatch(listUsers());
+            dispatch(listUsers(keyword, pageNumber, pageSize));
         } else {
             history.push('/login');
         }
 
-    }, [dispatch, history, userInfo, success]);
+    }, [dispatch, history, userInfo, success, keyword, pageNumber, pageSize]);
 
     useEffect(() => {
 
@@ -75,12 +85,53 @@ const ManageUsersScreen = ({ history }) => {
 
             )}
 
+            <Row>
+                <Col xs={6} md={4}>
+                    <Button className="mb-3" onClick={() => addUserHandler()}>
+                        <i className="fas fa-user-edit mr-2"></i>Add
+                    </Button>
+                </Col>
 
-            <Button className="mb-3" onClick={() => addUserHandler()}>
-                <i className="fas fa-user-edit mr-2"></i>Add
-            </Button>
 
-            
+                <Col xs={6} md={2}>
+                    <InputGroup>
+                        <FormControl
+                            type='text'
+                            className="mb-3"
+                            placeholder='Search name'
+                            value={keyword && keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                        ></FormControl>
+                    </InputGroup>
+                </Col>
+
+                <Col xs={6} md={4}>
+                    <Form.Control
+                        plaintext
+                        readOnly
+                        value={count ? `${count} consultants found` : '0 consultant found'} />
+                </Col>
+
+                <Col xs={6} md={2}>
+                    <InputGroup>
+                        <FormControl
+                            as='select'
+                            id='number-c'
+                            className="mb-3"
+                            value={pageSize && pageSize}
+                            onChange={(e) => setPageSize(e.target.value)}
+                        >
+                            {[5, 10, 15, 20, 50].map(x => (
+                                <option
+                                    key={x}
+                                    value={x}
+                                >{x} / page</option>
+                            ))}
+                        </FormControl>
+                    </InputGroup>
+                </Col>
+
+            </Row>
 
             <Table responsive hover striped>
                 <thead>
@@ -128,6 +179,29 @@ const ManageUsersScreen = ({ history }) => {
                     ))} 
                 </tbody>
             </Table>
+
+            <Pagination>
+                <Pagination.Prev
+                    onClick={() => setPageNumber(page - 1)}
+                    disabled={page === 1}
+                />
+                {[...Array(pages).keys()].map(x => (
+
+                    <Pagination.Item
+                        key={x + 1}
+                        active={x + 1 === page}
+                        onClick={() => {
+                            dispatch(listUsers(keyword, x + 1, pageSize));
+                            setPageNumber(x + 1);
+                        }}
+                    >{x + 1}</Pagination.Item>
+
+                ))}
+                <Pagination.Next
+                    onClick={() => setPageNumber(page + 1)}
+                    disabled={page === pages}
+                />
+            </Pagination>
         </>
     )
 }

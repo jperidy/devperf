@@ -1,7 +1,7 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { pxxListReducer, pxxTACEReducer, pxxUpdateReducer } from './reducers/pxxReducers';
+import { pxxAvailabilitiesReducer, pxxListReducer, pxxTACEReducer, pxxUpdateReducer } from './reducers/pxxReducers';
 import { userLoginReducer, userListReducer, userDeleteReducer, userDetailsReducer, userUpdateReducer, userRegisterReducer } from './reducers/userReducers';
 import { 
     consultantMyReducer, 
@@ -37,7 +37,8 @@ export const reducer = combineReducers({
     pxxList: pxxListReducer,
     pxxMyToEdit: pxxMyToEditReducer,
     pxxUpdate: pxxUpdateReducer,
-    pxxTACE: pxxTACEReducer
+    pxxTACE: pxxTACEReducer,
+    pxxAvailabilities: pxxAvailabilitiesReducer,
 });
 
 // space for store on local

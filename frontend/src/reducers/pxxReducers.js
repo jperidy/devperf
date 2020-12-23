@@ -14,7 +14,11 @@ import {
     PXX_TACE_REQUEST,
     PXX_TACE_SUCCESS,
     PXX_TACE_FAIL,
-    PXX_TACE_RESET
+    PXX_TACE_RESET,
+    PXX_AVAILABILITIES_REQUEST,
+    PXX_AVAILABILITIES_SUCCESS,
+    PXX_AVAILABILITIES_FAIL,
+    PXX_AVAILABILITIES_RESET
 } from '../constants/pxxConstants';
 
 export const pxxMyToEditReducer = (state= { pxx: [] }, action) => {
@@ -56,6 +60,21 @@ export const pxxTACEReducer = (state= {}, action) => {
         case PXX_TACE_FAIL:
             return { loading: false, error: action.payload };
         case PXX_TACE_RESET:
+            return {};
+        default:
+            return state ;
+    }
+};
+
+export const pxxAvailabilitiesReducer = (state= {}, action) => {
+    switch(action.type) {
+        case PXX_AVAILABILITIES_REQUEST:
+            return { loading: true, success: false };
+        case PXX_AVAILABILITIES_SUCCESS:
+            return { loading: false, success: true, availabilities: action.payload };
+        case PXX_AVAILABILITIES_FAIL:
+            return { loading: false, error: action.payload };
+        case PXX_AVAILABILITIES_RESET:
             return {};
         default:
             return state ;

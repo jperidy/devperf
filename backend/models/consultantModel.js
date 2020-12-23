@@ -15,6 +15,19 @@ const consultantSchema = mongoose.Schema({
         required: true,
         unique: true,
     },
+    grade: {
+        type: String,
+        required: true,
+        enum: ['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'],
+        default: 'Analyst'
+    },
+    Quality: [
+        {
+            category: {type: String},
+            name: {type: String},
+            description: {type: String}
+        }
+    ],
     arrival: {
         type: Date,
         required: false,

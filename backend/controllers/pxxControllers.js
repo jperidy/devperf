@@ -321,18 +321,13 @@ const updatePxx = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get TACE data between start and end dates
-// @route   GET /api/pxx/chart/prod/start/:start/end/:end
+// @route   GET /api/pxx/chart/tace?practice=practice&start=start&end=end
 // @access  Private
 const getProdChart = asyncHandler(async (req, res) => {
-    
-    //`/api/products?keyword=${keyword}&pageNumber=${pageNumber}`
-    //keyword = req.query.keyword 
 
     console.log(req.query);
     const start = req.query.start; // '2021-01-01'
     const end = req.query.end; //'2021-03-01'
-    
-    //const monthQuery = req.query.month;
     const practice = req.query.practice; //'DET'
 
     const searchPractice = practice ? {practice: practice} : '';
@@ -392,6 +387,64 @@ const getProdChart = asyncHandler(async (req, res) => {
     }
 })
 
+// @desc    Get Availability data between start and end dates
+// @route   GET /api/pxx/chart/availability?practice=practice&start=start&end=end
+// @access  Private
+const getAvailabilityChart = asyncHandler(async (req, res) => {
+
+    //console.log(req.query);
+    const start = req.query.start; // '2021-01-01'
+    const end = req.query.end; //'2021-03-01'
+    const practice = req.query.practice; //'DET'
+
+    const searchPractice = practice ? {practice: practice} : '';
+
+    const month = await Month.find({ 
+        firstDay: {
+            $gte: start,
+            $lte: end
+    }});
+
+    const consultant = await Consultant.find({...searchPractice});
+    const consultantId = consultant.map( x => x._id);
+    
+
+    const data = [];
+
+    if (month) {
+        for (let incr = 0; incr < month.length; incr++) {
+
+            const pxxMonth = await Pxx.find({
+                'month': month[incr]._id,
+                'name': {$in: consultantId}
+            }).populate('month name').sort({availableDay: -1});
+            
+            let pxxAvailable = pxxMonth.filter(x => x.availableDay > 0);
+            pxxAvailable = pxxAvailable.map(x => ({
+                name: x.name.name,
+                grade: x.name.grade,
+                practice: x.name.practice,
+                quality: x.name.quality,
+                availableDay: x.availableDay
+            }))
+            //console.log('pxxAvailable', pxxAvailable)
+    
+            const result = {
+                month: {firstDay: month[incr].firstDay, _id: month[incr]._id},
+                availabilities: pxxAvailable
+            }
+    
+            data.push(result);
+        }
+    }
+
+    if (data) {
+        res.status(200).json(data);
+    } else {
+        res.status(400).json({message: 'no data found'});
+    }
+})
+
 module.exports = { 
     getPxx, 
     updatePxx, 
@@ -399,5 +452,6 @@ module.exports = {
     resetAllPxx,
     resetPartialTimePxx, 
     updatePartialTimePxx,
-    getProdChart
+    getProdChart,
+    getAvailabilityChart
 };

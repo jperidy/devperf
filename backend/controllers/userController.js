@@ -134,9 +134,29 @@ const updateUserProfile = asyncHandler(async(req,res) =>{
 // @route   GET /api/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async(req,res) =>{
+
+    const pageSize = Number(req.query.pageSize);
+    const page = Number(req.query.pageNumber) || 1; // by default on page 1
+    const keyword = req.query.keyword ? {
+        name: {
+            $regex: req.query.keyword,
+            $options: 'i'
+        }
+    } : {};
+
+    //const practice = req.query.practice;
+
+    const count = await User.countDocuments({ ...keyword });
     
-    const users = await User.find({}).populate('consultantProfil').select('-password');
-    res.json(users);
+    const users = await User.find({...keyword})
+        .populate('consultantProfil').select('-password')
+        .limit(pageSize).skip(pageSize * (page - 1));
+
+    if (users) {
+        res.status(200).json({ users, page, pages: Math.ceil(count / pageSize), count });
+    } else {
+        res.status(400).json({ message: `No users found` });
+    }
     
 });
 

@@ -191,7 +191,7 @@ export const updateUserProfile = (user) => async(dispatch, getState) => {
 };
 */
 
-export const listUsers = () => async(dispatch, getState) => {
+export const listUsers = (keyword='', pageNumber='', pageSize='15') => async(dispatch, getState) => {
     try {
 
         dispatch({
@@ -199,6 +199,7 @@ export const listUsers = () => async(dispatch, getState) => {
         });
 
         const { userLogin: { userInfo } } = getState();
+        //const userPractice = userInfo.consultantProfil.practice;
 
         const config = {
             headers:{
@@ -206,7 +207,8 @@ export const listUsers = () => async(dispatch, getState) => {
             }
         };
 
-        const { data } = await axios.get(`/api/users`, config);
+        //const { data } = await axios.get(`/api/users`, config);
+        const { data } = await axios.get(`/api/users?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);
 
         dispatch({
             type: USER_LIST_SUCCESS,

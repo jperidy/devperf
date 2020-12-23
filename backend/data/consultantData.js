@@ -1,6 +1,7 @@
 //const bcrypt = require('bcryptjs');
 
 function getCDMData (nbCdm) {
+    const grade = ['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
     let matricule = 1000;
     const listOfCdm = []
     for (let incr = 0 ; incr < nbCdm ; incr++) {
@@ -11,6 +12,7 @@ function getCDMData (nbCdm) {
             name: 'usercdm_'+ matricule,
             matricule: 'matricule' + matricule,
             email: 'usercdm_' + matricule + '@mail.com',
+            grade: grade[ 2 + Math.floor(Math.random() * (grade.length - 3))],
             //password: bcrypt.hashSync('123456', 10),
             arrival: arrival,
             valued: arrival,
@@ -27,6 +29,9 @@ function getCDMData (nbCdm) {
 }
 
 function getConsultantData (nbUsers, cdmId) {
+    
+    const grade = ['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
+    
     let matricule = 0;
     const listOfUsers = []
     let incr2 = 0;
@@ -42,6 +47,8 @@ function getConsultantData (nbUsers, cdmId) {
             matricule: 'matricule' + matricule,
             email: 'user_' + matricule + '@mail.com',
             //password: bcrypt.hashSync('123456', 10),
+            grade: grade[Math.floor(Math.random() * (grade.length -1))],
+            quality: [],
             arrival: arrival,
             valued: arrival,
             leaving: leaving,

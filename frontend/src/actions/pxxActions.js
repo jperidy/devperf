@@ -11,7 +11,10 @@ import {
     PXX_UPDATE_FAIL,
     PXX_TACE_REQUEST,
     PXX_TACE_SUCCESS,
-    PXX_TACE_FAIL
+    PXX_TACE_FAIL,
+    PXX_AVAILABILITIES_REQUEST,
+    PXX_AVAILABILITIES_SUCCESS,
+    PXX_AVAILABILITIES_FAIL
 } from '../constants/pxxConstants';
 
 export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth) => async (dispatch, getState) => {
@@ -42,7 +45,7 @@ export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth
             pxx.push(data);
             functionDate.setMonth(functionDate.getMonth()+1);
         }
-        console.log(pxx);
+        //console.log(pxx);
         dispatch({ type: PXX_MY_TO_EDIT_SUCCESS, payload: pxx });
 
 
@@ -265,6 +268,34 @@ export const getTace = (practice, start, end) => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: PXX_TACE_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const getAvailabilities = (practice, start, end) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: PXX_AVAILABILITIES_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers:{
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+        const { data } = await axios.get(`/api/pxx/chart/availability?practice=${practice}&start=${start}&end=${end}`, config);
+
+        dispatch({ type: PXX_AVAILABILITIES_SUCCESS, payload: data });
+
+
+    } catch (error) {
+        dispatch({
+            type: PXX_AVAILABILITIES_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

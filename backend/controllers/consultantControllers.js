@@ -66,7 +66,7 @@ const getAllConsultants = asyncHandler(async (req, res) => {
     
     const practice = req.query.practice;
 
-    const count = await Consultant.countDocuments({ ...keyword });
+    const count = await Consultant.countDocuments({ ...keyword, practice: practice });
 
     //const practice = req.params.practice;
     let consultants = await Consultant.find({...keyword, practice: practice})
