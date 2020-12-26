@@ -27,7 +27,8 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
-app.use(helmet());
+
+//app.use(helmet());
 
 app.use('/api/users', userRoutes);
 app.use('/api/monthdata', monthPxxRoutes);
