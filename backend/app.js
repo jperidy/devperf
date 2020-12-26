@@ -42,9 +42,9 @@ if (process.env.NODE_ENV === 'production') {
     // default request for route for request not describe above
     app.get('*', (req, res) => res.sendFile(path.resolve(__dir, 'frontend', 'build', 'index.html')))
 } else {
-    app.get('/', (req, res) => {
-        res.send('API is running...');
-    });
+    //app.use(express.static(path.join(__dir, '/frontend/build')));
+    //app.get('*', (req, res) => res.sendFile(path.resolve(__dir, 'frontend', 'build', 'index.html')))
+    app.get('/', (req, res) => res.send('API is running...'));
 }
 
 module.exports = app;

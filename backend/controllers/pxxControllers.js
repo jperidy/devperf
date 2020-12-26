@@ -273,30 +273,39 @@ const getPxx = asyncHandler(async (req, res) => {
 
     // Collect ou create month information
     let month = await Month.findOne({ firstDay: firstDay }).select('_id days');
+
+    /////////////////////////////////////////////////////////////////////////////// ADD in Cron tab
+    /*
     if (!month) {
         month = await createMonth(firstDay);
     }
-
+    
     // Collect user information
     const userProfile = await Consultant.findById(consultantId);
-    //const arrivalDate = userProfile.arrival.toISOString().substring(0,10);
-    //const leavingDate = userProfile.leaving.toISOString().substring(0,10);
-
-
     // Collect or create pxx
-    const pxxData = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
-    //let returnPxx = null;
-    
-    
+    const pxxData = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');    
     if (pxxData) {
         res.status(200).json(pxxData);
-
+ 
     } else {
-
         await createPxx(userProfile, month);
         const pxxCreated = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
         res.status(200).json(pxxCreated);
     }
+
+    */
+
+    if (month) {
+        const pxxData = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
+        if (pxxData) {
+            res.status(200).json(pxxData);
+        } else {
+            res.status(400).json({message: `no pxx data found for consultant: ${consultantId} and month: ${firstDay}`});
+        }
+    } else {
+        res.status(400).json({message: `month not yet created: ${firstDay}` });
+    }
+    
 });
 
 // @desc    Update pxx data
