@@ -19,6 +19,7 @@ const authUser = asyncHandler(async(req,res) =>{
                 email: user.email,
                 adminLevel: user.adminLevel,
                 consultantProfil: user.consultantProfil,
+                status: user.status,
                 token: generateToken(user._id),
             });
         } else {

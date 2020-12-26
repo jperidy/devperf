@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const path = require('path');
+const cron = require('node-cron');
 
 const monthPxxRoutes = require('./routes/monthPxxRoutes');
 const pxxRoutes = require('./routes/pxxRoutes');
@@ -10,6 +11,7 @@ const consultantRoutes = require('./routes/consultantRoutes');
 
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
+const { controlAndCreateMonth, controleAndCreatePxx } = require('./controllers/cronJobsControllers');
 
 const app = express();
 
@@ -47,5 +49,25 @@ if (process.env.NODE_ENV === 'production') {
     //app.get('*', (req, res) => res.sendFile(path.resolve(__dir, 'frontend', 'build', 'index.html')))
     app.get('/', (req, res) => res.send('API is running...'));
 }
+
+
+// Declaration of cron tasks
+cron.schedule('*/5 * * * *', () => {
+    console.log('ControlAndCreateMonth running every 5 minutes');
+    try {
+        controlAndCreateMonth();
+    } catch (error) {
+        console.error(`${new Date(Date.now()).toISOString()} error with controlAndCreateMonth cron job: ${error}`);
+    }
+});
+
+cron.schedule('*/1 * * * *', () => {
+    console.log('ControleAndCreatePxx running every 1 minute');
+    try {
+        controleAndCreatePxx();
+    } catch (error) {
+        console.error(`${new Date(Date.now()).toISOString()} error with controlAndCreatePxx cron job: ${error}`);
+    }
+});
 
 module.exports = app;

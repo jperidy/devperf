@@ -258,6 +258,7 @@ const createPxx = async (userProfile, month) => {
     });
 
     await newPxx.save(newPxx);
+    console.log(`${new Date(Date.now()).toISOString()} Pxx created for: ${userProfile.name} and monthId: ${month._id}`);
 
     return newPxx;
 }
@@ -463,5 +464,6 @@ module.exports = {
     resetPartialTimePxx, 
     updatePartialTimePxx,
     getProdChart,
-    getAvailabilityChart
+    getAvailabilityChart,
+    createPxx
 };
