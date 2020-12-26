@@ -9,10 +9,16 @@ const app = require('./app');
 
 const ENVIRONMENT = process.env.NODE_ENV;
 
-
+/*
 const options = {
     key: fs.readFileSync("key.pem"),
     cert: fs.readFileSync("cert.pem")
+};
+*/
+
+const options = {
+    key: process.env.KEY,
+    cert: process.env.CERT
 };
 
 const normalizePort = val => {

@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const helmet = require('helmet');
 const path = require('path');
 
 const monthPxxRoutes = require('./routes/monthPxxRoutes');
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
+app.use(helmet());
 
 app.use('/api/users', userRoutes);
 app.use('/api/monthdata', monthPxxRoutes);
