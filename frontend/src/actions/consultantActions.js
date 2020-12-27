@@ -30,7 +30,10 @@ import {
     CONSULTANT_UPDATE_COMMENT_FAIL,
     CONSULTANT_ALL_PRACTICE_REQUEST,
     CONSULTANT_ALL_PRACTICE_SUCCESS,
-    CONSULTANT_ALL_PRACTICE_FAIL
+    CONSULTANT_ALL_PRACTICE_FAIL,
+    CONSULTANT_ALL_SKILLS_REQUEST,
+    CONSULTANT_ALL_SKILLS_SUCCESS,
+    CONSULTANT_ALL_SKILLS_FAIL
 } from '../constants/consultantConstants';
 
 
@@ -328,6 +331,34 @@ export const getAllConsultantByPractice = (practice) => async (dispatch, getStat
     } catch (error) {
         dispatch({
             type: CONSULTANT_ALL_PRACTICE_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const getAllConsultantSkills = () => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_ALL_SKILLS_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.get(`/api/consultants/skills`, config);
+
+        dispatch({ type: CONSULTANT_ALL_SKILLS_SUCCESS, payload: data.skills });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_ALL_SKILLS_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

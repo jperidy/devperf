@@ -10,6 +10,7 @@ import Message from '../components/Message';
 import {
     createConsultant,
     getAllCDM,
+    getAllConsultantSkills,
     getAllPractice,
     getMyConsultant,
     updateMyConsultant
@@ -29,10 +30,12 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [email, setEmail] = useState('');
     const [matricule, setMatricule] = useState('');
     const [practice, setPractice] = useState('');
+    
     const [quality, setQuality] = useState([]);
     const [skillCategory, setSkillCategory] = useState('default');
     const [skillName, setSkillName] = useState('default');
     const [skillLevel, setSkillLevel] = useState('default');
+    const [skillCategoryList, setSkillCategoryList] = useState([]);
 
     const [displayQuality, setDisplayQuality] = useState(false);
     const [cdm, setCdm] = useState('');
@@ -74,6 +77,9 @@ const ConsultantEditScreen = ({ history, match }) => {
     const consultantPracticeList = useSelector(state => state.consultantPracticeList);
     const { error: errorPractice, practiceList } = consultantPracticeList;
 
+    const consultantAllSkills = useSelector(state => state.consultantAllSkills);
+    const { loading:loadingSkills, error: errorSkills, skills } = consultantAllSkills;
+
     useEffect(() => {
         // only admin level 0 and 1 are authorized to manage consultants
         if (userInfo && !(userInfo.adminLevel <= 2)) {
@@ -107,12 +113,21 @@ const ConsultantEditScreen = ({ history, match }) => {
         if (practice) {
             dispatch(getAllCDM(practice));
         }
-        /*
-        if (practice && !cdmList && !loadingCDM) {
-            dispatch(getAllCDM(practice));
-        }
-        */
     }, [dispatch, practice]);
+
+    useEffect(() => {
+        if (!skills) {
+            dispatch(getAllConsultantSkills());
+        }
+    }, [dispatch, skills]);
+
+    useEffect(() => {
+        if (skills) {
+            let categoryList = skills.map( x => x.category);
+            categoryList = [...new Set(categoryList)];
+            setSkillCategoryList(categoryList);
+        }
+    }, [skills]);
 
     useEffect(() => {
         // When editing you need to charge consultant to edit values
@@ -351,8 +366,15 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         required
                                     >
                                         <option value='default'>Please Select</option>
-                                        <option value='hard skills'>Hard Skills</option>
-                                        <option value='soft skills'>Soft Skills</option>
+                                        {skillCategoryList && (
+                                            skillCategoryList.map((x, val) => (
+                                                <option
+                                                    value={x}
+                                                    key={val}
+                                                    onChange={(e) => setSkillCategory(e.target.value)}
+                                                >{x}</option>
+                                            )))}
+                                        
 
                                     </Form.Control>
                                 </Form.Group>
@@ -367,8 +389,16 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         required
                                     >
                                         <option value='default'>Please Select</option>
-                                        <option value='hard skills'>Hard Skills</option>
-                                        <option value='soft skills'>Soft Skills</option>
+                                        {skills && skillCategory && (
+                                            skills.map((x, val) => (
+                                                x.category === skillCategory && (
+                                                    <option
+                                                        value={x.name}
+                                                        key={val}
+                                                        onChange={(e) => setSkillName(e.target.value)}
+                                                    >{x.name}</option>
+                                                )
+                                            )))}
 
                                     </Form.Control>
                                 </Form.Group>
@@ -383,10 +413,22 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         required
                                     >
                                         <option value='default'>Please Select</option>
-                                        <option value='hard skills'>Hard Skills</option>
-                                        <option value='soft skills'>Soft Skills</option>
+                                        <option value={1}>1</option>
+                                        <option value={2}>2</option>
+                                        <option value={3}>3</option>
 
                                     </Form.Control>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <Form.Label><b>Add Skill</b></Form.Label>
+                                    <InputGroup>
+                                        <Button 
+                                            block
+                                            onClick={() => console.log('add skill')}
+                                        >Add</Button>
+                                    </InputGroup>
                                 </Form.Group>
                             </Col>
                         </Form.Row>

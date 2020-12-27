@@ -1,4 +1,5 @@
 const Consultant = require('../models/consultantModel');
+const Skill = require('../models/skillModels');
 const asyncHandler = require('express-async-handler');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
 //const { set } = require('mongoose');
@@ -268,6 +269,22 @@ const updateConsultantComment = asyncHandler(async(req,res) =>{
     }
 });
 
+// @desc    Get all registered skills
+// @route   GET /api/consultants/skills
+// @access  Private/AdminLevelOne
+const getAllSkills = asyncHandler(async(req,res) =>{
+    
+    const skills = await Skill.find();
+
+    if (skills) {
+
+        res.status(200).json({skills});
+    } else {
+        res.status(404).json({ message: 'Skills not found' });
+        throw new Error('Skills not found');
+    }
+});
+
 
 
 module.exports = { 
@@ -281,5 +298,6 @@ module.exports = {
     getAllCDMData,
     getAllPracticesData,
     updateConsultantComment,
+    getAllSkills
     //getAllConsultantByPractice
 };
