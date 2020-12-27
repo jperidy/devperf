@@ -4,12 +4,14 @@ const Month = require('./models/monthModel');
 const User = require('./models/userModel');
 const Consultant = require('./models/consultantModel')
 const Pxx = require('./models/pxxModel');
+const Skill = require('./models/skillModels');
 const connectDB = require('./config/db');
 
 //const getMonthData = require('./data/monthData');
 //const getPxxData = require('./data/pxxData');
 const {getConsultantData, getCDMData} = require('./data/consultantData');
 const { getUserData } = require('./data/userData');
+const { getSkills } = require('./data/skillData');
 
 dotenv.config();
 connectDB();
@@ -25,6 +27,7 @@ const importData = async () => {
         await Month.deleteMany();
         await Pxx.deleteMany();
         await Consultant.deleteMany();
+        await Skill.deleteMany();
         
         console.log('Data deleted');
         
@@ -34,22 +37,19 @@ const importData = async () => {
     }
     
     // CREATE NEW DATASET
-
-    //const startDate = new Date('2019-10-11');
-    //const endDate = new Date('2021-04-27');
     const nbUsers = 20;
     const nbCdm = 5;
 
-    // import default month data
-    const cdmData = getCDMData(nbCdm);
-    //const monthData = await getMonthData(startDate, endDate);
-
+    
     try {
-        //const monthDataCreated = await Month.insertMany(monthData);
+        const skillsData = getSkills();
+        const skillsDataCreated = await Skill.insertMany(skillsData);
         
+        const cdmData = getCDMData(nbCdm, skillsDataCreated);
         const cdmDataCreated = await Consultant.insertMany(cdmData);
+
         const cdmId = cdmDataCreated.map( x => x._id)
-        const consultantData = getConsultantData(nbUsers, cdmId);
+        const consultantData = getConsultantData(nbUsers, cdmId, skillsDataCreated);
         const consultantDataCreated = await Consultant.insertMany(consultantData);
 
         const allConsultants = await Consultant.find();
@@ -73,8 +73,10 @@ const destroyData = async () => {
         await Month.deleteMany();
         await Pxx.deleteMany();
         await Consultant.deleteMany();
+        await Skill.deleteMany
         
         console.log('Data deleted');
+        process.exit();
         
     } catch (error) {
         console.error(error)

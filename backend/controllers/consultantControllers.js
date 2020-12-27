@@ -117,7 +117,7 @@ const getMyConsultants = asyncHandler(async (req, res) => {
 // @access  Private, Embeded
 const getConsultant = asyncHandler(async (req, res) => {
 
-    const myConsultant = await Consultant.findById(req.params.consultantId);
+    const myConsultant = await Consultant.findById(req.params.consultantId).populate('quality');
     res.json(myConsultant);
     
 });

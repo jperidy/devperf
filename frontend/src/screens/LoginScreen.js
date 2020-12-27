@@ -21,7 +21,7 @@ const LoginScreen = ({ location, history }) => {
     useEffect(() => {
         if(userInfo && userInfo.status === 'Validated') {
             history.push(redirect);
-            // If user is authenticate, there is no seach and user is redirect to home page
+            // If user is authenticate, there is no search and user is redirect to home page
         }
     });
 

@@ -21,11 +21,16 @@ const consultantSchema = mongoose.Schema({
         enum: ['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'],
         default: 'Analyst'
     },
-    Quality: [
+    quality: [
         {
-            category: {type: String},
-            name: {type: String},
-            description: {type: String}
+            skill: {
+                type: mongoose.Schema.ObjectId,
+                ref: 'Skill'
+            },
+            level: {
+                type: Number,
+                required: true
+            }
         }
     ],
     arrival: {

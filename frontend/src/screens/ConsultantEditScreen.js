@@ -16,8 +16,6 @@ import {
 } from '../actions/consultantActions';
 import {
     CONSULTANT_CREATE_RESET,
-    //CONSULTANT_CREATE_RESET, 
-    //CONSULTANT_MY_RESET, 
     CONSULTANT_MY_UPDATE_RESET
 } from '../constants/consultantConstants';
 
@@ -31,6 +29,12 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [email, setEmail] = useState('');
     const [matricule, setMatricule] = useState('');
     const [practice, setPractice] = useState('');
+    const [quality, setQuality] = useState([]);
+    const [skillCategory, setSkillCategory] = useState('default');
+    const [skillName, setSkillName] = useState('default');
+    const [skillLevel, setSkillLevel] = useState('default');
+
+    const [displayQuality, setDisplayQuality] = useState(false);
     const [cdm, setCdm] = useState('');
     const [arrival, setArrival] = useState('');
     const [valued, setValued] = useState('');
@@ -118,6 +122,7 @@ const ConsultantEditScreen = ({ history, match }) => {
             setEmail(consultant.email);
             setMatricule(consultant.matricule);
             setPractice(consultant.practice);
+            setQuality(consultant.quality || []);
             setCdm(consultant.cdmId ? consultant.cdmId : ''); //'waiting affectation'
             setArrival(consultant.arrival.substring(0, 10));
             setValued(consultant.valued ? consultant.valued.substring(0, 10) : '');
@@ -322,6 +327,70 @@ const ConsultantEditScreen = ({ history, match }) => {
                             </Form.Group>
                         </Col>
                     </Form.Row>
+
+                    <Form.Row>
+                        <Col>
+                            <Form.Label>
+                                <b>Skills </b><i 
+                                    className="fas fa-plus-circle"
+                                    onClick={() => setDisplayQuality(!displayQuality)}    
+                                ></i>
+                            </Form.Label>
+                        </Col>
+                    </Form.Row>
+
+                    {displayQuality && (
+                        <Form.Row>
+                            <Col>
+                                <Form.Group controlId='skillCategory'>
+                                    <Form.Label><b>Category</b></Form.Label>
+                                    <Form.Control
+                                        as='select'
+                                        value={skillCategory ? skillCategory : 'default'}
+                                        onChange={(e) => setSkillCategory(e.target.value)}
+                                        required
+                                    >
+                                        <option value='default'>Please Select</option>
+                                        <option value='hard skills'>Hard Skills</option>
+                                        <option value='soft skills'>Soft Skills</option>
+
+                                    </Form.Control>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group controlId='skillName'>
+                                    <Form.Label><b>Skill</b></Form.Label>
+                                    <Form.Control
+                                        as='select'
+                                        value={skillName ? skillName : 'default'}
+                                        onChange={(e) => setSkillName(e.target.value)}
+                                        required
+                                    >
+                                        <option value='default'>Please Select</option>
+                                        <option value='hard skills'>Hard Skills</option>
+                                        <option value='soft skills'>Soft Skills</option>
+
+                                    </Form.Control>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group controlId='skillLevel'>
+                                    <Form.Label><b>Level</b></Form.Label>
+                                    <Form.Control
+                                        as='select'
+                                        value={skillLevel ? skillLevel : 'default'}
+                                        onChange={(e) => setSkillLevel(e.target.value)}
+                                        required
+                                    >
+                                        <option value='default'>Please Select</option>
+                                        <option value='hard skills'>Hard Skills</option>
+                                        <option value='soft skills'>Soft Skills</option>
+
+                                    </Form.Control>
+                                </Form.Group>
+                            </Col>
+                        </Form.Row>
+                    )}
 
                     <Form.Row>
                         <Col>
