@@ -260,6 +260,10 @@ const ConsultantEditScreen = ({ history, match }) => {
         setSeniority(((new Date(Date.now()) - new Date(e.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4));
     }
 
+    const handleUpdateSkillLevel = (id, level) => {
+        console.log('update skill level to implement');
+    }
+
     const goBackHandler = () => {
         history.go(-1);
         //dispatch({type: CONSULTANT_MY_RESET});
@@ -355,83 +359,132 @@ const ConsultantEditScreen = ({ history, match }) => {
                     </Form.Row>
 
                     {displayQuality && (
-                        <Form.Row>
-                            <Col>
-                                <Form.Group controlId='skillCategory'>
-                                    <Form.Label><b>Category</b></Form.Label>
-                                    <Form.Control
-                                        as='select'
-                                        value={skillCategory ? skillCategory : 'default'}
-                                        onChange={(e) => setSkillCategory(e.target.value)}
-                                        required
-                                    >
-                                        <option value='default'>Please Select</option>
-                                        {skillCategoryList && (
-                                            skillCategoryList.map((x, val) => (
-                                                <option
-                                                    value={x}
-                                                    key={val}
-                                                    onChange={(e) => setSkillCategory(e.target.value)}
-                                                >{x}</option>
-                                            )))}
-                                        
-
-                                    </Form.Control>
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Group controlId='skillName'>
-                                    <Form.Label><b>Skill</b></Form.Label>
-                                    <Form.Control
-                                        as='select'
-                                        value={skillName ? skillName : 'default'}
-                                        onChange={(e) => setSkillName(e.target.value)}
-                                        required
-                                    >
-                                        <option value='default'>Please Select</option>
-                                        {skills && skillCategory && (
-                                            skills.map((x, val) => (
-                                                x.category === skillCategory && (
+                        <>
+                            {quality && quality.length && (
+                                quality.map( (x, val) => (
+                                    <Form.Row key={val}>
+                                        <Col>
+                                            <Form.Group controlId='skillcategory'>
+                                                <Form.Control
+                                                    plaintext 
+                                                    readOnly 
+                                                    value={x.skill.category}
+                                                ></Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group controlId='skillName'>
+                                                <Form.Control
+                                                    plaintext 
+                                                    readOnly
+                                                    value={x.skill.name}
+                                                ></Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group controlId='skillLevel'>
+                                                <Form.Control
+                                                    type='Number'
+                                                    min={1}
+                                                    max={3}
+                                                    value={Number(x.level)}
+                                                    onChange={(e) => handleUpdateSkillLevel(x._id, e.target.value) }
+                                                ></Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2}>
+                                            <Form.Group>
+                                                <InputGroup>
+                                                    <Button
+                                                        block
+                                                        variant="danger"
+                                                        onClick={() => console.log('Delete skill')}
+                                                    ><i className="fas fa-times-circle"></i></Button>
+                                                </InputGroup>
+                                            </Form.Group>
+                                        </Col>
+                                    </Form.Row>
+                                    
+                                ))
+                            )}
+                            <Form.Row>
+                                <Col>
+                                    <Form.Group controlId='skillCategory'>
+                                        <Form.Label><b>Category</b></Form.Label>
+                                        <Form.Control
+                                            as='select'
+                                            value={skillCategory ? skillCategory : 'default'}
+                                            onChange={(e) => setSkillCategory(e.target.value)}
+                                            required
+                                        >
+                                            <option value='default'>Please Select</option>
+                                            {skillCategoryList && (
+                                                skillCategoryList.map((x, val) => (
                                                     <option
-                                                        value={x.name}
+                                                        value={x}
                                                         key={val}
-                                                        onChange={(e) => setSkillName(e.target.value)}
-                                                    >{x.name}</option>
-                                                )
-                                            )))}
+                                                        onChange={(e) => setSkillCategory(e.target.value)}
+                                                    >{x}</option>
+                                                )))}
 
-                                    </Form.Control>
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Group controlId='skillLevel'>
-                                    <Form.Label><b>Level</b></Form.Label>
-                                    <Form.Control
-                                        as='select'
-                                        value={skillLevel ? skillLevel : 'default'}
-                                        onChange={(e) => setSkillLevel(e.target.value)}
-                                        required
-                                    >
-                                        <option value='default'>Please Select</option>
-                                        <option value={1}>1</option>
-                                        <option value={2}>2</option>
-                                        <option value={3}>3</option>
 
-                                    </Form.Control>
-                                </Form.Group>
-                            </Col>
-                            <Col>
-                                <Form.Group>
-                                    <Form.Label><b>Add Skill</b></Form.Label>
-                                    <InputGroup>
-                                        <Button 
-                                            block
-                                            onClick={() => console.log('add skill')}
-                                        >Add</Button>
-                                    </InputGroup>
-                                </Form.Group>
-                            </Col>
-                        </Form.Row>
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId='skillName'>
+                                        <Form.Label><b>Skill</b></Form.Label>
+                                        <Form.Control
+                                            as='select'
+                                            value={skillName ? skillName : 'default'}
+                                            onChange={(e) => setSkillName(e.target.value)}
+                                            required
+                                        >
+                                            <option value='default'>Please Select</option>
+                                            {skills && skillCategory && (
+                                                skills.map((x, val) => (
+                                                    x.category === skillCategory && (
+                                                        <option
+                                                            value={x.name}
+                                                            key={val}
+                                                            onChange={(e) => setSkillName(e.target.value)}
+                                                        >{x.name}</option>
+                                                    )
+                                                )))}
+
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId='skillLevel'>
+                                        <Form.Label><b>Level</b></Form.Label>
+                                        <Form.Control
+                                            as='select'
+                                            value={skillLevel ? skillLevel : 'default'}
+                                            onChange={(e) => setSkillLevel(e.target.value)}
+                                            required
+                                        >
+                                            <option value='default'>Please Select</option>
+                                            <option value={1}>1</option>
+                                            <option value={2}>2</option>
+                                            <option value={3}>3</option>
+
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col xs={2}>
+                                    <Form.Group>
+                                        <Form.Label><b>Add Skill</b></Form.Label>
+                                        <InputGroup>
+                                            <Button
+                                                block
+                                                onClick={() => console.log('add skill')}
+                                            >Add</Button>
+                                        </InputGroup>
+                                    </Form.Group>
+                                </Col>
+                            </Form.Row>
+                        </>
                     )}
 
                     <Form.Row>

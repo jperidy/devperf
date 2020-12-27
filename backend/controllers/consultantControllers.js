@@ -118,7 +118,8 @@ const getMyConsultants = asyncHandler(async (req, res) => {
 // @access  Private, Embeded
 const getConsultant = asyncHandler(async (req, res) => {
 
-    const myConsultant = await Consultant.findById(req.params.consultantId).populate('quality');
+    const myConsultant = await Consultant.findById(req.params.consultantId)
+        .populate('quality.skill');
     res.json(myConsultant);
     
 });
@@ -274,7 +275,7 @@ const updateConsultantComment = asyncHandler(async(req,res) =>{
 // @access  Private/AdminLevelOne
 const getAllSkills = asyncHandler(async(req,res) =>{
     
-    const skills = await Skill.find();
+    const skills = await Skill.find().sort({category: 1});
 
     if (skills) {
 
