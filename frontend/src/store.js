@@ -14,7 +14,10 @@ import {
     consultantDeleteReducer,
     consultantUpdateCommentReducer,
     consultantAllPracticeReducer,
-    consultantAllSkillsReducer
+    consultantAllSkillsReducer,
+    consultantAddSkillReducer,
+    consultantDeleteSkillReducer,
+    consultantUpdateSkillReducer
  } from './reducers/consultantReducers';
 import { pxxMyToEditReducer } from './reducers/pxxReducers';
 
@@ -36,6 +39,9 @@ export const reducer = combineReducers({
     consultantPracticeList: consultantPracticeListReducer,
     consultantAllPractice: consultantAllPracticeReducer,
     consultantAllSkills: consultantAllSkillsReducer,
+    consultantAddSkill: consultantAddSkillReducer,
+    consultantDeleteSkill: consultantDeleteSkillReducer,
+    consultantUpdateSkill: consultantUpdateSkillReducer,
     pxxList: pxxListReducer,
     pxxMyToEdit: pxxMyToEditReducer,
     pxxUpdate: pxxUpdateReducer,

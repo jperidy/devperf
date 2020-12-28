@@ -7,7 +7,12 @@ import Button from 'react-bootstrap/Button';
 import FormContainer from '../components/FormContainer';
 import Alert from 'react-bootstrap/Alert';
 import Message from '../components/Message';
+import Loader from '../components/Loader';
+import SkillDisplayLine from '../components/SkillDisplayLine';
 import {
+    consultantAddASkill,
+    consultantDeleteSkill,
+    consultantUpdateASkillLevel,
     createConsultant,
     getAllCDM,
     getAllConsultantSkills,
@@ -30,10 +35,10 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [email, setEmail] = useState('');
     const [matricule, setMatricule] = useState('');
     const [practice, setPractice] = useState('');
-    
+
     const [quality, setQuality] = useState([]);
     const [skillCategory, setSkillCategory] = useState('default');
-    const [skillName, setSkillName] = useState('default');
+    const [skillId, setSkillId] = useState('default');
     const [skillLevel, setSkillLevel] = useState('default');
     const [skillCategoryList, setSkillCategoryList] = useState([]);
 
@@ -66,7 +71,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     const { loading, consultant } = consultantMy;
 
     const consultantMyUpdate = useSelector(state => state.consultantMyUpdate);
-    const { error: errorUpdate, success: successUpdate } = consultantMyUpdate;
+    const { loading: loadingUpdate, error: errorUpdate, success: successUpdate } = consultantMyUpdate;
 
     const consultantCreate = useSelector(state => state.consultantCreate);
     const { error: errorCreate, success: successCreate, consultantCreated } = consultantCreate;
@@ -78,7 +83,13 @@ const ConsultantEditScreen = ({ history, match }) => {
     const { error: errorPractice, practiceList } = consultantPracticeList;
 
     const consultantAllSkills = useSelector(state => state.consultantAllSkills);
-    const { loading:loadingSkills, error: errorSkills, skills } = consultantAllSkills;
+    const { loading: loadingSkills, error: errorSkills, skills } = consultantAllSkills;
+
+    const consultantAddSkill = useSelector(state => state.consultantAddSkill);
+    const { loading: loadingConsultantAddSkill, error: errorConsultantAddSkill } = consultantAddSkill;
+
+    const consultantUpdateSkill = useSelector(state => state.consultantUpdateSkill);
+    const { loading: loadingConsultantUpdateSkillconsultantUpdateSkill, error: errorConsultantUpdateSkillconsultantUpdateSkill } = consultantUpdateSkill;
 
     useEffect(() => {
         // only admin level 0 and 1 are authorized to manage consultants
@@ -123,7 +134,7 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     useEffect(() => {
         if (skills) {
-            let categoryList = skills.map( x => x.category);
+            let categoryList = skills.map(x => x.category);
             categoryList = [...new Set(categoryList)];
             setSkillCategoryList(categoryList);
         }
@@ -132,7 +143,6 @@ const ConsultantEditScreen = ({ history, match }) => {
     useEffect(() => {
         // When editing you need to charge consultant to edit values
         if (valueEditType === 'edit' && consultant) {
-            //dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
             setName(consultant.name);
             setEmail(consultant.email);
             setMatricule(consultant.matricule);
@@ -222,7 +232,6 @@ const ConsultantEditScreen = ({ history, match }) => {
                     ]
                 }
             }
-            //console.log('updatedUser', updatedUser);
             dispatch(updateMyConsultant(updatedUser));
         }
 
@@ -255,20 +264,27 @@ const ConsultantEditScreen = ({ history, match }) => {
     }
 
     const changeValueDateHandler = (e) => {
-        //console.log(e);
         setValued(e.substring(0, 10));
         setSeniority(((new Date(Date.now()) - new Date(e.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4));
     }
 
-    const handleUpdateSkillLevel = (id, level) => {
-        console.log('update skill level to implement');
+    const handleAddSkill = (consultantId, skillId, skillLevel) => {
+        dispatch(consultantAddASkill(consultantId, skillId, skillLevel));
+        dispatch(getMyConsultant(consultantId));
+    }
+
+    const handlerDeleteConsultantSkill = (consultantId, skillId) => {
+        dispatch(consultantDeleteSkill(consultantId, skillId));
+        dispatch(getMyConsultant(consultantId));
+    }
+
+    const handleUpdateSkillLevel = (consultantId, skillId, level) => {
+        //console.log('update skill level to implement');
+        dispatch(consultantUpdateASkillLevel(consultantId, skillId, level));
     }
 
     const goBackHandler = () => {
         history.go(-1);
-        //dispatch({type: CONSULTANT_MY_RESET});
-        //dispatch({ type: CONSULTANT_CREATE_RESET });
-        //dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
     }
 
     return (
@@ -350,9 +366,9 @@ const ConsultantEditScreen = ({ history, match }) => {
                     <Form.Row>
                         <Col>
                             <Form.Label>
-                                <b>Skills </b><i 
+                                <b>Skills </b><i
                                     className="fas fa-plus-circle"
-                                    onClick={() => setDisplayQuality(!displayQuality)}    
+                                    onClick={() => setDisplayQuality(!displayQuality)}
                                 ></i>
                             </Form.Label>
                         </Col>
@@ -360,53 +376,6 @@ const ConsultantEditScreen = ({ history, match }) => {
 
                     {displayQuality && (
                         <>
-                            {quality && quality.length && (
-                                quality.map( (x, val) => (
-                                    <Form.Row key={val}>
-                                        <Col>
-                                            <Form.Group controlId='skillcategory'>
-                                                <Form.Control
-                                                    plaintext 
-                                                    readOnly 
-                                                    value={x.skill.category}
-                                                ></Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col>
-                                            <Form.Group controlId='skillName'>
-                                                <Form.Control
-                                                    plaintext 
-                                                    readOnly
-                                                    value={x.skill.name}
-                                                ></Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col>
-                                            <Form.Group controlId='skillLevel'>
-                                                <Form.Control
-                                                    type='Number'
-                                                    min={1}
-                                                    max={3}
-                                                    value={Number(x.level)}
-                                                    onChange={(e) => handleUpdateSkillLevel(x._id, e.target.value) }
-                                                ></Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col xs={2}>
-                                            <Form.Group>
-                                                <InputGroup>
-                                                    <Button
-                                                        block
-                                                        variant="danger"
-                                                        onClick={() => console.log('Delete skill')}
-                                                    ><i className="fas fa-times-circle"></i></Button>
-                                                </InputGroup>
-                                            </Form.Group>
-                                        </Col>
-                                    </Form.Row>
-                                    
-                                ))
-                            )}
                             <Form.Row>
                                 <Col>
                                     <Form.Group controlId='skillCategory'>
@@ -436,8 +405,8 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         <Form.Label><b>Skill</b></Form.Label>
                                         <Form.Control
                                             as='select'
-                                            value={skillName ? skillName : 'default'}
-                                            onChange={(e) => setSkillName(e.target.value)}
+                                            value={skillId ? skillId : 'default'}
+                                            onChange={(e) => setSkillId(e.target.value)}
                                             required
                                         >
                                             <option value='default'>Please Select</option>
@@ -445,9 +414,8 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                 skills.map((x, val) => (
                                                     x.category === skillCategory && (
                                                         <option
-                                                            value={x.name}
+                                                            value={x._id}
                                                             key={val}
-                                                            onChange={(e) => setSkillName(e.target.value)}
                                                         >{x.name}</option>
                                                     )
                                                 )))}
@@ -478,12 +446,32 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         <InputGroup>
                                             <Button
                                                 block
-                                                onClick={() => console.log('add skill')}
-                                            >Add</Button>
+                                                onClick={() => handleAddSkill(consultantId, skillId, skillLevel)}
+                                            >{loadingConsultantAddSkill ? <Loader /> : 'Add'}</Button>
                                         </InputGroup>
                                     </Form.Group>
                                 </Col>
                             </Form.Row>
+                            {errorConsultantAddSkill && (
+                                <Form.Row>
+                                    <Message variant='danger'>{errorConsultantAddSkill}</Message>
+                                </Form.Row>
+                            )}
+
+                            {quality && quality.length && (
+                                quality.map((x, val) => (
+
+                                    <SkillDisplayLine
+                                        consultantId={consultantId}
+                                        skill={x}
+                                        val={val}
+                                        handleUpdateSkillLevel={handleUpdateSkillLevel}
+                                        handlerDeleteConsultantSkill={handlerDeleteConsultantSkill}
+                                    />
+
+                                ))
+                            )}
+
                         </>
                     )}
 
@@ -745,11 +733,11 @@ const ConsultantEditScreen = ({ history, match }) => {
 
                     <Form.Row>
                         <Col>
-                            <Button 
-                                type='submit' 
+                            <Button
+                                type='submit'
                                 variant='primary'
-                                disabled= {!name || !email || !matricule || !practice || !cdm || !valued || !arrival} 
-                            >{valueEditType === 'create' ? "Create" : "Update"}
+                                disabled={!name || !email || !matricule || !practice || !cdm || !valued || !arrival}
+                            >{loadingUpdate ? <Loader /> : valueEditType === 'create' ? "Create" : "Update"}
                             </Button>
                         </Col>
                     </Form.Row>

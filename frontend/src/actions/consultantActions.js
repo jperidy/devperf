@@ -33,7 +33,15 @@ import {
     CONSULTANT_ALL_PRACTICE_FAIL,
     CONSULTANT_ALL_SKILLS_REQUEST,
     CONSULTANT_ALL_SKILLS_SUCCESS,
-    CONSULTANT_ALL_SKILLS_FAIL
+    CONSULTANT_ALL_SKILLS_FAIL,
+    CONSULTANT_ADD_SKILL_REQUEST,
+    CONSULTANT_ADD_SKILL_SUCCESS,
+    CONSULTANT_ADD_SKILL_FAIL,
+    CONSULTANT_DELETE_SKILL_REQUEST,
+    CONSULTANT_DELETE_SKILL_FAIL,
+    CONSULTANT_UPDATE_SKILL_REQUEST,
+    CONSULTANT_UPDATE_SKILL_FAIL,
+    CONSULTANT_UPDATE_SKILL_SUCCESS
 } from '../constants/consultantConstants';
 
 
@@ -359,6 +367,98 @@ export const getAllConsultantSkills = () => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: CONSULTANT_ALL_SKILLS_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const consultantAddASkill = (consultantId, skillId, level) => async (dispatch, getState) => {
+
+    //console.log("consultantId", consultantId, 'skillId', skillId, 'level', level);
+
+    try {
+        const skill = {
+            skill: skillId,
+            level: level
+        }
+
+        dispatch({ type: CONSULTANT_ADD_SKILL_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        await axios.put(`/api/consultants/${consultantId}/skill`, skill, config);
+
+        dispatch({ type: CONSULTANT_ADD_SKILL_SUCCESS });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_ADD_SKILL_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const consultantDeleteSkill = (consultantId, skillId) => async (dispatch, getState) => {
+
+    //console.log("consultantId", consultantId, 'skillId', skillId);
+
+    try {
+
+        dispatch({ type: CONSULTANT_DELETE_SKILL_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        await axios.delete(`/api/consultants/${consultantId}/skill/${skillId}`, config);
+
+        dispatch({ type: CONSULTANT_DELETE_SUCCESS });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_DELETE_SKILL_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const consultantUpdateASkillLevel = (consultantId, skillId, level) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_UPDATE_SKILL_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        await axios.put(`/api/consultants/${consultantId}/skill/${skillId}`, { level }, config);
+
+        dispatch({ type: CONSULTANT_UPDATE_SKILL_SUCCESS });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_UPDATE_SKILL_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

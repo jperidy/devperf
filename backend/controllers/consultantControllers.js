@@ -286,6 +286,68 @@ const getAllSkills = asyncHandler(async(req,res) =>{
     }
 });
 
+// @desc    Add a skill for a consultant
+// @route   PUT /api/consultants/:consultantId/skill
+// @access  Private/AdminLevelOne
+const addConsultantSkill = asyncHandler(async(req,res) => {
+    
+    const consultantId = req.params.consultantId;
+    const skill = req.body;
+
+    const consultant = await Consultant.findById(consultantId);
+    const existingSkillId = consultant.quality.map( x => x.skill);
+
+    if (!existingSkillId.includes(skill.skill)) {
+        consultant.quality.push(skill);
+        const updatedConsultant = await consultant.save();
+        res.status(200).json(updatedConsultant);
+    } else {
+        res.status(400).json({message: `Can not add skill already registered for the user`});
+    }
+
+});
+
+// @desc    Delete a skill for a consultant
+// @route   PUT /api/consultants/:consultantId/skill
+// @access  Private/AdminLevelOne
+const deleteConsultantSkill = asyncHandler(async(req,res) => {
+    
+    const consultantId = req.params.consultantId;
+    const skillId = req.params.skillId;
+
+    const consultant = await Consultant.findById(consultantId);
+    const updatedSkills = consultant.quality.filter( x => x.skill.toString() !== skillId.toString());
+    consultant.quality = updatedSkills;
+
+    const updatedConsultant = await consultant.save();
+    res.status(200).json(updatedConsultant);
+
+});
+
+// @desc    Update a level skill for a consultant
+// @route   PUT /api/consultants/:consultantId/skill
+// @access  Private/AdminLevelOne
+const updateLevelConsultantSkill = asyncHandler(async(req,res) => {
+    
+    const consultantId = req.params.consultantId;
+    const skillId = req.params.skillId;
+    const level = req.body;
+
+    const consultant = await Consultant.findById(consultantId);
+    const updatedQuality = consultant.quality.map( x => {
+        if (x.skill === skillId) {
+            return {skill: skillId, level: level}
+        } else {
+            return x
+        }
+    });
+    consultant.quality = updatedQuality;
+
+    const updatedConsultant = await consultant.save();
+    res.status(200).json(updatedConsultant);
+
+});
+
 
 
 module.exports = { 
@@ -299,6 +361,9 @@ module.exports = {
     getAllCDMData,
     getAllPracticesData,
     updateConsultantComment,
-    getAllSkills
+    getAllSkills,
+    addConsultantSkill,
+    deleteConsultantSkill,
+    updateLevelConsultantSkill
     //getAllConsultantByPractice
 };

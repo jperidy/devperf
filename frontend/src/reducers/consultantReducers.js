@@ -43,7 +43,19 @@ import {
     CONSULTANT_ALL_SKILLS_REQUEST,
     CONSULTANT_ALL_SKILLS_SUCCESS,
     CONSULTANT_ALL_SKILLS_FAIL,
-    CONSULTANT_ALL_SKILLS_RESET
+    CONSULTANT_ALL_SKILLS_RESET,
+    CONSULTANT_ADD_SKILL_REQUEST,
+    CONSULTANT_ADD_SKILL_SUCCESS,
+    CONSULTANT_ADD_SKILL_FAIL,
+    CONSULTANT_ADD_SKILL_RESET,
+    CONSULTANT_DELETE_SKILL_REQUEST,
+    CONSULTANT_DELETE_SKILL_SUCCESS,
+    CONSULTANT_DELETE_SKILL_FAIL,
+    CONSULTANT_DELETE_SKILL_RESET,
+    CONSULTANT_UPDATE_SKILL_REQUEST,
+    CONSULTANT_UPDATE_SKILL_SUCCESS,
+    CONSULTANT_UPDATE_SKILL_FAIL,
+    CONSULTANT_UPDATE_SKILL_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {focus: 0}, action) => {
@@ -270,6 +282,51 @@ export const consultantAllSkillsReducer = (state = {}, action) => {
         case CONSULTANT_ALL_SKILLS_FAIL:
             return { loading: false, error: action.payload };
         case CONSULTANT_ALL_SKILLS_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const consultantAddSkillReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_ADD_SKILL_REQUEST:
+            return { loading: true };
+        case CONSULTANT_ADD_SKILL_SUCCESS:
+            return { loading: false, success: true };
+        case CONSULTANT_ADD_SKILL_FAIL:
+            return { loading: false, success: false, error: action.payload };
+        case CONSULTANT_ADD_SKILL_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const consultantDeleteSkillReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_DELETE_SKILL_REQUEST:
+            return { loading: true };
+        case CONSULTANT_DELETE_SKILL_SUCCESS:
+            return { loading: false, success: true };
+        case CONSULTANT_DELETE_SKILL_FAIL:
+            return { loading: false, success: false, error: action.payload };
+        case CONSULTANT_DELETE_SKILL_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const consultantUpdateSkillReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_UPDATE_SKILL_REQUEST:
+            return { loading: true };
+        case CONSULTANT_UPDATE_SKILL_SUCCESS:
+            return { loading: false, success: true };
+        case CONSULTANT_UPDATE_SKILL_FAIL:
+            return { loading: false, success: false, error: action.payload };
+        case CONSULTANT_UPDATE_SKILL_RESET:
             return {}
         default:
             return state;
