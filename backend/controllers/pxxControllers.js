@@ -1,10 +1,12 @@
 const Pxx = require('../models/pxxModel');
 const Month = require('../models/monthModel');
 const Consultant = require('../models/consultantModel');
+const Skill = require('../models/skillModels');
 const axios = require('axios');
 const asyncHandler = require('express-async-handler');
 const calculDayByType = require('../utils/calculDayByType');
 const { createMonth } = require('./monthPxxController');
+const mongoose = require('mongoose');
 
 
 const calculateAvailableDays = (userProfile, month) => {
@@ -198,7 +200,7 @@ const resetAllPxx = async (consultantInfo) => {
 }
 
 const resetPartialTimePxx = async (consultantInfo) => {
-    console.log('resetPartialTimePxx');
+    //console.log('resetPartialTimePxx');
 
     const consultantId = consultantInfo._id;
     const consultantToModify = await Consultant.findById(consultantId);
@@ -335,7 +337,7 @@ const updatePxx = asyncHandler(async (req, res) => {
 // @access  Private
 const getProdChart = asyncHandler(async (req, res) => {
 
-    console.log(req.query);
+    //console.log(req.query);
     const start = req.query.start; // '2021-01-01'
     const end = req.query.end; //'2021-03-01'
     const practice = req.query.practice; //'DET'
@@ -402,21 +404,22 @@ const getProdChart = asyncHandler(async (req, res) => {
 // @access  Private
 const getAvailabilityChart = asyncHandler(async (req, res) => {
 
-    //console.log(req.query);
     const start = req.query.start; // '2021-01-01'
     const end = req.query.end; //'2021-03-01'
     const practice = req.query.practice; //'DET'
+    let skills = req.query.skills.split(';').join('|');
+    
+    let searchSkillsId = await Skill.find({name: {$regex: skills, $options: 'i'}});
+    //let searchSkillsId = await Skill.find({name: {$in: skills}});
+    searchSkillsId = searchSkillsId ? {'quality.skill': {$in: searchSkillsId.map( x => x._id)}} : "";
 
     const searchPractice = practice ? {practice: practice} : '';
 
-    const month = await Month.find({ 
-        firstDay: {
-            $gte: start,
-            $lte: end
-    }});
+    const month = await Month.find({firstDay: { $gte: start, $lte: end }});
 
-    const consultant = await Consultant.find({...searchPractice});
-    const consultantId = consultant.map( x => x._id);
+    const consultants = await Consultant.find({...searchPractice, ...searchSkillsId});
+
+    const consultantId = consultants.map( x => x._id);
     
 
     const data = [];

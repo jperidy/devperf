@@ -64,10 +64,10 @@ const DashboardScreen = ({ history }) => {
 
     useEffect(() => {
         if (!loadingAvailabilities) {
-            dispatch(getAvailabilities(practice, start, end));
+            dispatch(getAvailabilities(practice, start, end, skill));
         }
     // eslint-disable-next-line
-    }, [dispatch, practice, start, end])
+    }, [dispatch, practice, start, end, skill])
 
     return (
         <>
@@ -141,8 +141,9 @@ const DashboardScreen = ({ history }) => {
                             type='text'
                             className="mb-3"
                             placeholder='Search skills'
-                            value={skill && skill}
-                            onChange={(e) => setSkill(e.target.value)}
+                            //value={skill && skill}
+                            onKeyUpCapture={(e) => setSkill(e.target.value)}
+                            //onChange={(e) => setSkill(e.target.value)}
                         ></FormControl>
                     </InputGroup>
                 </Col>
