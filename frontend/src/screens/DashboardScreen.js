@@ -35,7 +35,7 @@ const DashboardScreen = ({ history }) => {
     const [end, setEnd] = useState(endDefault);
 
     const [focus, setFocus] = useState('');
-    const [skill, setSkill] = useState('');
+    //const [skill, setSkill] = useState('');
     const [searchSkills, setSearchSkills] = useState('');
 
     const userLogin = useSelector(state => state.userLogin);
@@ -66,16 +66,13 @@ const DashboardScreen = ({ history }) => {
 
     useEffect(() => {
         if (!loadingAvailabilities) {
-            dispatch(getAvailabilities(practice, start, end, skill));
+            dispatch(getAvailabilities(practice, start, end, ''));
         }
     // eslint-disable-next-line
-    }, [dispatch, practice, start, end, skill])
+    }, [dispatch, practice, start, end])
 
     const handlerSkillsSubmit = (e) => {
         e.preventDefault();
-        //setSkill(e.target.value);
-        //console.log(searchSkills)
-        //console.log(e.target.value)
         dispatch(getAvailabilities(practice, start, end, searchSkills));
     }
 
@@ -111,7 +108,6 @@ const DashboardScreen = ({ history }) => {
                                 const date = new Date(e.target.value);
                                 date.setUTCDate(1);
                                 setEnd(date.toISOString().substring(0, 10));
-                                //dispatch(getTace(practice, start, end));
                             }}
                         ></FormControl>
                     </InputGroup>
@@ -145,33 +141,38 @@ const DashboardScreen = ({ history }) => {
             </Row>
 
             <Row className='mt-5'>
-                <Col>
+                <Col md={4}>
                     <Form onSubmit={handlerSkillsSubmit}>
-                        <Form.Group controlId='name'>
-                            <Form.Label><b>Search</b></Form.Label>
-                            <Form.Control
-                                type='text'
-                                placeholder='Search skills'
-                                value={searchSkills && searchSkills}
-                                onChange={(e) => setSearchSkills(e.target.value)}
-                                //required
-                            ></Form.Control>
-                        </Form.Group>
-                        <Button type='submit' variant='primary'>
-                            Search
+                        <Form.Row>
+                            <Col>
+                                <Form.Group controlId='skill-search'>
+                                    <Form.Control
+                                        type='text'
+                                        placeholder='Search skills'
+                                        value={searchSkills && searchSkills}
+                                        onChange={(e) => setSearchSkills(e.target.value)}
+                                    //required
+                                    ></Form.Control>
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Button type='submit' variant='primary'>
+                                    Search
                         </Button>
+                            </Col>
+                        </Form.Row>
                     </Form>
-                    
+
                 </Col>
             </Row>
 
-            {['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'].map((grade, gradVal) => (
+            {[['Analyst'], ['Consultant'], ['Senior consultant'], ['Manager', 'Senior manager', 'Director', 'Partner']].map((grades, gradVal) => (
                 
                 <div key={gradVal}>
 
                     <Row className='mt-3'>
                         <Col>
-                            <h5>{grade} availabilities</h5>
+                            <h5>{grades.join(', ')}</h5>
                         </Col>
                     </Row>
 
@@ -183,7 +184,7 @@ const DashboardScreen = ({ history }) => {
                                         <Card.Header as="h5">{x.month.firstDay.toString().substring(0, 7)}</Card.Header>
                                         <Card.Body>
                                             {x.availabilities.map((y, yVal) => (
-                                                y.grade === grade && (
+                                                grades.includes(y.grade) && (
                                                     <OverlayTrigger
                                                         key={yVal}
                                                         placement="bottom"
