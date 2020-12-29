@@ -35,6 +35,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [email, setEmail] = useState('');
     const [matricule, setMatricule] = useState('');
     const [practice, setPractice] = useState('');
+    const [grade, setGrade] = useState('Analyst');
 
     const [quality, setQuality] = useState([]);
     const [skillCategory, setSkillCategory] = useState('default');
@@ -74,7 +75,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     const { loading: loadingUpdate, error: errorUpdate, success: successUpdate } = consultantMyUpdate;
 
     const consultantCreate = useSelector(state => state.consultantCreate);
-    const { error: errorCreate, success: successCreate, consultantCreated } = consultantCreate;
+    const { loading: loadingCreate, error: errorCreate, success: successCreate, consultantCreated } = consultantCreate;
 
     const consultantCDMList = useSelector(state => state.consultantCDMList);
     const { error: errorCDM, cdmList } = consultantCDMList;
@@ -100,17 +101,17 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     useEffect(() => {
         // In edit mode we want to load the consultant informations
-        if ((valueEditType === 'edit') && !loading && (!consultant || consultant._id !== consultantId)) {
+        if ((match.params.id) && !loading && (!consultant || consultant._id !== consultantId)) {
             dispatch(getMyConsultant(consultantId));
         }
-    }, [dispatch, valueEditType, loading, consultant, consultantId]);
+    }, [dispatch, match, valueEditType, loading, consultant, consultantId]);
 
     useEffect(() => {
-        if (valueEditType === 'edit' && successUpdate) {
+        if ((match.params.id) && successUpdate) {
             dispatch(getMyConsultant(consultantId));
             dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
         }
-    }, [dispatch, successUpdate, consultantId, valueEditType]);
+    }, [dispatch, match, successUpdate, consultantId, valueEditType]);
 
     useEffect(() => {
         // Only in admin Level 0 access we can modify consultant Practice
@@ -141,12 +142,12 @@ const ConsultantEditScreen = ({ history, match }) => {
     }, [skills]);
 
     useEffect(() => {
-        // When editing you need to charge consultant to edit values
-        if (valueEditType === 'edit' && consultant) {
+        if ((match.params.id) && consultant) {
             setName(consultant.name);
             setEmail(consultant.email);
             setMatricule(consultant.matricule);
             setPractice(consultant.practice);
+            setGrade(consultant.grade);
             setQuality(consultant.quality || []);
             setCdm(consultant.cdmId ? consultant.cdmId : ''); //'waiting affectation'
             setArrival(consultant.arrival.substring(0, 10));
@@ -163,7 +164,7 @@ const ConsultantEditScreen = ({ history, match }) => {
             setValueThursday(consultant.isPartialTime.week.filter(x => x.num === 4)[0].worked)
             setValueFriday(consultant.isPartialTime.week.filter(x => x.num === 5)[0].worked)
         }
-    }, [consultant, valueEditType]);
+    }, [match, consultant, valueEditType]);
 
     useEffect(() => {
 
@@ -218,6 +219,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                 valued: new Date(valued),
                 leaving: leaving ? new Date(leaving) : null,
                 isCDM: isCDM,
+                grade: grade,
                 cdmId: cdm,
                 isPartialTime: {
                     value: partialTime,
@@ -245,6 +247,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                 leaving,
                 practice,
                 isCDM,
+                grade: grade,
                 cdmId: cdm,
                 isPartialTime: {
                     value: partialTime,
@@ -363,117 +366,122 @@ const ConsultantEditScreen = ({ history, match }) => {
                         </Col>
                     </Form.Row>
 
-                    <Form.Row>
-                        <Col>
-                            <Form.Label>
-                                <b>Skills </b><i
-                                    className="fas fa-plus-circle"
-                                    onClick={() => setDisplayQuality(!displayQuality)}
-                                ></i>
-                            </Form.Label>
-                        </Col>
-                    </Form.Row>
-
-                    {displayQuality && (
+                    {(valueEditType !== 'create') && (
                         <>
                             <Form.Row>
                                 <Col>
-                                    <Form.Group controlId='skillCategory'>
-                                        <Form.Label><b>Category</b></Form.Label>
-                                        <Form.Control
-                                            as='select'
-                                            value={skillCategory ? skillCategory : 'default'}
-                                            onChange={(e) => setSkillCategory(e.target.value)}
-                                            required
-                                        >
-                                            <option value='default'>Please Select</option>
-                                            {skillCategoryList && (
-                                                skillCategoryList.map((x, val) => (
-                                                    <option
-                                                        value={x}
-                                                        key={val}
-                                                        onChange={(e) => setSkillCategory(e.target.value)}
-                                                    >{x}</option>
-                                                )))}
-
-
-                                        </Form.Control>
-                                    </Form.Group>
-                                </Col>
-                                <Col>
-                                    <Form.Group controlId='skillName'>
-                                        <Form.Label><b>Skill</b></Form.Label>
-                                        <Form.Control
-                                            as='select'
-                                            value={skillId ? skillId : 'default'}
-                                            onChange={(e) => setSkillId(e.target.value)}
-                                            required
-                                        >
-                                            <option value='default'>Please Select</option>
-                                            {skills && skillCategory && (
-                                                skills.map((x, val) => (
-                                                    x.category === skillCategory && (
-                                                        <option
-                                                            value={x._id}
-                                                            key={val}
-                                                        >{x.name}</option>
-                                                    )
-                                                )))}
-
-                                        </Form.Control>
-                                    </Form.Group>
-                                </Col>
-                                <Col>
-                                    <Form.Group controlId='skillLevel'>
-                                        <Form.Label><b>Level</b></Form.Label>
-                                        <Form.Control
-                                            as='select'
-                                            value={skillLevel ? skillLevel : 'default'}
-                                            onChange={(e) => setSkillLevel(e.target.value)}
-                                            required
-                                        >
-                                            <option value='default'>Please Select</option>
-                                            <option value={1}>1</option>
-                                            <option value={2}>2</option>
-                                            <option value={3}>3</option>
-
-                                        </Form.Control>
-                                    </Form.Group>
-                                </Col>
-                                <Col xs={2}>
-                                    <Form.Group>
-                                        <Form.Label><b>Add Skill</b></Form.Label>
-                                        <InputGroup>
-                                            <Button
-                                                block
-                                                onClick={() => handleAddSkill(consultantId, skillId, skillLevel)}
-                                            >{loadingConsultantAddSkill ? <Loader /> : 'Add'}</Button>
-                                        </InputGroup>
-                                    </Form.Group>
+                                    <Form.Label>
+                                        <b>Skills </b><i
+                                            className="fas fa-plus-circle"
+                                            onClick={() => setDisplayQuality(!displayQuality)}
+                                        ></i>
+                                    </Form.Label>
                                 </Col>
                             </Form.Row>
-                            {errorConsultantAddSkill && (
-                                <Form.Row>
-                                    <Message variant='danger'>{errorConsultantAddSkill}</Message>
-                                </Form.Row>
+
+                            {displayQuality && (
+                                <>
+                                    <Form.Row>
+                                        <Col>
+                                            <Form.Group controlId='skillCategory'>
+                                                <Form.Label><b>Category</b></Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={skillCategory ? skillCategory : 'default'}
+                                                    onChange={(e) => setSkillCategory(e.target.value)}
+                                                    required
+                                                >
+                                                    <option value='default'>Please Select</option>
+                                                    {skillCategoryList && (
+                                                        skillCategoryList.map((x, val) => (
+                                                            <option
+                                                                value={x}
+                                                                key={val}
+                                                                onChange={(e) => setSkillCategory(e.target.value)}
+                                                            >{x}</option>
+                                                        )))}
+
+
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group controlId='skillName'>
+                                                <Form.Label><b>Skill</b></Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={skillId ? skillId : 'default'}
+                                                    onChange={(e) => setSkillId(e.target.value)}
+                                                    required
+                                                >
+                                                    <option value='default'>Please Select</option>
+                                                    {skills && skillCategory && (
+                                                        skills.map((x, val) => (
+                                                            x.category === skillCategory && (
+                                                                <option
+                                                                    value={x._id}
+                                                                    key={val}
+                                                                >{x.name}</option>
+                                                            )
+                                                        )))}
+
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col>
+                                            <Form.Group controlId='skillLevel'>
+                                                <Form.Label><b>Level</b></Form.Label>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={skillLevel ? skillLevel : 'default'}
+                                                    onChange={(e) => setSkillLevel(e.target.value)}
+                                                    required
+                                                >
+                                                    <option value='default'>Please Select</option>
+                                                    <option value={1}>1</option>
+                                                    <option value={2}>2</option>
+                                                    <option value={3}>3</option>
+
+                                                </Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2}>
+                                            <Form.Group>
+                                                <Form.Label><b>Add Skill</b></Form.Label>
+                                                <InputGroup>
+                                                    <Button
+                                                        block
+                                                        onClick={() => handleAddSkill(consultantId, skillId, skillLevel)}
+                                                    >{loadingConsultantAddSkill ? <Loader /> : 'Add'}</Button>
+                                                </InputGroup>
+                                            </Form.Group>
+                                        </Col>
+                                    </Form.Row>
+                                    {errorConsultantAddSkill && (
+                                        <Form.Row>
+                                            <Message variant='danger'>{errorConsultantAddSkill}</Message>
+                                        </Form.Row>
+                                    )}
+
+                                    {quality && quality.length && (
+                                        quality.map((x, val) => (
+
+                                            <SkillDisplayLine
+                                                consultantId={consultantId}
+                                                key={val}
+                                                skill={x}
+                                                val={val}
+                                                handleUpdateSkillLevel={handleUpdateSkillLevel}
+                                                handlerDeleteConsultantSkill={handlerDeleteConsultantSkill}
+                                            />
+
+                                        ))
+                                    )}
+
+                                </>
                             )}
-
-                            {quality && quality.length && (
-                                quality.map((x, val) => (
-
-                                    <SkillDisplayLine
-                                        consultantId={consultantId}
-                                        skill={x}
-                                        val={val}
-                                        handleUpdateSkillLevel={handleUpdateSkillLevel}
-                                        handlerDeleteConsultantSkill={handlerDeleteConsultantSkill}
-                                    />
-
-                                ))
-                            )}
-
                         </>
-                    )}
+                    )}                    
 
                     <Form.Row>
                         <Col>
@@ -524,6 +532,29 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         </InputGroup.Append>
                                     )}
                                 </InputGroup>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
+
+                    <Form.Row>
+                        <Col>
+                            <Form.Group controlId='grade'>
+                                <Form.Label><b>Grade</b></Form.Label>
+                                <Form.Control
+                                    as='select'
+                                    placeholder='Enter grade'
+                                    value={grade && grade}
+                                    onChange={(e) => setGrade(e.target.value)}
+                                    required
+                                >
+                                    <option value='Analyst'>Analyst</option>
+                                    <option value='Consultant'>Consultant</option>
+                                    <option value='Senior consultant'>Senior consultant</option>
+                                    <option value='Manager'>Manager</option>
+                                    <option value='Senior manager'>Senior manager</option>
+                                    <option value='Director'>Director</option>
+                                    <option value='Partner'>Partner</option>
+                                </Form.Control>
                             </Form.Group>
                         </Col>
                     </Form.Row>
@@ -737,7 +768,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                 type='submit'
                                 variant='primary'
                                 disabled={!name || !email || !matricule || !practice || !cdm || !valued || !arrival}
-                            >{loadingUpdate ? <Loader /> : valueEditType === 'create' ? "Create" : "Update"}
+                            >{(loadingUpdate || loadingCreate) ? <Loader /> : valueEditType === 'create' ? "Create" : "Update"}
                             </Button>
                         </Col>
                     </Form.Row>

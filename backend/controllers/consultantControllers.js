@@ -149,6 +149,7 @@ const updateConsultant = asyncHandler(async (req, res) => {
         myConsultant.name = consultantToUpdate.name;
         myConsultant.matricule = consultantToUpdate.matricule;
         myConsultant.cdmId = consultantToUpdate.cdmId;
+        myConsultant.grade = consultantToUpdate.grade;
         myConsultant.arrival = consultantToUpdate.arrival;
         myConsultant.valued = consultantToUpdate.valued;
         myConsultant.leaving = consultantToUpdate.leaving;

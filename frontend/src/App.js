@@ -12,6 +12,7 @@ import UserEditScreen from './screens/UserEditScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import StaffingRequestScreen from './screens/StaffingRequestScreen';
+import ManageSkillsScreen from './screens/ManageSkillsScreen';
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
           <Route path='/admin/users' component={ManageUsersScreen} exact />
           <Route path='/admin/edituser/:id' component={UserEditScreen} exact />
           <Route path='/admin/consultant/add' component={ConsultantEditScreen} exact />
+          <Route path='/admin/skills' component={ManageSkillsScreen} exact />
           <Route path='/' component={DashboardScreen} exact />
         </Container>
       </main>

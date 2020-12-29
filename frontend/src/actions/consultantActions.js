@@ -45,7 +45,7 @@ import {
 } from '../constants/consultantConstants';
 
 
-export const getAllMyAdminConsultants = (keyword='', pageNumber='', pageSize='15') => async (dispatch, getState) => {
+export const getAllMyAdminConsultants = (keyword = '', pageNumber = '', pageSize = '15') => async (dispatch, getState) => {
 
     try {
 
@@ -61,17 +61,17 @@ export const getAllMyAdminConsultants = (keyword='', pageNumber='', pageSize='15
             }
         };
 
-        const { data } = await axios.get(`/api/consultants/admin/consultants?practice=${userPractice}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);        
+        const { data } = await axios.get(`/api/consultants/admin/consultants?practice=${userPractice}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);
         dispatch({ type: CONSULTANTS_ALL_ADMIN_DETAILS_SUCCESS, payload: data });
 
-} catch (error) {
-    dispatch({
-        type: CONSULTANTS_ALL_ADMIN_DETAILS_FAIL,
-        payload: error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message
-    });
-}
+    } catch (error) {
+        dispatch({
+            type: CONSULTANTS_ALL_ADMIN_DETAILS_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
 };
 
 export const getAllMyConsultants = () => async (dispatch, getState) => {

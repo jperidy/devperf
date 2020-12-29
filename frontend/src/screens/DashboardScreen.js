@@ -76,43 +76,61 @@ const DashboardScreen = ({ history }) => {
         dispatch(getAvailabilities(practice, start, end, searchSkills));
     }
 
+    const navigationMonthHandler = (val) => {
+        const startDate = new Date(start);
+        const endDate = new Date(end);
+        startDate.setUTCMonth(startDate.getUTCMonth() + val);
+        endDate.setUTCMonth(endDate.getUTCMonth() + val);
+        
+        setStart(startDate.toISOString().substring(0,10));
+        setEnd(endDate.toISOString().substring(0,10));
+    }
+
     return (
         <>
             <Row>
-                <Col sm={12} md={6} lg={4} xl={3}>
-                    <label htmlFor='start-date'><b>Start date</b></label>
+                <Col className="text-center" xs={2}>
+                    <Button
+                        variant='primary'
+                        size='sm'
+                        onClick={() => navigationMonthHandler(-1)}
+                    ><i className="fas fa-caret-left"></i>
+                    </Button>
+                </Col>
+                <Col>
                     <InputGroup>
                         <FormControl
-                            type='date'
+                            type='text'
                             id='start-date'
-                            className='mb-3'
-                            value={start && start}
-                            onChange={(e) => {
-                                const date = new Date(e.target.value);
-                                date.setUTCDate(1);
-                                setStart(date.toISOString().substring(0, 10));
-                                //dispatch(getTace(practice, start, end));
-                            }}
+                            className='mb-3 text-right'
+                            plaintext
+                            value={start && `From: ${start}`}
+                            readOnly
                         ></FormControl>
                     </InputGroup>
                 </Col>
-                <Col sm={12} md={6} lg={4} xl={3}>
-                    <label htmlFor='date-end'><b>End date</b></label>
+                <Col>
                     <InputGroup>
                         <FormControl
-                            type='date'
+                            type='text'
                             id='date-end'
-                            className='mb-3'
-                            value={end && end}
-                            onChange={(e) => {
-                                const date = new Date(e.target.value);
-                                date.setUTCDate(1);
-                                setEnd(date.toISOString().substring(0, 10));
-                            }}
+                            className='mb-3 text-left'
+                            plaintext
+                            value={end && `To: ${end}`}
+                            readOnly
                         ></FormControl>
                     </InputGroup>
+                </Col>
+                <Col className="text-center" xs={2}>
+                    <Button
+                        variant='primary'
+                        size='sm'
+                        onClick={() => navigationMonthHandler(1)}
+                    ><i className="fas fa-caret-right"></i>
+                    </Button>
                 </Col>
             </Row>
+            
             <Row className='mt-3'>
                 <Col>
                     <h4>TACE ({userInfo && userInfo.consultantProfil.practice})</h4>
@@ -123,7 +141,7 @@ const DashboardScreen = ({ history }) => {
                     tace && tace.map((x, val) => (
 
                         <Col key={val} sm={12} md={6} lg={4} xl={3}>
-                            <Card className='my-3 p-3 rounded' >
+                            <Card className='my-3 p-3 rounded'>
                                 <Card.Header as="h5">{x.month.firstDay.toString().substring(0, 7)}</Card.Header>
                                 <Card.Body>
                                     <Card.Text as="div"><strong>{(Number(x.totalTACE) * 100).toString().substring(0, 4)} %</strong> Tace</Card.Text>

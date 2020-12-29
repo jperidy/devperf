@@ -11,6 +11,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 //import Message from '../components/Message';
 import { deleteUser, listUsers } from '../actions/userActions';
+import { USER_DELETE_RESET } from '../constants/userConstants';
 
 const ManageUsersScreen = ({ history }) => {
 

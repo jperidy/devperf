@@ -8,6 +8,7 @@ const monthPxxRoutes = require('./routes/monthPxxRoutes');
 const pxxRoutes = require('./routes/pxxRoutes');
 const userRoutes = require('./routes/userRoutes');
 const consultantRoutes = require('./routes/consultantRoutes');
+const skillsRoutes = require('./routes/skillsRoutes');
 
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
@@ -36,6 +37,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/monthdata', monthPxxRoutes);
 app.use('/api/pxx', pxxRoutes);
 app.use('/api/consultants', consultantRoutes);
+app.use('/api/skills', skillsRoutes);
 
 // static route for developpement access to build repository
 const __dir = path.resolve();

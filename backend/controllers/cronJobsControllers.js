@@ -37,7 +37,8 @@ const controleAndCreatePxx = async () => {
 
     const currentDate = new Date(Date.now());
     currentDate.setUTCHours(12,0,0,0);
-    currentDate.setUTCDate(1);
+    currentDate.setUTCMonth(currentDate.getUTCMonth()+1)
+    currentDate.setUTCDate(0);
     
     const numberOfMonth = 5;
     const endDate = new Date(Date.now());
