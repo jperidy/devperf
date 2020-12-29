@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import { Link } from 'react-router-dom';
@@ -35,6 +36,7 @@ const DashboardScreen = ({ history }) => {
 
     const [focus, setFocus] = useState('');
     const [skill, setSkill] = useState('');
+    const [searchSkills, setSearchSkills] = useState('');
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -68,6 +70,14 @@ const DashboardScreen = ({ history }) => {
         }
     // eslint-disable-next-line
     }, [dispatch, practice, start, end, skill])
+
+    const handlerSkillsSubmit = (e) => {
+        e.preventDefault();
+        //setSkill(e.target.value);
+        //console.log(searchSkills)
+        //console.log(e.target.value)
+        dispatch(getAvailabilities(practice, start, end, searchSkills));
+    }
 
     return (
         <>
@@ -135,17 +145,23 @@ const DashboardScreen = ({ history }) => {
             </Row>
 
             <Row className='mt-5'>
-                <Col xs={6} md={2}>
-                    <InputGroup>
-                        <FormControl
-                            type='text'
-                            className="mb-3"
-                            placeholder='Search skills'
-                            //value={skill && skill}
-                            onKeyUpCapture={(e) => setSkill(e.target.value)}
-                            //onChange={(e) => setSkill(e.target.value)}
-                        ></FormControl>
-                    </InputGroup>
+                <Col>
+                    <Form onSubmit={handlerSkillsSubmit}>
+                        <Form.Group controlId='name'>
+                            <Form.Label><b>Search</b></Form.Label>
+                            <Form.Control
+                                type='text'
+                                placeholder='Search skills'
+                                value={searchSkills && searchSkills}
+                                onChange={(e) => setSearchSkills(e.target.value)}
+                                //required
+                            ></Form.Control>
+                        </Form.Group>
+                        <Button type='submit' variant='primary'>
+                            Search
+                        </Button>
+                    </Form>
+                    
                 </Col>
             </Row>
 
