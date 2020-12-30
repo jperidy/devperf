@@ -56,7 +56,7 @@ export const deleteSkill = (skillId) => async (dispatch, getState) => {
             }
         };
 
-        const { data } = await axios.delete(`/api/skills/${skillId}`, config);
+        await axios.delete(`/api/skills/${skillId}`, config);
         dispatch({ type: SKILL_DELETE_SUCCESS });
 
     } catch (error) {

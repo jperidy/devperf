@@ -21,7 +21,7 @@ const ManageSkillsScreen = ({ history }) => {
 
     const [pageSize, setPageSize] = useState(10);
     const [pageNumber, setPageNumber] = useState(1);
-    const [category, setCategory] = useState('');
+    const category = ''; // to implement if you want to search on specific category
     const [name, setName] = useState('');
 
     // local states to add a category
@@ -43,7 +43,7 @@ const ManageSkillsScreen = ({ history }) => {
     const { loading: loadingCreateSkill, error: errorCreateSkill, success: successCreateSkill } = skillCreate;
 
     const consultantAllSkills = useSelector(state => state.consultantAllSkills);
-    const { loading: loadingSkills, error: errorSkills, skills: skillsList } = consultantAllSkills;
+    const { loading: loadingSkills, skills: skillsList } = consultantAllSkills;
 
     useEffect(() => {
         if (userInfo && (userInfo.adminLevel <= 1)) {
@@ -89,10 +89,6 @@ const ManageSkillsScreen = ({ history }) => {
             description: skillDescription
         };
         dispatch(createSkills(skillToCreate));
-    }
-
-    const onClickEditHandler = (skillId) => {
-        history.push(`/admin/editskill/${skillId}`);
     };
 
     const onClickDeleteHandler = (skill) => {
@@ -103,7 +99,7 @@ const ManageSkillsScreen = ({ history }) => {
 
     return (
         <>
-            <Row className='mt-5'>
+            <Row className='mt-3'>
                 <Col>
                     <Form onSubmit={handlerAddSkill}>
                         <Form.Row>
@@ -166,7 +162,7 @@ const ManageSkillsScreen = ({ history }) => {
                 </Col>
             </Row>
 
-            <Row>
+            <Row className='mt-3'>
 
                 <Col xs={6} md={2}>
                     <InputGroup>
@@ -219,7 +215,6 @@ const ManageSkillsScreen = ({ history }) => {
                                 <th className='align-middle text-light'>Skill</th>
                                 <th className='align-middle text-light'>Description</th>
                                 <th className='align-middle text-light'></th>
-                                <th className='align-middle text-light'></th>
                             </tr>
                         </thead>
 
@@ -229,11 +224,6 @@ const ManageSkillsScreen = ({ history }) => {
                                     <td className='align-middle'>{skill.category}</td>
                                     <td className='align-middle'>{skill.name}</td>
                                     <td className='align-middle'>{skill.description}</td>
-                                    <td className='align-middle'>
-                                        <Button className='btn btn-primary p-1' onClick={() => onClickEditHandler(skill._id)}>
-                                            <i className="fas fa-user-edit"></i>
-                                        </Button>
-                                    </td>
                                     <td className='align-middle'>
                                         <Button className='btn btn-danger p-1' onClick={() => onClickDeleteHandler(skill)}>
                                             <i className="fas fa-user-times"></i>
