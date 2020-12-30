@@ -63,4 +63,21 @@ const deleteSkill = asyncHandler(async (req, res) => {
 
 });
 
-module.exports = { getAllSkills, deleteSkill };
+// @desc    Create a skill
+// @route   POST /api/skills
+// @access  Private, AdminLevelZero
+const createASkill = asyncHandler(async (req, res) => {
+    const skill = req.body;
+    
+    const verifySkill = await Skill.find({category: skill.category, name: skill.name});
+
+    if (verifySkill.length === 0) {
+        const createdSkill = await Skill.create(skill);
+        res.status(201).json(createdSkill)
+    } else {
+        res.status(409).json({message: 'Skill already created, please verify'});
+    }
+
+});
+
+module.exports = { getAllSkills, deleteSkill, createASkill };

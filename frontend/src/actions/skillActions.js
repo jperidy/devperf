@@ -5,10 +5,13 @@ import {
     SKILL_LIST_FAIL,
     SKILL_DELETE_REQUEST,
     SKILL_DELETE_FAIL,
-    SKILL_DELETE_SUCCESS
+    SKILL_DELETE_SUCCESS,
+    SKILL_CREATE_REQUEST,
+    SKILL_CREATE_SUCCESS,
+    SKILL_CREATE_FAIL
  } from '../constants/skillsConstants';
 
- export const getAllSkills = (category = '', name = '', pageNumber = '', pageSize = '15') => async (dispatch, getState) => {
+export const getAllSkills = (category = '', name = '', pageNumber = '', pageSize = '15') => async (dispatch, getState) => {
 
     try {
 
@@ -65,3 +68,31 @@ export const deleteSkill = (skillId) => async (dispatch, getState) => {
         });
     }
 }
+
+export const createSkills = (skill) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: SKILL_CREATE_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.post('/api/skills', skill, config);
+        dispatch({ type: SKILL_CREATE_SUCCESS, payload: data });
+
+    } catch (error) {
+        dispatch({
+            type: SKILL_CREATE_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};

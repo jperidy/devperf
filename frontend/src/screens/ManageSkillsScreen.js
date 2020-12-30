@@ -4,21 +4,18 @@ import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import Alert from 'react-bootstrap/Alert';
 import Pagination from 'react-bootstrap/Pagination';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
-import { deleteSkill, getAllSkills } from '../actions/skillActions';
-import { SKILL_DELETE_RESET } from '../constants/skillsConstants';
+import { createSkills, deleteSkill, getAllSkills } from '../actions/skillActions';
+import { getAllConsultantSkills } from '../actions/consultantActions';
 
 const ManageSkillsScreen = ({ history }) => {
 
     const dispatch = useDispatch();
-
-    //const [message, setMessage] = useState({});
 
     // pagination configuration
 
@@ -27,48 +24,71 @@ const ManageSkillsScreen = ({ history }) => {
     const [category, setCategory] = useState('');
     const [name, setName] = useState('');
 
+    // local states to add a category
+    const [skillCategoryList, setSkillCategoryList] = useState([]);
+    const [skillCategory, setSkillCategory] = useState('default');
+    const [skillName, setSkillName] = useState('');
+    const [skillDescription, setSkillDescription] = useState('');
+
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const skillList = useSelector(state => state.skillList);
     const { loading, skills, pages, page, count } = skillList;
 
-    const skillDelete = useSelector(state  => state.skillDelete);
-    const {error, success} = skillDelete;
+    const skillDelete = useSelector(state => state.skillDelete);
+    const { error, success } = skillDelete;
+
+    const skillCreate = useSelector(state => state.skillCreate);
+    const { loading: loadingCreateSkill, error: errorCreateSkill, success: successCreateSkill } = skillCreate;
+
+    const consultantAllSkills = useSelector(state => state.consultantAllSkills);
+    const { loading: loadingSkills, error: errorSkills, skills: skillsList } = consultantAllSkills;
 
     useEffect(() => {
-
         if (userInfo && (userInfo.adminLevel <= 1)) {
             dispatch(getAllSkills(category, name, pageNumber, pageSize));
         } else {
             history.push('/login');
         }
 
-    }, [dispatch, history, userInfo, success, pageNumber, pageSize, category, name] );
+    }, [dispatch, history, userInfo, pageNumber, pageSize, category, name]);
 
-    /*
-    useEffect(() => {
-
-        if (error) {
-            setMessage({message: error, type:'danger'});
-        }
-        if (success) {
-            setMessage({message: 'Skill deleted', type:'success'})
-        }
-
-    }, [error, success]);
-    */
-    /*
     useEffect(() => {
         if (success) {
             dispatch(getAllSkills(category, name, pageNumber, pageSize));
-            dispatch({type: SKILL_DELETE_RESET});
         }
-    }, [dispatch, success, category, name, pageNumber, pageSize]);
-    */
+    // eslint-disable-next-line
+    }, [dispatch, success]);
 
-    const addSkillHandler = () => {
-        console.log('Add a skill');
+    useEffect(() => {
+        if (successCreateSkill) {
+            dispatch(getAllSkills(category, name, pageNumber, pageSize));
+        }
+    // eslint-disable-next-line
+    }, [dispatch, successCreateSkill]);
+
+    useEffect(() => {
+        if (!skillsList) {
+            if (!loadingSkills) {
+                dispatch(getAllConsultantSkills());
+            }
+        } else {
+            let categoryList = skillsList.map(x => x.category);
+            categoryList = [...new Set(categoryList)];
+            setSkillCategoryList(categoryList);
+        }
+    }, [dispatch, skillsList, loadingSkills]);
+
+
+    const handlerAddSkill = (e) => {
+        e.preventDefault();
+        const skillToCreate = {
+            category: skillCategory,
+            name: skillName,
+            description: skillDescription
+        };
+        dispatch(createSkills(skillToCreate));
     }
 
     const onClickEditHandler = (skillId) => {
@@ -77,21 +97,76 @@ const ManageSkillsScreen = ({ history }) => {
 
     const onClickDeleteHandler = (skill) => {
         if (window.confirm(`Are you sure to delete skill: ${skill.name} ?`)) {
-            //console.log(('deleteHandler'))
             dispatch(deleteSkill(skill._id));
         }
     }
 
     return (
         <>
+            <Row className='mt-5'>
+                <Col>
+                    <Form onSubmit={handlerAddSkill}>
+                        <Form.Row>
+                            <Col md={3}>
+                                <Form.Group controlId='skillCategory'>
+                                    <Form.Control
+                                        as='select'
+                                        value={skillCategory ? skillCategory : 'default'}
+                                        onChange={(e) => setSkillCategory(e.target.value)}
+                                        required
+                                    >
+                                        <option value='default'>Please Select</option>
+                                        {skillCategoryList && (
+                                            skillCategoryList.map((x, val) => (
+                                                <option
+                                                    value={x}
+                                                    key={val}
+                                                    onChange={(e) => { setSkillCategory(e.target.value) }}
+                                                >{x}</option>
+                                            )))}
+
+
+                                    </Form.Control>
+                                </Form.Group>
+                            </Col>
+                            <Col md={3}>
+                                <Form.Group controlId='name-skill'>
+                                    <Form.Control
+                                        type='text'
+                                        placeholder='Skill'
+                                        value={skillName && skillName}
+                                        onChange={(e) => setSkillName(e.target.value)}
+                                        disabled={skillCategory === 'default'}
+                                        required
+                                    ></Form.Control>
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group controlId='description-skill'>
+                                    <Form.Control
+                                        type='text'
+                                        placeholder='Skill description'
+                                        value={skillDescription && skillDescription}
+                                        onChange={(e) => setSkillDescription(e.target.value)}
+                                        disabled={skillCategory === 'default'}
+                                        required
+                                    ></Form.Control>
+                                </Form.Group>
+                            </Col>
+
+                            <Col className='text-right'>
+                                <Button type='submit' variant='primary' block>
+                                    {loadingCreateSkill ? <Loader /> : 'Add'}
+                                </Button>
+                            </Col>
+                        </Form.Row>
+                        {errorCreateSkill && <Message variant='danger'>{errorCreateSkill}</Message>}
+                    </Form>
+
+                </Col>
+            </Row>
 
             <Row>
-
-                <Col xs={6} md={4}>
-                    <Button className="mb-3" onClick={() => addSkillHandler()}>
-                        <i className="fas fa-user-edit mr-2"></i>Add
-                    </Button>
-                </Col>
 
                 <Col xs={6} md={2}>
                     <InputGroup>
@@ -105,13 +180,13 @@ const ManageSkillsScreen = ({ history }) => {
                     </InputGroup>
                 </Col>
 
-                <Col xs={6} md={4}>
-                    <Form.Control 
-                        plaintext 
-                        readOnly 
+                <Col xs={6} md={8}>
+                    <Form.Control
+                        plaintext
+                        readOnly
                         value={count ? `${count} skills found` : '0 skills found'} />
                 </Col>
-                
+
                 <Col xs={6} md={2}>
                     <InputGroup>
                         <FormControl
@@ -121,12 +196,12 @@ const ManageSkillsScreen = ({ history }) => {
                             value={pageSize && pageSize}
                             onChange={(e) => setPageSize(e.target.value)}
                         >
-                            {[5,10,15,20,50].map(x => (
+                            {[5, 10, 15, 20, 50].map(x => (
                                 <option
                                     key={x}
                                     value={x}
                                 >{x} / page</option>
-                                                            ))}
+                            ))}
                         </FormControl>
                     </InputGroup>
                 </Col>
@@ -160,8 +235,8 @@ const ManageSkillsScreen = ({ history }) => {
                                         </Button>
                                     </td>
                                     <td className='align-middle'>
-                                        <Button  className='btn btn-danger p-1' onClick={() => onClickDeleteHandler(skill)}>
-                                        <i className="fas fa-user-times"></i>
+                                        <Button className='btn btn-danger p-1' onClick={() => onClickDeleteHandler(skill)}>
+                                            <i className="fas fa-user-times"></i>
                                         </Button>
                                     </td>
                                 </tr>
@@ -171,28 +246,28 @@ const ManageSkillsScreen = ({ history }) => {
 
                 )}
 
-                <Pagination>
-                    <Pagination.Prev
-                        onClick={() => setPageNumber(page - 1)}
-                        disabled={page===1}
-                    />
-                    {[...Array(pages).keys()].map(x => (
-                        
-                        <Pagination.Item
-                            key={x+1}
-                            active={x + 1 === page}
-                            onClick={() => {
-                                dispatch(getAllSkills(category, name, x + 1, pageSize));
-                                setPageNumber(x+1);
-                            }}
-                        >{x + 1}</Pagination.Item>
-                        
-                    ))}
-                    <Pagination.Next
-                        onClick={() => setPageNumber(page + 1)}
-                        disabled={page===pages}
-                    />
-                </Pagination>   
+            <Pagination>
+                <Pagination.Prev
+                    onClick={() => setPageNumber(page - 1)}
+                    disabled={page === 1}
+                />
+                {[...Array(pages).keys()].map(x => (
+
+                    <Pagination.Item
+                        key={x + 1}
+                        active={x + 1 === page}
+                        onClick={() => {
+                            dispatch(getAllSkills(category, name, x + 1, pageSize));
+                            setPageNumber(x + 1);
+                        }}
+                    >{x + 1}</Pagination.Item>
+
+                ))}
+                <Pagination.Next
+                    onClick={() => setPageNumber(page + 1)}
+                    disabled={page === pages}
+                />
+            </Pagination>
         </>
     )
 }

@@ -6,7 +6,11 @@ import {
     SKILL_DELETE_REQUEST,
     SKILL_DELETE_SUCCESS,
     SKILL_DELETE_FAIL,
-    SKILL_DELETE_RESET
+    SKILL_DELETE_RESET,
+    SKILL_CREATE_REQUEST,
+    SKILL_CREATE_SUCCESS,
+    SKILL_CREATE_FAIL,
+    SKILL_CREATE_RESET
 } from "../constants/skillsConstants";
 
 export const skillListReducer = (state= {}, action) => {
@@ -40,6 +44,21 @@ export const skillDelteReducer = (state= {}, action) => {
         case SKILL_DELETE_FAIL:
             return { loading: false, error: action.payload };
         case SKILL_DELETE_RESET:
+            return {};
+        default:
+            return state ;
+    }
+};
+
+export const skillCreateReducer = (state= {}, action) => {
+    switch(action.type) {
+        case SKILL_CREATE_REQUEST:
+            return { loading: true, success: false };
+        case SKILL_CREATE_SUCCESS:
+            return { loading: false, success: true };
+        case SKILL_CREATE_FAIL:
+            return { loading: false, error: action.payload };
+        case SKILL_CREATE_RESET:
             return {};
         default:
             return state ;
