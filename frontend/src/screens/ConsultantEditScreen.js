@@ -42,7 +42,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [quality, setQuality] = useState([]);
     const [skillCategory, setSkillCategory] = useState('default');
     const [skillId, setSkillId] = useState('default');
-    const [skillLevel, setSkillLevel] = useState('default');
+    const [skillLevel, setSkillLevel] = useState(1);
     const [skillCategoryList, setSkillCategoryList] = useState([]);
 
     const [displayQuality, setDisplayQuality] = useState(false);
