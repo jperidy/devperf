@@ -1,12 +1,8 @@
 const bcrypt = require('bcryptjs');
 
 function getUserData(consultants) {
-    //const numberOfUser = 3;
     const listOfUser = [];
-
-    //console.log('consultants', consultants);
     const consultantCdmProfil = consultants.filter( x => x.isCDM === true);
-    //console.log('consultantCdmProfil', consultantCdmProfil);
 
     for (let incr = 0 ; incr < consultantCdmProfil.length ; incr++) {
          
@@ -16,7 +12,8 @@ function getUserData(consultants) {
             password : bcrypt.hashSync('123456', 10),
             consultantProfil: consultantCdmProfil[incr]._id,
             isCDM: consultantCdmProfil[incr].isCDM,
-            adminLevel: 2
+            adminLevel: consultantCdmProfil[incr].name === 'cdm1000' ? 0 : 2,
+            status: consultantCdmProfil[incr].name === 'cdm1000' ? 'Validated' : 'Waiting approval'
         };
         listOfUser.push(userCDM);
     }

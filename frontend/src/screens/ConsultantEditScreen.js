@@ -6,6 +6,8 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import FormContainer from '../components/FormContainer';
 import Alert from 'react-bootstrap/Alert';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import SkillDisplayLine from '../components/SkillDisplayLine';
@@ -397,7 +399,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                             <option
                                                                 value={x}
                                                                 key={val}
-                                                                onChange={(e) => setSkillCategory(e.target.value)}
+                                                                onChange={(e) => {setSkillCategory(e.target.value)}}
                                                             >{x}</option>
                                                         )))}
 
@@ -408,43 +410,48 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         <Col>
                                             <Form.Group controlId='skillName'>
                                                 <Form.Label><b>Skill</b></Form.Label>
-                                                <Form.Control
-                                                    as='select'
-                                                    value={skillId ? skillId : 'default'}
-                                                    onChange={(e) => setSkillId(e.target.value)}
-                                                    required
+                                                <OverlayTrigger
+                                                    placement="top"
+                                                    overlay={<Tooltip id="button-tooltip-2">{skillId ? skills.map(x => (x._id === skillId) && x.description) : 'no description'}</Tooltip>}
                                                 >
-                                                    <option value='default'>Please Select</option>
-                                                    {skills && skillCategory && (
-                                                        skills.map((x, val) => (
-                                                            x.category === skillCategory && (
-                                                                <option
-                                                                    value={x._id}
-                                                                    key={val}
-                                                                >{x.name}</option>
-                                                            )
-                                                        )))}
+                                                    <Form.Control
+                                                        as='select'
+                                                        value={skillId ? skillId : 'default'}
+                                                        onChange={(e) => setSkillId(e.target.value)}
+                                                        required
+                                                    >
+                                                        <option value='default'>Please Select</option>
+                                                        {skills && skillCategory && (
+                                                            skills.map((x, val) => (
+                                                                x.category === skillCategory && (
+                                                                    <option
+                                                                        value={x._id}
+                                                                        key={val}
+                                                                    >{x.name}</option>
+                                                                )
+                                                            )))}
 
-                                                </Form.Control>
+                                                    </Form.Control>
+                                                </OverlayTrigger>
                                             </Form.Group>
                                         </Col>
                                         <Col>
-                                            <Form.Group controlId='skillLevel'>
-                                                <Form.Label><b>Level</b></Form.Label>
-                                                <Form.Control
-                                                    as='select'
-                                                    value={skillLevel ? skillLevel : 'default'}
-                                                    onChange={(e) => setSkillLevel(e.target.value)}
-                                                    required
-                                                >
-                                                    <option value='default'>Please Select</option>
-                                                    <option value={1}>1</option>
-                                                    <option value={2}>2</option>
-                                                    <option value={3}>3</option>
+                                        <Form.Group controlId='skillLevel'>
+                                            <Form.Label><b>Level</b></Form.Label>
+                                            <Form.Control
+                                                as='select'
+                                                value={skillLevel ? skillLevel : 1}
+                                                onChange={(e) => setSkillLevel(e.target.value)}
+                                                required
+                                            >
+                                                <option value={1}>1</option>
+                                                <option value={2}>2</option>
+                                                <option value={3}>3</option>
 
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Col>
+                                            </Form.Control>
+
+                                        </Form.Group>
+                                    </Col>
                                         <Col xs={2}>
                                             <Form.Group>
                                                 <Form.Label><b>Add Skill</b></Form.Label>

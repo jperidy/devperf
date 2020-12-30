@@ -3,6 +3,8 @@ function getSkills() {
 
     let category = 'Soft Skills';
     let description = 'Description for Soft Skills';
+    ['Project Management', 'RFP', 'PMO', 'Change'].map( x => skills.push({category: category, description: 'Description', name: x}));
+    /*
     for (let incr = 1 ; incr < 11 ; incr++) {
         skills.push({
             category: category,
@@ -10,26 +12,13 @@ function getSkills() {
             name: `Name skills ${incr}`
         })
     }
+    */
 
     category = 'Hard Skills';
     description = 'Description for Hard Skills';
-    for (let incr = 1 ; incr < 11 ; incr++) {
-        skills.push({
-            category: category,
-            description: description,
-            name: `Name skills ${incr}`
-        })
-    }
-
-    category = 'Other Skills';
-    description = 'Description for Other Skills';
-    for (let incr = 1 ; incr < 11 ; incr++) {
-        skills.push({
-            category: category,
-            description: description,
-            name: `Name skills ${incr}`
-        })
-    }
+    ['Workplace', 'AD', 'Telecom', 'UX'].map( x => skills.push({category: category, description: 'Description', name: x}));
+    
+    //console.log('skills', skills)
     return skills;
 }
 
