@@ -416,12 +416,11 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
         }
         : '';
     
-    let searchSkillsId = (skills !== '') ? await Skill.find(skills) : '';
-    searchSkillsId = (searchSkillsId !== '') ? {'quality.skill': {$in: searchSkillsId.map( x => x._id)}} : {};
+    let searchSkillsId = (skills !== '') ? await Skill.find(skills).select('_id') : '';
+    searchSkillsId = (searchSkillsId !== '') ? {'quality.skill': {$in: searchSkillsId}} : {};
     const searchPractice = practice ? {practice: practice} : {};
 
-    const consultants = await Consultant.find({...searchPractice, ...searchSkillsId});
-    const consultantId = consultants.map( x => x._id);
+    const consultantId = await Consultant.find({...searchPractice, ...searchSkillsId}).select('_id');
     
     const month = await Month.find({firstDay: { $gte: start, $lte: end }});
     const data = [];

@@ -18,7 +18,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                         <Form.Control
                             plaintext
                             readOnly
-                            value={skill.skill.category}
+                            value={skill.skill && skill.skill.category}
                         ></Form.Control>
                     </Form.Group>
                 </Col>
@@ -27,7 +27,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                         <Form.Control
                             plaintext
                             readOnly
-                            value={skill.skill.name}
+                            value={skill.skill && skill.skill.name}
                         ></Form.Control>
                     </Form.Group>
                 </Col>

@@ -1,4 +1,5 @@
 const Skill = require('../models/skillModels');
+const Consultant = require('../models/consultantModel');
 const axios = require('axios');
 const asyncHandler = require('express-async-handler');
 
@@ -43,10 +44,17 @@ const getAllSkills = asyncHandler(async (req, res) => {
 // @access  Private, AdminLevelZero
 const deleteSkill = asyncHandler(async (req, res) => {
 
-    const skill = await Skill.findById(req.params.skillId);
-
+    const skill = await Skill.findById(req.params.skillId).select('_id');
+    
     if (skill) {
-        await skill.remove()
+        const impactedConsultants = await Consultant.find({'quality.skill': skill._id});
+        //console.log('impactedConsultants', impactedConsultants.map(x => x.quality))
+        for (let incr = 0; incr < impactedConsultants.length; incr++) {
+            let impactedSkills = impactedConsultants[incr].quality;
+            impactedSkills =  impactedSkills.filter(x => x.skill.toString() !== skill._id.toString());
+            await Consultant.updateOne({_id: impactedConsultants[incr]._id}, {$set: {quality: impactedSkills}});
+        }
+        await skill.remove();
         res.json({ message: 'Skill removed: ' + req.params.skillId });
     } else {
         res.status(404).json({message: 'Skill not found: ' + req.params.skillId});
