@@ -407,23 +407,24 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
     const start = req.query.start; // '2021-01-01'
     const end = req.query.end; //'2021-03-01'
     const practice = req.query.practice; //'DET'
-    let skills = req.query.skills.split(';').join('|');
+    let skills = req.query.skills ?
+        {
+            name: {
+                $regex: req.query.skills.split(';').join('|'),
+                $options: 'i'
+            }
+        }
+        : '';
     
-    let searchSkillsId = await Skill.find({name: {$regex: skills, $options: 'i'}});
-    //let searchSkillsId = await Skill.find({name: {$in: skills}});
-    searchSkillsId = searchSkillsId ? {'quality.skill': {$in: searchSkillsId.map( x => x._id)}} : "";
-
-    const searchPractice = practice ? {practice: practice} : '';
-
-    const month = await Month.find({firstDay: { $gte: start, $lte: end }});
+    let searchSkillsId = (skills !== '') ? await Skill.find(skills) : '';
+    searchSkillsId = (searchSkillsId !== '') ? {'quality.skill': {$in: searchSkillsId.map( x => x._id)}} : {};
+    const searchPractice = practice ? {practice: practice} : {};
 
     const consultants = await Consultant.find({...searchPractice, ...searchSkillsId});
-
     const consultantId = consultants.map( x => x._id);
     
-
+    const month = await Month.find({firstDay: { $gte: start, $lte: end }});
     const data = [];
-
     if (month) {
         for (let incr = 0; incr < month.length; incr++) {
 
