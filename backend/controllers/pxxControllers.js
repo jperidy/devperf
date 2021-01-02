@@ -246,16 +246,21 @@ const resetPartialTimePxx = async (consultantInfo) => {
     }
 }
 
-const createPxx = async (userProfile, month) => {
+const createPxx = async (userProfile, month, tace = 0) => {
 
-    const availableDay = calculateAvailableDays(userProfile, month );
+    let availableDay = calculateAvailableDays(userProfile, month );
+    //const workingDay = (month.days.filter(x => x.type === 'working-day')).length;
+    const prodDay = tace ? Math.round((tace + 0.05 * Math.random()) * availableDay) : 0;
+    const leavingDay = tace ? Math.round(Math.random() * (30/220) * (availableDay)) : 0;
+    const notProdDay = tace ? Math.round(Math.random() * (availableDay - prodDay - leavingDay)) : 0;
+    availableDay = availableDay - (prodDay + notProdDay + leavingDay);   
 
     const newPxx = new Pxx({
         name: userProfile._id,
         month: month._id,
-        prodDay: 0,
-        notProdDay: 0,
-        leavingDay: 0,
+        prodDay: prodDay,
+        notProdDay: notProdDay,
+        leavingDay: leavingDay,
         availableDay: availableDay
     });
 
@@ -265,17 +270,69 @@ const createPxx = async (userProfile, month) => {
     return newPxx;
 }
 
-// @desc    Get one pxx data
-// @route   GET /api/pxx/consultantId/:id/month/:month
+// @desc    Get pxx data
+// @route   GET /api/edit?consultantId=${consultantId}&month=${month}&numberMonth=${numberOfMonth}
 // @access  Private
 const getPxx = asyncHandler(async (req, res) => {
 
+    /*
     const consultantId = req.params.id;
     const date = req.params.month;
     const firstDay = date;
+    */
 
-    // Collect ou create month information
+    const consultantId = req.query.consultantId;
+    const month = req.query.month;
+    const numberOfMonth = Number(req.query.numberOfMonth);
+
+    const lastMonth = new Date(month);
+    lastMonth.setUTCMonth(lastMonth.getUTCMonth() + numberOfMonth - 1);
+    lastMonth.setUTCDate(1);
+
+    const pxxsData = [];
+
+    for (let tampMonth = new Date(month) ; tampMonth <= new Date(lastMonth) ; tampMonth.setUTCMonth(tampMonth.getUTCMonth() +1)) {
+        tampMonth.setUTCDate(1);
+        console.log(month, lastMonth, tampMonth);
+
+        const firstDay = tampMonth.toISOString().substring(0,10);
+        const searchMonth = await Month.findOne({ firstDay: firstDay });
+        if (searchMonth) {
+            const pxxData = await Pxx.findOne({ name: consultantId, month: searchMonth._id }).populate('month', 'name firstDay');
+            if (pxxData) {
+                pxxsData.push(pxxData);
+            } else {
+                pxxsData.push({ 
+                    _id: null,
+                    month: searchMonth,
+                    prodDay: '-',
+                    notProdDay: '-',
+                    leavingDay: '-',
+                    availableDay: '-'
+                })
+            }
+        } else {
+            pxxsData.push({ 
+                _id: null,
+                month: null,
+                prodDay: '-',
+                notProdDay: '-',
+                leavingDay: '-',
+                availableDay: '-'
+            })
+        }
+    }
+
+    if (pxxsData.length) {
+        res.status(200).json(pxxsData)
+    } else {
+        res.status(400).json({ message: `no pxx data found for consultant with id: ${consultantId} please check arrival date`})
+    }
+
+    /*
+    // Collect month information
     let month = await Month.findOne({ firstDay: firstDay }).select('_id days');
+    */
 
     /////////////////////////////////////////////////////////////////////////////// ADD in Cron tab
     /*
@@ -298,6 +355,7 @@ const getPxx = asyncHandler(async (req, res) => {
 
     */
 
+    /*
     if (month) {
         const pxxData = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
         if (pxxData) {
@@ -308,6 +366,7 @@ const getPxx = asyncHandler(async (req, res) => {
     } else {
         res.status(400).json({message: `month not yet created: ${firstDay}` });
     }
+    */
     
 });
 
@@ -353,7 +412,7 @@ const getProdChart = asyncHandler(async (req, res) => {
     const consultant = await Consultant.find({...searchPractice});
     const consultantId = consultant.map( x => x._id);
     //console.log('consultant', consultant);
-    console.log('nb of consultants', consultantId.length);
+    //console.log('nb of consultants', consultantId.length);
     
 
     const data = [];

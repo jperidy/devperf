@@ -57,7 +57,6 @@ const controleAndCreatePxx = async () => {
             }
         ]
     });
-    //console.log('consultants', consultants);
 
     for (let incr = 0 ; incr < consultants.length ; incr++) {
 
@@ -78,7 +77,7 @@ const controleAndCreatePxx = async () => {
             const pxxData = await Pxx.findOne({ name: consultant._id, month: searchMonth._id }).populate('month', 'name firstDay');
             
             if (!pxxData) {
-                await createPxx(consultant, searchMonth);
+                await createPxx(consultant, searchMonth, 0.79);
             }
         }
     }

@@ -56,8 +56,8 @@ function getConsultantData (nbUsers, cdmId, skills, practice) {
             })
         }
         
-        let arrival = new Date(2019 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
-        let leaving = new Date(2023 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
+        let arrival = new Date(2019 + Math.floor(Math.random() * 2), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
+        //let leaving = new Date(2023 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
         let seniority = (Date.now() - arrival) / (1000 * 3600 * 24 * 365.25);
 
         const name = nameDataSet[Math.floor(Math.random() * (nameDataSet.length - 1))] + ' ' + secondNameDataSet[Math.floor(Math.random() * (nameDataSet.length - 1))];
@@ -69,7 +69,7 @@ function getConsultantData (nbUsers, cdmId, skills, practice) {
             grade: grade[Math.floor(Math.random() * (grade.length -1))],
             arrival: arrival,
             valued: arrival,
-            leaving: leaving,
+            //leaving: leaving,
             seniority: seniority,
             practice: practice,
             isCDM: false,

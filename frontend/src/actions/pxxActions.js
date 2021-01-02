@@ -35,22 +35,26 @@ export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth
             }
         };
 
+        searchDate.setUTCDate(1);
+        const month = searchDate.toISOString().substring(0,10);
+
+        const { data } = await axios.get(`/api/pxx/edit?consultantId=${consultantId}&month=${month}&numberOfMonth=${numberOfMonth}`, config)
+        
+        /*
         const functionDate = new Date(searchDate);
         functionDate.setDate(1);
-        
         const pxx = [];
-        
         for (let incr = 0; incr < numberOfMonth; incr++){
             
             const transformDate = functionDate.toISOString().substring(0,10);
-            //console.log("transformDate", transformDate);
             const { data } = await axios.get(`/api/pxx/consultantId/${consultantId}/month/${transformDate}`, config);
             pxx.push(data);
             functionDate.setMonth(functionDate.getMonth()+1);
         }
-        //console.log(pxx);
         dispatch({ type: PXX_MY_TO_EDIT_SUCCESS, payload: pxx });
+        */
 
+       dispatch({ type: PXX_MY_TO_EDIT_SUCCESS, payload: data });
 
     } catch (error) {
         dispatch({

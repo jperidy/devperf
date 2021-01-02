@@ -217,7 +217,6 @@ const DashboardScreen = ({ history }) => {
                                                             style={(y.name === focus) ? {background: '#464277', color: 'white'} : {color: 'black'}}
                                                             onFocus={(e) => {
                                                                 setFocus(e.target.id)
-                                                                console.log(e.target.id)
                                                             }}
                                                         />
                                                     </OverlayTrigger>

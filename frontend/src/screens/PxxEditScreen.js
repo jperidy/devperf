@@ -9,7 +9,6 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { getAllMyConsultants } from '../actions/consultantActions';
 import { Container } from 'react-bootstrap';
-//import { CONSULTANT_MY_RESET } from '../constants/consultantConstants';
 
 
 const PxxEditScreen = ({ history }) => {
@@ -23,22 +22,13 @@ const PxxEditScreen = ({ history }) => {
     const consultantsMyList = useSelector(state => state.consultantsMyList);
     const { loading: loadingConsultantsMyList, error: errorConsultantsMyList, consultantsMy, focus } = consultantsMyList;
 
-    /*
-    const consultantMy = useSelector(state => state.consultantMy);
-    const { consultant } = consultantMy;
-    */
-
     const [searchDate, setSearchDate] = useState(new Date(Date.now()));
-    //const [focus, setFocus] = useState(0);
-
 
     useEffect(() => {
 
         if (!userInfo) {
             history.push('/login');
         }
-
-
     }, [history, userInfo]);
 
 
@@ -66,7 +56,6 @@ const PxxEditScreen = ({ history }) => {
                                         <ConsultantSelector
                                             consultantsMy={consultantsMy}
                                             focus={focus}
-                                            //setFocus={setFocus}
                                         />
                                     </Col>
 
@@ -84,7 +73,6 @@ const PxxEditScreen = ({ history }) => {
                                     <ConsultantsTab
                                         consultantsMy={consultantsMy}
                                         history={history}
-                                        //setFocus={setFocus}
                                         focusActive={true}
                                     />
                                 </Row>

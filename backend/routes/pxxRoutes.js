@@ -12,9 +12,9 @@ const { protect } = require('../middleware/authMiddleware');
 router.route('/')
     .put(protect, updatePxx)
     .get(protect, getAllPxx);
-//router.put('/', protect, updatePxx );
 
-router.get('/consultantId/:id/month/:month', protect, getPxx);
+//router.get('/consultantId/:id/month/:month', protect, getPxx);
+router.get('/edit', protect, getPxx);
 
 router.get('/chart/tace', getProdChart);
 router.get('/chart/availability', getAvailabilityChart);
