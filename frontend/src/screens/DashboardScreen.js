@@ -59,7 +59,7 @@ const DashboardScreen = ({ history }) => {
 
     useEffect(() => {
         if (!loadingTACE) {
-            dispatch(getTace(practice, start, end));
+            dispatch(getTace(userInfo.consultantProfil.practice, start, end));
         }
     // eslint-disable-next-line
     }, [dispatch, practice, start, end])

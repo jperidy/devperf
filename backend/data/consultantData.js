@@ -1,6 +1,6 @@
 //const bcrypt = require('bcryptjs');
 
-function getCDMData (nbCdm, skills) {
+function getCDMData (nbCdm, skills, practice) {
     const grade = ['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
     let matricule = 1000;
     const listOfCdm = [];
@@ -18,14 +18,14 @@ function getCDMData (nbCdm, skills) {
         let arrival = new Date( 2019 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
         let leaving = new Date( 2023 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
         cdm = {
-            name: 'cdm'+ matricule,
-            matricule: 'matricule' + matricule,
-            email: `cdm${matricule}@mail.com`,
+            name: 'cdm'+ practice.toLowerCase() + matricule,
+            matricule: practice + 'matricule' + matricule,
+            email: `cdm${practice.toLowerCase()}${matricule}@mail.com`,
             grade: grade[ 2 + Math.floor(Math.random() * (grade.length - 3))],
             arrival: arrival,
             valued: arrival,
             leaving: leaving,
-            practice: 'DET',
+            practice: practice,
             isCDM: true,
             isPartialTime:{ value: false, week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}], start: '', end: ''},
             quality: quality
@@ -36,7 +36,7 @@ function getCDMData (nbCdm, skills) {
     return listOfCdm;
 }
 
-function getConsultantData (nbUsers, cdmId, skills) {
+function getConsultantData (nbUsers, cdmId, skills, practice) {
     
     const grade = ['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
     const nameDataSet = ['Richard', 'Benoit', 'Jacques', 'Laurine', 'Isabelle', 'Jeanne', 'Arthur', 'Jessica', 'Jean'];
@@ -64,14 +64,14 @@ function getConsultantData (nbUsers, cdmId, skills) {
 
         user = {
             name: name,
-            matricule: 'matricule' + matricule,
-            email: name.toLowerCase().replace(' ', '') + matricule + '@mail.com',
+            matricule: practice + 'matricule' + matricule,
+            email: name.toLowerCase().replace(' ', '') + practice.toLowerCase() + matricule + '@mail.com',
             grade: grade[Math.floor(Math.random() * (grade.length -1))],
             arrival: arrival,
             valued: arrival,
             leaving: leaving,
             seniority: seniority,
-            practice: 'DET',
+            practice: practice,
             isCDM: false,
             isPartialTime: { value: false, week: [{ num: 1, worked: 1 }, { num: 2, worked: 1 }, { num: 3, worked: 1 }, { num: 4, worked: 1 }, { num: 5, worked: 1 }], start: '', end: '' },
             cdmId: cdmId[incr2],

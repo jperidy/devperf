@@ -13,7 +13,7 @@ function getUserData(consultants) {
             consultantProfil: consultantCdmProfil[incr]._id,
             isCDM: consultantCdmProfil[incr].isCDM,
             adminLevel: consultantCdmProfil[incr].name === 'cdm1000' ? 0 : 2,
-            status: consultantCdmProfil[incr].name === 'cdm1000' ? 'Validated' : 'Waiting approval'
+            status: consultantCdmProfil[incr].name === ('cdmptc11000' || 'cdmptc21000') ? 'Validated' : 'Waiting approval'
         };
         listOfUser.push(userCDM);
     }

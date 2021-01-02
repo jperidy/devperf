@@ -3,10 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import Button from 'react-bootstrap/Button';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import Form from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
 import Container from 'react-bootstrap/Container';
 import { logout } from '../actions/userActions';
 
@@ -82,10 +79,7 @@ const Header = () => {
                                 </LinkContainer>)}
 
                         </Nav>
-                        <Form inline>
-                            <FormControl type="text" placeholder="Search" className="mr-sm-2" />
-                            <Button variant="outline-success">Search</Button>
-                        </Form>
+                        
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

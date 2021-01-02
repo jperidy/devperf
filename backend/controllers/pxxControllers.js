@@ -353,6 +353,7 @@ const getProdChart = asyncHandler(async (req, res) => {
     const consultant = await Consultant.find({...searchPractice});
     const consultantId = consultant.map( x => x._id);
     //console.log('consultant', consultant);
+    console.log('nb of consultants', consultantId.length);
     
 
     const data = [];

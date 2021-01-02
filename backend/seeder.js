@@ -45,16 +45,30 @@ const importData = async () => {
         const skillsData = getSkills();
         const skillsDataCreated = await Skill.insertMany(skillsData);
         
-        const cdmData = getCDMData(nbCdm, skillsDataCreated);
-        const cdmDataCreated = await Consultant.insertMany(cdmData);
+        let ptc = 'PTC1';
+        let cdmData = getCDMData(nbCdm, skillsDataCreated, ptc);
+        let cdmDataCreated = await Consultant.insertMany(cdmData);
 
-        const cdmId = cdmDataCreated.map( x => x._id)
-        const consultantData = getConsultantData(nbUsers, cdmId, skillsDataCreated);
-        const consultantDataCreated = await Consultant.insertMany(consultantData);
+        let cdmId = cdmDataCreated.map( x => x.practice === ptc && x._id);
+        let consultantData = getConsultantData(nbUsers, cdmId, skillsDataCreated, ptc);
+        let consultantDataCreated = await Consultant.insertMany(consultantData);
 
-        const allConsultants = await Consultant.find();
-        const userData = getUserData(allConsultants);
-        const userDataCreated = await User.insertMany(userData);
+        let allConsultants = await Consultant.find({practice: ptc});
+        let userData = getUserData(allConsultants);
+        let userDataCreated = await User.insertMany(userData);
+
+
+        ptc = 'PTC2';
+        cdmData = getCDMData(nbCdm, skillsDataCreated, ptc);
+        cdmDataCreated = await Consultant.insertMany(cdmData);
+
+        cdmId = cdmDataCreated.map( x => x.practice === ptc && x._id);
+        consultantData = getConsultantData(nbUsers, cdmId, skillsDataCreated, ptc);
+        consultantDataCreated = await Consultant.insertMany(consultantData);
+
+        allConsultants = await Consultant.find({practice: ptc});
+        userData = getUserData(allConsultants);
+        userDataCreated = await User.insertMany(userData);
 
         console.log('Data imported');
         process.exit();
