@@ -34,7 +34,7 @@ const ManageUsersScreen = ({ history }) => {
     useEffect(() => {
 
         if (userInfo && (userInfo.adminLevel === 0)) {
-            dispatch(listUsers(keyword, pageNumber, pageSize));
+            dispatch(listUsers(userInfo.consultantProfil.practice, keyword, pageNumber, pageSize));
         } else {
             history.push('/login');
         }
@@ -190,7 +190,7 @@ const ManageUsersScreen = ({ history }) => {
                         key={x + 1}
                         active={x + 1 === page}
                         onClick={() => {
-                            dispatch(listUsers(keyword, x + 1, pageSize));
+                            dispatch(listUsers(userInfo.consultantProfil.practice, keyword, x + 1, pageSize));
                             setPageNumber(x + 1);
                         }}
                     >{x + 1}</Pagination.Item>

@@ -136,6 +136,7 @@ const updateUserProfile = asyncHandler(async(req,res) =>{
 // @access  Private/Admin
 const getUsers = asyncHandler(async(req,res) =>{
 
+    const practice = req.query.practice ? { practice: req.query.practice } : {};
     const pageSize = Number(req.query.pageSize);
     const page = Number(req.query.pageNumber) || 1; // by default on page 1
     const keyword = req.query.keyword ? {
@@ -145,11 +146,14 @@ const getUsers = asyncHandler(async(req,res) =>{
         }
     } : {};
 
-    //const practice = req.query.practice;
+    const consultants = await Consultant.find(practice).select('_id');
+    const consultantsId = consultants.map (consultant => consultant._id);
+    //consultantsId.push(''); // for non affected consultants
+    //console.log('length', consultantsId.length)
 
-    const count = await User.countDocuments({ ...keyword });
+    const count = await User.countDocuments({ ...keyword, consultantProfil: {$in: consultantsId} });
     
-    const users = await User.find({...keyword})
+    const users = await User.find({ ...keyword, consultantProfil: {$in: consultantsId} })
         .populate('consultantProfil').select('-password')
         .limit(pageSize).skip(pageSize * (page - 1));
 
