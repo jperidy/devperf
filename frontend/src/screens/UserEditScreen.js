@@ -59,10 +59,15 @@ const UserEditScreen = ({ match, history }) => {
         if (user) {
             setName(user.name);
             setEmail(user.email);
-            setPractice(user.consultantProfil.practice);
-            setLinkConsultant(user.consultantProfil._id);
             setAdminLevel(user.adminLevel);
-            setStatus(user.status)
+            setStatus(user.status);
+            if (user.consultantProfil) {
+                setPractice(user.consultantProfil.practice);
+                setLinkConsultant(user.consultantProfil._id);
+            } else {
+                setPractice('Undefined');
+                setLinkConsultant('');
+            }
         }
 
     }, [user]);
