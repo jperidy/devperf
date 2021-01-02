@@ -23,13 +23,13 @@ const PxxUserLine = ({ data }) => {
 
     const pxxUpdate = useSelector(state => state.pxxUpdate);
     const { loading, error } = pxxUpdate;
-    
+
     // Calculate firstday of current month to compare with firstDayMonth of displayed Pxx
     let firstDayOfCurrentMonth = new Date(Date.now());
     firstDayOfCurrentMonth.setDate(1);
-    firstDayOfCurrentMonth = firstDayOfCurrentMonth.toISOString().substring(0,10);
+    firstDayOfCurrentMonth = firstDayOfCurrentMonth.toISOString().substring(0, 10);
     //const firstdayPxxMonth = data.month ? data.month.firstDay : 'Not Created yet';
-    
+
     const editable = data.month ? (data.month.firstDay >= firstDayOfCurrentMonth) : false;
 
 
@@ -60,9 +60,9 @@ const PxxUserLine = ({ data }) => {
 
     return (
         <>
-            {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : (
+
             <Row className="py-1">
-                <Col xs={2} className="text-center align-middle"><b>{data.month ? data.month.name : 'Not created Yeat'}</b><br/><i>{workingDay ? `(${workingDay} days)` : null}</i></Col>
+                <Col xs={2} className="text-center align-middle"><b>{data.month ? data.month.name : 'Not created Yeat'}</b><br /><i>{workingDay ? `(${workingDay} days)` : null}</i></Col>
                 <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
                         <FormControl
@@ -92,7 +92,7 @@ const PxxUserLine = ({ data }) => {
                             value={notProdDayComponent ? notProdDayComponent : 0}
                             onChange={(e) => {
                                 setNotProdDayComponent(Number(e.target.value));
-                                setHasBeenModified(true);    
+                                setHasBeenModified(true);
                             }}
                         />
                     </InputGroup>
@@ -133,10 +133,11 @@ const PxxUserLine = ({ data }) => {
                         variant='outline-primary'
                         disabled={(submitButtonState && hasBeenModified) ? false : true}
                         onClick={() => clickButtonHandler()}
-                    >Submit</Button>
+                    >{loading ? <Loader /> : 'Submit'}</Button>
                 </Col>
             </Row>
-
+            {error && (
+                <Row><Message>{error}</Message></Row>
             )}
         </>
     )

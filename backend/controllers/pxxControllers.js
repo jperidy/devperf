@@ -495,7 +495,9 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
             let pxxAvailable = pxxMonth.filter(x => x.availableDay > 0);
             pxxAvailable = pxxAvailable.map(x => ({
                 name: x.name.name,
+                email: x.name.email,
                 grade: x.name.grade,
+                valued: x.name.valued,
                 practice: x.name.practice,
                 quality: x.name.quality,
                 availableDay: x.availableDay,

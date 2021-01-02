@@ -206,15 +206,20 @@ const DashboardScreen = ({ history }) => {
                                                     <OverlayTrigger
                                                         key={yVal}
                                                         placement="bottom"
-                                                        overlay={<Tooltip id="button-tooltip-2">{y.comment ? y.comment : 'no comment'}</Tooltip>}
+                                                        overlay={<Tooltip id="button-tooltip-2">{
+                                                            <>
+                                                                <p>{y.valued && ((Date.now() - new Date(y.valued))/(1000*24*3600*365.25)).toString().substring(0,4)} years</p><br/>
+                                                                <p>{y.comment ? y.comment : 'no comment'}</p>
+                                                            </>
+                                                            }</Tooltip>}
                                                     >
                                                         <Form.Control
                                                             className="px-2"
                                                             plaintext
                                                             readOnly
-                                                            id={y.name}
+                                                            id={y.email}
                                                             value={y.availableDay.toString() + ' : ' + y.name}
-                                                            style={(y.name === focus) ? {background: '#464277', color: 'white'} : {color: 'black'}}
+                                                            style={(y.email === focus) ? {background: '#464277', color: 'white'} : {color: 'black'}}
                                                             onFocus={(e) => {
                                                                 setFocus(e.target.id)
                                                             }}
