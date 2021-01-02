@@ -18,7 +18,11 @@ import {
     PXX_AVAILABILITIES_REQUEST,
     PXX_AVAILABILITIES_SUCCESS,
     PXX_AVAILABILITIES_FAIL,
-    PXX_AVAILABILITIES_RESET
+    PXX_AVAILABILITIES_RESET,
+    PXX_ALL_REQUEST,
+    PXX_ALL_SUCCESS,
+    PXX_ALL_FAIL,
+    PXX_ALL_RESET
 } from '../constants/pxxConstants';
 
 export const pxxMyToEditReducer = (state= { pxx: [] }, action) => {
@@ -81,6 +85,27 @@ export const pxxAvailabilitiesReducer = (state= {}, action) => {
     }
 };
 
+export const pxxAllListReducer = (state= {}, action) => {
+    switch(action.type) {
+        case PXX_ALL_REQUEST:
+            return { loading: true, success: false };
+        case PXX_ALL_SUCCESS:
+            return { 
+                loading: false, 
+                success: true, 
+                pxxs: action.payload.pxxs,
+                pages: action.payload.pages,
+                page: action.payload.page,
+                count: action.payload.count
+            };
+        case PXX_ALL_FAIL:
+            return { loading: false, error: action.payload };
+        case PXX_ALL_RESET:
+            return {};
+        default:
+            return state ;
+    }
+};
 
 
 

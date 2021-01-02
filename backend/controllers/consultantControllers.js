@@ -69,7 +69,6 @@ const getAllConsultants = asyncHandler(async (req, res) => {
 
     const count = await Consultant.countDocuments({ ...keyword, practice: practice });
 
-    //const practice = req.params.practice;
     let consultants = await Consultant.find({...keyword, practice: practice})
             .sort({'name': 1})
             .limit(pageSize).skip(pageSize * (page - 1));
@@ -356,7 +355,6 @@ module.exports = {
     getConsultant, 
     updateConsultant,
     getAllConsultants,
-    //getAllPracticeConsultants, 
     createConsultant,
     deleteConsultant,
     getAllCDMData,

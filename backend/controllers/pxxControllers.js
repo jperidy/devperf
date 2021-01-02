@@ -457,10 +457,45 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
     } else {
         res.status(400).json({message: 'no data found'});
     }
-})
+});
+
+// @desc    Get All pxx data for spectific month
+// @route   GET /api/pxx?practice=practice&month=month&keywork=keywork&pagesize=pagesize&pageNumber=pageNumber
+// @access  Private
+const getAllPxx = asyncHandler(async (req, res) => {
+
+    const pageSize = Number(req.query.pageSize);
+    const page = Number(req.query.pageNumber) || 1; // by default on page 1
+    const practice = req.query.practice ;
+    const month = req.query.month ;
+    const keyword = req.query.keyword ? {
+        name: {
+            $regex: req.query.keyword,
+            $options: 'i'
+        }
+    } : {};
+
+    const consultants = await Consultant.find({...keyword, practice: practice}).select('_id');
+    const consultantsId = consultants.map( consultant => consultant._id);
+
+    const count = await Pxx.countDocuments({ month: month, name: {$in: consultantsId} });
+    const pxxs = await Pxx.find({ month: month, name: {$in: consultantsId} })
+        .populate('name month')
+        .sort({'name': 1})
+        .limit(pageSize).skip(pageSize * (page - 1));
+
+    //console.log('pxxs', pxxs);
+
+    if (pxxs) {
+        res.status(200).json({pxxs, page, pages: Math.ceil(count/pageSize), count});
+    } else {
+        res.status(400).json({message: 'no pxx found'});
+    }
+});
 
 module.exports = { 
-    getPxx, 
+    getPxx,
+    getAllPxx,
     updatePxx, 
     calculateAvailableDays,
     resetAllPxx,

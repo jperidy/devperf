@@ -14,7 +14,10 @@ import {
     PXX_TACE_FAIL,
     PXX_AVAILABILITIES_REQUEST,
     PXX_AVAILABILITIES_SUCCESS,
-    PXX_AVAILABILITIES_FAIL
+    PXX_AVAILABILITIES_FAIL,
+    PXX_ALL_REQUEST,
+    PXX_ALL_FAIL,
+    PXX_ALL_SUCCESS
 } from '../constants/pxxConstants';
 
 export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth) => async (dispatch, getState) => {
@@ -296,6 +299,34 @@ export const getAvailabilities = (practice, start, end, skills) => async (dispat
     } catch (error) {
         dispatch({
             type: PXX_AVAILABILITIES_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const getAllPxx = (practice = '', month = '', keywork = '', pageSize = '10', pageNumber = '1') => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: PXX_ALL_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers:{
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+        const { data } = await axios.get(`/api/pxx?practice=${practice}&month=${month}&keyword=${keywork}&pageSize=${pageSize}&pageNumber=${pageNumber}`, config);
+
+        dispatch({ type: PXX_ALL_SUCCESS, payload: data });
+
+
+    } catch (error) {
+        dispatch({
+            type: PXX_ALL_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

@@ -1,9 +1,19 @@
 const express = require('express');
-const { getPxx, updatePxx, getProdChart, getAvailabilityChart } = require('../controllers/pxxControllers');
+const { 
+    getPxx, 
+    updatePxx, 
+    getProdChart, 
+    getAvailabilityChart, 
+    getAllPxx 
+} = require('../controllers/pxxControllers');
 const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
 
-router.put('/', protect, updatePxx );
+router.route('/')
+    .put(protect, updatePxx)
+    .get(protect, getAllPxx);
+//router.put('/', protect, updatePxx );
+
 router.get('/consultantId/:id/month/:month', protect, getPxx);
 
 router.get('/chart/tace', getProdChart);

@@ -149,7 +149,7 @@ const DashboardScreen = ({ history }) => {
                                     <Card.Text as="div">{x.totalETP.toString().substring(0, 4)} ETP</Card.Text>
                                 </Card.Body>
                                 <Card.Footer>
-                                    <Link to='/'>View details</Link>
+                                    <Link to={`/pxxdetails/${x.month._id}`}>View details</Link>
                                 </Card.Footer>
                             </Card>
                         </Col>
