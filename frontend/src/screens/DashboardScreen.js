@@ -102,9 +102,9 @@ const DashboardScreen = ({ history }) => {
                         <FormControl
                             type='text'
                             id='start-date'
-                            className='mb-3 text-right'
+                            className='form-control-lg mb-3 text-right'
                             plaintext
-                            value={start && `From: ${start}`}
+                            value={start && `From: ${start.substring(0,7).replace('-','/')}`}
                             readOnly
                         ></FormControl>
                     </InputGroup>
@@ -114,9 +114,9 @@ const DashboardScreen = ({ history }) => {
                         <FormControl
                             type='text'
                             id='date-end'
-                            className='mb-3 text-left'
+                            className='form-control-lg mb-3 text-left'
                             plaintext
-                            value={end && `To: ${end}`}
+                            value={end && `To: ${end.substring(0,7).replace('-','/')}`}
                             readOnly
                         ></FormControl>
                     </InputGroup>

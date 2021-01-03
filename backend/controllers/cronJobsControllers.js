@@ -11,7 +11,7 @@ const controlAndCreateMonth = async () => {
     currentDate.setUTCHours(12,0,0,0);
     currentDate.setUTCDate(1);
     
-    const numberOfMonth = 10;
+    const numberOfMonth = 12;
     const endDate = new Date(Date.now());
     endDate.setUTCMonth(endDate.getUTCMonth() + numberOfMonth);
     endDate.setUTCDate(1);
@@ -40,7 +40,7 @@ const controleAndCreatePxx = async () => {
     currentDate.setUTCMonth(currentDate.getUTCMonth()+1)
     currentDate.setUTCDate(0);
     
-    const numberOfMonth = 5;
+    const numberOfMonth = 12;
     const endDate = new Date(Date.now());
     endDate.setUTCMonth(endDate.getUTCMonth() + numberOfMonth);
     endDate.setUTCDate(1);

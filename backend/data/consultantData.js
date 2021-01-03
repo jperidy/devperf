@@ -10,8 +10,8 @@ function getCDMData (nbCdm, skills, practice) {
         const quality = [];
         for (let incr = 0 ; incr < 5 ; incr++) {
             quality.push({
-                skill: skills[(Math.floor(Math.random() * (skills.length -1)))]._id,
-                level: Number(1 + Math.floor(Math.random() * 2))
+                skill: skills[(Math.round(Math.random() * (skills.length -1)))]._id,
+                level: Number(1 + Math.round(Math.random() * 2))
             })
         }
         
@@ -21,7 +21,7 @@ function getCDMData (nbCdm, skills, practice) {
             name: 'cdm'+ practice.toLowerCase() + matricule,
             matricule: practice + 'matricule' + matricule,
             email: `cdm${practice.toLowerCase()}${matricule}@mail.com`,
-            grade: grade[ 2 + Math.floor(Math.random() * (grade.length - 3))],
+            grade: grade[ 2 + Math.round(Math.random() * (grade.length - 3))],
             arrival: arrival,
             valued: arrival,
             leaving: leaving,
@@ -43,7 +43,7 @@ function getConsultantData (nbUsers, cdmId, skills, practice) {
     const secondNameDataSet = ['DURAND', 'MARTIN', 'BERNARD', 'THOMAS', 'PETIT', 'MICHEL', 'ROUX'];
 
     let matricule = 0;
-    const listOfUsers = []
+    const listOfUsers = [];
     let incr2 = 0;
 
     
@@ -51,8 +51,8 @@ function getConsultantData (nbUsers, cdmId, skills, practice) {
         const quality = [];
         for (let incr = 0 ; incr < 5 ; incr++) {
             quality.push({
-                skill: skills[(Math.floor(Math.random() * (skills.length -1)))]._id,
-                level: Number(1 + Math.floor(Math.random() * 2))
+                skill: skills[(Math.round(Math.random() * (skills.length -1)))]._id,
+                level: Number(1 + Math.round(Math.random() * 2))
             })
         }
         
@@ -60,13 +60,13 @@ function getConsultantData (nbUsers, cdmId, skills, practice) {
         //let leaving = new Date(2023 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
         let seniority = (Date.now() - arrival) / (1000 * 3600 * 24 * 365.25);
 
-        const name = nameDataSet[Math.floor(Math.random() * (nameDataSet.length - 1))] + ' ' + secondNameDataSet[Math.floor(Math.random() * (nameDataSet.length - 1))];
+        const name = nameDataSet[Math.round(Math.random() * (nameDataSet.length - 1))] + ' ' + secondNameDataSet[Math.round(Math.random() * (secondNameDataSet.length - 1))];
 
         user = {
             name: name,
             matricule: practice + 'matricule' + matricule,
             email: name.toLowerCase().replace(' ', '') + practice.toLowerCase() + matricule + '@mail.com',
-            grade: grade[Math.floor(Math.random() * (grade.length -1))],
+            grade: grade[Math.round(Math.random() * (grade.length -1))],
             arrival: arrival,
             valued: arrival,
             //leaving: leaving,
