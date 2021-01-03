@@ -66,7 +66,7 @@ function getConsultantData (nbUsers, cdmId, skills, practice) {
             name: name,
             matricule: practice + 'matricule' + matricule,
             email: name.toLowerCase().replace(' ', '') + practice.toLowerCase() + matricule + '@mail.com',
-            grade: grade[Math.round(Math.random() * (grade.length -1))],
+            grade: grade[Math.round(Math.random() * (grade.length - 1))],
             arrival: arrival,
             valued: arrival,
             //leaving: leaving,

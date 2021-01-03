@@ -214,11 +214,10 @@ const DashboardScreen = ({ history }) => {
                                                             }</Tooltip>}
                                                     >
                                                         <Form.Control
-                                                            className="px-2"
                                                             plaintext
                                                             readOnly
                                                             id={y.email}
-                                                            value={y.availableDay.toString() + ' : ' + y.name}
+                                                            value={y.availableDay.toString() + ' days : ' + y.name}
                                                             style={(y.email === focus) ? {background: '#464277', color: 'white'} : {color: 'black'}}
                                                             onFocus={(e) => {
                                                                 setFocus(e.target.id)
