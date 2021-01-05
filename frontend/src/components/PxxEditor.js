@@ -16,41 +16,35 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
 
 
     const pxxMyToEdit = useSelector(state => state.pxxMyToEdit);
-    const { loading: loadingConsultantMyToEdit, error: errorConsultantMyToEdit, pxx } = pxxMyToEdit;
+    const { loading: loadingPxx, error: errorPxx, pxx } = pxxMyToEdit;
+
+    const pxxUpdate = useSelector(state => state.pxxUpdate);
+    const { loading: loadingUpdate, error: errorUpdate } = pxxUpdate;
 
     let consultantId = consultantsMy[consultantFocus]._id;
     
     useEffect(() => {
 
         // Effect when loading component and each time entry parameters change
-        if(!loadingConsultantMyToEdit) {
-            dispatch(getMyConsultantPxxToEdit(consultantId, searchDate, numberOfMonth));
+        dispatch(getMyConsultantPxxToEdit(consultantId, searchDate, numberOfMonth));
+        /*
+        if(!loadingPxx) {
         }
- 
-
+        */
     }, [dispatch, searchDate, numberOfMonth, consultantId]);
 
     return (
         <>
 
             <Row>
-                <Col xs={2} className="text-center"></Col>
-                <Col xs={2} className="text-center align-middle px-1"><b>Prod</b></Col>
-                <Col xs={2} className="text-center align-middle px-1"><b>Not Prod</b></Col>
-                <Col xs={2} className="text-center align-middle px-1"><b>Holidays</b></Col>
-                <Col xs={2} className="text-center align-middle px-1"><b>Availability</b></Col>
-                <Col xs={2} className="text-center">
-                    <Button
-                        className='btn btn-primary mb-3'
-                        variant='primary'
-                        size='sm'
-                        onClick={() => navigationMonthHandler(-1)}
-                    ><i className="fas fa-caret-up"></i>
-                    </Button>
-                </Col>
+                <Col xs={4} className="text-center align-middle px-1 pb-2"> {loadingUpdate && <Loader />}</Col>
+                <Col xs={2} className="text-center align-middle px-1 pb-2"><b>Prod</b></Col>
+                <Col xs={2} className="text-center align-middle px-1 pb-2"><b>Not Prod</b></Col>
+                <Col xs={2} className="text-center align-middle px-1 pb-2"><b>Holidays</b></Col>
+                <Col xs={2} className="text-center align-middle px-1 pb-2"><b>Availability</b></Col>
             </Row>
 
-            {loadingConsultantMyToEdit ? <Loader /> : errorConsultantMyToEdit ? <Message variant="danger">{errorConsultantMyToEdit}</Message> : (
+            {loadingPxx ? <Loader /> : errorPxx ? <Message variant="danger">{errorPxx}</Message> : (
                 pxx.map((line, key) => (
                         <PxxUserLine
                             key={key}
@@ -58,21 +52,32 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
                         />
                 ))
             )}
+
+            {errorUpdate && (
+                <Row><Message variant='danger'>{errorUpdate}</Message></Row>
+            )}
+            
             <Row>
-                <Col xs={2} className="text-center"></Col>
-                <Col xs={2} className="text-center align-middle px-1"></Col>
-                <Col xs={2} className="text-center align-middle px-1"></Col>
-                <Col xs={2} className="text-center align-middle px-1"></Col>
-                <Col xs={2} className="text-center align-middle px-1"></Col>
-                <Col xs={2} className="text-center">
+                <Col xs={0} md={6}></Col>
+                <Col xs={6} md={2} className="text-right">
+                    <Button
+                        className='btn btn-primary mt-3'
+                        variant='primary'
+                        size='sm'
+                        onClick={() => navigationMonthHandler(-1)}
+                        block
+                    ><i className="fas fa-caret-left"></i>  Previous</Button>
+                </Col>
+                <Col xs={6} md={2} className="text-left">
                     <Button
                         className='btn btn-primary mt-3'
                         variant='primary'
                         size='sm'
                         onClick={() => navigationMonthHandler(1)}
-                    ><i className="fas fa-caret-down"></i>
-                    </Button>
+                        block
+                    >Next  <i className="fas fa-caret-right"></i></Button>
                 </Col>
+                <Col xs={0} md={2}></Col>
             </Row>
 
         </>

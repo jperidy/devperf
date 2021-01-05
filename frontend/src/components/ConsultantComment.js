@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { updateComment } from '../actions/consultantActions';
-import Loader from '../components/Loader';
-import Message from '../components/Message';
+import Loader from './Loader';
+import Message from './Message';
 //import { getAllMyConsultants } from '../actions/consultantActions';
 
-const PxxComment = ({ comment, consultantId, setCommentUpdated }) => {
+const ConsultantComment = ({ comment, consultantId, setCommentUpdated }) => {
 
     const dispatch = useDispatch();
 
@@ -33,6 +33,7 @@ const PxxComment = ({ comment, consultantId, setCommentUpdated }) => {
                         <Form.Label><b>Comments</b></Form.Label>
                         <Form.Control
                             as="textarea"
+                            style={{'minHeight': '15vh'}}
                             placeholder="Please enter a comment"
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
@@ -50,4 +51,4 @@ const PxxComment = ({ comment, consultantId, setCommentUpdated }) => {
     )
 }
 
-export default PxxComment; 
+export default ConsultantComment; 

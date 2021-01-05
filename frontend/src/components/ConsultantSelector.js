@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
-import PxxComment from '../components/PxxComment';
+import ConsultantComment from './ConsultantComment';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
@@ -63,7 +63,7 @@ const ConsultantSelector = ({ consultantsMy, focus }) => {
             </Row>
             <Row className="my-3">
                 <Col>
-                    {<PxxComment
+                    {<ConsultantComment
                         comment={consultantsMy[focus].comment}
                         consultantId={consultantsMy[focus]._id}
                         //setCommentUpdated={setCommentUpdated}

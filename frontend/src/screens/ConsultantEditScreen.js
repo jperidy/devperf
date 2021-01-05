@@ -62,7 +62,6 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [valueThursday, setValueThursday] = useState(1);
     const [valueFriday, setValueFriday] = useState(1);
 
-    const [addPractice, setAddPractice] = useState(false);
     const [message, setMessage] = useState('');
 
     const valueEditType = match.params.id ? 'edit' : 'create';
@@ -86,13 +85,13 @@ const ConsultantEditScreen = ({ history, match }) => {
     const { error: errorPractice, practiceList } = consultantPracticeList;
 
     const consultantAllSkills = useSelector(state => state.consultantAllSkills);
-    const { loading: loadingSkills, error: errorSkills, skills } = consultantAllSkills;
+    const { skills } = consultantAllSkills;
 
     const consultantAddSkill = useSelector(state => state.consultantAddSkill);
     const { loading: loadingConsultantAddSkill, error: errorConsultantAddSkill } = consultantAddSkill;
 
     const consultantUpdateSkill = useSelector(state => state.consultantUpdateSkill);
-    const { loading: loadingConsultantUpdateSkillconsultantUpdateSkill, error: errorConsultantUpdateSkillconsultantUpdateSkill } = consultantUpdateSkill;
+    const { loading: loadingConsultantUpdateSkill, error: errorConsultantUpdateSkill } = consultantUpdateSkill;
 
     useEffect(() => {
         // only admin level 0 and 1 are authorized to manage consultants
@@ -171,11 +170,11 @@ const ConsultantEditScreen = ({ history, match }) => {
     useEffect(() => {
 
         // Charge default practice for admin Level 0 user
-        if (!addPractice && !practice && userInfo && practiceList && !practice) {
+        if (!practice && userInfo && practiceList) {
             setPractice(practiceList[0]);
         }
         // set default Practice if admin Level > 0
-        if (!addPractice && !practice && userInfo && userInfo.adminLevel > 0) {
+        if (!practice && userInfo && userInfo.adminLevel > 0) {
             setPractice(userInfo.consultantProfil.practice);
         }
 
@@ -185,7 +184,7 @@ const ConsultantEditScreen = ({ history, match }) => {
         practiceList,
         cdm,
         cdmList,
-        addPractice
+        //addPractice
     ]);
 
     useEffect(() => {
@@ -383,6 +382,8 @@ const ConsultantEditScreen = ({ history, match }) => {
 
                             {displayQuality && (
                                 <>
+                                    {loadingConsultantUpdateSkill && <Loader />}
+                                    {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
                                     <Form.Row>
                                         <Col>
                                             <Form.Group controlId='skillCategory'>
@@ -495,49 +496,27 @@ const ConsultantEditScreen = ({ history, match }) => {
                             <Form.Group controlId='practice'>
                                 <Form.Label><b>Practice</b></Form.Label>
                                 <InputGroup>
-                                    {addPractice ? (
-                                        <Form.Control
-                                            type='text'
-                                            placeholder='Enter Practice'
-                                            value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ''}
-                                            onChange={(e) => {
-                                                setPractice(e.target.value);
-                                                setCdm('');
-                                            }}
-                                            required
-                                        ></Form.Control>
-                                    ) : (
-                                            <Form.Control
-                                                as='select'
-                                                value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ""}
-                                                disabled={userInfo && !(userInfo.adminLevel === 0)}
-                                                onChange={(e) => {
-                                                    setPractice(e.target.value)
-                                                    //console.log('e.target.value', e.target.value)
-                                                    //dispatch(getAllCDM(e.target.value))
-                                                }}
-                                                required
-                                            >
-                                                {!practiceList ? <option value={practice && practice}>{practice}</option>
-                                                    : errorPractice ? <Message variant='Danger'>No Practice found</Message>
-                                                        : (
-                                                            practiceList.map(x => (
-                                                                <option
-                                                                    key={x}
-                                                                    value={x}
-                                                                    disabled={x === '-' ? true : false}
-                                                                >{x}</option>
-                                                            ))
-                                                        )}
-                                            </Form.Control>
-                                        )}
-                                    {(userInfo.adminLevel === 0) && (
-                                        <InputGroup.Append>
-                                            <Button
-                                                className='btn-primary'
-                                                onClick={(e) => setAddPractice(!addPractice)}>{addPractice ? 'Back' : 'Add'}</Button>
-                                        </InputGroup.Append>
-                                    )}
+                                    <Form.Control
+                                        as='select'
+                                        value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ""}
+                                        disabled={userInfo && !(userInfo.adminLevel === 0)}
+                                        onChange={(e) => {
+                                            setPractice(e.target.value)
+                                        }}
+                                        required
+                                    >
+                                        {!practiceList ? <option value={practice && practice}>{practice}</option>
+                                            : errorPractice ? <Message variant='Danger'>No Practice found</Message>
+                                                : (
+                                                    practiceList.map(x => (
+                                                        <option
+                                                            key={x}
+                                                            value={x}
+                                                            disabled={x === '-' ? true : false}
+                                                        >{x}</option>
+                                                    ))
+                                                )}
+                                    </Form.Control>
                                 </InputGroup>
                             </Form.Group>
                         </Col>

@@ -265,7 +265,7 @@ const createPxx = async (userProfile, month, tace = 0) => {
     });
 
     await newPxx.save(newPxx);
-    console.log(`${new Date(Date.now()).toISOString()} Pxx created for: ${userProfile.name} and monthId: ${month._id}`);
+    //console.log(`${new Date(Date.now()).toISOString()} Pxx created for: ${userProfile.name} and monthId: ${month._id}`);
 
     return newPxx;
 }
@@ -293,7 +293,7 @@ const getPxx = asyncHandler(async (req, res) => {
 
     for (let tampMonth = new Date(month) ; tampMonth <= new Date(lastMonth) ; tampMonth.setUTCMonth(tampMonth.getUTCMonth() +1)) {
         tampMonth.setUTCDate(1);
-        console.log(month, lastMonth, tampMonth);
+        //console.log(month, lastMonth, tampMonth);
 
         const firstDay = tampMonth.toISOString().substring(0,10);
         const searchMonth = await Month.findOne({ firstDay: firstDay });
