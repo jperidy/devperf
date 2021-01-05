@@ -9,9 +9,11 @@ import { Link } from 'react-router-dom';
 import { getTace, getAvailabilities } from '../actions/pxxActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import Meta from '../components/Meta';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 const DashboardScreen = ({ history }) => {
@@ -37,6 +39,8 @@ const DashboardScreen = ({ history }) => {
     const [focus, setFocus] = useState('');
     //const [skill, setSkill] = useState('');
     const [searchSkills, setSearchSkills] = useState('');
+    const [searchExperienceStart, setSearchExperienceStart] = useState('');
+    const [searchExperienceEnd, setSearchExperienceEnd] = useState('');
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -66,14 +70,14 @@ const DashboardScreen = ({ history }) => {
 
     useEffect(() => {
         if (!loadingAvailabilities) {
-            dispatch(getAvailabilities(practice, start, end, ''));
+            dispatch(getAvailabilities(practice, start, end, '', '', ''));
         }
     // eslint-disable-next-line
     }, [dispatch, practice, start, end])
 
     const handlerSkillsSubmit = (e) => {
         e.preventDefault();
-        dispatch(getAvailabilities(practice, start, end, searchSkills));
+        dispatch(getAvailabilities(practice, start, end, searchSkills, searchExperienceStart, searchExperienceEnd));
     }
 
     const navigationMonthHandler = (val) => {
@@ -88,6 +92,7 @@ const DashboardScreen = ({ history }) => {
 
     return (
         <>
+            <Meta />
             <Row>
                 <Col className="text-center" xs={2}>
                     <Button
@@ -159,24 +164,71 @@ const DashboardScreen = ({ history }) => {
             </Row>
 
             <Row className='mt-5'>
-                <Col md={4}>
+                <Col md={12}>
                     <Form onSubmit={handlerSkillsSubmit}>
                         <Form.Row>
                             <Col>
                                 <Form.Group controlId='skill-search'>
                                     <Form.Control
                                         type='text'
-                                        placeholder='Search skills'
+                                        placeholder='Search: skill1 ; skill2'
                                         value={searchSkills && searchSkills}
                                         onChange={(e) => setSearchSkills(e.target.value)}
-                                    //required
                                     ></Form.Control>
                                 </Form.Group>
                             </Col>
+
+                            <Col md={2}>
+                                <Form.Group controlId='experience-search-start'>
+                                    <Form.Control
+                                        type='number'
+                                        min={0}
+                                        step={0.1}
+                                        placeholder='From (year)'
+                                        value={searchExperienceStart && searchExperienceStart}
+                                        onChange={(e) => setSearchExperienceStart(e.target.value)}
+                                    ></Form.Control>
+                                </Form.Group>
+                            </Col>
+
+                            <Col md={2}>
+                                <Form.Group controlId='experience-search-end'>
+                                    <Form.Control
+                                        type='number'
+                                        step={0.1}
+                                        min={searchExperienceStart || 0}
+                                        placeholder='To (year)'
+                                        value={searchExperienceEnd && searchExperienceEnd}
+                                        onChange={(e) => setSearchExperienceEnd(e.target.value)}
+                                    ></Form.Control>
+                                </Form.Group>
+                            </Col>
+
                             <Col>
-                                <Button type='submit' variant='primary'>
-                                    Search
-                        </Button>
+                                <Button 
+                                    type='submit' 
+                                    variant='primary'
+                                    className='align-bottom'
+                                >Search</Button>
+
+                                <OverlayTrigger
+                                    trigger="click"
+                                    placement="right"
+                                    overlay={
+                                        <Popover id="popover-basic">
+                                            <Popover.Title as="h3">How to use search box</Popover.Title>
+                                            <Popover.Content>
+                                                Example: <strong>workpl ; telec</strong> will find workplace or telecom 
+                                            </Popover.Content>
+                                        </Popover>
+                                    }>
+                                    <Button 
+                                        variant="light"
+                                        className='ml-3'
+                                    >info  <i className="fas fa-info-circle ml-3"></i></Button>
+                                </OverlayTrigger>
+
+                                
                             </Col>
                         </Form.Row>
                     </Form>
@@ -208,8 +260,8 @@ const DashboardScreen = ({ history }) => {
                                                         placement="bottom"
                                                         overlay={<Tooltip id="button-tooltip-2">{
                                                             <>
-                                                                <p>{y.valued && ((Date.now() - new Date(y.valued))/(1000*24*3600*365.25)).toString().substring(0,4)} years</p><br/>
-                                                                <p>{y.comment ? y.comment : 'no comment'}</p>
+                                                                <>{y.valued && ((Date.now() - new Date(y.valued))/(1000*24*3600*365.25)).toString().substring(0,4)} years</><br/>
+                                                                <>{y.comment ? y.comment : 'no comment'}</>
                                                             </>
                                                             }</Tooltip>}
                                                     >

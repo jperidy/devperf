@@ -53,10 +53,12 @@ const ManageUsersScreen = ({ history }) => {
     }, [error, success]);
     
 
+    /*
     const addUserHandler = () => {
         //console.log('AddConsultantHandler');
         history.push('/admin/user/add');
     };
+    */
 
 
     const onClickEditHandler = (userId) => {
@@ -85,11 +87,13 @@ const ManageUsersScreen = ({ history }) => {
             )}
 
             <Row>
-                <Col xs={6} md={4}>
-                    <Button className="mb-3" onClick={() => addUserHandler()}>
-                        <i className="fas fa-user-edit mr-2"></i>Add
-                    </Button>
-                </Col>
+                {/* 
+                    <Col xs={6} md={4}>
+                        <Button className="mb-3" onClick={() => addUserHandler()}>
+                            <i className="fas fa-user-edit mr-2"></i>Add
+                        </Button>
+                    </Col>
+                */}
 
 
                 <Col xs={6} md={2}>

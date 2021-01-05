@@ -467,20 +467,30 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
     const start = req.query.start; // '2021-01-01'
     const end = req.query.end; //'2021-03-01'
     const practice = req.query.practice; //'DET'
+    
+    let experience = req.query.experience ? 
+    {
+        valued: {
+            $gte: req.query.experience.split('-').length > 1 ? new Date(Date.now() - (1000 * 3600 * 24 * 365.25 * Number(req.query.experience.split('-')[1]))) : 0,
+            $lte: new Date(Date.now() - (1000 * 3600 * 24 * 365.25 * Number(req.query.experience.split('-')[0])))
+        }
+    } : {};
+    
     let skills = req.query.skills ?
         {
             name: {
-                $regex: req.query.skills.split(';').join('|'),
+                $regex: req.query.skills.replace(' ', '').split(';').join('|'),
                 $options: 'i'
             }
-        }
-        : '';
+        } : '';
     
+    
+    console.log('experience: ', experience);
     let searchSkillsId = (skills !== '') ? await Skill.find(skills).select('_id') : '';
     searchSkillsId = (searchSkillsId !== '') ? {'quality.skill': {$in: searchSkillsId}} : {};
     const searchPractice = practice ? {practice: practice} : {};
 
-    const consultantId = await Consultant.find({...searchPractice, ...searchSkillsId}).select('_id');
+    const consultantId = await Consultant.find({...searchPractice, ...searchSkillsId, ...experience}).select('_id');
     
     const month = await Month.find({firstDay: { $gte: start, $lte: end }});
     const data = [];

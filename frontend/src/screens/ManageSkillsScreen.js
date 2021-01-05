@@ -225,8 +225,8 @@ const ManageSkillsScreen = ({ history }) => {
                                     <td className='align-middle'>{skill.name}</td>
                                     <td className='align-middle'>{skill.description}</td>
                                     <td className='align-middle'>
-                                        <Button className='btn btn-danger p-1' onClick={() => onClickDeleteHandler(skill)}>
-                                            <i className="fas fa-user-times"></i>
+                                        <Button variant='danger' onClick={() => onClickDeleteHandler(skill)}>
+                                            <i className="fas fa-times"></i>
                                         </Button>
                                     </td>
                                 </tr>
