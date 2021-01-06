@@ -167,7 +167,7 @@ const DashboardScreen = ({ history }) => {
                 <Col md={12}>
                     <Form onSubmit={handlerSkillsSubmit}>
                         <Form.Row>
-                            <Col>
+                            <Col md={5}>
                                 <Form.Group controlId='skill-search'>
                                     <Form.Control
                                         type='text'
@@ -204,13 +204,14 @@ const DashboardScreen = ({ history }) => {
                                 </Form.Group>
                             </Col>
 
-                            <Col>
+                            <Col md={1}>
                                 <Button 
                                     type='submit' 
                                     variant='primary'
-                                    className='align-bottom'
+                                    block
                                 >Search</Button>
-
+                            </Col>
+                            <Col md={2}>
                                 <OverlayTrigger
                                     trigger="click"
                                     placement="right"
@@ -224,7 +225,7 @@ const DashboardScreen = ({ history }) => {
                                     }>
                                     <Button 
                                         variant="light"
-                                        className='ml-3'
+                                        block
                                     >info  <i className="fas fa-info-circle ml-3"></i></Button>
                                 </OverlayTrigger>
 

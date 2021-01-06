@@ -1,11 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import FormContainer from '../components/FormContainer';
+import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Loader from '../components/Loader';
+import Message from '../components/Message';
+import { createDeal } from '../actions/dealActions';
+import { getAllPractice } from '../actions/consultantActions';
 
 const StaffingRequestScreen = () => {
+
+    const dispatch = useDispatch();
+
+    const dealCreate = useSelector(state => state.dealCreate);
+    const { loading, error, success } = dealCreate;
+
+    const consultantPracticeList = useSelector(state => state.consultantPracticeList);
+    const { practiceList } = consultantPracticeList;
 
     const [title, setTitle] = useState('');
     const [company, setCompany] = useState('');
@@ -17,8 +29,8 @@ const StaffingRequestScreen = () => {
     const [presentationDate, setPresentationDate] = useState('');
     const [startDate, setStartDate] = useState('');
     const [duration, setDuration] = useState('');
-    const [mainPractice, setMainPractice] = useState(1);
-    const [othersPractices, setOthersPractices] = useState(1);
+    const [mainPractice, setMainPractice] = useState('');
+    const [othersPractices, setOthersPractices] = useState([]);
     const [location, setLocation] = useState('');
     const [srInstruction, setSrInstruction] = useState('');
     const [srStatus, setSrStatus] = useState('wait');
@@ -29,6 +41,11 @@ const StaffingRequestScreen = () => {
     const [srVolume, setSrVolumeAdd] = useState('');
     const [srDuration, setSrDuration] = useState('');
 
+    useEffect(() => {
+        if(!practiceList) {
+            dispatch(getAllPractice());
+        }
+    }, [practiceList]);
     
 
     const addRessource = (responsability, grade, volume, duration) => {
@@ -39,25 +56,55 @@ const StaffingRequestScreen = () => {
             volume,
             duration
         });
-        //console.log('tampon', tampon);
         setSrRessources(tampon);
     };
 
     const deleteRessource = (val) => {
         let tampon = new Array(...srRessources);
-        console.log('tampon', tampon);
-        console.log('val', val);
         tampon.splice(Number(val), 1);
         setSrRessources(tampon);
     };
 
-    const submitHandler = () => {
+    const updateOthersPractices = () => {
+        const selectedList = [];
+        const selectBox = document.getElementById('others-practices');
+        for (let i = 0; i < selectBox.options.length; i++) {
+            if (selectBox.options[i].selected) {
+                selectedList.push(selectBox.options[i].value);
+            }
+        }
+        setOthersPractices(selectedList);
+    }
+
+    const submitHandler = (e) => {
         console.log('submit');
+        e.preventDefault()
+        const deal = {
+            company: company,
+            client: client,
+            title: title,
+            status: status,
+            probability: probability,
+            description: description,
+            proposalDate: proposalDate,
+            presentationDate: presentationDate,
+            startDate: startDate,
+            duration: duration,
+            mainPractice: mainPractice,
+            othersPractice: othersPractices,
+            location: location,
+            staffingRequest: {
+                instructions: srInstruction,
+                requestStatus: srStatus,
+                ressources: srRessources
+            },
+        }
+        dispatch(createDeal(deal));
     };
 
     return (
         <>
-            <h1>Staffing request</h1>
+            <h1>Staffing request (/!\ work in progress)</h1>
             <Form onSubmit={submitHandler}>
                 <Row>
 
@@ -135,20 +182,31 @@ const StaffingRequestScreen = () => {
                                 onChange={(e) => setMainPractice(e.target.value)}
                                 required
                             >
-                                <option value={1}>1</option>
-                                <option value={2}>2</option>
+                                <option value=''>--Select--</option>
+                                {practiceList && practiceList.map((practice, val) => (
+                                    <option 
+                                        value={practice}
+                                        key={val}
+                                    >{practice}</option>
+                                ))}
                             </Form.Control>
                         </Form.Group>
 
-                        <Form.Group controlId='second-practice'>
+                        <Form.Group controlId='others-practices'>
                             <Form.Label as='h5'>Others Practices</Form.Label>
                             <Form.Control
                                 as='select'
-                                value={othersPractices}
-                                onChange={(e) => setOthersPractices(e.target.value)}
+                                onClick={(e) => updateOthersPractices() }
+                                multiple
                             >
-                                <option value={1}>1</option>
-                                <option value={2}>2</option>
+                                {practiceList && practiceList.map((practice, val) => (
+                                    (practice !== mainPractice) && (
+                                        <option 
+                                            value={practice}
+                                            key={val}
+                                        >{practice}</option>
+                                    )
+                                ))}
                             </Form.Control>
                         </Form.Group>
 
@@ -270,7 +328,6 @@ const StaffingRequestScreen = () => {
                                         as='select'
                                         value={srResponsabilityAdd}
                                         onChange={(e) => setSrResponsabilityAdd(e.target.value)}
-                                        required
                                     >
                                         <option value=''>--Select--</option>
                                         <option value={'Project director'}>Project director</option>
@@ -287,7 +344,6 @@ const StaffingRequestScreen = () => {
                                         as='select'
                                         value={srGradeAdd}
                                         onChange={(e) => setSrGradeAdd(e.target.value)}
-                                        required
                                     >
                                         <option value=''>--Select--</option>
                                         <option value={'Analyst'}>Analyst</option>
@@ -307,7 +363,6 @@ const StaffingRequestScreen = () => {
                                         as='select'
                                         value={srVolume}
                                         onChange={(e) => setSrVolumeAdd(e.target.value)}
-                                        required
                                     >
                                         <option value=''>--Select--</option>
                                         <option value={'1/5'}>1/5</option>
@@ -328,7 +383,6 @@ const StaffingRequestScreen = () => {
                                         value={srDuration}
                                         placeholder={0}
                                         onChange={(e) => setSrDuration(e.target.value)}
-                                        required
                                     ></Form.Control>
                                 </Form.Group>
                             </Col>
@@ -389,11 +443,18 @@ const StaffingRequestScreen = () => {
                                 </Col>
                             </Row>
                         ))}
-
-
                     </Col>
-
                 </Row>
+                <Row>
+                    <Col xs={12} md={4}>
+                        <Button type='submit' variant='primary' block>
+                            {loading ? <Loader /> : 'Add'}
+                        </Button>
+                    </Col>
+                </Row>
+                {error && (
+                    <Row><Col><Message variant='danger'>{error}</Message></Col></Row>
+                )}
             </Form>
         </>
     )

@@ -9,6 +9,7 @@ const pxxRoutes = require('./routes/pxxRoutes');
 const userRoutes = require('./routes/userRoutes');
 const consultantRoutes = require('./routes/consultantRoutes');
 const skillsRoutes = require('./routes/skillsRoutes');
+const dealRoutes = require('./routes/dealRoutes')
 
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
@@ -38,6 +39,7 @@ app.use('/api/monthdata', monthPxxRoutes);
 app.use('/api/pxx', pxxRoutes);
 app.use('/api/consultants', consultantRoutes);
 app.use('/api/skills', skillsRoutes);
+app.use('/api/deals', dealRoutes);
 
 // static route for developpement access to build repository
 const __dir = path.resolve();
@@ -55,7 +57,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // Declaration of cron tasks
 cron.schedule('*/5 * * * *', () => {
-    console.log('ControlAndCreateMonth running every 5 minutes');
+    console.log(new Date(Date.now()).toISOString() + ': ControlAndCreateMonth running every 5 minutes');
     try {
         controlAndCreateMonth();
     } catch (error) {
@@ -64,7 +66,7 @@ cron.schedule('*/5 * * * *', () => {
 });
 
 cron.schedule('*/1 * * * *', () => {
-    console.log('ControleAndCreatePxx running every 1 minute');
+    console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running every 1 minute');
     try {
         controleAndCreatePxx();
     } catch (error) {

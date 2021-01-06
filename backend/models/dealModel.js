@@ -19,7 +19,7 @@ const dealSchema = mongoose.Schema({
         required: true,
         //enum: ['']
     },
-    propability: {
+    probability: {
         type: Number,
         required: true,
     },
