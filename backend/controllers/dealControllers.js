@@ -1,6 +1,9 @@
 const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 
+// @desc    Create a Deal 
+// @route   POST /api/deals
+// @access  Private/AdminLevelOne
 const createDeal = asyncHandler(async (req, res) => { 
 
     const deal = req.body;
@@ -10,6 +13,40 @@ const createDeal = asyncHandler(async (req, res) => {
         res.status(201).json(newDeal);
     } else {
         res.status(400).json({message: 'missing data to create a deal'});
+    }
+    
+});
+
+// @desc    Update a Deal 
+// @route   PUT /api/deals/:id
+// @access  Private/AdminLevelOne
+const updateADeal = asyncHandler(async (req, res) => { 
+
+    const dealId = req.params.id;
+    const deal = await Deal.findById(dealId)
+
+    if (deal) {
+
+        deal.company = req.body.company;
+        deal.client = req.body.client;
+        deal.title = req.body.title;
+        deal.status = req.body.status;
+        deal.probability = req.body.probability;
+        deal.description = req.body.description;
+        deal.proposalDate = req.body.proposalDate;
+        deal.presentationDate = req.body.presentationDate;
+        deal.startDate = req.body.startDate;
+        deal.mainPractice = req.body.mainPractice;
+        deal.othersPractices = req.body.othersPractices;
+        deal.location = req.body.location;
+        deal.staffingRequest.instructions = req.body.staffingRequest.instructions;
+        deal.staffingRequest.requestStatus = req.body.staffingRequest.requestStatus;
+        deal.staffingRequest.ressources = req.body.staffingRequest.ressources;
+
+        await deal.save();
+        res.status(200).json({message: 'Deal updated'});
+    } else {
+        res.status(400).json({ message: "Can't update not registered deal" });
     }
     
 });
@@ -96,4 +133,37 @@ const getAllDeals = asyncHandler(async (req, res) => {
 
 });
 
-module.exports = { createDeal, getAllDeals };
+// @desc    Delete a Deal 
+// @route   DELETE /api/deals?id=id
+// @access  Private/AdminLevelOne
+const deleteDeal = asyncHandler(async (req, res) => { 
+
+    const id = req.query.id;
+    const deal = await Deal.findById(id);
+
+    if(deal) {
+        await deal.remove();
+        res.status(200).json({message: "deal deleted"});
+    } else {
+        res.status(404).json({message: "deal to delete not found"});
+    }
+    
+});
+
+// @desc    Get a Deal 
+// @route   GET /api/deals/:id
+// @access  Private/AdminLevelOne
+const getADeal = asyncHandler(async (req, res) => { 
+
+    const id = req.params.id;
+    const deal = await Deal.findById(id);
+
+    if(deal) {
+        res.status(200).json(deal);
+    } else {
+        res.status(404).json({message: "deal not found"});
+    }
+    
+});
+
+module.exports = { createDeal, getAllDeals, deleteDeal, getADeal, updateADeal };

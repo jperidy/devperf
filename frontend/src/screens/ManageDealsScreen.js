@@ -10,9 +10,9 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-//import InputGroup from 'react-bootstrap/InputGroup';
-//import FormControl from 'react-bootstrap/FormControl';
-import { getAllDeals } from '../actions/dealActions';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
+import { deleteDeal, getAllDeals } from '../actions/dealActions';
 
 
 
@@ -31,20 +31,21 @@ const ManageDealsScreen = ({history}) => {
     const [searchClient, setSearchClient] = useState('');
     const [searchDealStatus, setSearchDealStatus] = useState('');
     const [searchRequestStatus, setSearchRequestStatus] = useState('');
-    const [searchStart, setSearchStart] = useState('');
 
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const dealAllList = useSelector(state => state.dealAllList);
-    const { error, success, loading, deals, page, pages } = dealAllList;
+    const { error, loading, deals, page, pages, count } = dealAllList;
+
+    const dealDelete = useSelector(state => state.dealDelete);
+    const { error: errorDelete, success: successDelete } = dealDelete;
 
 
 
     useEffect(() => {
         if (userInfo && (userInfo.adminLevel <= 1)) {
-            
             const keyword = {
                 title: searchTitle,
                 mainPractice: userInfo.consultantProfil.practice,
@@ -61,10 +62,26 @@ const ManageDealsScreen = ({history}) => {
 
     }, [dispatch, history, userInfo, searchTitle, searchPractice, searchCompany, searchClient, searchDealStatus, searchRequestStatus, pageNumber, pageSize]);
 
+
+    useEffect(() => {
+        if (successDelete) {
+            const keyword = {
+                title: searchTitle,
+                mainPractice: userInfo.consultantProfil.practice,
+                othersPractices: searchPractice,
+                client: searchClient,
+                company: searchCompany,
+                status: searchDealStatus,
+                request: searchRequestStatus
+            }
+            dispatch(getAllDeals(keyword, pageNumber, pageSize));
+        }
+    // eslint-disable-next-line
+    }, [dispatch, successDelete])
+
     const onClickDeleteHandler = (deal) => {
-        if (window.confirm(`Are you sure to delete deal: ${deal.name} ?`)) {
-            console.log('dispatch delete')
-            //dispatch(deleteSkill(deal._id));
+        if (window.confirm(`Are you sure to delete deal: ${deal.title} ?`)) {
+            dispatch(deleteDeal(deal._id));
         }
     }
 
@@ -74,8 +91,8 @@ const ManageDealsScreen = ({history}) => {
 
     return (
         <>
+            {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
             <Row className='mt-3'>
-                <Col>
                     <Form onSubmit={filterLeads}>
                         <Row>
                             <Col xs={6} md={2}>
@@ -157,14 +174,38 @@ const ManageDealsScreen = ({history}) => {
                             </Col>
 
                         </Row>
-                        <Row>
-                            <Col xs={12} md={2} className='text-right'>
-                                <Button type='submit' variant='primary' block>Search</Button>
-                            </Col>
-                        </Row>
+                    <Row>
+                        <Col xs={12} md={2} className='text-right'>
+                            <Button type='submit' variant='primary' block>Search</Button>
+                        </Col>
 
+                        <Col xs={6} md={8}>
+                            <Form.Control
+                                plaintext
+                                readOnly
+                                value={count ? `${count} Deals found` : '0 skills found'} />
+                        </Col>
+
+                        <Col xs={6} md={2}>
+                            <InputGroup>
+                                <FormControl
+                                    as='select'
+                                    id='number-c'
+                                    className="mb-3"
+                                    value={pageSize && pageSize}
+                                    onChange={(e) => setPageSize(e.target.value)}
+                                >
+                                    {[5, 10, 15, 20, 50].map(x => (
+                                        <option
+                                            key={x}
+                                            value={x}
+                                        >{x} / page</option>
+                                    ))}
+                                </FormControl>
+                            </InputGroup>
+                        </Col>
+                    </Row>
                     </Form>
-                </Col>
             </Row>
 
             {deals && deals.length === 0 ? <Message variant='information'>You have not access to these information</Message> :
@@ -212,7 +253,7 @@ const ManageDealsScreen = ({history}) => {
                                     </OverlayTrigger>
                                     <td className='align-middle'>{deal.startDate.substring(0,10)}</td>
                                     <td className='align-middle'>
-                                        <Button variant='primary' onClick={() => console.log('go to deal')}>
+                                        <Button variant='primary' onClick={() => history.push(`/staffing/${deal._id}`)}>
                                             <i className="fas fa-edit"></i>
                                         </Button>
                                     </td>

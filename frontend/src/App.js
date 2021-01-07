@@ -25,6 +25,7 @@ const App = () => {
           <Route path='/login' component={LoginScreen} exact />
           <Route path='/register' component={RegisterScreen} exact />
           <Route path='/staffing' component={StaffingRequestScreen} exact />
+          <Route path='/staffing/:id' component={StaffingRequestScreen} exact />
           <Route path='/pxx' component={PxxEditScreen} exact />
           <Route path='/pxx/:id' component={PxxEditScreen} exact />
           <Route path='/pxxdetails/:id' component={PxxDetailsScreen} exact />

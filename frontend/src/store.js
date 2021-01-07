@@ -21,7 +21,7 @@ import {
  } from './reducers/consultantReducers';
 import { pxxMyToEditReducer } from './reducers/pxxReducers';
 import { skillCreateReducer, skillDelteReducer, skillListReducer } from './reducers/skillReducers'
-import { dealAllListReducer, dealCreateReducer } from './reducers/dealReducer';
+import { dealAllListReducer, dealCreateReducer, dealDeleteReducer, dealEditeReducer, dealUpdateReducer } from './reducers/dealReducer';
 
 export const reducer = combineReducers({
     userRegister: userRegisterReducer,
@@ -54,7 +54,10 @@ export const reducer = combineReducers({
     skillDelete: skillDelteReducer,
     skillCreate: skillCreateReducer,
     dealCreate: dealCreateReducer,
-    dealAllList: dealAllListReducer
+    dealAllList: dealAllListReducer,
+    dealDelete: dealDeleteReducer,
+    dealEdit: dealEditeReducer,
+    dealUpdate: dealUpdateReducer
 });
 
 // space for store on local

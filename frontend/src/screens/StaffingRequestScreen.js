@@ -6,15 +6,23 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import { createDeal } from '../actions/dealActions';
+import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
 import { getAllPractice } from '../actions/consultantActions';
 
-const StaffingRequestScreen = () => {
+const StaffingRequestScreen = ({match, history}) => {
 
     const dispatch = useDispatch();
 
+    const dealId = match.params.id;
+
+    const userLogin = useSelector(state => state.userLogin);
+    const { userInfo } = userLogin;
+
     const dealCreate = useSelector(state => state.dealCreate);
-    const { loading, error, success } = dealCreate;
+    const { loading, error, success, createId } = dealCreate;
+
+    const dealEdit = useSelector(state => state.dealEdit);
+    const { success: successEdit, deal: dealToEdit } = dealEdit;
 
     const consultantPracticeList = useSelector(state => state.consultantPracticeList);
     const { practiceList } = consultantPracticeList;
@@ -41,11 +49,48 @@ const StaffingRequestScreen = () => {
     const [srDuration, setSrDuration] = useState('');
 
     useEffect(() => {
+        if (!userInfo ) {
+            history.push('/login');
+        }
+    }, [history, userInfo]);
+
+    useEffect(() => {
         if(!practiceList) {
             dispatch(getAllPractice());
         }
-    }, [practiceList]);
+    }, [dispatch, practiceList]);
+
+    useEffect(()=>{
+        if(dealId) {
+            dispatch(getDealToEdit(dealId));
+        }
+    }, [dispatch, dealId])
+
+    useEffect(() => {
+        if(dealId && successEdit) {
+            setTitle(dealToEdit.title);
+            setCompany(dealToEdit.company);
+            setClient(dealToEdit.client);
+            setStatus(dealToEdit.status);
+            setProbability(dealToEdit.probability);
+            setDescription(dealToEdit.description);
+            setProposalDate(dealToEdit.proposalDate && dealToEdit.proposalDate.substring(0,10));
+            setPresentationDate(dealToEdit.presentationDate && dealToEdit.presentationDate.substring(0,10));
+            setStartDate(dealToEdit.startDate && dealToEdit.startDate.substring(0,10));
+            setMainPractice(dealToEdit.mainPractice);
+            setOthersPractices(dealToEdit.othersPractices);
+            setLocation(dealToEdit.location);
+            setSrInstruction(dealToEdit.staffingRequest.instructions);
+            setSrStatus(dealToEdit.staffingRequest.requestStatus);
+            setSrRessources(dealToEdit.staffingRequest.ressources ? dealToEdit.staffingRequest.ressources : []);
+        }
+    }, [successEdit, dealToEdit, dealId])
     
+    useEffect(() => {
+        if(success) {
+            history.push(`/staffing/${createId}`)
+        }
+    }, [history, success]);
 
     const addRessource = (responsability, grade, volume, duration) => {
         let tampon = new Array(...srRessources);
@@ -76,7 +121,6 @@ const StaffingRequestScreen = () => {
     }
 
     const submitHandler = (e) => {
-        console.log('submit');
         e.preventDefault()
         const deal = {
             company: company,
@@ -97,18 +141,36 @@ const StaffingRequestScreen = () => {
                 ressources: srRessources
             },
         }
-        dispatch(createDeal(deal));
+        if (dealId) {
+            //console.log('updage');
+            dispatch(updateDeal(dealId, deal));
+        } else {
+            dispatch(createDeal(deal));
+        }
     };
 
     return (
         <>
             <h1>Staffing request (/!\ work in progress)</h1>
             <Form onSubmit={submitHandler}>
-                <Row>
-                    <Col xs={0} md={10}></Col>
-                    <Col xs={12} md={2}>
-                        <Button type='submit' variant='primary' block>
-                            {loading ? <Loader /> : 'Submit staffing'}
+                <Row className='mt-3'>
+                    <Col xs={6} md={2}>
+                        {dealId && (
+                            <Button 
+                                type='button' 
+                                variant='primary' 
+                                onClick={() => history.go(-1)}
+                                block
+                            >Go Back</Button>
+                        )}
+                    </Col>
+                    <Col xs={0} md={8}></Col>
+                    <Col xs={6} md={2}>
+                        <Button 
+                            type='submit' 
+                            variant='primary' 
+                            block
+                        >{loading ? <Loader /> : dealId ? 'Update' : 'Submit staffing'}
                         </Button>
                     </Col>
                 </Row>
@@ -116,7 +178,7 @@ const StaffingRequestScreen = () => {
                     <Row><Col><Message variant='danger'>{error}</Message></Col></Row>
                 )}
 
-                <Row>
+                <Row className='mt-5'>
 
                     <Col xs={12} md={4}>
 
