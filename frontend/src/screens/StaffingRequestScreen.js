@@ -28,7 +28,6 @@ const StaffingRequestScreen = () => {
     const [proposalDate, setProposalDate] = useState('');
     const [presentationDate, setPresentationDate] = useState('');
     const [startDate, setStartDate] = useState('');
-    const [duration, setDuration] = useState('');
     const [mainPractice, setMainPractice] = useState('');
     const [othersPractices, setOthersPractices] = useState([]);
     const [location, setLocation] = useState('');
@@ -89,9 +88,8 @@ const StaffingRequestScreen = () => {
             proposalDate: proposalDate,
             presentationDate: presentationDate,
             startDate: startDate,
-            duration: duration,
             mainPractice: mainPractice,
-            othersPractice: othersPractices,
+            othersPractices: othersPractices,
             location: location,
             staffingRequest: {
                 instructions: srInstruction,
@@ -106,6 +104,18 @@ const StaffingRequestScreen = () => {
         <>
             <h1>Staffing request (/!\ work in progress)</h1>
             <Form onSubmit={submitHandler}>
+                <Row>
+                    <Col xs={0} md={10}></Col>
+                    <Col xs={12} md={2}>
+                        <Button type='submit' variant='primary' block>
+                            {loading ? <Loader /> : 'Submit staffing'}
+                        </Button>
+                    </Col>
+                </Row>
+                {error && (
+                    <Row><Col><Message variant='danger'>{error}</Message></Col></Row>
+                )}
+
                 <Row>
 
                     <Col xs={12} md={4}>
@@ -145,23 +155,35 @@ const StaffingRequestScreen = () => {
                         <Form.Group controlId='status'>
                             <Form.Label as='h5'>Status</Form.Label>
                             <Form.Control
-                                type='text'
-                                placeholder='Deal status'
+                                as='select'
                                 value={status}
                                 onChange={(e) => setStatus(e.target.value)}
                                 required
-                            ></Form.Control>
+                            >
+                                <option value=''>--Select--</option>
+                                <option value='Lead'>Lead</option>
+                                <option value='Proposal to send'>Proposal to send</option>
+                                <option value='Proposal sent'>Proposal sent</option>
+                                <option value='Won'>Won</option>
+                                <option value='Abandoned'>Abandoned</option>
+                            </Form.Control>
                         </Form.Group>
 
                         <Form.Group controlId='probability'>
                             <Form.Label as='h5'>Probability</Form.Label>
                             <Form.Control
-                                type='Number'
-                                placeholder='Deal probability'
+                                as='select'
                                 value={probability}
                                 onChange={(e) => setProbability(e.target.value)}
                                 required
-                            ></Form.Control>
+                            >
+                                <option value=''>--Select--</option>
+                                <option value={10}>10 %</option>
+                                <option value={30}>30 %</option>
+                                <option value={50}>50 %</option>
+                                <option value={70}>70 %</option>
+                                <option value={100}>100 %</option>
+                            </Form.Control>
                         </Form.Group>
 
                         <Form.Group controlId='location'>
@@ -235,7 +257,6 @@ const StaffingRequestScreen = () => {
                                         placeholder='Deal date'
                                         value={proposalDate}
                                         onChange={(e) => setProposalDate(e.target.value)}
-                                        required
                                     ></Form.Control>
                                 </Form.Group>
                             </Col>
@@ -266,19 +287,6 @@ const StaffingRequestScreen = () => {
                             </Col>
                         </Row>
 
-                        <Form.Group controlId='duration'>
-                            <Form.Label as='h5'>Duration (month)</Form.Label>
-                            <Form.Control
-                                type='Number'
-                                min={0}
-                                step={0.5}
-                                placeholder='Duration'
-                                value={duration}
-                                onChange={(e) => setDuration(e.target.value)}
-                                required
-                            ></Form.Control>
-                        </Form.Group>
-
                         <Row>
                             <Col xs={12} md={8}>
                                 <Form.Group controlId='sr-instruction'>
@@ -303,10 +311,10 @@ const StaffingRequestScreen = () => {
                                         onChange={(e) => setSrStatus(e.target.value)}
                                         required
                                     >
-                                        <option value={'wait'}>Wait</option>
-                                        <option value={'staff'}>Staff</option>
-                                        <option value={'keep'}>Keep</option>
-                                        <option value={'available'}>Available</option>
+                                        <option value='To do'>To do</option>
+                                        <option value='Keep staffing'>Keep staffing</option>
+                                        <option value='Retreat staffing'>Keep</option>
+                                        <option value='Release staffing'>Available</option>
 
                                     </Form.Control>
                                 </Form.Group>
@@ -332,7 +340,8 @@ const StaffingRequestScreen = () => {
                                         <option value=''>--Select--</option>
                                         <option value={'Project director'}>Project director</option>
                                         <option value={'Project manager'}>Project manager</option>
-                                        <option value={'Consultant'}>Consultant</option>
+                                        <option value={'Project leader'}>Project leader</option>
+                                        <option value={'X'}>X</option>
                                         <option value={'Intern'}>Intern</option>
 
                                     </Form.Control>
@@ -389,9 +398,9 @@ const StaffingRequestScreen = () => {
                             <Col>
                                 <Button
                                     onClick={() => addRessource(srResponsabilityAdd, srGradeAdd, srVolume, srDuration)}
-                                    variant='primary'
+                                    variant='secondary'
                                     block
-                                >Add</Button>
+                                ><i className="fas fa-plus"></i></Button>
                             </Col>
                         </Row>
 
@@ -445,16 +454,7 @@ const StaffingRequestScreen = () => {
                         ))}
                     </Col>
                 </Row>
-                <Row>
-                    <Col xs={12} md={4}>
-                        <Button type='submit' variant='primary' block>
-                            {loading ? <Loader /> : 'Add'}
-                        </Button>
-                    </Col>
-                </Row>
-                {error && (
-                    <Row><Col><Message variant='danger'>{error}</Message></Col></Row>
-                )}
+                
             </Form>
         </>
     )

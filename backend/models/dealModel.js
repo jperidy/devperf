@@ -39,10 +39,6 @@ const dealSchema = mongoose.Schema({
         type: Date,
         required: true,
     },
-    duration: {
-        type: Number,
-        required: true
-    },
     mainPractice: {
         type: String,
         required: false
@@ -61,14 +57,13 @@ const dealSchema = mongoose.Schema({
             required: true
         },
         requestStatus: {
-            type: String,
-            enum: ['wait', 'staff', 'keep', 'available']
+            type: String
         },
         ressources: [{
             responsability: {
                 type: String,
                 required: true,
-                enum: ['Project director', 'Project manager', 'Consultant', 'Intern']
+                enum: ['Project director', 'Project manager', 'Project leader', 'X', 'Intern']
             },
             grade: {
                 type: String,

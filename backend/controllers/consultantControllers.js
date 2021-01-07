@@ -37,20 +37,6 @@ const deleteConsultant = asyncHandler(async (req, res) => {
 
 });
 
-/*
-// @desc    Get all admin consultant data
-// @route   GET /api/admin/consultants
-// @access  Private, Admin
-const getAllPracticeConsultants = asyncHandler(async (req, res) => {
-
-    const userConsultantProfil = await Consultant.findById(req.user.consultantProfil).select('practice');
-    const myConsultants = await Consultant.find({ practice: userConsultantProfil.practice })
-                                                    .sort({'name': 1});
-    res.json(myConsultants);
-    
-});
-*/
-
 // @desc    Get the list of consultant in a Practice
 // @route   GET /api/consultants/practice/:practice
 // @access  Private/AdminLevelOne
