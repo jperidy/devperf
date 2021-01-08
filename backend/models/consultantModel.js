@@ -24,7 +24,7 @@ const consultantSchema = mongoose.Schema({
     quality: [
         {
             skill: {
-                type: mongoose.Schema.ObjectId,
+                type: mongoose.Schema.Types.ObjectId,
                 ref: 'Skill'
             },
             level: {

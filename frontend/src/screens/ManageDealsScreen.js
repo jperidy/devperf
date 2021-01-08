@@ -240,6 +240,7 @@ const ManageDealsScreen = ({ history }) => {
                             <tr className='table-primary'>
                                 <th className='align-middle text-light'>Title</th>
                                 <th className='align-middle text-light'>Practice</th>
+                                <th className='align-middle text-light'>Contacts</th>
                                 <th className='align-middle text-light'>Company</th>
                                 <th className='align-middle text-light'>Client</th>
                                 <th className='align-middle text-light'>Status</th>
@@ -263,6 +264,7 @@ const ManageDealsScreen = ({ history }) => {
                                         <td className='align-middle'>{deal.title}</td>
                                     </OverlayTrigger>
                                     <td className='align-middle'>{deal.mainPractice} / ({deal.othersPractices.toString()})</td>
+                                    <td className='align-middle'>{deal.contacts && deal.contacts.primary} {deal.contacts.secondary && '/ (' + deal.contacts.secondary.toString() + ' )'}</td>
                                     <td className='align-middle'>{deal.company}</td>
                                     <td className='align-middle'>{deal.client}</td>
                                     <td className='align-middle'>{deal.status}</td>

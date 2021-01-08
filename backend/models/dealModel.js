@@ -19,6 +19,10 @@ const dealSchema = mongoose.Schema({
         required: true,
         //enum: ['']
     },
+    contacts: {
+        primary: { type: mongoose.Schema.Types.ObjectId },
+        secondary: [ { type: mongoose.Schema.Types.ObjectId } ]
+    },
     probability: {
         type: Number,
         required: true,
@@ -85,32 +89,32 @@ const dealSchema = mongoose.Schema({
             }
         }]
     },       
-    staffingDecision: [{
-        responsability: {
-            type: String,
-            required: true,
-            enum: ['Project director', 'Project manager', 'Consultant', 'Intern']
-        },
-        grade: {
-            type: String,
-            required: true,
-            enum: ['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner']
-        },
-        consultant: {
-            type: mongoose.Schema.ObjectId,
-            required: true,
-            ref: 'Consultant'
-        },
-        priority: {
-            type: String,
-            required: false,
-            enum: ['P1', 'P2', 'P3']
-        },
-        information: {
-            type: String,
-            required: false
-        }
-    }],
+    staffingDecision: {
+        instructions: { type: String},
+        staffingStatus: { type: String },
+        staff: [{
+            responsability: {
+                type: String,
+                required: true,
+                enum: ['Project director', 'Project manager', 'Consultant', 'Intern']
+            },
+            idConsultant: {
+                type: mongoose.Schema.Types.ObjectId,
+                required: true,
+                ref: 'Consultant'
+            },
+            priority: {
+                type: String,
+                required: false,
+                enum: ['P1', 'P2', 'P3']
+            },
+            information: {
+                type: String,
+                required: false
+            }
+        }]
+    }
+    
 }, {
     timestamps: true,
 });

@@ -43,6 +43,11 @@ const updateADeal = asyncHandler(async (req, res) => {
         deal.staffingRequest.instructions = req.body.staffingRequest.instructions;
         deal.staffingRequest.requestStatus = req.body.staffingRequest.requestStatus;
         deal.staffingRequest.ressources = req.body.staffingRequest.ressources;
+        deal.staffingDecision.instructions = req.body.staffingDecision.instructions;
+        deal.staffingDecision.staffingStatus = req.body.staffingDecision.staffingStatus;
+        deal.staffingDecision.staff = req.body.staffingDecision.staff;
+
+        console.log(deal.staffingDecision.staff);
 
         await deal.save();
         res.status(200).json({message: 'Deal updated'});
@@ -209,7 +214,7 @@ const deleteDeal = asyncHandler(async (req, res) => {
 const getADeal = asyncHandler(async (req, res) => { 
 
     const id = req.params.id;
-    const deal = await Deal.findById(id);
+    const deal = await (await Deal.findById(id)).populated();
 
     if(deal) {
         res.status(200).json(deal);

@@ -12,7 +12,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-const ConsoDispo = ({ practice, start, end }) => {
+const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
 
     const dispatch = useDispatch();
 
@@ -30,6 +30,22 @@ const ConsoDispo = ({ practice, start, end }) => {
         }
         // eslint-disable-next-line
     }, [dispatch, practice, start, end]);
+
+    const formatName = (fullName) => {
+        const separateName = fullName.split(' ');
+        if (separateName.length === 1) {
+            return separateName[0];
+        } else {
+            const outName = separateName.map((word, indice1) => {
+                if (indice1 === 0) {
+                    return word[0].toUpperCase() + '.';
+                } else {
+                    return word.toUpperCase();
+                }
+            });
+            return outName.join(' ');
+        }
+    }
 
     const handlerSkillsSubmit = (e) => {
         e.preventDefault();
@@ -126,32 +142,44 @@ const ConsoDispo = ({ practice, start, end }) => {
                         {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
                             availabilities && availabilities.map((x, xVal) => (
                                 <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
-                                    <Card className='my-3 p-3 rounded' >
+                                    <Card className='my-1 rounded' >
                                         <Card.Header as="h5">{x.month.firstDay.toString().substring(0, 7)}</Card.Header>
                                         <Card.Body>
                                             {x.availabilities.map((y, yVal) => (
                                                 grades.includes(y.grade) && (
-                                                    <OverlayTrigger
-                                                        key={yVal}
-                                                        placement="bottom"
-                                                        overlay={<Tooltip id="button-tooltip-2">{
-                                                            <>
-                                                                <>{y.valued && ((Date.now() - new Date(y.valued)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)} years</><br />
-                                                                <>{y.comment ? y.comment : 'no comment'}</>
-                                                            </>
-                                                        }</Tooltip>}
-                                                    >
-                                                        <Form.Control
-                                                            plaintext
-                                                            readOnly
-                                                            id={y.email}
-                                                            value={y.availableDay.toString() + ' days : ' + y.name}
-                                                            style={(y.email === focus) ? { background: '#464277', color: 'white' } : { color: 'black' }}
-                                                            onFocus={(e) => {
-                                                                setFocus(e.target.id)
-                                                            }}
-                                                        />
-                                                    </OverlayTrigger>
+                                                    <Row key={yVal}>
+                                                        {mode === 'staffing' && (
+                                                            <Col sm={2}>
+                                                                <Button
+                                                                    size='sm'
+                                                                    variant='ligth'
+                                                                    onClick={() => addStaff(y)}
+                                                                ><i className="fas fa-plus-square"></i></Button>
+                                                            </Col>
+                                                        )}
+                                                        <Col sm={10}>
+                                                            <OverlayTrigger
+                                                                placement="bottom"
+                                                                overlay={<Tooltip id="button-tooltip-2">{
+                                                                    <>
+                                                                        <>{y.valued && ((Date.now() - new Date(y.valued)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)} years</><br />
+                                                                        <>{y.comment ? y.comment : 'no comment'}</>
+                                                                    </>
+                                                                }</Tooltip>}
+                                                            >
+                                                                <Form.Control
+                                                                    plaintext
+                                                                    readOnly
+                                                                    id={y.email}
+                                                                    value={y.availableDay.toString() + ' days : ' + formatName(y.name)}
+                                                                    style={(y.email === focus) ? { background: '#464277', color: 'white' } : { color: 'black' }}
+                                                                    onFocus={(e) => {
+                                                                        setFocus(e.target.id)
+                                                                    }}
+                                                                />
+                                                            </OverlayTrigger>
+                                                        </Col>
+                                                    </Row>
                                                 )
                                             ))}
                                         </Card.Body>

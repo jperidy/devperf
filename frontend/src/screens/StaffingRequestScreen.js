@@ -4,8 +4,11 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import ModalWindow from '../components/ModalWindow';
 import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
 import { getAllPractice } from '../actions/consultantActions';
 import ConsoDispo from '../components/ConsoDispo';
@@ -52,7 +55,17 @@ const StaffingRequestScreen = ({match, history}) => {
     const [srVolume, setSrVolumeAdd] = useState('');
     const [srDuration, setSrDuration] = useState('');
 
+    const [sdInstructions, setSdInstructions] = useState('');
+    const [sdStatus, setSdStatus] = useState('');
+    const [sdStaff, setSdStaff] = useState([]);
+    const [sdResponsability, setSdResponsability] = useState('');
+    const [sdPriority, setSdPriority] = useState('');
+    const [sdInformation, setSdInformation] = useState('');
+    const [sdConsultant, setSdConsultant] = useState('');
+
     const [wonDate, setWonDate] = useState('');
+
+    const [modalWindowShow, setModalWindowShow] = useState(false);
 
     //ConsoDispo
     const duration = 3;
@@ -105,6 +118,9 @@ const StaffingRequestScreen = ({match, history}) => {
             setSrInstruction(dealToEdit.staffingRequest.instructions);
             setSrStatus(dealToEdit.staffingRequest.requestStatus);
             setSrRessources(dealToEdit.staffingRequest.ressources ? dealToEdit.staffingRequest.ressources : []);
+            setSdStatus(dealToEdit.staffingDecision.staffingStatus ? dealToEdit.staffingDecision.staffingStatus : '');
+            setSdStatus(dealToEdit.staffingDecision.instructions ? dealToEdit.staffingDecision.instructions : '');
+            setSdStaff(dealToEdit.staffingDecision.staff ? dealToEdit.staffingDecision.staff : []);
         }
     }, [successEdit, dealToEdit, dealId])
     
@@ -142,6 +158,39 @@ const StaffingRequestScreen = ({match, history}) => {
         setOthersPractices(selectedList);
     }
 
+    const addStaff = (consultant) => {
+        const staffId = sdStaff.map(consultant => consultant.idConsultant);
+        if(staffId.includes(consultant._id)) {
+            window.confirm('Consultant already added')
+        } else {
+            setModalWindowShow(true);
+            setSdConsultant(consultant);
+        }
+        
+    };
+
+    const addStaffHandler = () => {
+        //console.log('processToAdd');
+
+        let tampon = new Array(...sdStaff);
+        tampon.push({
+            idConsultant: sdConsultant._id,
+            consultant: sdConsultant.name,
+            responsability: sdResponsability,
+            priority: sdPriority,
+            information: sdInformation
+        });
+        setSdStaff(tampon);
+        
+        setModalWindowShow(false)
+    }
+
+    const removeStaffHandler = (id) => {
+        let tampon = new Array(...sdStaff);
+        tampon = tampon.filter(consultant => consultant.idConsultant !== id);
+        setSdStaff(tampon);
+    }
+
     const submitHandler = (e) => {
         e.preventDefault()
         const deal = {
@@ -163,7 +212,18 @@ const StaffingRequestScreen = ({match, history}) => {
                 requestStatus: srStatus,
                 ressources: srRessources
             },
+            staffingDecision:{
+                instructions: sdInstructions,
+                staffingStatus: sdStatus,
+                staff: sdStaff.map(staff => ({
+                    responsability: staff.responsability,
+                    idConsultant: staff.idConsultant,
+                    priority: staff.priority,
+                    information: staff.information
+                }))
+            }
         }
+        console.log(deal.staffingDecision.staff)
         if (dealId) {
             //console.log('updage');
             dispatch(updateDeal(dealId, deal));
@@ -548,14 +608,140 @@ const StaffingRequestScreen = ({match, history}) => {
                                 </Col>
                             </Row>
                         ))}
+
+                        <h5>Staff decision</h5>
+                        <Row>
+                            <Col><strong>Name</strong></Col>
+                            <Col><strong>Responsability</strong></Col>
+                            <Col><strong>Priority</strong></Col>
+                            <Col></Col>
+                        </Row>
+                        {sdStaff && sdStaff.map((consultant, val) => (
+                            <Row key={val}>
+                                <Col>
+                                    <Form.Group controlId='sd-name'>
+                                        <Form.Control
+                                            type='text'
+                                            plaintext
+                                            readOnly
+                                            value={consultant.consultant}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+
+                                <Col>
+                                    <Form.Group controlId='sd-responsability'>
+                                        <Form.Control
+                                            type='text'
+                                            plaintext
+                                            readOnly
+                                            value={consultant.responsability}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Form.Group controlId='sd-priority'>
+                                        <Form.Control
+                                            type='text'
+                                            plaintext
+                                            readOnly
+                                            value={consultant.priority}
+                                        ></Form.Control>
+                                    </Form.Group>
+                                </Col>
+                                <Col>
+                                    <Button
+                                        onClick={() => removeStaffHandler(consultant.idConsultant)}
+                                        variant='danger'
+                                        size='sm'
+                                    ><i className="fas fa-times"></i></Button>
+                                </Col>
+                            </Row>
+                        ))}
                     </Col>
                 </Row>
             </Form>
+
+            <ModalWindow 
+                show={modalWindowShow}
+                onSubmit={() => addStaffHandler()}
+                header='Staffing'
+                title='Description'
+                body={
+                    <>
+                        <Row>
+                            <Col>
+                                <label htmlFor='sd-consultant'>Name</label>
+                                <InputGroup id='sd-consultant'>
+                                    <FormControl
+                                        type='text'
+                                        plaintext
+                                        readOnly
+                                        value={sdConsultant.name ? sdConsultant.name : ''}
+                                    ></FormControl>
+                                </InputGroup>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className='mt-3'>
+                                <label htmlFor='sd-responsability'>Responsability</label>
+                                <InputGroup id='sd-responsability'>
+                                    <FormControl
+                                        as='select'
+                                        value={sdResponsability}
+                                        onChange={(e) => setSdResponsability(e.target.value)}
+                                    >
+                                        <option value=''>--Select--</option>
+                                        <option value={'Project director'}>Project director</option>
+                                        <option value={'Project manager'}>Project manager</option>
+                                        <option value={'Project leader'}>Project leader</option>
+                                        <option value={'X'}>X</option>
+                                        <option value={'Intern'}>Intern</option>
+
+                                    </FormControl>
+                                </InputGroup>
+                            </Col>
+
+                            <Col className='mt-3'>
+                                <label htmlFor='sd-priority'>Priority</label>
+                                <InputGroup id='sd-priority'>
+                                    <FormControl
+                                        as='select'
+                                        value={sdPriority}
+                                        onChange={(e) => setSdPriority(e.target.value)}
+                                    >
+                                        <option value=''>--Select--</option>
+                                        <option value={'P1'}>P1</option>
+                                        <option value={'P2'}>P2</option>
+                                        <option value={'P3'}>P3</option>
+
+                                    </FormControl>
+                                </InputGroup>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className='mt-3'>
+                                <label>Comment (option)</label>
+                                <InputGroup id='sd-information'>
+                                    <FormControl
+                                        as='textarea'
+                                        rows={3}
+                                        value={sdInformation}
+                                        onChange={(e) => setSdInformation(e.target.value)}
+                                    ></FormControl>
+                                </InputGroup>
+                            </Col>
+                        </Row>
+                    </>
+                }
+            />
 
             <ConsoDispo 
                 practice={practice}
                 start={start}
                 end={end}
+                mode='staffing'
+                addStaff={addStaff}
             />
 
 
