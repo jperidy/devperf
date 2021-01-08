@@ -485,7 +485,7 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
         } : '';
     
     
-    console.log('experience: ', experience);
+    //console.log('experience: ', experience);
     let searchSkillsId = (skills !== '') ? await Skill.find(skills).select('_id') : '';
     searchSkillsId = (searchSkillsId !== '') ? {'quality.skill': {$in: searchSkillsId}} : {};
     const searchPractice = practice ? {practice: practice} : {};

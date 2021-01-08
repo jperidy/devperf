@@ -40,7 +40,7 @@ const StaffingRequestScreen = ({match, history}) => {
     const [othersPractices, setOthersPractices] = useState([]);
     const [location, setLocation] = useState('');
     const [srInstruction, setSrInstruction] = useState('');
-    const [srStatus, setSrStatus] = useState('wait');
+    const [srStatus, setSrStatus] = useState('');
     const [srRessources, setSrRessources] = useState([]);
 
     const [srResponsabilityAdd, setSrResponsabilityAdd] = useState('');
@@ -373,6 +373,7 @@ const StaffingRequestScreen = ({match, history}) => {
                                         onChange={(e) => setSrStatus(e.target.value)}
                                         required
                                     >
+                                        <option value=''>--Select--</option>
                                         <option value='To do'>To do</option>
                                         <option value='Keep staffing'>Keep staffing</option>
                                         <option value='Retreat staffing'>Keep</option>
