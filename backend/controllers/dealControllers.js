@@ -214,7 +214,7 @@ const deleteDeal = asyncHandler(async (req, res) => {
 const getADeal = asyncHandler(async (req, res) => { 
 
     const id = req.params.id;
-    const deal = await (await Deal.findById(id)).populated();
+    const deal = await (await Deal.findById(id));
 
     if(deal) {
         res.status(200).json(deal);
