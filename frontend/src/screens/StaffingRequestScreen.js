@@ -8,6 +8,7 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
 import { getAllPractice } from '../actions/consultantActions';
+import ConsoDispo from '../components/ConsoDispo';
 
 const StaffingRequestScreen = ({match, history}) => {
 
@@ -20,6 +21,9 @@ const StaffingRequestScreen = ({match, history}) => {
 
     const dealCreate = useSelector(state => state.dealCreate);
     const { loading, error, success, createId } = dealCreate;
+
+    const dealUpdate = useSelector(state => state.dealUpdate);
+    const { loading:loadingUpdate, error: errorUpdate } = dealUpdate;
 
     const dealEdit = useSelector(state => state.dealEdit);
     const { success: successEdit, deal: dealToEdit } = dealEdit;
@@ -48,6 +52,24 @@ const StaffingRequestScreen = ({match, history}) => {
     const [srVolume, setSrVolumeAdd] = useState('');
     const [srDuration, setSrDuration] = useState('');
 
+    const [wonDate, setWonDate] = useState('');
+
+    //ConsoDispo
+    const duration = 3;
+    let startDefault = new Date(Date.now());
+    startDefault.setUTCDate(1);
+    startDefault.setUTCMonth(startDefault.getUTCMonth());
+    startDefault = startDefault.toISOString().substring(0, 10);
+
+    let endDefault = new Date(Date.now());
+    endDefault.setUTCDate(1);
+    endDefault.setUTCMonth(endDefault.getUTCMonth() + duration);
+    endDefault = endDefault.toISOString().substring(0, 10);
+
+    const [practice, setPractice] = useState('PTC1');
+    const [start, setStart] = useState(startDefault);
+    const [end, setEnd] = useState(endDefault);
+
     useEffect(() => {
         if (!userInfo ) {
             history.push('/login');
@@ -74,11 +96,11 @@ const StaffingRequestScreen = ({match, history}) => {
             setStatus(dealToEdit.status);
             setProbability(dealToEdit.probability);
             setDescription(dealToEdit.description);
-            setProposalDate(dealToEdit.proposalDate && dealToEdit.proposalDate.substring(0,10));
-            setPresentationDate(dealToEdit.presentationDate && dealToEdit.presentationDate.substring(0,10));
-            setStartDate(dealToEdit.startDate && dealToEdit.startDate.substring(0,10));
+            setProposalDate(dealToEdit.proposalDate ? dealToEdit.proposalDate.substring(0,10) : "");
+            setPresentationDate(dealToEdit.presentationDate ? dealToEdit.presentationDate.substring(0,10) : "");
+            setStartDate(dealToEdit.startDate ? dealToEdit.startDate.substring(0,10) : "");
             setMainPractice(dealToEdit.mainPractice);
-            setOthersPractices(dealToEdit.othersPractices);
+            setOthersPractices(dealToEdit.othersPractices ? dealToEdit.othersPractices : []);
             setLocation(dealToEdit.location);
             setSrInstruction(dealToEdit.staffingRequest.instructions);
             setSrStatus(dealToEdit.staffingRequest.requestStatus);
@@ -90,7 +112,7 @@ const StaffingRequestScreen = ({match, history}) => {
         if(success) {
             history.push(`/staffing/${createId}`)
         }
-    }, [history, success]);
+    }, [history, success, createId]);
 
     const addRessource = (responsability, grade, volume, duration) => {
         let tampon = new Array(...srRessources);
@@ -131,6 +153,7 @@ const StaffingRequestScreen = ({match, history}) => {
             description: description,
             proposalDate: proposalDate,
             presentationDate: presentationDate,
+            wonDate: wonDate,
             startDate: startDate,
             mainPractice: mainPractice,
             othersPractices: othersPractices,
@@ -170,12 +193,16 @@ const StaffingRequestScreen = ({match, history}) => {
                             type='submit' 
                             variant='primary' 
                             block
-                        >{loading ? <Loader /> : dealId ? 'Update' : 'Submit staffing'}
+                        >{(loading || loadingUpdate) ? <Loader /> : dealId ? 'Update' : 'Submit staffing'}
                         </Button>
                     </Col>
                 </Row>
+
                 {error && (
                     <Row><Col><Message variant='danger'>{error}</Message></Col></Row>
+                )}
+                {errorUpdate && (
+                    <Row><Col><Message variant='danger'>{errorUpdate}</Message></Col></Row>
                 )}
 
                 <Row className='mt-5'>
@@ -219,7 +246,13 @@ const StaffingRequestScreen = ({match, history}) => {
                             <Form.Control
                                 as='select'
                                 value={status}
-                                onChange={(e) => setStatus(e.target.value)}
+                                onChange={(e) => {
+                                    if (e.target.value === 'Won') {
+                                        setWonDate(new Date(Date.now()));
+                                        setSrStatus('Keep staffing');
+                                    } 
+                                    setStatus(e.target.value);
+                                }}
                                 required
                             >
                                 <option value=''>--Select--</option>
@@ -517,8 +550,15 @@ const StaffingRequestScreen = ({match, history}) => {
                         ))}
                     </Col>
                 </Row>
-                
             </Form>
+
+            <ConsoDispo 
+                practice={practice}
+                start={start}
+                end={end}
+            />
+
+
         </>
     )
 }

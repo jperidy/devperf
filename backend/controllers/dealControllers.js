@@ -35,6 +35,7 @@ const updateADeal = asyncHandler(async (req, res) => {
         deal.description = req.body.description;
         deal.proposalDate = req.body.proposalDate;
         deal.presentationDate = req.body.presentationDate;
+        deal.wonDate = req.body.wonDate;
         deal.startDate = req.body.startDate;
         deal.mainPractice = req.body.mainPractice;
         deal.othersPractices = req.body.othersPractices;
@@ -104,6 +105,56 @@ const getAllDeals = asyncHandler(async (req, res) => {
         }
     } : {};
 
+    let globalFilter = {};
+    
+    if (req.query.globalFilter) {
+
+        const currentDate = new Date(Date.now());
+    
+        const lastWeekDate = new Date(Date.now());
+        lastWeekDate.setUTCDate(lastWeekDate.getUTCDate() - 7);
+    
+        const lastMonthDate = new Date(Date.now());
+        lastMonthDate.setUTCMonth(lastMonthDate.getUTCMonth() - 1);
+
+        switch (req.query.globalFilter) {
+            case 'updatedDeal':
+                globalFilter = {
+                    updatedAt: { $gte: lastWeekDate }
+                };
+                break;
+            case 'notUpdatedDeal':
+                globalFilter = {
+                    updatedAt: { $lte: lastMonthDate }
+                };
+                break;
+            case 'newDealWeek':
+                globalFilter = {
+                    createdAt: { $gte: lastWeekDate }
+                };
+                break;
+            case 'newDealMonth':
+                globalFilter = {
+                    createdAt: { $gte: lastMonthDate }
+                };
+                break;
+            case 'wonWeek':
+                globalFilter = {
+                    wonDate: { $gte: lastWeekDate }
+                };
+                break;
+            case 'wonMonth':
+                globalFilter = {
+                    wonDate: { $gte: lastMonthDate }
+                };
+                break;
+            default:
+                globalFilter = {};
+        }
+    }
+
+    //console.log(globalFilter);
+
     const count = await Deal.countDocuments({ 
         ...searchClient,
         ...searchMainPractice,
@@ -111,7 +162,8 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,
-        ...searchRequest 
+        ...searchRequest,
+        ...globalFilter
     });
 
     const deals = await Deal.find({ 
@@ -121,7 +173,8 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,
-        ...searchRequest 
+        ...searchRequest,
+        ...globalFilter
     }).sort({'name': 1})
         .limit(pageSize).skip(pageSize * (page - 1));
 

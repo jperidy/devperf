@@ -35,6 +35,10 @@ const dealSchema = mongoose.Schema({
         type: Date,
         required: false
     },
+    wonDate: {
+        type: Date,
+        required: false
+    },
     startDate: {
         type: Date,
         required: true,

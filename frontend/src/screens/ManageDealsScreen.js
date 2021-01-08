@@ -14,16 +14,17 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import { deleteDeal, getAllDeals } from '../actions/dealActions';
 
-
-
-const ManageDealsScreen = ({history}) => {
+const ManageDealsScreen = ({ history }) => {
 
     const dispatch = useDispatch();
 
     // pagination configuration
     const [pageSize, setPageSize] = useState(10);
     const [pageNumber, setPageNumber] = useState(1);
-    
+
+    // global filter
+    const [globalFilter, setGlobalFilter] = useState('');
+
     // search configuration
     const [searchTitle, setSearchTitle] = useState('');
     const [searchPractice, setSearchPractice] = useState('');
@@ -55,12 +56,12 @@ const ManageDealsScreen = ({history}) => {
                 status: searchDealStatus,
                 request: searchRequestStatus
             }
-            dispatch(getAllDeals(keyword, pageNumber, pageSize));
+            dispatch(getAllDeals(keyword, globalFilter, pageNumber, pageSize));
         } else {
             history.push('/login');
         }
 
-    }, [dispatch, history, userInfo, searchTitle, searchPractice, searchCompany, searchClient, searchDealStatus, searchRequestStatus, pageNumber, pageSize]);
+    }, [dispatch, history, userInfo, globalFilter, searchTitle, searchPractice, searchCompany, searchClient, searchDealStatus, searchRequestStatus, pageNumber, pageSize]);
 
 
     useEffect(() => {
@@ -74,9 +75,9 @@ const ManageDealsScreen = ({history}) => {
                 status: searchDealStatus,
                 request: searchRequestStatus
             }
-            dispatch(getAllDeals(keyword, pageNumber, pageSize));
+            dispatch(getAllDeals(keyword, globalFilter, pageNumber, pageSize));
         }
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [dispatch, successDelete])
 
     const onClickDeleteHandler = (deal) => {
@@ -92,7 +93,29 @@ const ManageDealsScreen = ({history}) => {
     return (
         <>
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+
+            <Row>
+                <Col xs={12} md={4}>
+                    <InputGroup>
+                        <FormControl
+                            as='select'
+                            value={globalFilter && globalFilter}
+                            onChange={(e) => setGlobalFilter(e.target.value)}
+                        >
+                            <option value=''>--Select--</option>
+                            <option value='updatedDeal'>Updated Deal (week)</option>
+                            <option value='notUpdatedDeal'>Not updated Deal (month)</option>
+                            <option value='newDealWeek'>New Deal (week)</option>
+                            <option value='newDealMonth'>New Deal (month)</option>
+                            <option value='wonWeek'>Won (week)</option>
+                            <option value='wonMonth'>Won (month)</option>
+                        </FormControl>
+                    </InputGroup>
+                </Col>
+            </Row>
+
             <Row className='mt-3'>
+                <Col>
                     <Form onSubmit={filterLeads}>
                         <Row>
                             <Col xs={6} md={2}>
@@ -174,41 +197,42 @@ const ManageDealsScreen = ({history}) => {
                             </Col>
 
                         </Row>
-                    <Row>
-                        <Col xs={12} md={2} className='text-right'>
-                            <Button type='submit' variant='primary' block>Search</Button>
-                        </Col>
+                        <Row>
+                            <Col xs={12} md={2} className='text-right'>
+                                <Button type='submit' variant='primary' block>Search</Button>
+                            </Col>
 
-                        <Col xs={6} md={8}>
-                            <Form.Control
-                                plaintext
-                                readOnly
-                                value={count ? `${count} Deals found` : '0 skills found'} />
-                        </Col>
+                            <Col xs={6} md={8}>
+                                <Form.Control
+                                    plaintext
+                                    readOnly
+                                    value={count ? `${count} Deals found` : '0 skills found'} />
+                            </Col>
 
-                        <Col xs={6} md={2}>
-                            <InputGroup>
-                                <FormControl
-                                    as='select'
-                                    id='number-c'
-                                    className="mb-3"
-                                    value={pageSize && pageSize}
-                                    onChange={(e) => setPageSize(e.target.value)}
-                                >
-                                    {[5, 10, 15, 20, 50].map(x => (
-                                        <option
-                                            key={x}
-                                            value={x}
-                                        >{x} / page</option>
-                                    ))}
-                                </FormControl>
-                            </InputGroup>
-                        </Col>
-                    </Row>
+                            <Col xs={6} md={2}>
+                                <InputGroup>
+                                    <FormControl
+                                        as='select'
+                                        id='number-c'
+                                        className="mb-3"
+                                        value={pageSize && pageSize}
+                                        onChange={(e) => setPageSize(e.target.value)}
+                                    >
+                                        {[5, 10, 15, 20, 50].map(x => (
+                                            <option
+                                                key={x}
+                                                value={x}
+                                            >{x} / page</option>
+                                        ))}
+                                    </FormControl>
+                                </InputGroup>
+                            </Col>
+                        </Row>
                     </Form>
+                </Col>
             </Row>
 
-            {deals && deals.length === 0 ? <Message variant='information'>You have not access to these information</Message> :
+            {deals && deals.length === 0 ? <Message variant='information'>No deal found</Message> :
                 loading ? <Loader /> : error ? <Message variant="danger">{error}</Message> : (
 
                     <Table responsive hover striped className='mt-5'>
@@ -251,7 +275,7 @@ const ManageDealsScreen = ({history}) => {
                                     >
                                         <td className='align-middle'>{deal.staffingRequest.requestStatus}</td>
                                     </OverlayTrigger>
-                                    <td className='align-middle'>{deal.startDate.substring(0,10)}</td>
+                                    <td className='align-middle'>{deal.startDate.substring(0, 10)}</td>
                                     <td className='align-middle'>
                                         <Button variant='primary' onClick={() => history.push(`/staffing/${deal._id}`)}>
                                             <i className="fas fa-edit"></i>
@@ -289,7 +313,7 @@ const ManageDealsScreen = ({history}) => {
                                 status: searchDealStatus,
                                 request: searchRequestStatus
                             }
-                            dispatch(getAllDeals(keyword, pageNumber, pageSize));
+                            dispatch(getAllDeals(keyword, globalFilter, pageNumber, pageSize));
                             setPageNumber(x + 1);
                         }}
                     >{x + 1}</Pagination.Item>
