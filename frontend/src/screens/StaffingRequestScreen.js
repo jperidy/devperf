@@ -12,12 +12,13 @@ import ModalWindow from '../components/ModalWindow';
 import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
 import { getAllPractice } from '../actions/consultantActions';
 import ConsoDispo from '../components/ConsoDispo';
+import { DEAL_CREATE_RESET } from '../constants/dealConstants';
 
 const StaffingRequestScreen = ({match, history}) => {
 
     const dispatch = useDispatch();
 
-    const dealId = match.params.id;
+    //const dealId = match.params.id;
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -96,13 +97,13 @@ const StaffingRequestScreen = ({match, history}) => {
     }, [dispatch, practiceList]);
 
     useEffect(()=>{
-        if(dealId) {
-            dispatch(getDealToEdit(dealId));
+        if(match.params.id) {
+            dispatch(getDealToEdit(match.params.id));
         }
-    }, [dispatch, dealId])
+    }, [dispatch, match])
 
     useEffect(() => {
-        if(dealId && successEdit) {
+        if(match.params.id && successEdit) {
             setTitle(dealToEdit.title);
             setCompany(dealToEdit.company);
             setClient(dealToEdit.client);
@@ -122,11 +123,12 @@ const StaffingRequestScreen = ({match, history}) => {
             setSdStatus(dealToEdit.staffingDecision.instructions ? dealToEdit.staffingDecision.instructions : '');
             setSdStaff(dealToEdit.staffingDecision.staff ? dealToEdit.staffingDecision.staff : []);
         }
-    }, [successEdit, dealToEdit, dealId])
+    }, [successEdit, dealToEdit, match])
     
     useEffect(() => {
         if(success) {
-            history.push(`/staffing/${createId}`)
+            history.push(`/staffing/${createId}`);
+            dispatch({ type: DEAL_CREATE_RESET });
         }
     }, [history, success, createId]);
 
@@ -159,7 +161,7 @@ const StaffingRequestScreen = ({match, history}) => {
     }
 
     const addStaff = (consultant) => {
-        const staffId = sdStaff.map(consultant => consultant.idConsultant);
+        const staffId = sdStaff.map(consultant => consultant.idConsultant._id);
         if(staffId.includes(consultant._id)) {
             window.confirm('Consultant already added')
         } else {
@@ -174,8 +176,10 @@ const StaffingRequestScreen = ({match, history}) => {
 
         let tampon = new Array(...sdStaff);
         tampon.push({
-            idConsultant: sdConsultant._id,
-            consultant: sdConsultant.name,
+            idConsultant : {
+                _id: sdConsultant._id,
+                name: sdConsultant.name,
+            },
             responsability: sdResponsability,
             priority: sdPriority,
             information: sdInformation
@@ -186,8 +190,9 @@ const StaffingRequestScreen = ({match, history}) => {
     }
 
     const removeStaffHandler = (id) => {
+        //console.log(id);
         let tampon = new Array(...sdStaff);
-        tampon = tampon.filter(consultant => consultant.idConsultant !== id);
+        tampon = tampon.filter(consultant => consultant.idConsultant._id !== id);
         setSdStaff(tampon);
     }
 
@@ -217,16 +222,16 @@ const StaffingRequestScreen = ({match, history}) => {
                 staffingStatus: sdStatus,
                 staff: sdStaff.map(staff => ({
                     responsability: staff.responsability,
-                    idConsultant: staff.idConsultant,
+                    idConsultant: staff.idConsultant._id,
                     priority: staff.priority,
                     information: staff.information
                 }))
             }
         }
-        console.log(deal.staffingDecision.staff)
-        if (dealId) {
+
+        if (match.params.id) {
             //console.log('updage');
-            dispatch(updateDeal(dealId, deal));
+            dispatch(updateDeal(match.params.id, deal));
         } else {
             dispatch(createDeal(deal));
         }
@@ -238,7 +243,7 @@ const StaffingRequestScreen = ({match, history}) => {
             <Form onSubmit={submitHandler}>
                 <Row className='mt-3'>
                     <Col xs={6} md={2}>
-                        {dealId && (
+                        {match.params.id && (
                             <Button 
                                 type='button' 
                                 variant='primary' 
@@ -253,7 +258,7 @@ const StaffingRequestScreen = ({match, history}) => {
                             type='submit' 
                             variant='primary' 
                             block
-                        >{(loading || loadingUpdate) ? <Loader /> : dealId ? 'Update' : 'Submit staffing'}
+                        >{(loading || loadingUpdate) ? <Loader /> : match.params.id ? 'Update' : 'Submit staffing'}
                         </Button>
                     </Col>
                 </Row>
@@ -445,7 +450,7 @@ const StaffingRequestScreen = ({match, history}) => {
                         <Row>
                             <Col xs={12} md={8}>
                                 <Form.Group controlId='sr-instruction'>
-                                    <Form.Label as='h5'>Instruction</Form.Label>
+                                    <Form.Label as='h5'>Staffing instruction</Form.Label>
                                     <Form.Control
                                         as='textarea'
                                         rows={3}
@@ -477,7 +482,7 @@ const StaffingRequestScreen = ({match, history}) => {
                             </Col>
                         </Row>
 
-                        <h5>Add ressources</h5>
+                        {/* <h5>Add ressources</h5>
                         <Row>
                             <Col>Responsability</Col>
                             <Col>Grade</Col>
@@ -607,29 +612,29 @@ const StaffingRequestScreen = ({match, history}) => {
                                     ><i className="fas fa-trash-alt"></i></Button>
                                 </Col>
                             </Row>
-                        ))}
+                        ))}  */}
 
-                        <h5>Staff decision</h5>
+                        <h5>Staffing decision</h5>
                         <Row>
-                            <Col><strong>Name</strong></Col>
-                            <Col><strong>Responsability</strong></Col>
-                            <Col><strong>Priority</strong></Col>
-                            <Col></Col>
+                            <Col xs={4}><strong>Name</strong></Col>
+                            <Col xs={4}><strong>Responsability</strong></Col>
+                            <Col xs={2}><strong>Priority</strong></Col>
+                            <Col xs={2}></Col>
                         </Row>
                         {sdStaff && sdStaff.map((consultant, val) => (
                             <Row key={val}>
-                                <Col>
+                                <Col xs={4}>
                                     <Form.Group controlId='sd-name'>
                                         <Form.Control
                                             type='text'
                                             plaintext
                                             readOnly
-                                            value={consultant.consultant}
+                                            value={consultant.idConsultant.name}
                                         ></Form.Control>
                                     </Form.Group>
                                 </Col>
 
-                                <Col>
+                                <Col xs={4}>
                                     <Form.Group controlId='sd-responsability'>
                                         <Form.Control
                                             type='text'
@@ -639,7 +644,7 @@ const StaffingRequestScreen = ({match, history}) => {
                                         ></Form.Control>
                                     </Form.Group>
                                 </Col>
-                                <Col>
+                                <Col xs={2}>
                                     <Form.Group controlId='sd-priority'>
                                         <Form.Control
                                             type='text'
@@ -649,11 +654,12 @@ const StaffingRequestScreen = ({match, history}) => {
                                         ></Form.Control>
                                     </Form.Group>
                                 </Col>
-                                <Col>
+                                <Col xs={2}>
                                     <Button
-                                        onClick={() => removeStaffHandler(consultant.idConsultant)}
+                                        onClick={() => removeStaffHandler(consultant.idConsultant._id)}
                                         variant='danger'
                                         size='sm'
+                                        block
                                     ><i className="fas fa-times"></i></Button>
                                 </Col>
                             </Row>
@@ -665,8 +671,10 @@ const StaffingRequestScreen = ({match, history}) => {
             <ModalWindow 
                 show={modalWindowShow}
                 onSubmit={() => addStaffHandler()}
+                onHide={() => setModalWindowShow(false)}
                 header='Staffing'
                 title='Description'
+                isValid={sdResponsability !== '' && sdPriority !== ''}
                 body={
                     <>
                         <Row>
@@ -736,13 +744,15 @@ const StaffingRequestScreen = ({match, history}) => {
                 }
             />
 
-            <ConsoDispo 
-                practice={practice}
-                start={start}
-                end={end}
-                mode='staffing'
-                addStaff={addStaff}
-            />
+            {match.params.id && (
+                <ConsoDispo 
+                    practice={practice}
+                    start={start}
+                    end={end}
+                    mode='staffing'
+                    addStaff={addStaff}
+                />
+            )}
 
 
         </>

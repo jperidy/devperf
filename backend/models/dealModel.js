@@ -96,7 +96,7 @@ const dealSchema = mongoose.Schema({
             responsability: {
                 type: String,
                 required: true,
-                enum: ['Project director', 'Project manager', 'Project Leader', 'X', 'Intern']
+                enum: ['Project director', 'Project manager', 'Project leader', 'X', 'Intern']
             },
             idConsultant: {
                 type: mongoose.Schema.Types.ObjectId,
