@@ -63,10 +63,12 @@ const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
             $lte: endDay.toISOString().substring(0,10)
         }
     });
-
+    
     const monthId = monthData.map( x => x._id);
+    //console.log('monthId', monthId);
+
     const pxxData = await Pxx.find({ month: {$in: monthId}, name: consultantId})
-    //const userProfile = await User.findById(consultantId);
+    //console.log('pxxData', pxxData);
 
     for (let incrPxx = 0; incrPxx < pxxData.length; incrPxx++) {
         const idMonth = pxxData[incrPxx].month;

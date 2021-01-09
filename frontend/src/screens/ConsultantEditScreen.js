@@ -235,6 +235,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                     ]
                 }
             }
+            console.log("updatedUser", updatedUser);
             dispatch(updateMyConsultant(updatedUser));
         }
 

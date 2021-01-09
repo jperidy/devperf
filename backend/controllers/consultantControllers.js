@@ -145,7 +145,7 @@ const updateConsultant = asyncHandler(async (req, res) => {
             try {
                 await resetAllPxx(myConsultant);
             } catch (error) {
-                console.log('Error: resetAllPxx fail:', error);
+                //console.log('Error: resetAllPxx fail:', error);
                 res.status(500).json({message: 'Error: resetAllPxx fail'});
             }
         }
@@ -159,13 +159,16 @@ const updateConsultant = asyncHandler(async (req, res) => {
             || startChange
             || endChange)
         ) {
+            //console.log('partialTime detected with changement');
             try {
                 if (!partialTimeChange && (startChange || endChange)) {
+                    //console.log('on va reseter')
                     await resetPartialTimePxx(myConsultant);
                 }
+                //console.log('on va updater')
                 await updatePartialTimePxx(myConsultant, consultantToUpdate.isPartialTime);
             } catch (error) {
-                console.log('Error: updatePartialTimePxx fail', error);
+                //console.log('Error: updatePartialTimePxx fail', error);
                 res.status(500).json({ message: 'Error: updatePartialTimePxx fail' });
             }
         } 
@@ -180,10 +183,11 @@ const updateConsultant = asyncHandler(async (req, res) => {
             || startChange
             || endChange ) 
             && !consultantToUpdate.isPartialTime.value) {
+            //console.log('suppression du partial time');
             try {
                 await resetPartialTimePxx(myConsultant);
             } catch (error) {
-                console.log('Error: resetPartialTimePxx fail', error);
+                //console.log('Error: resetPartialTimePxx fail', error);
                 res.status(500).json({ message: 'Error: resetPartialTimePxx fail' });
             }
         }

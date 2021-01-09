@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-//import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
-//import Loader from '../components/Loader';
-//import Message from '../components/Message';
 import { updatePxx } from '../actions/pxxActions';
 
 const PxxUserLine = ({ data }) => {
@@ -17,14 +14,9 @@ const PxxUserLine = ({ data }) => {
     const [notProdDayComponent, setNotProdDayComponent] = useState(Number(data.notProdDay));
     const [leavingDayComponent, setLeavingDayComponent] = useState(Number(data.leavingDay));
     const [availableDayComponent, setAvailableDayComponent] = useState(Number(data.availableDay));
-    //const [submitButtonState, setSubmitButtonState] = useState(false);
-    //const [hasBeenModified, setHasBeenModified] = useState(false);
-    const workingDay = Number(data.prodDay) + Number(data.notProdDay) + Number(data.leavingDay) + Number(data.availableDay)
+    const [workingDay] = useState(Number(data.prodDay) + Number(data.notProdDay) + Number(data.leavingDay) + Number(data.availableDay));
 
-    /*
-    const pxxUpdate = useSelector(state => state.pxxUpdate);
-    const { loading, error } = pxxUpdate;
-    */
+    const [hasChange, setHasChange] = useState(false);
 
     // Calculate firstday of current month to compare with firstDayMonth of displayed Pxx
     let firstDayOfCurrentMonth = new Date(Date.now());
@@ -34,9 +26,8 @@ const PxxUserLine = ({ data }) => {
     const editable = data.month ? (data.month.firstDay >= firstDayOfCurrentMonth) : false;
 
 
+    /*
     useEffect(() => {
-        //const value = workingDay >= (prodDayComponent + notProdDayComponent + leavingDayComponent)
-        //setSubmitButtonState(value);
         setAvailableDayComponent(workingDay - (prodDayComponent + notProdDayComponent + leavingDayComponent))
     }, [prodDayComponent,
         notProdDayComponent,
@@ -44,9 +35,11 @@ const PxxUserLine = ({ data }) => {
         availableDayComponent,
         workingDay
     ]);
+    */
 
     useEffect(() => {
-        if (workingDay >= (prodDayComponent + notProdDayComponent + leavingDayComponent)) {
+        if (hasChange && workingDay >= (prodDayComponent + notProdDayComponent + leavingDayComponent)) {
+            setAvailableDayComponent(workingDay - (prodDayComponent + notProdDayComponent + leavingDayComponent))
             dispatch(updatePxx({
                 _id: data._id,
                 name: data.name,
@@ -56,6 +49,7 @@ const PxxUserLine = ({ data }) => {
                 leavingDay: leavingDayComponent,
                 availableDay: availableDayComponent
             }));
+            setHasChange(false);
         }
     // eslint-disable-next-line
     },[workingDay, prodDayComponent, notProdDayComponent, leavingDayComponent, data]);
@@ -77,6 +71,7 @@ const PxxUserLine = ({ data }) => {
                             value={prodDayComponent ? prodDayComponent : 0}
                             onChange={(e) => {
                                 setProdDayComponent(Number(e.target.value));
+                                setHasChange(true);
                                 //setHasBeenModified(true);
                             }}
                         />
@@ -94,6 +89,7 @@ const PxxUserLine = ({ data }) => {
                             value={notProdDayComponent ? notProdDayComponent : 0}
                             onChange={(e) => {
                                 setNotProdDayComponent(Number(e.target.value));
+                                setHasChange(true);
                                 //setHasBeenModified(true);
                             }}
                         />
@@ -111,7 +107,7 @@ const PxxUserLine = ({ data }) => {
                             value={leavingDayComponent ? leavingDayComponent : 0}
                             onChange={(e) => {
                                 setLeavingDayComponent(Number(e.target.value));
-                                //setHasBeenModified(true);
+                                setHasChange(true);
                             }}
                         />
                     </InputGroup>

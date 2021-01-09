@@ -14,7 +14,6 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
 
     const [numberOfMonth] = useState(5);
 
-
     const pxxMyToEdit = useSelector(state => state.pxxMyToEdit);
     const { loading: loadingPxx, error: errorPxx, pxx } = pxxMyToEdit;
 
@@ -27,10 +26,6 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
 
         // Effect when loading component and each time entry parameters change
         dispatch(getMyConsultantPxxToEdit(consultantId, searchDate, numberOfMonth));
-        /*
-        if(!loadingPxx) {
-        }
-        */
     }, [dispatch, searchDate, numberOfMonth, consultantId]);
 
     return (
