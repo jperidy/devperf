@@ -20,8 +20,8 @@ const dealSchema = mongoose.Schema({
         //enum: ['']
     },
     contacts: {
-        primary: { type: mongoose.Schema.Types.ObjectId },
-        secondary: [ { type: mongoose.Schema.Types.ObjectId } ]
+        primary: { type: mongoose.Schema.Types.ObjectId, ref: 'Consultant' },
+        secondary: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Consultant' } ]
     },
     probability: {
         type: Number,

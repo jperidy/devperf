@@ -180,7 +180,8 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...searchStatus,
         ...searchRequest,
         ...globalFilter
-    }).sort({'name': 1})
+    }).populate('contacts.primary contacts.secondary')
+        .sort({'name': 1})
         .limit(pageSize).skip(pageSize * (page - 1));
 
     if (deals) {

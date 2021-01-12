@@ -1,7 +1,7 @@
 //const bcrypt = require('bcryptjs');
 
 function getCDMData (nbCdm, skills, practice) {
-    const grade = ['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
+    const grade = ['Intern', 'Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
     let matricule = 1000;
     const listOfCdm = [];
     
@@ -38,9 +38,9 @@ function getCDMData (nbCdm, skills, practice) {
 
 function getConsultantData (nbUsers, cdmId, skills, practice) {
     
-    const grade = ['Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
-    const nameDataSet = ['Richard', 'Benoit', 'Jacques', 'Laurine', 'Isabelle', 'Jeanne', 'Arthur', 'Jessica', 'Jean'];
-    const secondNameDataSet = ['DURAND', 'MARTIN', 'BERNARD', 'THOMAS', 'PETIT', 'MICHEL', 'ROUX'];
+    const grade = ['Intern', 'Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
+    const nameDataSet = ['Richard', 'Benoit', 'Jacques', 'Laurine', 'Isabelle', 'Jeanne', 'Arthur', 'Jessica', 'Jean', 'Paul', 'Marion', 'Julien', 'Sophie'];
+    const secondNameDataSet = ['DURAND', 'MARTIN', 'DUPONT', 'THOMAS', 'PETIT', 'MICHEL', 'ROUX', 'DUBOIS', 'ROBERT', 'BRUN'];
 
     let matricule = 0;
     const listOfUsers = [];
@@ -50,14 +50,17 @@ function getConsultantData (nbUsers, cdmId, skills, practice) {
     for (let iter = 0 ; iter < nbUsers ; iter++){
         const quality = [];
         for (let incr = 0 ; incr < 5 ; incr++) {
-            quality.push({
-                skill: skills[(Math.round(Math.random() * (skills.length -1)))]._id,
-                level: Number(1 + Math.round(Math.random() * 2))
-            })
+            const skill = skills[(Math.round(Math.random() * (skills.length -1)))]._id;
+            
+            if (!quality.map(x => x.skill).includes(skill)) {
+                quality.push({
+                    skill: skills[(Math.round(Math.random() * (skills.length -1)))]._id,
+                    level: Number(1 + Math.round(Math.random() * 2))
+                })
+            }
         }
         
         let arrival = new Date(2019 + Math.floor(Math.random() * 2), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
-        //let leaving = new Date(2023 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
         let seniority = (Date.now() - arrival) / (1000 * 3600 * 24 * 365.25);
 
         const name = nameDataSet[Math.round(Math.random() * (nameDataSet.length - 1))] + ' ' + secondNameDataSet[Math.round(Math.random() * (secondNameDataSet.length - 1))];
@@ -69,7 +72,6 @@ function getConsultantData (nbUsers, cdmId, skills, practice) {
             grade: grade[Math.round(Math.random() * (grade.length - 1))],
             arrival: arrival,
             valued: arrival,
-            //leaving: leaving,
             seniority: seniority,
             practice: practice,
             isCDM: false,

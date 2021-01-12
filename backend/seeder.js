@@ -5,13 +5,13 @@ const User = require('./models/userModel');
 const Consultant = require('./models/consultantModel')
 const Pxx = require('./models/pxxModel');
 const Skill = require('./models/skillModels');
+const Deal = require('./models/dealModel');
 const connectDB = require('./config/db');
 
-//const getMonthData = require('./data/monthData');
-//const getPxxData = require('./data/pxxData');
 const {getConsultantData, getCDMData} = require('./data/consultantData');
 const { getUserData } = require('./data/userData');
 const { getSkills } = require('./data/skillData');
+const { getDeals } = require('./data/dealsData');
 
 dotenv.config();
 connectDB();
@@ -28,6 +28,7 @@ const importData = async () => {
         await Pxx.deleteMany();
         await Consultant.deleteMany();
         await Skill.deleteMany();
+        await Deal.deleteMany();
         
         console.log('Data deleted');
         
@@ -37,8 +38,8 @@ const importData = async () => {
     }
     
     // CREATE NEW DATASET
-    const nbUsers = 20;
-    const nbCdm = 5;
+    const nbConsultants = 100;
+    const nbCdm = 10;
 
     
     try {
@@ -50,7 +51,7 @@ const importData = async () => {
         let cdmDataCreated = await Consultant.insertMany(cdmData);
 
         let cdmId = cdmDataCreated.map( x => x.practice === ptc && x._id);
-        let consultantData = getConsultantData(nbUsers, cdmId, skillsDataCreated, ptc);
+        let consultantData = getConsultantData(nbConsultants, cdmId, skillsDataCreated, ptc);
         let consultantDataCreated = await Consultant.insertMany(consultantData);
 
         let allConsultants = await Consultant.find({practice: ptc});
@@ -63,15 +64,50 @@ const importData = async () => {
         cdmDataCreated = await Consultant.insertMany(cdmData);
 
         cdmId = cdmDataCreated.map( x => x.practice === ptc && x._id);
-        consultantData = getConsultantData(nbUsers, cdmId, skillsDataCreated, ptc);
+        consultantData = getConsultantData(nbConsultants, cdmId, skillsDataCreated, ptc);
         consultantDataCreated = await Consultant.insertMany(consultantData);
 
         allConsultants = await Consultant.find({practice: ptc});
         userData = getUserData(allConsultants);
         userDataCreated = await User.insertMany(userData);
 
+        ptc = 'PTC3';
+        cdmData = getCDMData(nbCdm, skillsDataCreated, ptc);
+        cdmDataCreated = await Consultant.insertMany(cdmData);
+
+        cdmId = cdmDataCreated.map( x => x.practice === ptc && x._id);
+        consultantData = getConsultantData(nbConsultants, cdmId, skillsDataCreated, ptc);
+        consultantDataCreated = await Consultant.insertMany(consultantData);
+
+        allConsultants = await Consultant.find({practice: ptc});
+        userData = getUserData(allConsultants);
+        userDataCreated = await User.insertMany(userData);
+
+        
+        ptc = 'PTC4';
+        cdmData = getCDMData(nbCdm, skillsDataCreated, ptc);
+        cdmDataCreated = await Consultant.insertMany(cdmData);
+        
+        cdmId = cdmDataCreated.map( x => x.practice === ptc && x._id);
+        consultantData = getConsultantData(nbConsultants, cdmId, skillsDataCreated, ptc);
+        consultantDataCreated = await Consultant.insertMany(consultantData);
+        
+        allConsultants = await Consultant.find({practice: ptc});
+        userData = getUserData(allConsultants);
+        userDataCreated = await User.insertMany(userData);
+
+        let allFinalConsultants = await Consultant.find();
+        allFinalConsultants = allFinalConsultants.filter(x => ['Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'].includes(x.grade));
+
+        const nbDeals = 200;
+        let practices = allFinalConsultants.map(x => x.practice);
+        practices = [... new Set(practices)];
+        dealsData = getDeals(nbDeals, allFinalConsultants, practices);
+        dealsDataCreated = await Deal.insertMany(dealsData);
+
         console.log('Data imported');
         process.exit();
+        
         
     } catch (error) {
         console.error(error);

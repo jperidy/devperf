@@ -13,8 +13,9 @@ import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
 import { getAllPractice } from '../actions/consultantActions';
 import ConsoDispo from '../components/ConsoDispo';
 import { DEAL_CREATE_RESET } from '../constants/dealConstants';
+import { ListGroup } from 'react-bootstrap';
 
-const StaffingRequestScreen = ({match, history}) => {
+const StaffingRequestScreen = ({ match, history }) => {
 
     const dispatch = useDispatch();
 
@@ -27,7 +28,7 @@ const StaffingRequestScreen = ({match, history}) => {
     const { loading, error, success, createId } = dealCreate;
 
     const dealUpdate = useSelector(state => state.dealUpdate);
-    const { loading:loadingUpdate, error: errorUpdate } = dealUpdate;
+    const { loading: loadingUpdate, error: errorUpdate } = dealUpdate;
 
     const dealEdit = useSelector(state => state.dealEdit);
     const { success: successEdit, deal: dealToEdit } = dealEdit;
@@ -68,6 +69,8 @@ const StaffingRequestScreen = ({match, history}) => {
 
     const [modalWindowShow, setModalWindowShow] = useState(false);
 
+    const [editRequest, setEditRequest] = useState(match.params.id ? false : true);
+
     //ConsoDispo
     const duration = 3;
     let startDefault = new Date(Date.now());
@@ -85,34 +88,34 @@ const StaffingRequestScreen = ({match, history}) => {
     const [end, setEnd] = useState(endDefault);
 
     useEffect(() => {
-        if (!userInfo ) {
+        if (!userInfo) {
             history.push('/login');
         }
     }, [history, userInfo]);
 
     useEffect(() => {
-        if(!practiceList) {
+        if (!practiceList) {
             dispatch(getAllPractice());
         }
     }, [dispatch, practiceList]);
 
-    useEffect(()=>{
-        if(match.params.id) {
+    useEffect(() => {
+        if (match.params.id) {
             dispatch(getDealToEdit(match.params.id));
         }
     }, [dispatch, match])
 
     useEffect(() => {
-        if(match.params.id && successEdit) {
+        if (match.params.id && successEdit) {
             setTitle(dealToEdit.title);
             setCompany(dealToEdit.company);
             setClient(dealToEdit.client);
             setStatus(dealToEdit.status);
             setProbability(dealToEdit.probability);
             setDescription(dealToEdit.description);
-            setProposalDate(dealToEdit.proposalDate ? dealToEdit.proposalDate.substring(0,10) : "");
-            setPresentationDate(dealToEdit.presentationDate ? dealToEdit.presentationDate.substring(0,10) : "");
-            setStartDate(dealToEdit.startDate ? dealToEdit.startDate.substring(0,10) : "");
+            setProposalDate(dealToEdit.proposalDate ? dealToEdit.proposalDate.substring(0, 10) : "");
+            setPresentationDate(dealToEdit.presentationDate ? dealToEdit.presentationDate.substring(0, 10) : "");
+            setStartDate(dealToEdit.startDate ? dealToEdit.startDate.substring(0, 10) : "");
             setMainPractice(dealToEdit.mainPractice);
             setOthersPractices(dealToEdit.othersPractices ? dealToEdit.othersPractices : []);
             setLocation(dealToEdit.location);
@@ -124,9 +127,9 @@ const StaffingRequestScreen = ({match, history}) => {
             setSdStaff(dealToEdit.staffingDecision.staff ? dealToEdit.staffingDecision.staff : []);
         }
     }, [successEdit, dealToEdit, match])
-    
+
     useEffect(() => {
-        if(success) {
+        if (success) {
             history.push(`/staffing/${createId}`);
             dispatch({ type: DEAL_CREATE_RESET });
         }
@@ -143,11 +146,14 @@ const StaffingRequestScreen = ({match, history}) => {
         setSrRessources(tampon);
     };
 
+    /*
     const deleteRessource = (val) => {
         let tampon = new Array(...srRessources);
         tampon.splice(Number(val), 1);
         setSrRessources(tampon);
     };
+    */
+
 
     const updateOthersPractices = () => {
         const selectedList = [];
@@ -160,15 +166,16 @@ const StaffingRequestScreen = ({match, history}) => {
         setOthersPractices(selectedList);
     }
 
+
     const addStaff = (consultant) => {
         const staffId = sdStaff.map(consultant => consultant.idConsultant._id);
-        if(staffId.includes(consultant._id)) {
+        if (staffId.includes(consultant._id)) {
             window.confirm('Consultant already added')
         } else {
             setModalWindowShow(true);
             setSdConsultant(consultant);
         }
-        
+
     };
 
     const addStaffHandler = () => {
@@ -176,7 +183,7 @@ const StaffingRequestScreen = ({match, history}) => {
 
         let tampon = new Array(...sdStaff);
         tampon.push({
-            idConsultant : {
+            idConsultant: {
                 _id: sdConsultant._id,
                 name: sdConsultant.name,
             },
@@ -185,7 +192,7 @@ const StaffingRequestScreen = ({match, history}) => {
             information: sdInformation
         });
         setSdStaff(tampon);
-        
+
         setModalWindowShow(false)
     }
 
@@ -217,7 +224,7 @@ const StaffingRequestScreen = ({match, history}) => {
                 requestStatus: srStatus,
                 ressources: srRessources
             },
-            staffingDecision:{
+            staffingDecision: {
                 instructions: sdInstructions,
                 staffingStatus: sdStatus,
                 staff: sdStaff.map(staff => ({
@@ -244,9 +251,9 @@ const StaffingRequestScreen = ({match, history}) => {
                 <Row className='mt-3'>
                     <Col xs={6} md={2}>
                         {match.params.id && (
-                            <Button 
-                                type='button' 
-                                variant='primary' 
+                            <Button
+                                type='button'
+                                variant='primary'
                                 onClick={() => history.go(-1)}
                                 block
                             >Go Back</Button>
@@ -254,9 +261,9 @@ const StaffingRequestScreen = ({match, history}) => {
                     </Col>
                     <Col xs={0} md={8}></Col>
                     <Col xs={6} md={2}>
-                        <Button 
-                            type='submit' 
-                            variant='primary' 
+                        <Button
+                            type='submit'
+                            variant='primary'
                             block
                         >{(loading || loadingUpdate) ? <Loader /> : match.params.id ? 'Update' : 'Submit staffing'}
                         </Button>
@@ -270,217 +277,365 @@ const StaffingRequestScreen = ({match, history}) => {
                     <Row><Col><Message variant='danger'>{errorUpdate}</Message></Col></Row>
                 )}
 
-                <Row className='mt-5'>
+                <Row className='mt-3'><Col>
+                    <Button
+                        onClick={() => setEditRequest(!editRequest)}
+                        variant='light'
+                    >{editRequest ? (<i className="far fa-check-circle"></i>) : (<i className="far fa-edit"></i>)}
+                    </Button>
+                </Col></Row>
+                
+                <Row className='mt-2'>
 
                     <Col xs={12} md={4}>
 
-                        <Form.Group controlId='title'>
-                            <Form.Label as='h5'>Title</Form.Label>
-                            <Form.Control
-                                type='text'
-                                placeholder='Staffing request object'
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                required
-                            ></Form.Control>
-                        </Form.Group>
+                        <ListGroup.Item>
+                            <Form.Group controlId='title' className='mb-0'>
+                                <Form.Label as='h5'>Title</Form.Label>
+                                {editRequest ? (
+                                    <Form.Control
+                                        type='text'
+                                        placeholder='Staffing request object'
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        required
+                                    ></Form.Control>
+                                ) : (
+                                        <Form.Control
+                                            type='text'
+                                            plaintext
+                                            value={title}
+                                            readOnly
+                                        ></Form.Control>
+                                    )}
+                            </Form.Group>
+                        </ListGroup.Item>
 
-                        <Form.Group controlId='company'>
-                            <Form.Label as='h5'>Company</Form.Label>
-                            <Form.Control
-                                type='text'
-                                placeholder='Company name'
-                                value={company}
-                                onChange={(e) => setCompany(e.target.value)}
-                                required
-                            ></Form.Control>
-                        </Form.Group>
+                        <ListGroup.Item>
+                            <Form.Group controlId='company' className='mb-0'>
+                                <Form.Label as='h5'>Company</Form.Label>
+                                {editRequest ? (
+                                    <Form.Control
+                                        type='text'
+                                        placeholder='Company name'
+                                        value={company}
+                                        onChange={(e) => setCompany(e.target.value)}
+                                        required
+                                    ></Form.Control>
+                                ) : (
+                                        <Form.Control
+                                            type='text'
+                                            plaintext
+                                            readOnly
+                                            value={company}
+                                        ></Form.Control>
+                                    )}
+                            </Form.Group>
+                        </ListGroup.Item>
 
-                        <Form.Group controlId='client'>
-                            <Form.Label as='h5'>Client</Form.Label>
-                            <Form.Control
-                                type='text'
-                                placeholder='Client name'
-                                value={client}
-                                onChange={(e) => setClient(e.target.value)}
-                            ></Form.Control>
-                        </Form.Group>
+                        <ListGroup.Item>
+                            <Form.Group controlId='client' className='mb-0'>
+                                <Form.Label as='h5'>Client</Form.Label>
+                                {editRequest ? (
+                                    <Form.Control
+                                        type='text'
+                                        placeholder='Client name'
+                                        value={client}
+                                        onChange={(e) => setClient(e.target.value)}
+                                    ></Form.Control>
+                                ) : (
+                                        <Form.Control
+                                            type='text'
+                                            plaintext
+                                            readOnly
+                                            value={client}
+                                        ></Form.Control>
+                                    )}
+                            </Form.Group>
+                        </ListGroup.Item>
 
-                        <Form.Group controlId='status'>
-                            <Form.Label as='h5'>Status</Form.Label>
-                            <Form.Control
-                                as='select'
-                                value={status}
-                                onChange={(e) => {
-                                    if (e.target.value === 'Won') {
-                                        setWonDate(new Date(Date.now()));
-                                        setSrStatus('Keep staffing');
-                                    } 
-                                    setStatus(e.target.value);
-                                }}
-                                required
-                            >
-                                <option value=''>--Select--</option>
-                                <option value='Lead'>Lead</option>
-                                <option value='Proposal to send'>Proposal to send</option>
-                                <option value='Proposal sent'>Proposal sent</option>
-                                <option value='Won'>Won</option>
-                                <option value='Abandoned'>Abandoned</option>
-                            </Form.Control>
-                        </Form.Group>
+                        <ListGroup.Item>
+                            <Form.Group controlId='status' className='mb-0'>
+                                <Form.Label as='h5'>Status</Form.Label>
+                                {editRequest ? (
+                                    <Form.Control
+                                        as='select'
+                                        value={status}
+                                        onChange={(e) => {
+                                            if (e.target.value === 'Won') {
+                                                setWonDate(new Date(Date.now()));
+                                                setSrStatus('Keep staffing');
+                                            }
+                                            setStatus(e.target.value);
+                                        }}
+                                        required
+                                    >
+                                        <option value=''>--Select--</option>
+                                        <option value='Lead'>Lead</option>
+                                        <option value='Proposal to send'>Proposal to send</option>
+                                        <option value='Proposal sent'>Proposal sent</option>
+                                        <option value='Won'>Won</option>
+                                        <option value='Abandoned'>Abandoned</option>
+                                    </Form.Control>
+                                ) : (
+                                        <Form.Control
+                                            type='text'
+                                            plaintext
+                                            readOnly
+                                            value={status}
+                                        ></Form.Control>
+                                    )}
+                            </Form.Group>
+                        </ListGroup.Item>
 
-                        <Form.Group controlId='probability'>
-                            <Form.Label as='h5'>Probability</Form.Label>
-                            <Form.Control
-                                as='select'
-                                value={probability}
-                                onChange={(e) => setProbability(e.target.value)}
-                                required
-                            >
-                                <option value=''>--Select--</option>
-                                <option value={10}>10 %</option>
-                                <option value={30}>30 %</option>
-                                <option value={50}>50 %</option>
-                                <option value={70}>70 %</option>
-                                <option value={100}>100 %</option>
-                            </Form.Control>
-                        </Form.Group>
+                        <ListGroup.Item>
+                            <Form.Group controlId='probability' className='mb-0'>
+                                <Form.Label as='h5'>Probability</Form.Label>
+                                {editRequest ? (
+                                    <Form.Control
+                                        as='select'
+                                        value={probability}
+                                        onChange={(e) => setProbability(e.target.value)}
+                                        required
+                                    >
+                                        <option value=''>--Select--</option>
+                                        <option value={10}>10 %</option>
+                                        <option value={30}>30 %</option>
+                                        <option value={50}>50 %</option>
+                                        <option value={70}>70 %</option>
+                                        <option value={100}>100 %</option>
+                                    </Form.Control>
+                                ) : (
+                                    <Form.Control
+                                        type='text'
+                                        value={probability}
+                                        plaintext
+                                        readOnly
+                                    ></Form.Control>
+                                )}
+                            </Form.Group>
+                        </ListGroup.Item>
+                        
+                        <ListGroup.Item>
+                            <Form.Group controlId='location' className='mb-0'>
+                                <Form.Label as='h5'>Location</Form.Label>
+                                {editRequest ? (
+                                    <Form.Control
+                                        type='text'
+                                        placeholder='Location'
+                                        value={location}
+                                        onChange={(e) => setLocation(e.target.value)}
+                                    ></Form.Control>
+                                ) : (
+                                    <Form.Control
+                                        type='text'
+                                        plaintext
+                                        readOnly
+                                        value={location}
+                                    ></Form.Control>
+                                )}
+                            </Form.Group>
+                        </ListGroup.Item>
 
-                        <Form.Group controlId='location'>
-                            <Form.Label as='h5'>Location</Form.Label>
-                            <Form.Control
-                                type='String'
-                                placeholder='Location'
-                                value={location}
-                                onChange={(e) => setLocation(e.target.value)}
-                            ></Form.Control>
-                        </Form.Group>
+                        <ListGroup.Item>
+                            <Form.Group controlId='main-practice' className='mb-0'>
+                                <Form.Label as='h5'>Main Practice</Form.Label>
+                                {editRequest ? (
+                                    <Form.Control
+                                        as='select'
+                                        value={mainPractice}
+                                        onChange={(e) => setMainPractice(e.target.value)}
+                                        required
+                                    >
+                                        <option value=''>--Select--</option>
+                                        {practiceList && practiceList.map((practice, val) => (
+                                            <option
+                                                value={practice}
+                                                key={val}
+                                            >{practice}</option>
+                                        ))}
+                                    </Form.Control>
+                                ) : (
+                                    <Form.Control
+                                        type='text'
+                                        plaintext
+                                        readOnly
+                                        value={mainPractice}
+                                    ></Form.Control>
+                                )}
+                            </Form.Group>
+                        </ListGroup.Item>
 
-                        <Form.Group controlId='main-practice'>
-                            <Form.Label as='h5'>Main Practice</Form.Label>
-                            <Form.Control
-                                as='select'
-                                value={mainPractice}
-                                onChange={(e) => setMainPractice(e.target.value)}
-                                required
-                            >
-                                <option value=''>--Select--</option>
-                                {practiceList && practiceList.map((practice, val) => (
-                                    <option 
-                                        value={practice}
-                                        key={val}
-                                    >{practice}</option>
-                                ))}
-                            </Form.Control>
-                        </Form.Group>
-
-                        <Form.Group controlId='others-practices'>
-                            <Form.Label as='h5'>Others Practices</Form.Label>
-                            <Form.Control
-                                as='select'
-                                onClick={(e) => updateOthersPractices() }
-                                multiple
-                            >
-                                {practiceList && practiceList.map((practice, val) => (
-                                    (practice !== mainPractice) && (
-                                        <option 
-                                            value={practice}
-                                            key={val}
-                                        >{practice}</option>
-                                    )
-                                ))}
-                            </Form.Control>
-                        </Form.Group>
+                        <ListGroup.Item>
+                            <Form.Group controlId='others-practices' className='mb-0'>
+                                <Form.Label as='h5'>Others Practices</Form.Label>
+                                {editRequest ? (
+                                    <Form.Control
+                                        as='select'
+                                        multiple
+                                        value={othersPractices}
+                                        onChange={(e) => updateOthersPractices()}
+                                    >
+                                        {practiceList && practiceList.map((practice, val) => (
+                                            (practice !== mainPractice) && (
+                                                <option
+                                                    value={practice}
+                                                    key={val}
+                                                >{practice}</option>
+                                            )
+                                        ))}
+                                    </Form.Control>
+                                ) : (
+                                    <Form.Control
+                                        type='Text'
+                                        value={othersPractices.toString()}
+                                        plaintext
+                                        readOnly
+                                    ></Form.Control>
+                                )}
+                            </Form.Group>
+                        </ListGroup.Item>
 
                     </Col>
 
                     <Col xs={12} md={8}>
 
-                        <Form.Group controlId='description'>
-                            <Form.Label as='h5'>Description</Form.Label>
-                            <Form.Control
-                                as='textarea'
-                                rows={3}
-                                placeholder='Deal description'
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                required
-                            ></Form.Control>
-                        </Form.Group>
-
-                        <Row>
-                            <Col>
-                                <Form.Group controlId='proposal-date'>
-                                    <Form.Label as='h5'>Proposal Date</Form.Label>
-                                    <Form.Control
-                                        type='date'
-                                        placeholder='Deal date'
-                                        value={proposalDate}
-                                        onChange={(e) => setProposalDate(e.target.value)}
-                                    ></Form.Control>
-                                </Form.Group>
-                            </Col>
-
-                            <Col>
-                                <Form.Group controlId='presentation-date'>
-                                    <Form.Label as='h5'>Presentation Date</Form.Label>
-                                    <Form.Control
-                                        type='date'
-                                        placeholder='Presentation date'
-                                        value={presentationDate}
-                                        onChange={(e) => setPresentationDate(e.target.value)}
-                                    ></Form.Control>
-                                </Form.Group>
-                            </Col>
-
-                            <Col>
-                                <Form.Group controlId='start-date'>
-                                    <Form.Label as='h5'>Start Date</Form.Label>
-                                    <Form.Control
-                                        type='date'
-                                        placeholder='Start date'
-                                        value={startDate}
-                                        onChange={(e) => setStartDate(e.target.value)}
-                                        required
-                                    ></Form.Control>
-                                </Form.Group>
-                            </Col>
-                        </Row>
-
-                        <Row>
-                            <Col xs={12} md={8}>
-                                <Form.Group controlId='sr-instruction'>
-                                    <Form.Label as='h5'>Staffing instruction</Form.Label>
+                        <ListGroup.Item>
+                            <Form.Group controlId='description' className='mb-0'>
+                                <Form.Label as='h5'>Description</Form.Label>
+                                {editRequest ? (
                                     <Form.Control
                                         as='textarea'
                                         rows={3}
-                                        placeholder='Staffing instruction'
-                                        value={srInstruction}
-                                        onChange={(e) => setSrInstruction(e.target.value)}
+                                        placeholder='Deal description'
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
                                         required
                                     ></Form.Control>
-                                </Form.Group>
-                            </Col>
-
-                            <Col xs={12} md={4}>
-                                <Form.Group controlId='sr-status'>
-                                    <Form.Label as='h5'>Status</Form.Label>
+                                ) : (
                                     <Form.Control
-                                        as='select'
-                                        value={srStatus}
-                                        onChange={(e) => setSrStatus(e.target.value)}
-                                        required
-                                    >
-                                        <option value=''>--Select--</option>
-                                        <option value='To do'>To do</option>
-                                        <option value='Keep staffing'>Keep staffing</option>
-                                        <option value='Retreat staffing'>Keep</option>
-                                        <option value='Release staffing'>Available</option>
+                                        type='text'
+                                        value={description}
+                                        plaintext
+                                        readOnly
+                                    ></Form.Control>
+                                )}
+                            </Form.Group>
+                        </ListGroup.Item>
 
-                                    </Form.Control>
-                                </Form.Group>
-                            </Col>
-                        </Row>
+                        <ListGroup.Item>
+                            <Row>
+                                <Col>
+                                    <Form.Group controlId='proposal-date' className='mb-0'>
+                                        <Form.Label as='h5'>Proposal Date</Form.Label>
+                                        {editRequest ? (
+                                            <Form.Control
+                                                type='date'
+                                                placeholder='Deal date'
+                                                value={proposalDate}
+                                                onChange={(e) => setProposalDate(e.target.value)}
+                                            ></Form.Control>
+                                        ) : (
+                                            <Form.Control
+                                                type='date'
+                                                value={proposalDate}
+                                                plaintext
+                                                readOnly
+                                            ></Form.Control>
+                                        )}
+                                    </Form.Group>
+                                </Col>
+
+                                <Col>
+                                    <Form.Group controlId='presentation-date' className='mb-0'>
+                                        <Form.Label as='h5'>Presentation Date</Form.Label>
+                                        {editRequest ? (
+                                            <Form.Control
+                                                type='date'
+                                                placeholder='Presentation date'
+                                                value={presentationDate}
+                                                onChange={(e) => setPresentationDate(e.target.value)}
+                                            ></Form.Control>
+                                        ) : (
+                                            <Form.Control
+                                                type='date'
+                                                value={presentationDate}
+                                                plaintext
+                                                readOnly
+                                            ></Form.Control>
+                                        )}
+                                    </Form.Group>
+                                </Col>
+
+                                <Col>
+                                    <Form.Group controlId='start-date' className='mb-0'>
+                                        <Form.Label as='h5'>Start Date</Form.Label>
+                                        {editRequest ? (
+                                            <Form.Control
+                                                type='date'
+                                                placeholder='Start date'
+                                                value={startDate}
+                                                onChange={(e) => setStartDate(e.target.value)}
+                                                required
+                                            ></Form.Control>
+                                        ) : (
+                                            <Form.Control
+                                                type='date'
+                                                value={startDate}
+                                                plaintext
+                                                readOnly
+                                            ></Form.Control>
+                                        )}
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                        </ListGroup.Item>
+                        
+                        <ListGroup.Item>
+                            <Row>
+                                <Col xs={12} md={8}>
+                                    <Form.Group controlId='sr-instruction' className='mb-0'>
+                                        <Form.Label as='h5'>Staffing instruction</Form.Label>
+                                        {editRequest ? (
+                                            <Form.Control
+                                                as='textarea'
+                                                rows={3}
+                                                placeholder='Staffing instruction'
+                                                value={srInstruction}
+                                                onChange={(e) => setSrInstruction(e.target.value)}
+                                                required
+                                            ></Form.Control>
+                                        ) : (
+                                            <Form.Control
+                                                type='text'
+                                                value={srInstruction}
+                                                plaintext
+                                                readOnly
+                                            ></Form.Control>
+                                        )}
+                                    </Form.Group>
+                                </Col>
+
+                                <Col xs={12} md={4}>
+                                    <Form.Group controlId='sr-status' className='mb-0'>
+                                        <Form.Label as='h5'>Status</Form.Label>
+                                        <Form.Control
+                                            as='select'
+                                            value={srStatus}
+                                            onChange={(e) => setSrStatus(e.target.value)}
+                                            required
+                                        >
+                                            <option value=''>--Select--</option>
+                                            <option value='To do'>To do</option>
+                                            <option value='Keep staffing'>Keep staffing</option>
+                                            <option value='Retreat staffing'>Keep</option>
+                                            <option value='Release staffing'>Available</option>
+
+                                        </Form.Control>
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                        </ListGroup.Item>
 
                         {/* <h5>Add ressources</h5>
                         <Row>
@@ -614,61 +769,74 @@ const StaffingRequestScreen = ({match, history}) => {
                             </Row>
                         ))}  */}
 
-                        <h5>Staffing decision</h5>
-                        <Row>
-                            <Col xs={4}><strong>Name</strong></Col>
-                            <Col xs={4}><strong>Responsability</strong></Col>
-                            <Col xs={2}><strong>Priority</strong></Col>
-                            <Col xs={2}></Col>
-                        </Row>
-                        {sdStaff && sdStaff.map((consultant, val) => (
-                            <Row key={val}>
-                                <Col xs={4}>
-                                    <Form.Group controlId='sd-name'>
-                                        <Form.Control
-                                            type='text'
-                                            plaintext
-                                            readOnly
-                                            value={consultant.idConsultant.name}
-                                        ></Form.Control>
-                                    </Form.Group>
-                                </Col>
+                        <ListGroup.Item>
+                            <h5>Staffing decision</h5>
+                            <Row className='mt-3'>
+                                <Col xs={4}><strong>Name</strong></Col>
+                                <Col xs={4}><strong>Responsability</strong></Col>
+                                <Col xs={2}><strong>Priority</strong></Col>
+                                <Col xs={2}></Col>
+                            </Row>
+                            {sdStaff && sdStaff.map((consultant, val) => (
+                                <ListGroup.Item key={val}>
+                                    <Row>
+                                        <Col xs={4}>
+                                            <Form.Group controlId='sd-name' className='mb-0'>
+                                                <Form.Control
+                                                    type='text'
+                                                    plaintext
+                                                    readOnly
+                                                    value={consultant.idConsultant.name}
+                                                ></Form.Control>
+                                            </Form.Group>
+                                        </Col>
 
-                                <Col xs={4}>
-                                    <Form.Group controlId='sd-responsability'>
-                                        <Form.Control
-                                            type='text'
-                                            plaintext
-                                            readOnly
-                                            value={consultant.responsability}
-                                        ></Form.Control>
-                                    </Form.Group>
-                                </Col>
-                                <Col xs={2}>
-                                    <Form.Group controlId='sd-priority'>
-                                        <Form.Control
-                                            type='text'
-                                            plaintext
-                                            readOnly
-                                            value={consultant.priority}
-                                        ></Form.Control>
-                                    </Form.Group>
-                                </Col>
-                                <Col xs={2}>
-                                    <Button
-                                        onClick={() => removeStaffHandler(consultant.idConsultant._id)}
-                                        variant='danger'
-                                        size='sm'
-                                        block
-                                    ><i className="fas fa-times"></i></Button>
+                                        <Col xs={4}>
+                                            <Form.Group controlId='sd-responsability' className='mb-0'>
+                                                <Form.Control
+                                                    type='text'
+                                                    plaintext
+                                                    readOnly
+                                                    value={consultant.responsability}
+                                                ></Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2}>
+                                            <Form.Group controlId='sd-priority' className='mb-0'>
+                                                <Form.Control
+                                                    type='text'
+                                                    plaintext
+                                                    readOnly
+                                                    value={consultant.priority}
+                                                ></Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2}>
+                                            <Button
+                                                onClick={() => removeStaffHandler(consultant.idConsultant._id)}
+                                                variant='danger'
+                                                size='sm'
+                                            ><i className="fas fa-times"></i></Button>
+                                        </Col>
+                                    </Row>
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup.Item>
+
+                        {dealToEdit && (
+                            <Row className='mt-5'>
+                                <Col>
+                                    <strong>Created at: </strong>{dealToEdit.createdAt.substring(0, 19).replace('T', ' ')} <br />
+                                    <strong>Last update at: </strong>{dealToEdit.updatedAt.substring(0, 19).replace('T', ' ')}
                                 </Col>
                             </Row>
-                        ))}
+                        )}
+
                     </Col>
                 </Row>
             </Form>
 
-            <ModalWindow 
+            <ModalWindow
                 show={modalWindowShow}
                 onSubmit={() => addStaffHandler()}
                 onHide={() => setModalWindowShow(false)}
@@ -745,7 +913,7 @@ const StaffingRequestScreen = ({match, history}) => {
             />
 
             {match.params.id && (
-                <ConsoDispo 
+                <ConsoDispo
                     practice={practice}
                     start={start}
                     end={end}
