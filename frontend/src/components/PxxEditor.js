@@ -7,6 +7,7 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import PxxUserLine from '../components/PxxUserLine';
 import { getMyConsultantPxxToEdit } from '../actions/pxxActions';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonthHandler }) => {
 
@@ -29,7 +30,7 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
     }, [dispatch, searchDate, numberOfMonth, consultantId]);
 
     return (
-        <>
+        <ListGroup.Item>
 
             <Row>
                 <Col xs={4} className="text-center align-middle px-1 pb-2"> {loadingUpdate && <Loader />}</Col>
@@ -75,7 +76,7 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
                 <Col xs={0} md={2}></Col>
             </Row>
 
-        </>
+        </ListGroup.Item>
     )
 }
 
