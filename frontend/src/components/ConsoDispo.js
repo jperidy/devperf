@@ -11,6 +11,8 @@ import Card from 'react-bootstrap/Card';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import Tooltip from 'react-bootstrap/Tooltip';
+import Tabs from 'react-bootstrap/Tabs';
+import Tab from 'react-bootstrap/Tab';
 
 const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
 
@@ -31,21 +33,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
         // eslint-disable-next-line
     }, [dispatch, practice, start, end]);
 
-    const formatName = (fullName) => {
-        const separateName = fullName.split(' ');
-        if (separateName.length === 1) {
-            return separateName[0];
-        } else {
-            const outName = separateName.map((word, indice1) => {
-                if (indice1 === 0) {
-                    return word[0].toUpperCase() + '.';
-                } else {
-                    return word.toUpperCase();
-                }
-            });
-            return outName.join(' ');
-        }
-    }
+    
 
     const handlerSkillsSubmit = (e) => {
         e.preventDefault();
@@ -96,8 +84,8 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                             </Col>
 
                             <Col md={1}>
-                                <Button 
-                                    type='submit' 
+                                <Button
+                                    type='submit'
                                     variant='primary'
                                     block
                                 >Search</Button>
@@ -110,17 +98,17 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                         <Popover id="popover-basic">
                                             <Popover.Title as="h3">How to use search box</Popover.Title>
                                             <Popover.Content>
-                                                Example: <strong>workpl ; telec</strong> will find workplace or telecom 
+                                                Example: <strong>workpl ; telec</strong> will find workplace or telecom
                                             </Popover.Content>
                                         </Popover>
                                     }>
-                                    <Button 
+                                    <Button
                                         variant="light"
                                         block
                                     >info  <i className="fas fa-info-circle ml-3"></i></Button>
                                 </OverlayTrigger>
 
-                                
+
                             </Col>
                         </Form.Row>
                     </Form>
@@ -128,70 +116,151 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                 </Col>
             </Row>
 
-            {[['Analyst'], ['Consultant'], ['Senior consultant'], ['Manager', 'Senior manager', 'Director', 'Partner']].map((grades, gradVal) => (
-
-                <div key={gradVal}>
-
-                    <Row className='mt-3'>
-                        <Col>
-                            <h5>{grades.join(', ')}</h5>
-                        </Col>
-                    </Row>
-
+            <Tabs defaultActiveKey="Analysts" id="uncontrolled-tab-example">
+                <Tab eventKey="Analysts" title="Analysts">
                     <Row className='mt-3'>
                         {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
                             availabilities && availabilities.map((x, xVal) => (
                                 <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
-                                    <Card className='my-1 rounded' >
-                                        <Card.Header as="h5">{x.month.firstDay.toString().substring(0, 7)}</Card.Header>
-                                        <Card.Body>
-                                            {x.availabilities.map((y, yVal) => (
-                                                grades.includes(y.grade) && (
-                                                    <Row key={yVal}>
-                                                        {mode === 'staffing' && (
-                                                            <Col sm={2}>
-                                                                <Button
-                                                                    size='sm'
-                                                                    variant='ligth'
-                                                                    onClick={() => addStaff(y)}
-                                                                ><i className="fas fa-plus-square"></i></Button>
-                                                            </Col>
-                                                        )}
-                                                        <Col sm={10}>
-                                                            <OverlayTrigger
-                                                                placement="bottom"
-                                                                overlay={<Tooltip id="button-tooltip-2">{
-                                                                    <>
-                                                                        <>{y.valued && ((Date.now() - new Date(y.valued)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)} years</><br />
-                                                                        <>{y.comment ? y.comment : 'no comment'}</>
-                                                                    </>
-                                                                }</Tooltip>}
-                                                            >
-                                                                <Form.Control
-                                                                    plaintext
-                                                                    readOnly
-                                                                    id={y.email}
-                                                                    value={y.availableDay.toString() + ' days : ' + formatName(y.name)}
-                                                                    style={(y.email === focus) ? { background: '#464277', color: 'white' } : { color: 'black' }}
-                                                                    onFocus={(e) => {
-                                                                        setFocus(e.target.id)
-                                                                    }}
-                                                                />
-                                                            </OverlayTrigger>
-                                                        </Col>
-                                                    </Row>
-                                                )
-                                            ))}
-                                        </Card.Body>
-                                    </Card>
+                                    <ConsoDispoUnit
+                                        monthData={x}
+                                        grades={['Analyst']}
+                                        mode={mode}
+                                        addStaff={addStaff}
+                                        focus={focus}
+                                        setFocus={setFocus}
+                                    />
                                 </Col>
                             ))
                         )}
                     </Row>
-                </div>
-            ))}
+                </Tab>
+
+                <Tab eventKey="Consultants" title="Consultants">
+                    <Row className='mt-3'>
+                        {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
+                            availabilities && availabilities.map((x, xVal) => (
+                                <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
+                                    <ConsoDispoUnit
+                                        monthData={x}
+                                        grades={['Consultant']}
+                                        mode={mode}
+                                        addStaff={addStaff}
+                                        focus={focus}
+                                        setFocus={setFocus}
+                                    />
+                                </Col>
+                            ))
+                        )}
+                    </Row>
+                </Tab>
+
+                <Tab eventKey="Seniors" title="Seniors">
+                    <Row className='mt-3'>
+                        {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
+                            availabilities && availabilities.map((x, xVal) => (
+                                <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
+                                    <ConsoDispoUnit
+                                        monthData={x}
+                                        grades={['Manager', 'Senior manager', 'Director', 'Partner']}
+                                        mode={mode}
+                                        addStaff={addStaff}
+                                        focus={focus}
+                                        setFocus={setFocus}
+                                    />
+                                </Col>
+                            ))
+                        )}
+                    </Row>
+                </Tab>
+
+                <Tab eventKey="Managers" title="Managers and +">
+                    <Row className='mt-3'>
+                        {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
+                            availabilities && availabilities.map((x, xVal) => (
+                                <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
+                                    <ConsoDispoUnit
+                                        monthData={x}
+                                        grades={['Consultant']}
+                                        mode={mode}
+                                        addStaff={addStaff}
+                                        focus={focus}
+                                        setFocus={setFocus}
+                                    />
+                                </Col>
+                            ))
+                        )}
+                    </Row>
+                </Tab>
+            </Tabs>
         </>
     )
 }
+
+
+const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) => {
+    
+    const formatName = (fullName) => {
+        const separateName = fullName.split(' ');
+        if (separateName.length === 1) {
+            return separateName[0];
+        } else {
+            const outName = separateName.map((word, indice1) => {
+                if (indice1 === 0) {
+                    return word[0].toUpperCase() + '.';
+                } else {
+                    return word.toUpperCase();
+                }
+            });
+            return outName.join(' ');
+        }
+    }
+
+    return (
+        <Card className='my-1 rounded' >
+            <Card.Header as="h5">{monthData.month.firstDay.toString().substring(0, 7)}</Card.Header>
+            <Card.Body>
+                {monthData.availabilities.map((consultantData, yVal) => (
+                    grades.includes(consultantData.grade) && (
+                        <Row key={yVal}>
+                            {mode === 'staffing' && (
+                                <Col sm={2}>
+                                    <Button
+                                        size='sm'
+                                        variant='ligth'
+                                        onClick={() => addStaff(consultantData)}
+                                    ><i className="fas fa-plus-square"></i></Button>
+                                </Col>
+                            )}
+                            <Col sm={10}>
+                                <OverlayTrigger
+                                    placement="bottom"
+                                    overlay={<Tooltip id="button-tooltip-2">{
+                                        <>
+                                            <>{consultantData.valued && ((Date.now() - new Date(consultantData.valued)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)} years</><br />
+                                            <>{consultantData.comment ? consultantData.comment : 'no comment'}</>
+                                        </>
+                                    }</Tooltip>}
+                                >
+                                    <Form.Control
+                                        plaintext
+                                        readOnly
+                                        id={consultantData.email}
+                                        value={consultantData.availableDay.toString() + ' days : ' + formatName(consultantData.name)}
+                                        style={(consultantData.email === focus) ? { background: '#464277', color: 'white' } : { color: 'black' }}
+                                        onFocus={(e) => {
+                                            setFocus(e.target.id)
+                                        }}
+                                    />
+                                </OverlayTrigger>
+                            </Col>
+                        </Row>
+                    )
+                ))}
+            </Card.Body>
+        </Card>
+    )
+}
+
 
 export default ConsoDispo

@@ -44,9 +44,10 @@ const DashboardScreen = ({ history }) => {
     const pxxTACE = useSelector(state => state.pxxTACE);
     const { loading: loadingTACE, error: errorTACE, tace } = pxxTACE;
 
+    /*
     const pxxAvailabilities = useSelector(state => state.pxxAvailabilities);
     const { loading: loadingAvailabilities, error: errorAvailabilities, availabilities } = pxxAvailabilities;
-
+    */
 
     useEffect(() => {
 
@@ -63,18 +64,6 @@ const DashboardScreen = ({ history }) => {
         }
     // eslint-disable-next-line
     }, [dispatch, practice, start, end])
-
-    useEffect(() => {
-        if (!loadingAvailabilities) {
-            dispatch(getAvailabilities(practice, start, end, '', '', ''));
-        }
-    // eslint-disable-next-line
-    }, [dispatch, practice, start, end])
-
-    const handlerSkillsSubmit = (e) => {
-        e.preventDefault();
-        dispatch(getAvailabilities(practice, start, end, searchSkills, searchExperienceStart, searchExperienceEnd));
-    }
 
     const navigationMonthHandler = (val) => {
         const startDate = new Date(start);

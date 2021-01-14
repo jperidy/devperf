@@ -251,10 +251,14 @@ const resetPartialTimePxx = async (consultantInfo) => {
 const createPxx = async (userProfile, month, tace = 0) => {
 
     let availableDay = calculateAvailableDays(userProfile, month );
-    //const workingDay = (month.days.filter(x => x.type === 'working-day')).length;
-    const prodDay = tace ? Math.round((tace + 0.05 * Math.random()) * availableDay) : 0;
-    const leavingDay = tace ? Math.round(Math.random() * (30/220) * (availableDay)) : 0;
+    
+    let prodDay = tace ? Math.abs(Math.round(((tace - 0.1) + Math.random() * 0.5) * availableDay)) : 0;
+    prodDay = Math.min(prodDay, availableDay);
+
+    const leavingDay = tace ? Math.round(Math.random() * (30/220) * (availableDay - prodDay)) : 0;
+
     const notProdDay = tace ? Math.round(Math.random() * (availableDay - prodDay - leavingDay)) : 0;
+    
     availableDay = availableDay - (prodDay + notProdDay + leavingDay);   
 
     const newPxx = new Pxx({
@@ -330,45 +334,6 @@ const getPxx = asyncHandler(async (req, res) => {
     } else {
         res.status(400).json({ message: `no pxx data found for consultant with id: ${consultantId} please check arrival date`})
     }
-
-    /*
-    // Collect month information
-    let month = await Month.findOne({ firstDay: firstDay }).select('_id days');
-    */
-
-    /////////////////////////////////////////////////////////////////////////////// ADD in Cron tab
-    /*
-    if (!month) {
-        month = await createMonth(firstDay);
-    }
-    
-    // Collect user information
-    const userProfile = await Consultant.findById(consultantId);
-    // Collect or create pxx
-    const pxxData = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');    
-    if (pxxData) {
-        res.status(200).json(pxxData);
- 
-    } else {
-        await createPxx(userProfile, month);
-        const pxxCreated = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
-        res.status(200).json(pxxCreated);
-    }
-
-    */
-
-    /*
-    if (month) {
-        const pxxData = await Pxx.findOne({ name: consultantId, month: month._id }).populate('month', 'name firstDay');
-        if (pxxData) {
-            res.status(200).json(pxxData);
-        } else {
-            res.status(400).json({message: `no pxx data found for consultant: ${consultantId} and month: ${firstDay}`});
-        }
-    } else {
-        res.status(400).json({message: `month not yet created: ${firstDay}` });
-    }
-    */
     
 });
 
@@ -435,27 +400,39 @@ const getProdChart = asyncHandler(async (req, res) => {
                 }]
             );
             
-            const totalProdDay = sums[0].sumProdDay;
-            const totalNotProdDay = sums[0].sumNotProdDay;
-            const totalLeavingDay = sums[0].sumLeaving;
-            const totalAvailableDay = sums[0].sumAvailableDay;
+            let monthCalcule = {};
             
-            const totalTACE = totalProdDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
-            const totalLeaving = totalLeavingDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
-            const workingDay = (month[incr].days.filter(x => x.type === 'working-day')).length;
-            const totalETP = (totalAvailableDay + totalLeavingDay + totalNotProdDay + totalProdDay) / workingDay;
-
-            //console.log(totalProdDay, totalNotProdDay, totalLeaving, totalAvailableDay, totalTACE)
-    
-            const monthCalcule = {
-                month: {firstDay: month[incr].firstDay, workingDay, _id: month[incr]._id},
-                totalProdDay,
-                totalNotProdDay,
-                totalLeavingDay,
-                totalAvailableDay,
-                totalTACE,
-                totalLeaving,
-                totalETP
+            if (sums) {
+                const totalProdDay = sums[0].sumProdDay;
+                const totalNotProdDay = sums[0].sumNotProdDay;
+                const totalLeavingDay = sums[0].sumLeaving;
+                const totalAvailableDay = sums[0].sumAvailableDay;
+                
+                const totalTACE = totalProdDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
+                const totalLeaving = totalLeavingDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
+                const workingDay = (month[incr].days.filter(x => x.type === 'working-day')).length;
+                const totalETP = (totalAvailableDay + totalLeavingDay + totalNotProdDay + totalProdDay) / workingDay;
+        
+                monthCalcule = {
+                    month: {firstDay: month[incr].firstDay, workingDay, _id: month[incr]._id},
+                    totalProdDay,
+                    totalNotProdDay,
+                    totalLeavingDay,
+                    totalAvailableDay,
+                    totalTACE,
+                    totalLeaving,
+                    totalETP
+                }
+            } else {
+                monthCalcule = {
+                    totalProdDay:'0',
+                    totalNotProdDay:'0',
+                    totalLeavingDay:'0',
+                    totalAvailableDay:'0',
+                    totalTACE:'0',
+                    totalLeaving:'0',
+                    totalETP:'0'
+                }
             }
     
             data.push(monthCalcule);
@@ -473,6 +450,8 @@ const getProdChart = asyncHandler(async (req, res) => {
 // @route   GET /api/pxx/chart/availability?practice=practice&start=start&end=end
 // @access  Private
 const getAvailabilityChart = asyncHandler(async (req, res) => {
+
+    console.log(Date(Date.now()) + ' >> Début get availabilities');
 
     const start = req.query.start; // '2021-01-01'
     const end = req.query.end; //'2021-03-01'
@@ -498,22 +477,30 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
     //console.log('experience: ', experience);
     let searchSkillsId = (skills !== '') ? await Skill.find(skills).select('_id') : '';
     searchSkillsId = (searchSkillsId !== '') ? {'quality.skill': {$in: searchSkillsId}} : {};
+    
     const searchPractice = practice ? {practice: practice} : {};
 
     const consultantId = await Consultant.find({...searchPractice, ...searchSkillsId, ...experience}).select('_id');
     
-    const month = await Month.find({firstDay: { $gte: start, $lte: end }});
+    const month = await Month.find({firstDay: { $gte: start, $lte: end }}).sort({'name': 1});
     const data = [];
-    if (month) {
-        for (let incr = 0; incr < month.length; incr++) {
 
-            const pxxMonth = await Pxx.find({
-                'month': month[incr]._id,
-                'name': {$in: consultantId}
-            }).populate('month name').sort({availableDay: -1});
-            
-            let pxxAvailable = pxxMonth.filter(x => x.availableDay > 0);
-            pxxAvailable = pxxAvailable.map(x => ({
+    //console.log(Date(Date.now()) + ' >> début requête availablePxx');
+
+    const availablePxx = await Pxx.find({
+            month: {$in: month.map(x => x._id)},
+            name: {$in: consultantId.map(x => x._id)},
+            availableDay: {$gt: 0}
+    }).select('_id name email grade valued practice quality availableDay comment')
+    .populate('month name').sort({availableDay: -1});
+
+    //console.log(Date(Date.now()) + ' >> fin requête availablePxx');
+    //console.log(availablePxx);
+
+    if (availablePxx) {
+        for (let incr = 0; incr < month.length; incr++) {
+            let pxxLines = availablePxx.filter(x => x.month.name === month[incr].name);
+            pxxLines = pxxLines.map(x => ({
                 _id: x.name._id,
                 name: x.name.name,
                 email: x.name.email,
@@ -523,17 +510,17 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
                 quality: x.name.quality,
                 availableDay: x.availableDay,
                 comment: x.name.comment
-            }))
-            //console.log('pxxAvailable', pxxAvailable)
-    
+            }));
             const result = {
                 month: {firstDay: month[incr].firstDay, _id: month[incr]._id},
-                availabilities: pxxAvailable
+                availabilities: pxxLines
             }
     
             data.push(result);
         }
     }
+    //console.log(Date(Date.now()) + ' >> fin boucle 3 mois');
+
 
     if (data) {
         res.status(200).json(data);
