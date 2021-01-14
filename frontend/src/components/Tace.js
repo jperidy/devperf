@@ -13,7 +13,7 @@ const Tace = ({ tace }) => {
                 <Card.Body>
                     <Card.Text as="div"><strong>{(Number(tace.totalTACE) * 100).toString().substring(0, 4)} %</strong> Tace</Card.Text>
                     <Card.Text as="div">{(Number(tace.totalLeaving) * 100).toString().substring(0, 4)} % Leaving</Card.Text>
-                    <Card.Text as="div">{tace.totalETP.toString().substring(0, 4)} ETP</Card.Text>
+                    <Card.Text as="div">{tace.totalETP && tace.totalETP.toString().substring(0, 4)} ETP</Card.Text>
                 </Card.Body>
                 <Card.Footer>
                     <Link to={`/pxxdetails/${tace.month._id}`}>View details</Link>

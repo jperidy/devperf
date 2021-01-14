@@ -411,33 +411,41 @@ const getProdChart = asyncHandler(async (req, res) => {
             $lte: end
     }});
 
-    const consultant = await Consultant.find({...searchPractice});
-    const consultantId = consultant.map( x => x._id);
-    //console.log('consultant', consultant);
-    //console.log('nb of consultants', consultantId.length);
-    
+    const consultantId = await Consultant.find({...searchPractice, grade: { $not: { $regex: 'Intern', $options: 'i' }}}).select('_id');   
 
     const data = [];
 
     if (month) {
         for (let incr = 0; incr < month.length; incr++) {
-            const pxxMonth = await Pxx.find({
-                'month': month[incr]._id,
-                'name': {$in: consultantId}
-            }).populate('month');
-            const prodDay = pxxMonth.map(x => x.prodDay);
-            const notProdDay = pxxMonth.map(x => x.notProdDay);
-            const leavingDay = pxxMonth.map(x => x.leavingDay);
-            const availableDay = pxxMonth.map(x => x.availableDay);
-    
-            const totalProdDay = prodDay.reduce((acc, item) => acc + item, 0);
-            const totalNotProdDay = notProdDay.reduce((acc, item) => acc + item, 0);
-            const totalLeavingDay = leavingDay.reduce((acc, item) => acc + item, 0);
-            const totalAvailableDay = availableDay.reduce((acc, item) => acc + item, 0);
+
+            const sums = await Pxx.aggregate(
+                [{
+                    $match: {
+                        'month': month[incr]._id,
+                        'name': {$in: consultantId.map(x => x._id)}
+                    }
+                },{
+                    $group: {
+                        _id: null,
+                        sumProdDay: {$sum: "$prodDay"},
+                        sumNotProdDay: {$sum: "$notProdDay"},
+                        sumLeaving: {$sum: "$leavingDay"},
+                        sumAvailableDay: {$sum: "$availableDay"},
+                    }
+                }]
+            );
+            
+            const totalProdDay = sums[0].sumProdDay;
+            const totalNotProdDay = sums[0].sumNotProdDay;
+            const totalLeavingDay = sums[0].sumLeaving;
+            const totalAvailableDay = sums[0].sumAvailableDay;
+            
             const totalTACE = totalProdDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
             const totalLeaving = totalLeavingDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
             const workingDay = (month[incr].days.filter(x => x.type === 'working-day')).length;
-            const totalETP = (totalAvailableDay+totalLeavingDay+totalNotProdDay+totalProdDay)/workingDay;
+            const totalETP = (totalAvailableDay + totalLeavingDay + totalNotProdDay + totalProdDay) / workingDay;
+
+            //console.log(totalProdDay, totalNotProdDay, totalLeaving, totalAvailableDay, totalTACE)
     
             const monthCalcule = {
                 month: {firstDay: month[incr].firstDay, workingDay, _id: month[incr]._id},
