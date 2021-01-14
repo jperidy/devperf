@@ -17,7 +17,7 @@ const controlAndCreateMonth = async () => {
     endDate.setUTCDate(1);
 
     for (let month = currentDate ; month <= endDate; month.setUTCMonth(month.getUTCMonth() + 1)) {
-        //console.log(month.toISOString().substring(0,10));
+        
         const searchMonth = month.toISOString().substring(0,10);
         
         const monthExist = await Month.findOne({firstDay: searchMonth});

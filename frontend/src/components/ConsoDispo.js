@@ -9,7 +9,7 @@ import Message from '../components/Message';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
+//import Popover from 'react-bootstrap/Popover';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
@@ -33,7 +33,12 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
         // eslint-disable-next-line
     }, [dispatch, practice, start, end]);
 
-    
+    const removeFilterAction = () => {
+        setSearchSkills('');
+        setSearchExperienceStart('');
+        setSearchExperienceEnd('');
+        dispatch(getAvailabilities(practice, start, end, '', '', ''));
+    };
 
     const handlerSkillsSubmit = (e) => {
         e.preventDefault();
@@ -46,7 +51,22 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                 <Col md={12}>
                     <Form onSubmit={handlerSkillsSubmit}>
                         <Form.Row>
-                            <Col md={5}>
+                            <Col md={1}>
+                                {(searchSkills || searchExperienceStart || searchExperienceEnd) ? (
+                                    <Button 
+                                        variant='secondary'
+                                        onClick={removeFilterAction}
+                                        block
+                                    ><i className="fas fa-minus-circle"></i></Button>
+                                ) : (
+                                    <Button 
+                                        variant='primary'
+                                        disabled
+                                        block
+                                    ><i className="fas fa-keyboard"></i></Button>
+                                )}
+                            </Col>
+                            <Col md={4}>
                                 <Form.Group controlId='skill-search'>
                                     <Form.Control
                                         type='text'
@@ -57,7 +77,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                 </Form.Group>
                             </Col>
 
-                            <Col md={2}>
+                            <Col md={3}>
                                 <Form.Group controlId='experience-search-start'>
                                     <Form.Control
                                         type='number'
@@ -70,7 +90,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                 </Form.Group>
                             </Col>
 
-                            <Col md={2}>
+                            <Col md={3}>
                                 <Form.Group controlId='experience-search-end'>
                                     <Form.Control
                                         type='number'
@@ -90,7 +110,8 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                     block
                                 >Search</Button>
                             </Col>
-                            <Col md={2}>
+
+                            {/* <Col md={2}>
                                 <OverlayTrigger
                                     trigger="click"
                                     placement="right"
@@ -109,7 +130,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                 </OverlayTrigger>
 
 
-                            </Col>
+                            </Col> */}
                         </Form.Row>
                     </Form>
 

@@ -146,14 +146,6 @@ const StaffingRequestScreen = ({ match, history }) => {
         setSrRessources(tampon);
     };
 
-    /*
-    const deleteRessource = (val) => {
-        let tampon = new Array(...srRessources);
-        tampon.splice(Number(val), 1);
-        setSrRessources(tampon);
-    };
-    */
-
 
     const updateOthersPractices = () => {
         const selectedList = [];
@@ -179,7 +171,6 @@ const StaffingRequestScreen = ({ match, history }) => {
     };
 
     const addStaffHandler = () => {
-        //console.log('processToAdd');
 
         let tampon = new Array(...sdStaff);
         tampon.push({
@@ -235,6 +226,7 @@ const StaffingRequestScreen = ({ match, history }) => {
                 }))
             }
         }
+        //console.log(deal);
 
         if (match.params.id) {
             //console.log('updage');
@@ -364,7 +356,9 @@ const StaffingRequestScreen = ({ match, history }) => {
                                         onChange={(e) => {
                                             if (e.target.value === 'Won') {
                                                 setWonDate(new Date(Date.now()));
-                                                setSrStatus('Keep staffing');
+                                            }
+                                            else {
+                                                setWonDate('');
                                             }
                                             setStatus(e.target.value);
                                         }}

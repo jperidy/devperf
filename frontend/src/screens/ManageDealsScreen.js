@@ -4,11 +4,13 @@ import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
-import Pagination from 'react-bootstrap/Pagination';
+//import Pagination from 'react-bootstrap/Pagination';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tabs from 'react-bootstrap/Tabs';
+import Tab from 'react-bootstrap/Tab';
 import Tooltip from 'react-bootstrap/Tooltip';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
@@ -19,8 +21,8 @@ const ManageDealsScreen = ({ history }) => {
     const dispatch = useDispatch();
 
     // pagination configuration
-    const [pageSize, setPageSize] = useState(10);
-    const [pageNumber, setPageNumber] = useState(1);
+    const [pageSize, setPageSize] = useState('');
+    const [pageNumber, setPageNumber] = useState('');
 
     // global filter
     const [globalFilter, setGlobalFilter] = useState('');
@@ -33,6 +35,8 @@ const ManageDealsScreen = ({ history }) => {
     const [searchDealStatus, setSearchDealStatus] = useState('');
     const [searchRequestStatus, setSearchRequestStatus] = useState('');
 
+    const [tabsFilter] = useState(['Waiting staffing', 'Updated', 'Not updated (Month)', 'New deal (week)', 'New deal (Month)', 'Won (Week)', 'Won (Month)', 'All']);
+    const [dataFiltered, setDataFiltered] = useState([]);
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -63,8 +67,54 @@ const ManageDealsScreen = ({ history }) => {
 
     }, [dispatch, history, userInfo, globalFilter, searchTitle, searchPractice, searchCompany, searchClient, searchDealStatus, searchRequestStatus, pageNumber, pageSize]);
 
+    useEffect(() => {
+        if (deals) {
+            const lastWeekDate = new Date(Date.now());
+            lastWeekDate.setUTCDate(lastWeekDate.getUTCDate() - 7);
+
+            const lastMonthDate = new Date(Date.now());
+            lastMonthDate.setUTCMonth(lastMonthDate.getUTCMonth() - 1);
+            const filteredData = []
+
+            for (let incr = 0 ; incr < tabsFilter.length ; incr ++) {
+                let dealsFiltered = [];
+                switch (tabsFilter[incr]) {
+                    case 'Waiting staffing':
+                        dealsFiltered = deals.filter(deal => deal.staffingRequest.requestStatus === 'To do');
+                        break;
+                    case 'Updated':
+                        dealsFiltered = deals.filter(deal => new Date(deal.updatedAt) >= lastWeekDate);
+                        break;
+                    case 'Not updated (Month)':
+                        dealsFiltered = deals.filter(deal => new Date(deal.updatedAt) >= lastMonthDate);
+                        break;
+                    case 'New deal (week)':
+                        dealsFiltered = deals.filter(deal => new Date(deal.createdAt) >= lastWeekDate);
+                        break;
+                    case 'New deal (Month)':
+                        dealsFiltered = deals.filter(deal => new Date(deal.createdAt) >= lastMonthDate);
+                        break;
+                    case 'Won (Week)':
+                        dealsFiltered = deals.filter(deal => new Date(deal.wonDate) >= lastWeekDate);
+                        break;
+                    case 'Won (Month)':
+                        dealsFiltered = deals.filter(deal => new Date(deal.wonDate) >= lastMonthDate);
+                        break;
+                    case 'All':
+                        dealsFiltered = deals;
+                        break;
+                    default:
+                        dealsFiltered = {};
+                }
+                filteredData.push({filter: tabsFilter[incr], data: dealsFiltered, count: dealsFiltered.length});
+            }
+            setDataFiltered(filteredData);
+            //console.log(filteredData)
+        }
+    }, [deals, tabsFilter]);
 
     useEffect(() => {
+
         if (successDelete) {
             const keyword = {
                 title: searchTitle,
@@ -80,11 +130,6 @@ const ManageDealsScreen = ({ history }) => {
         // eslint-disable-next-line
     }, [dispatch, successDelete])
 
-    const onClickDeleteHandler = (deal) => {
-        if (window.confirm(`Are you sure to delete deal: ${deal.title} ?`)) {
-            dispatch(deleteDeal(deal._id));
-        }
-    }
 
     const filterLeads = () => {
         console.log('dispatch here filter');
@@ -93,26 +138,6 @@ const ManageDealsScreen = ({ history }) => {
     return (
         <>
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
-
-            <Row>
-                <Col xs={12} md={4}>
-                    <InputGroup>
-                        <FormControl
-                            as='select'
-                            value={globalFilter && globalFilter}
-                            onChange={(e) => setGlobalFilter(e.target.value)}
-                        >
-                            <option value=''>--Select--</option>
-                            <option value='updatedDeal'>Updated Deal (week)</option>
-                            <option value='notUpdatedDeal'>Not updated Deal (month)</option>
-                            <option value='newDealWeek'>New Deal (week)</option>
-                            <option value='newDealMonth'>New Deal (month)</option>
-                            <option value='wonWeek'>Won (week)</option>
-                            <option value='wonMonth'>Won (month)</option>
-                        </FormControl>
-                    </InputGroup>
-                </Col>
-            </Row>
 
             <Row className='mt-3'>
                 <Col>
@@ -197,6 +222,7 @@ const ManageDealsScreen = ({ history }) => {
                             </Col>
 
                         </Row>
+
                         <Row>
                             <Col xs={12} md={2} className='text-right'>
                                 <Button type='submit' variant='primary' block>Search</Button>
@@ -209,7 +235,7 @@ const ManageDealsScreen = ({ history }) => {
                                     value={count ? `${count} Deals found` : '0 skills found'} />
                             </Col>
 
-                            <Col xs={6} md={2}>
+                            {/* <Col xs={6} md={2}>
                                 <InputGroup>
                                     <FormControl
                                         as='select'
@@ -226,76 +252,29 @@ const ManageDealsScreen = ({ history }) => {
                                         ))}
                                     </FormControl>
                                 </InputGroup>
-                            </Col>
+                            </Col> */}
                         </Row>
                     </Form>
                 </Col>
             </Row>
 
-            {deals && deals.length === 0 ? <Message variant='information'>No deal found</Message> :
-                loading ? <Loader /> : error ? <Message variant="danger">{error}</Message> : (
 
-                    <Table responsive hover striped className='mt-5'>
-                        <thead>
-                            <tr className='table-primary'>
-                                <th className='align-middle text-light'>Title</th>
-                                <th className='align-middle text-light'>Practice</th>
-                                <th className='align-middle text-light'>Contacts</th>
-                                <th className='align-middle text-light'>Company</th>
-                                <th className='align-middle text-light'>Client</th>
-                                <th className='align-middle text-light'>Status</th>
-                                <th className='align-middle text-light'>Probability</th>
-                                <th className='align-middle text-light'>Request</th>
-                                <th className='align-middle text-light'>Start</th>
-                                <th className='align-middle text-light'></th>
-                                <th className='align-middle text-light'></th>
-                            </tr>
-                        </thead>
+            <Tabs defaultActiveKey={tabsFilter[0]} id="uncontrolled-tab-example" variant='tabs'>
 
-                        <tbody>
-                            {deals && deals.map((deal) => (
-                                <tr key={deal._id}>
-                                    <OverlayTrigger
-                                        placement="bottom"
-                                        overlay={<Tooltip id="button-tooltip-2">{
-                                            deal.description
-                                        }</Tooltip>}
-                                    >
-                                        <td className='align-middle'>{deal.title}</td>
-                                    </OverlayTrigger>
-                                    <td className='align-middle'>{deal.mainPractice} / ({deal.othersPractices.toString()})</td>
-                                    <td className='align-middle'>{deal.contacts && deal.contacts.primary.name} {deal.contacts.secondary && '/ (' + deal.contacts.secondary.map(x => x.name).toString() + ')'}</td>
-                                    <td className='align-middle'>{deal.company}</td>
-                                    <td className='align-middle'>{deal.client}</td>
-                                    <td className='align-middle'>{deal.status}</td>
-                                    <td className='align-middle'>{deal.probability}</td>
-                                    <OverlayTrigger
-                                        placement="bottom"
-                                        overlay={<Tooltip id="button-tooltip-2">{
-                                            deal.staffingRequest.instructions
-                                        }</Tooltip>}
-                                    >
-                                        <td className='align-middle'>{deal.staffingRequest.requestStatus}</td>
-                                    </OverlayTrigger>
-                                    <td className='align-middle'>{deal.startDate.substring(0, 10)}</td>
-                                    <td className='align-middle'>
-                                        <Button variant='primary' onClick={() => history.push(`/staffing/${deal._id}`)}>
-                                            <i className="fas fa-edit"></i>
-                                        </Button>
-                                    </td>
-                                    <td className='align-middle'>
-                                        <Button variant='danger' onClick={() => onClickDeleteHandler(deal)}>
-                                            <i className="fas fa-times"></i>
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-
+                {loading ? <Loader /> : error ? <Message variant="danger">{error}</Message> : deals && deals.length > 0 && (
+                    dataFiltered.map((data, val) => (
+                        <Tab eventKey={`${data.filter}`} title={`${data.filter} (${data.count})`} key={val}>
+                            <DealList
+                                history={history}
+                                data={data.data}
+                            />
+                        </Tab>
+                    ))
                 )}
 
-            <Pagination>
+            </Tabs>
+
+            {/* <Pagination>
                 <Pagination.Prev
                     onClick={() => setPageNumber(page - 1)}
                     disabled={page === 1}
@@ -325,9 +304,80 @@ const ManageDealsScreen = ({ history }) => {
                     onClick={() => setPageNumber(page + 1)}
                     disabled={page === pages}
                 />
-            </Pagination>
+            </Pagination> */}
         </>
     )
+}
+
+const DealList = ({ history, data }) => {
+
+    const dispatch = useDispatch();
+
+    const onClickDeleteHandler = (deal) => {
+        if (window.confirm(`Are you sure to delete deal: ${deal.title} ?`)) {
+            dispatch(deleteDeal(deal._id));
+        }
+    }
+
+    return (
+        <Table responsive hover striped className='mt-5'>
+            <thead>
+                <tr className='table-primary'>
+                    <th className='align-middle text-light'>Title</th>
+                    <th className='align-middle text-light'>Practice</th>
+                    <th className='align-middle text-light'>Contacts</th>
+                    <th className='align-middle text-light'>Company</th>
+                    <th className='align-middle text-light'>Client</th>
+                    <th className='align-middle text-light'>Status</th>
+                    <th className='align-middle text-light'>Probability</th>
+                    <th className='align-middle text-light'>Request</th>
+                    <th className='align-middle text-light'>Start</th>
+                    <th className='align-middle text-light'></th>
+                    <th className='align-middle text-light'></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {data && data.map((deal) => (
+                    <tr key={deal._id}>
+                        <OverlayTrigger
+                            placement="bottom"
+                            overlay={<Tooltip id="button-tooltip-2">{
+                                deal.description
+                            }</Tooltip>}
+                        >
+                            <td className='align-middle'>{deal.title}</td>
+                        </OverlayTrigger>
+                        <td className='align-middle'>{deal.mainPractice} / ({deal.othersPractices.toString()})</td>
+                        <td className='align-middle'>{deal.contacts && deal.contacts.primary.name} {deal.contacts.secondary && '/ (' + deal.contacts.secondary.map(x => x.name).toString() + ')'}</td>
+                        <td className='align-middle'>{deal.company}</td>
+                        <td className='align-middle'>{deal.client}</td>
+                        <td className='align-middle'>{deal.status}</td>
+                        <td className='align-middle'>{deal.probability}</td>
+                        <OverlayTrigger
+                            placement="bottom"
+                            overlay={<Tooltip id="button-tooltip-2">{
+                                deal.staffingRequest.instructions
+                            }</Tooltip>}
+                        >
+                            <td className='align-middle'>{deal.staffingRequest.requestStatus}</td>
+                        </OverlayTrigger>
+                        <td className='align-middle'>{deal.startDate.substring(0, 10)}</td>
+                        <td className='align-middle'>
+                            <Button variant='primary' onClick={() => history.push(`/staffing/${deal._id}`)}>
+                                <i className="fas fa-edit"></i>
+                            </Button>
+                        </td>
+                        <td className='align-middle'>
+                            <Button variant='danger' onClick={() => onClickDeleteHandler(deal)}>
+                                <i className="fas fa-times"></i>
+                            </Button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </Table>
+    );
 }
 
 export default ManageDealsScreen

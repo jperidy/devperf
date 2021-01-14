@@ -25,6 +25,8 @@ const updateADeal = asyncHandler(async (req, res) => {
     const dealId = req.params.id;
     const deal = await Deal.findById(dealId)
 
+    //console.log(req.body)
+
     if (deal) {
 
         deal.company = req.body.company;
@@ -47,7 +49,7 @@ const updateADeal = asyncHandler(async (req, res) => {
         deal.staffingDecision.staffingStatus = req.body.staffingDecision.staffingStatus;
         deal.staffingDecision.staff = req.body.staffingDecision.staff;
 
-        console.log(deal.staffingDecision.staff);
+        //console.log(deal.staffingDecision.staff);
 
         await deal.save();
         res.status(200).json({message: 'Deal updated'});
@@ -62,7 +64,7 @@ const updateADeal = asyncHandler(async (req, res) => {
 // @access  Private/AdminLevelOne
 const getAllDeals = asyncHandler(async (req, res) => {
     
-    const pageSize = Number(req.query.pageSize);
+    const pageSize = Number(req.query.pageSize) || 10000; // by default a lot
     const page = Number(req.query.pageNumber) || 1; // by default on page 1
     
     const searchTitle = req.query.title ? {
