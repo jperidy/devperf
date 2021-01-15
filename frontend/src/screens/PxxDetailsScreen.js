@@ -53,7 +53,7 @@ const PxxDetailsScreen = ({ history, match }) => {
                 'PRACTICE': pxx.name.practice,
                 'VALUED': pxx.name.valued.substring(0,10),
                 'ARRIVAL': pxx.name.arrival.substring(0,10),
-                'LEAVING': pxx.name.leaving.substring(0,10),
+                'LEAVING': pxx.name.leaving ? pxx.name.leaving.substring(0,10) : '',
                 'MONTH': pxx.month.name,
                 'PROD': pxx.prodDay,
                 'NOT PROD': pxx.notProdDay,
