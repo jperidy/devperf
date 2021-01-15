@@ -118,6 +118,7 @@ const PxxEditScreen = ({ history }) => {
                                                 <InputGroup>
                                                     <FormControl
                                                         as='textarea'
+                                                        rows={4}
                                                         id='comment'
                                                         value={commentText}
                                                         placeholder='Please enter a comment'
