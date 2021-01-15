@@ -6,20 +6,19 @@ import { LinkContainer } from 'react-router-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
 import ListGroup from 'react-bootstrap/ListGroup';
-//import ConsultantSelector from '../components/ConsultantSelector';
 import PxxEditor from '../components/PxxEditor';
 import ConsultantsTab from '../components/ConsultantsTab';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { getAllMyConsultants } from '../actions/consultantActions';
-import { Container } from 'react-bootstrap';
+import { getAllMyConsultants, updateComment } from '../actions/consultantActions';
+import { Container, FormControl, InputGroup } from 'react-bootstrap';
 import { setConsultantFocus } from '../actions/consultantActions';
-import ConsultantComment from '../components/ConsultantComment';
 
 const PxxEditScreen = ({ history }) => {
 
     const dispatch = useDispatch();
 
+    const [commentText, setCommentText] = useState('');
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -42,6 +41,12 @@ const PxxEditScreen = ({ history }) => {
         dispatch(getAllMyConsultants());
     }, [dispatch, focus])
 
+    useEffect(() => {
+        if(consultantsMy) {
+            setCommentText(consultantsMy[focus].comment);
+        }
+    }, [consultantsMy, focus]);
+
     const navigationMonthHandler = (value) => {
         const navigationDate = new Date(searchDate);
         navigationDate.setMonth(navigationDate.getMonth() + value);
@@ -53,6 +58,10 @@ const PxxEditScreen = ({ history }) => {
         if (((focus + value) >= 0) && ((focus + value) < consultantsMy.length)) {
             dispatch(setConsultantFocus(focus + value));
         }
+    }
+
+    const updateCommentHandler = (consultantId, value) => {
+        dispatch(updateComment(consultantId, value));
     }
 
     return (
@@ -105,10 +114,20 @@ const PxxEditScreen = ({ history }) => {
 
                                         <Row className="my-3">
                                             <Col>
-                                                {<ConsultantComment
-                                                    comment={consultantsMy[focus].comment}
-                                                    consultantId={consultantsMy[focus]._id}
-                                                />}
+                                                <label htmlFor="comment"><strong>Staffing comment</strong></label>
+                                                <InputGroup>
+                                                    <FormControl
+                                                        as='textarea'
+                                                        id='comment'
+                                                        value={commentText}
+                                                        placeholder='Please enter a comment'
+                                                        onChange={(e) => {
+                                                            setCommentText(e.target.value);
+                                                            updateCommentHandler(consultantsMy[focus]._id, e.target.value)
+                                                        }}
+                                                    ></FormControl>
+                                                </InputGroup>
+
                                             </Col>
                                         </Row>
                                     </ListGroup.Item>

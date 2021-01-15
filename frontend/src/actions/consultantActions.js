@@ -301,8 +301,8 @@ export const updateComment = (consultantId, commentText) => async(dispatch, getS
             }
         };
 
-        //console.log('consultantId', consultantId);
-        //console.log('commentText', commentText);
+        console.log('consultantId', consultantId);
+        console.log('commentText', commentText);
         await axios.put(`/api/consultants/comment/${consultantId}`, {commentText}, config);
 
         dispatch({ type: CONSULTANT_UPDATE_COMMENT_SUCCESS });
