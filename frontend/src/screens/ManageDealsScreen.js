@@ -35,7 +35,7 @@ const ManageDealsScreen = ({ history }) => {
     const [searchDealStatus, setSearchDealStatus] = useState('');
     const [searchRequestStatus, setSearchRequestStatus] = useState('');
 
-    const [tabsFilter] = useState(['Waiting staffing', 'Updated - 7d', 'Not updated - 30d', 'New deal - 7d', 'New deal - 30d', 'Won (7d)', 'Won - 30d', 'All']);
+    const [tabsFilter] = useState(['Waiting staffing', 'Updated (7d)', 'Not updated (30d)', 'New deal (7d)', 'New deal (30d)', 'Won (7d)', 'Won (30d)', 'All']);
     const [dataFiltered, setDataFiltered] = useState([]);
 
     const userLogin = useSelector(state => state.userLogin);
@@ -76,29 +76,30 @@ const ManageDealsScreen = ({ history }) => {
 
             for (let incr = 0 ; incr < tabsFilter.length ; incr ++) {
                 let dealsFiltered = [];
+                
                 switch (tabsFilter[incr]) {
-                    case 'Waiting staffing':
+                    case tabsFilter[0]:
                         dealsFiltered = deals.filter(deal => deal.staffingRequest.requestStatus === 'To do');
                         break;
-                    case 'Updated - 7d':
+                    case tabsFilter[1]:
                         dealsFiltered = deals.filter(deal => new Date(deal.updatedAt) >= lastWeekDate);
                         break;
-                    case 'Not updated - 30d':
+                    case tabsFilter[2]:
                         dealsFiltered = deals.filter(deal => new Date(deal.updatedAt) <= lastMonthDate);
                         break;
-                    case 'New deal - 7d':
+                    case tabsFilter[3]:
                         dealsFiltered = deals.filter(deal => new Date(deal.createdAt) >= lastWeekDate);
                         break;
-                    case 'New deal - 30d':
+                    case tabsFilter[4]:
                         dealsFiltered = deals.filter(deal => new Date(deal.createdAt) >= lastMonthDate);
                         break;
-                    case 'Won - 7d':
+                    case tabsFilter[5]:
                         dealsFiltered = deals.filter(deal => new Date(deal.wonDate) >= lastWeekDate);
                         break;
-                    case 'Won - 30d':
+                    case tabsFilter[6]:
                         dealsFiltered = deals.filter(deal => new Date(deal.wonDate) >= lastMonthDate);
                         break;
-                    case 'All':
+                    case tabsFilter[7]:
                         dealsFiltered = deals;
                         break;
                     default:
@@ -263,7 +264,7 @@ const ManageDealsScreen = ({ history }) => {
             <Tabs defaultActiveKey={tabsFilter[0]} id="uncontrolled-tab-example" variant='tabs'>
 
                 {dataFiltered.length > 0 && dataFiltered.map((data, val) => (
-                    <Tab eventKey={`${data.filter}`} title={`${data.filter} (${data.count})`} key={val}>
+                    <Tab eventKey={`${data.filter}`} title={`${data.filter} > ${data.count}`} key={val}>
                         <DealList
                             history={history}
                             data={data.data}
