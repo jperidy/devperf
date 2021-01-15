@@ -22,7 +22,6 @@ const ConsultantComment = ({ comment, consultantId, setCommentUpdated }) => {
 
     const submitHandler = () => {
         dispatch(updateComment(consultantId, commentText));
-        //setCommentUpdated(true);
     };
 
     return (

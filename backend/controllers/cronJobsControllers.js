@@ -34,48 +34,68 @@ const controlAndCreateMonth = async () => {
 }
 
 const controleAndCreatePxx = async () => {
-
-    const currentDate = new Date(Date.now());
-    currentDate.setUTCHours(12,0,0,0);
-    currentDate.setUTCMonth(currentDate.getUTCMonth()+1)
-    currentDate.setUTCDate(0);
     
     const numberOfMonth = 12;
+    
+    const currentDate = new Date(Date.now());
+    currentDate.setUTCHours(12,0,0,0);
+    //currentDate.setUTCMonth(currentDate.getUTCMonth() + numberOfMonth)
+    currentDate.setUTCDate(1);
+    
     const endDate = new Date(Date.now());
     endDate.setUTCMonth(endDate.getUTCMonth() + numberOfMonth);
     endDate.setUTCDate(1);
-
+    
     const consultants = await Consultant.find({
         $or: [
             {
-                arrival: { $lte: currentDate },
+                arrival: { $lte: endDate },
                 leaving: { $gte: currentDate }
             },
             {
-                arrival: { $lte: currentDate },
+                arrival: { $lte: endDate },
                 leaving: null
             }
         ]
     });
+    //consultants.map( x => console.log(x.name));    
+    const margin = -2; // if forgot to create
+    const stampDate = new Date(Date.now());
+    stampDate.setUTCHours(12, 0, 0, 0);
+    stampDate.setUTCMonth(stampDate.getUTCMonth() + margin)
+    stampDate.setUTCDate(1);
 
-    for (let incr = 0 ; incr < consultants.length ; incr++) {
+    for (let month = stampDate; month <= endDate; month.setUTCMonth(month.getUTCMonth() + 1)) {
 
-        const consultant = consultants[incr];
+        let searchMonth = await Month.findOne({ firstDay: month.toISOString().substring(0, 10) }).select('_id days');
 
-        const stampDate = new Date(Date.now());
-        stampDate.setUTCHours(12,0,0,0);
-        stampDate.setUTCDate(1);
+        if (!searchMonth) {
+            searchMonth = await createMonth(month.toISOString().substring(0, 10));
+        }
 
-        for (let month = stampDate ; month <= endDate; month.setUTCMonth(month.getUTCMonth() + 1)) {
-            
-            let searchMonth = await Month.findOne({ firstDay: month.toISOString().substring(0,10) }).select('_id days');
+        for (let incr = 0; incr < consultants.length; incr++) {
 
-            if (!searchMonth) {
-                searchMonth = await createMonth(month.toISOString().substring(0,10));
-            }
+            const consultant = consultants[incr];
+            //console.log(consultant.name);
+
+            /*
+            const margin = -2; // if forgot to create
+            const stampDate = new Date(Date.now());
+            stampDate.setUTCHours(12, 0, 0, 0);
+            stampDate.setUTCMonth(stampDate.getUTCMonth() + margin)
+            stampDate.setUTCDate(1);
+            */
+
+            /* for (let month = stampDate ; month <= endDate; month.setUTCMonth(month.getUTCMonth() + 1)) {
+                
+                let searchMonth = await Month.findOne({ firstDay: month.toISOString().substring(0,10) }).select('_id days');
+    
+                if (!searchMonth) {
+                    searchMonth = await createMonth(month.toISOString().substring(0,10));
+                } */
 
             const pxxData = await Pxx.findOne({ name: consultant._id, month: searchMonth._id }).populate('month', 'name firstDay');
-            
+
             if (!pxxData) {
                 await createPxx(consultant, searchMonth, 0.79);
             }

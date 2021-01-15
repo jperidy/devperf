@@ -56,8 +56,8 @@ if (process.env.NODE_ENV === 'production') {
 
 
 // Declaration of cron tasks
-cron.schedule('*/5 * * * *', () => {
-    console.log(new Date(Date.now()).toISOString() + ': ControlAndCreateMonth running every 5 minutes');
+cron.schedule('*/60 * * * *', () => {
+    console.log(new Date(Date.now()).toISOString() + ': ControlAndCreateMonth running every 60 minutes');
     try {
         controlAndCreateMonth();
     } catch (error) {
@@ -66,7 +66,7 @@ cron.schedule('*/5 * * * *', () => {
 });
 
 cron.schedule('*/1 * * * *', () => {
-    console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running every 1 minute');
+    console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running every 10 minutes');
     try {
         controleAndCreatePxx();
     } catch (error) {

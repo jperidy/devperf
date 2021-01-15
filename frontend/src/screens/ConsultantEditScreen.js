@@ -5,7 +5,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import FormContainer from '../components/FormContainer';
-import Alert from 'react-bootstrap/Alert';
+//import Alert from 'react-bootstrap/Alert';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Message from '../components/Message';
@@ -62,7 +62,8 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [valueThursday, setValueThursday] = useState(1);
     const [valueFriday, setValueFriday] = useState(1);
 
-    const [message, setMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     const valueEditType = match.params.id ? 'edit' : 'create';
 
@@ -110,7 +111,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     useEffect(() => {
         if ((match.params.id) && successUpdate) {
             dispatch(getMyConsultant(consultantId));
-            dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
+            //dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
         }
     }, [dispatch, match, successUpdate, consultantId, valueEditType]);
 
@@ -189,25 +190,26 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     useEffect(() => {
         if (errorUpdate) {
-            setMessage({ message: errorUpdate, type: 'danger' });
+            setErrorMessage({ message: errorUpdate, type: 'danger' });
             dispatch({ type: CONSULTANT_MY_UPDATE_RESET })
         }
         if (successUpdate) {
-            setMessage({ message: 'Consultant updated', type: 'success' });
+            setSuccessMessage({ message: 'Consultant updated', type: 'success' });
             dispatch({ type: CONSULTANT_MY_UPDATE_RESET })
         }
         if (errorCreate) {
-            setMessage({ message: errorCreate, type: 'danger' });
+            setErrorMessage({ message: errorCreate, type: 'danger' });
             dispatch({ type: CONSULTANT_CREATE_RESET })
         }
         if (successCreate) {
-            setMessage({ message: 'Consultant created', type: 'success' });
+            setSuccessMessage({ message: 'Consultant created', type: 'success' });
             history.push(`/editconsultant/${consultantCreated._id}`);
             dispatch({ type: CONSULTANT_CREATE_RESET })
         }
     }, [dispatch, history, errorUpdate, successUpdate, successCreate, errorCreate, consultantCreated]);
 
     const submitHandler = (e) => {
+
         e.preventDefault();
 
         if (valueEditType === 'edit') {
@@ -235,7 +237,6 @@ const ConsultantEditScreen = ({ history, match }) => {
                     ]
                 }
             }
-            console.log("updatedUser", updatedUser);
             dispatch(updateMyConsultant(updatedUser));
         }
 
@@ -290,20 +291,18 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     const goBackHandler = () => {
         history.go(-1);
+        setErrorMessage('');
+        setSuccessMessage('');
     }
 
     return (
         <>
-            {message && message.message && (
+            {errorMessage && <Message variant='danger'>{errorMessage.message}</Message>}
 
-                <Alert variant={message.type} onClose={() => setMessage({})} dismissible>
-                    <Alert.Heading>Notification</Alert.Heading>
-                    <p>
-                        {message.message}
-                    </p>
-                </Alert>
-
-            )}
+            {errorCDM && <Message variant='danger'>{errorCDM}</Message>}
+            {errorPractice && <Message variant='danger'>{errorPractice}</Message>}
+            {errorConsultantAddSkill && <Message variant='danger'>{errorConsultantAddSkill}</Message>}
+            {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
 
             <Button className='mb-3' onClick={() => goBackHandler()}>
                 Go Back
@@ -754,9 +753,15 @@ const ConsultantEditScreen = ({ history, match }) => {
                             <Button
                                 type='submit'
                                 variant='primary'
+                                block
                                 disabled={!name || !email || !matricule || !practice || !cdm || !valued || !arrival}
                             >{(loadingUpdate || loadingCreate) ? <Loader /> : valueEditType === 'create' ? "Create" : "Update"}
                             </Button>
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            {successMessage && <Message variant='success'><i className="fas fa-check-circle">  Your information is correctly registered</i></Message>}
                         </Col>
                     </Form.Row>
                 </Form>

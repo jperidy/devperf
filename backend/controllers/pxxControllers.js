@@ -482,7 +482,7 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
 
     const consultantId = await Consultant.find({...searchPractice, ...searchSkillsId, ...experience}).select('_id');
     
-    const month = await Month.find({firstDay: { $gte: start, $lte: end }}).sort({'name': 1});
+    const month = await Month.find({firstDay: { $gte: start, $lte: end }}).sort({'name': 1}).select('_id name firstDay');
     const data = [];
 
     //console.log(Date(Date.now()) + ' >> début requête availablePxx');

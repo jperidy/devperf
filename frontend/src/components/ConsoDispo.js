@@ -110,27 +110,6 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                     block
                                 >Search</Button>
                             </Col>
-
-                            {/* <Col md={2}>
-                                <OverlayTrigger
-                                    trigger="click"
-                                    placement="right"
-                                    overlay={
-                                        <Popover id="popover-basic">
-                                            <Popover.Title as="h3">How to use search box</Popover.Title>
-                                            <Popover.Content>
-                                                Example: <strong>workpl ; telec</strong> will find workplace or telecom
-                                            </Popover.Content>
-                                        </Popover>
-                                    }>
-                                    <Button
-                                        variant="light"
-                                        block
-                                    >info  <i className="fas fa-info-circle ml-3"></i></Button>
-                                </OverlayTrigger>
-
-
-                            </Col> */}
                         </Form.Row>
                     </Form>
 
