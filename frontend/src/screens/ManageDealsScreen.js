@@ -12,8 +12,8 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import Tooltip from 'react-bootstrap/Tooltip';
-import InputGroup from 'react-bootstrap/InputGroup';
-import FormControl from 'react-bootstrap/FormControl';
+//import InputGroup from 'react-bootstrap/InputGroup';
+//import FormControl from 'react-bootstrap/FormControl';
 import { deleteDeal, getAllDeals } from '../actions/dealActions';
 
 const ManageDealsScreen = ({ history }) => {
@@ -35,7 +35,7 @@ const ManageDealsScreen = ({ history }) => {
     const [searchDealStatus, setSearchDealStatus] = useState('');
     const [searchRequestStatus, setSearchRequestStatus] = useState('');
 
-    const [tabsFilter] = useState(['Waiting staffing', 'Updated', 'Not updated (Month)', 'New deal (week)', 'New deal (Month)', 'Won (Week)', 'Won (Month)', 'All']);
+    const [tabsFilter] = useState(['Waiting staffing', 'Updated - 7d', 'Not updated - 30d', 'New deal - 7d', 'New deal - 30d', 'Won (7d)', 'Won - 30d', 'All']);
     const [dataFiltered, setDataFiltered] = useState([]);
 
     const userLogin = useSelector(state => state.userLogin);
@@ -46,8 +46,6 @@ const ManageDealsScreen = ({ history }) => {
 
     const dealDelete = useSelector(state => state.dealDelete);
     const { error: errorDelete, success: successDelete } = dealDelete;
-
-
 
     useEffect(() => {
         if (userInfo && (userInfo.adminLevel <= 1)) {
@@ -73,7 +71,7 @@ const ManageDealsScreen = ({ history }) => {
             lastWeekDate.setUTCDate(lastWeekDate.getUTCDate() - 7);
 
             const lastMonthDate = new Date(Date.now());
-            lastMonthDate.setUTCMonth(lastMonthDate.getUTCMonth() - 1);
+            lastMonthDate.setUTCDate(lastMonthDate.getUTCDate() - 30);
             const filteredData = []
 
             for (let incr = 0 ; incr < tabsFilter.length ; incr ++) {
@@ -82,34 +80,35 @@ const ManageDealsScreen = ({ history }) => {
                     case 'Waiting staffing':
                         dealsFiltered = deals.filter(deal => deal.staffingRequest.requestStatus === 'To do');
                         break;
-                    case 'Updated':
+                    case 'Updated - 7d':
                         dealsFiltered = deals.filter(deal => new Date(deal.updatedAt) >= lastWeekDate);
                         break;
-                    case 'Not updated (Month)':
-                        dealsFiltered = deals.filter(deal => new Date(deal.updatedAt) >= lastMonthDate);
+                    case 'Not updated - 30d':
+                        dealsFiltered = deals.filter(deal => new Date(deal.updatedAt) <= lastMonthDate);
                         break;
-                    case 'New deal (week)':
+                    case 'New deal - 7d':
                         dealsFiltered = deals.filter(deal => new Date(deal.createdAt) >= lastWeekDate);
                         break;
-                    case 'New deal (Month)':
+                    case 'New deal - 30d':
                         dealsFiltered = deals.filter(deal => new Date(deal.createdAt) >= lastMonthDate);
                         break;
-                    case 'Won (Week)':
+                    case 'Won - 7d':
                         dealsFiltered = deals.filter(deal => new Date(deal.wonDate) >= lastWeekDate);
                         break;
-                    case 'Won (Month)':
+                    case 'Won - 30d':
                         dealsFiltered = deals.filter(deal => new Date(deal.wonDate) >= lastMonthDate);
                         break;
                     case 'All':
                         dealsFiltered = deals;
                         break;
                     default:
-                        dealsFiltered = {};
+                        dealsFiltered = [];
                 }
                 filteredData.push({filter: tabsFilter[incr], data: dealsFiltered, count: dealsFiltered.length});
             }
+            //console.log('filteredData', filteredData);
             setDataFiltered(filteredData);
-            //console.log(filteredData)
+            //console.log('dataFiltered', dataFiltered)
         }
     }, [deals, tabsFilter]);
 
@@ -138,6 +137,8 @@ const ManageDealsScreen = ({ history }) => {
     return (
         <>
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+            {error && <Message variant='danger'>{error}</Message>}
+            {loading && <Loader />}
 
             <Row className='mt-3'>
                 <Col>
@@ -261,16 +262,14 @@ const ManageDealsScreen = ({ history }) => {
 
             <Tabs defaultActiveKey={tabsFilter[0]} id="uncontrolled-tab-example" variant='tabs'>
 
-                {loading ? <Loader /> : error ? <Message variant="danger">{error}</Message> : deals && deals.length > 0 && (
-                    dataFiltered.map((data, val) => (
-                        <Tab eventKey={`${data.filter}`} title={`${data.filter} (${data.count})`} key={val}>
-                            <DealList
-                                history={history}
-                                data={data.data}
-                            />
-                        </Tab>
-                    ))
-                )}
+                {dataFiltered.length > 0 && dataFiltered.map((data, val) => (
+                    <Tab eventKey={`${data.filter}`} title={`${data.filter} (${data.count})`} key={val}>
+                        <DealList
+                            history={history}
+                            data={data.data}
+                        />
+                    </Tab>
+                ))}
 
             </Tabs>
 
@@ -309,7 +308,7 @@ const ManageDealsScreen = ({ history }) => {
     )
 }
 
-const DealList = ({ history, data }) => {
+const DealList = ({ history, data=[] }) => {
 
     const dispatch = useDispatch();
 
@@ -377,7 +376,7 @@ const DealList = ({ history, data }) => {
                 ))}
             </tbody>
         </Table>
-    );
+    )
 }
 
 export default ManageDealsScreen

@@ -252,7 +252,7 @@ const createPxx = async (userProfile, month, tace = 0) => {
 
     let availableDay = calculateAvailableDays(userProfile, month );
     
-    let prodDay = tace ? Math.abs(Math.round(((tace - 0.1) + Math.random() * 0.5) * availableDay)) : 0;
+    let prodDay = tace ? Math.abs(Math.round(((tace - 0.1) + Math.random() * 1) * availableDay)) : 0;
     prodDay = Math.min(prodDay, availableDay);
 
     const leavingDay = tace ? Math.round(Math.random() * (30/220) * (availableDay - prodDay)) : 0;
