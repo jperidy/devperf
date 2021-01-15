@@ -101,6 +101,7 @@ const controleAndCreatePxx = async () => {
             }
         }
     }
+    console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running every 10 minutes >>> end');
 }
 
 module.exports = { controlAndCreateMonth, controleAndCreatePxx };

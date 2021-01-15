@@ -65,8 +65,8 @@ cron.schedule('*/60 * * * *', () => {
     }
 });
 
-cron.schedule('*/10 * * * *', () => {
-    console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running every 10 minutes');
+cron.schedule('*/30 * * * *', () => {
+    console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running every 30 minutes >>> start');
     try {
         controleAndCreatePxx();
     } catch (error) {
