@@ -10,10 +10,10 @@ const PxxUserLine = ({ data }) => {
 
     const dispatch = useDispatch();
 
-    const [prodDayComponent, setProdDayComponent] = useState(Number(data.prodDay));
-    const [notProdDayComponent, setNotProdDayComponent] = useState(Number(data.notProdDay));
-    const [leavingDayComponent, setLeavingDayComponent] = useState(Number(data.leavingDay));
-    const [availableDayComponent, setAvailableDayComponent] = useState(Number(data.availableDay));
+    const [prodDayComponent, setProdDayComponent] = useState(Number(data.prodDay) || 0);
+    const [notProdDayComponent, setNotProdDayComponent] = useState(Number(data.notProdDay) || 0);
+    const [leavingDayComponent, setLeavingDayComponent] = useState(Number(data.leavingDay) || 0);
+    const [availableDayComponent, setAvailableDayComponent] = useState(Number(data.availableDay) || 0);
     const [workingDay] = useState(Number(data.prodDay) + Number(data.notProdDay) + Number(data.leavingDay) + Number(data.availableDay));
 
     const [hasChange, setHasChange] = useState(false);
@@ -68,7 +68,8 @@ const PxxUserLine = ({ data }) => {
                             step={0.5}
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
-                            value={prodDayComponent ? prodDayComponent : 0}
+                            //value={prodDayComponent ? prodDayComponent : 0}
+                            value={prodDayComponent && prodDayComponent}
                             onChange={(e) => {
                                 setProdDayComponent(Number(e.target.value));
                                 setHasChange(true);
@@ -86,7 +87,8 @@ const PxxUserLine = ({ data }) => {
                             step={0.5}
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
-                            value={notProdDayComponent ? notProdDayComponent : 0}
+                            //value={notProdDayComponent ? notProdDayComponent : 0}
+                            value={notProdDayComponent && notProdDayComponent}
                             onChange={(e) => {
                                 setNotProdDayComponent(Number(e.target.value));
                                 setHasChange(true);
@@ -104,7 +106,8 @@ const PxxUserLine = ({ data }) => {
                             step={0.5}
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
-                            value={leavingDayComponent ? leavingDayComponent : 0}
+                            //value={leavingDayComponent ? leavingDayComponent : 0}
+                            value={leavingDayComponent && leavingDayComponent}
                             onChange={(e) => {
                                 setLeavingDayComponent(Number(e.target.value));
                                 setHasChange(true);
@@ -120,7 +123,8 @@ const PxxUserLine = ({ data }) => {
                             max={workingDay ? workingDay : 0}
                             step={0.5}
                             className="align-middle text-center p-0"
-                            value={availableDayComponent ? availableDayComponent : 0}
+                            //value={availableDayComponent ? availableDayComponent : 0}
+                            value={availableDayComponent && availableDayComponent}
                             disabled
                         />
                     </InputGroup>

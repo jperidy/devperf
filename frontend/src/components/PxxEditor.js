@@ -33,7 +33,7 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
         <ListGroup.Item>
 
             <Row>
-                <Col xs={4} className="text-center align-middle px-1 pb-2"> {loadingUpdate && <Loader />}</Col>
+                <Col xs={4} className="text-center align-middle px-1 pb-2" style={{height: '2em'}}> {loadingUpdate && <Loader />}</Col>
                 <Col xs={2} className="text-center align-middle px-1 pb-2"><b>Prod</b></Col>
                 <Col xs={2} className="text-center align-middle px-1 pb-2"><b>Not Prod</b></Col>
                 <Col xs={2} className="text-center align-middle px-1 pb-2"><b>Holidays</b></Col>
