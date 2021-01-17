@@ -13,6 +13,7 @@ import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
 import { getAllPractice } from '../actions/consultantActions';
 import ConsoDispo from '../components/ConsoDispo';
 import { DEAL_CREATE_RESET } from '../constants/dealConstants';
+import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import { ListGroup } from 'react-bootstrap';
 
 const StaffingRequestScreen = ({ match, history }) => {
@@ -907,13 +908,17 @@ const StaffingRequestScreen = ({ match, history }) => {
             />
 
             {match.params.id && (
-                <ConsoDispo
-                    practice={practice}
-                    start={start}
-                    end={end}
-                    mode='staffing'
-                    addStaff={addStaff}
-                />
+                <>
+                    <DropDownTitleContainer title='Availabilities' close={false}>
+                        <ConsoDispo
+                            practice={practice}
+                            start={start}
+                            end={end}
+                            mode='staffing'
+                            addStaff={addStaff}
+                        />
+                    </DropDownTitleContainer>
+                </>
             )}
 
 

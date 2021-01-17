@@ -12,7 +12,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import SkillDisplayLine from '../components/SkillDisplayLine';
-import ListGroupContainer from '../components/ListGroupContainer';
+import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import {
     consultantAddASkill,
     consultantDeleteSkill,
@@ -314,7 +314,7 @@ const ConsultantEditScreen = ({ history, match }) => {
 
                 <Form onSubmit={submitHandler}>
 
-                    <ListGroupContainer title='Personal'>
+                    <DropDownTitleContainer title='Personal'>
                         <ListGroup.Item>
                             <Form.Row>
                                 <Col>
@@ -373,10 +373,10 @@ const ConsultantEditScreen = ({ history, match }) => {
                             </Form.Row>
 
                         </ListGroup.Item>
-                    </ListGroupContainer>
+                    </DropDownTitleContainer>
 
                     {(valueEditType !== 'create') && (
-                        <ListGroupContainer title='Skills' initial={false}>
+                        <DropDownTitleContainer title='Skills' close={false}>
 
                             {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
 
@@ -493,11 +493,11 @@ const ConsultantEditScreen = ({ history, match }) => {
                                     </>
                                 )}
                             </ListGroup.Item>
-                        </ListGroupContainer>
+                        </DropDownTitleContainer>
 
                     )}
 
-                    <ListGroupContainer title='Profil' initial={false}>
+                    <DropDownTitleContainer title='Profil' close={false}>
                         <ListGroup.Item>
                             <Form.Row>
                                 <Col>
@@ -762,7 +762,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                 </Form.Row>
                             </ListGroup.Item>
                             </ListGroup.Item>
-                            </ListGroupContainer>
+                            </DropDownTitleContainer>
 
                             <Form.Row className='pt-3'>
                                 <Col>

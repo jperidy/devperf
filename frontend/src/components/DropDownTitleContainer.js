@@ -3,9 +3,9 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-const ListGroupContainer = ({children, title, initial = true}) => {
+const DropDownTitleContainer = ({children, title, close = true}) => {
 
-    const [hide, setHide] = useState(initial);
+    const [hide, setHide] = useState(close);
 
     return (
         <Row className='mt-3'>
@@ -27,4 +27,4 @@ const ListGroupContainer = ({children, title, initial = true}) => {
     )
 }
 
-export default ListGroupContainer
+export default DropDownTitleContainer

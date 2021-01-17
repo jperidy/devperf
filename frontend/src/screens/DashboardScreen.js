@@ -11,6 +11,7 @@ import Message from '../components/Message';
 import Meta from '../components/Meta';
 import ConsoDispo from '../components/ConsoDispo';
 import Tace from '../components/Tace';
+import DropDownTitleContainer from '../components/DropDownTitleContainer'
 
 const DashboardScreen = ({ history }) => {
 
@@ -79,6 +80,7 @@ const DashboardScreen = ({ history }) => {
         <>
             <Meta />
 
+
             <Row>
 
                 <Col className="text-center" xs={2}>
@@ -126,25 +128,29 @@ const DashboardScreen = ({ history }) => {
                 </Col>
             </Row>
 
-            <Row className='mt-3'>
-                <Col>
-                    <h4>TACE ({userInfo && userInfo.consultantProfil.practice})</h4>
-                </Col>
-            </Row>
+            <DropDownTitleContainer title='TACE' close={false}>
+                <Row className='mt-3'>
+                    <Col>
+                        <h4>TACE ({userInfo && userInfo.consultantProfil.practice})</h4>
+                    </Col>
+                </Row>
 
-            <Row className='mt-1'>
-                {loadingTACE ? <Loader /> : errorTACE ? <Message variant='danger'>{errorTACE}</Message> : (
-                    tace && tace.map((x, val) => (
-                        <Tace key={val} tace={x} />
-                    ))
-                )}
-            </Row>
+                <Row className='mt-1'>
+                    {loadingTACE ? <Loader /> : errorTACE ? <Message variant='danger'>{errorTACE}</Message> : (
+                        tace && tace.map((x, val) => (
+                            <Tace key={val} tace={x} />
+                        ))
+                    )}
+                </Row>
+            </DropDownTitleContainer>
 
-            <ConsoDispo
-                practice={practice}
-                start={start}
-                end={end}
-            />
+            <DropDownTitleContainer title='Availabilities' close={true}>
+                <ConsoDispo
+                    practice={practice}
+                    start={start}
+                    end={end}
+                />
+            </DropDownTitleContainer>
 
         </>
     )
