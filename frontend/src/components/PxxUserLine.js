@@ -39,6 +39,7 @@ const PxxUserLine = ({ data }) => {
 
     useEffect(() => {
         if (hasChange && workingDay >= (prodDayComponent + notProdDayComponent + leavingDayComponent)) {
+            //console.log(prodDayComponent, notProdDayComponent, leavingDayComponent)
             setAvailableDayComponent(workingDay - (prodDayComponent + notProdDayComponent + leavingDayComponent))
             dispatch(updatePxx({
                 _id: data._id,
@@ -47,7 +48,7 @@ const PxxUserLine = ({ data }) => {
                 prodDay: prodDayComponent,
                 notProdDay: notProdDayComponent,
                 leavingDay: leavingDayComponent,
-                availableDay: availableDayComponent
+                availableDay: workingDay - (prodDayComponent + notProdDayComponent + leavingDayComponent)
             }));
             setHasChange(false);
         }
@@ -58,18 +59,18 @@ const PxxUserLine = ({ data }) => {
         <>
 
             <Row className="py-1">
-                <Col xs={4} className="text-center align-middle"><b>{data.month ? data.month.name : 'Not created Yeat'}</b> <i>{workingDay ? `(${workingDay} days)` : null}</i></Col>
+                <Col xs={4} className="text-center align-middle"><b>{data.month ? data.month.name : 'Not created Yeat'}</b> <i>{workingDay ? `(${workingDay}d)` : null}</i></Col>
                 <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
                         <FormControl
                             type="number"
                             min={0}
-                            max={(workingDay - notProdDayComponent - leavingDayComponent) ? (workingDay - notProdDayComponent - leavingDayComponent) : 0}
+                            max={(workingDay - notProdDayComponent - leavingDayComponent) ? (workingDay - notProdDayComponent - leavingDayComponent) : '-'}
                             step={0.5}
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
                             //value={prodDayComponent ? prodDayComponent : 0}
-                            value={prodDayComponent && prodDayComponent}
+                            value={prodDayComponent && prodDayComponent.toString()}
                             onChange={(e) => {
                                 setProdDayComponent(Number(e.target.value));
                                 setHasChange(true);
@@ -83,12 +84,12 @@ const PxxUserLine = ({ data }) => {
                         <FormControl
                             type="number"
                             min={0}
-                            max={(workingDay - prodDayComponent - leavingDayComponent) ? (workingDay - prodDayComponent - leavingDayComponent) : 0}
+                            max={(workingDay - prodDayComponent - leavingDayComponent) ? (workingDay - prodDayComponent - leavingDayComponent) : '-'}
                             step={0.5}
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
                             //value={notProdDayComponent ? notProdDayComponent : 0}
-                            value={notProdDayComponent && notProdDayComponent}
+                            value={notProdDayComponent && notProdDayComponent.toString()}
                             onChange={(e) => {
                                 setNotProdDayComponent(Number(e.target.value));
                                 setHasChange(true);
@@ -102,12 +103,12 @@ const PxxUserLine = ({ data }) => {
                         <FormControl
                             type="number"
                             min={0}
-                            max={(workingDay - prodDayComponent - notProdDayComponent) ? (workingDay - prodDayComponent - notProdDayComponent) : 0}
+                            max={(workingDay - prodDayComponent - notProdDayComponent) ? (workingDay - prodDayComponent - notProdDayComponent) : '-'}
                             step={0.5}
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
                             //value={leavingDayComponent ? leavingDayComponent : 0}
-                            value={leavingDayComponent && leavingDayComponent}
+                            value={leavingDayComponent && leavingDayComponent.toString()}
                             onChange={(e) => {
                                 setLeavingDayComponent(Number(e.target.value));
                                 setHasChange(true);
@@ -120,11 +121,11 @@ const PxxUserLine = ({ data }) => {
                         <FormControl
                             type="number"
                             min={0}
-                            max={workingDay ? workingDay : 0}
+                            max={workingDay ? workingDay : '-'}
                             step={0.5}
                             className="align-middle text-center p-0"
                             //value={availableDayComponent ? availableDayComponent : 0}
-                            value={availableDayComponent && availableDayComponent}
+                            value={availableDayComponent && availableDayComponent.toString()}
                             disabled
                         />
                     </InputGroup>
