@@ -13,7 +13,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
     return (
         <>
             <Form.Row key={val}>
-                <Col>
+                <Col xs={12} md={3}>
                     <Form.Group controlId='skillcategory'>
                         <Form.Control
                             plaintext
@@ -22,7 +22,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                         ></Form.Control>
                     </Form.Group>
                 </Col>
-                <Col>
+                <Col xs={12} md={3}>
                     <Form.Group controlId='skillName'>
                         <Form.Control
                             plaintext
@@ -31,7 +31,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                         ></Form.Control>
                     </Form.Group>
                 </Col>
-                <Col>
+                <Col xs={12} md={3}>
                     <Form.Group controlId='skillLevel'>
                         <Form.Control
                             type='Number'
@@ -45,7 +45,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                         ></Form.Control>
                     </Form.Group>
                 </Col>
-                <Col xs={2}>
+                <Col xs={12} md={3}>
                     <Form.Group>
                         <InputGroup>
                             <Button
