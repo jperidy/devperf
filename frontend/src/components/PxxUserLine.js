@@ -88,11 +88,12 @@ const PxxUserLine = ({ data }) => {
                             step={0.5}
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
-                            //value={notProdDayComponent ? notProdDayComponent : 0}
                             value={notProdDayComponent && notProdDayComponent.toString()}
                             onChange={(e) => {
-                                setNotProdDayComponent(Number(e.target.value));
-                                setHasChange(true);
+                                if (!e.target.value.toString().match(/[0-9]*[,.]$/g)) {
+                                    setNotProdDayComponent(Number(e.target.value));
+                                    setHasChange(true);
+                                }
                                 //setHasBeenModified(true);
                             }}
                         />
