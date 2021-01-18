@@ -162,7 +162,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                 <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
                                     <ConsoDispoUnit
                                         monthData={x}
-                                        grades={['Manager', 'Senior manager', 'Director', 'Partner']}
+                                        grades={['Senior consultant']}
                                         mode={mode}
                                         addStaff={addStaff}
                                         focus={focus}
@@ -181,7 +181,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                 <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
                                     <ConsoDispoUnit
                                         monthData={x}
-                                        grades={['Consultant']}
+                                        grades={['Manager', 'Senior manager', 'Director', 'Partner']}
                                         mode={mode}
                                         addStaff={addStaff}
                                         focus={focus}
