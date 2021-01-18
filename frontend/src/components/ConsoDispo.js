@@ -235,10 +235,14 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                             <Col sm={10}>
                                 <OverlayTrigger
                                     placement="bottom"
-                                    overlay={<Tooltip id="button-tooltip-2">{
+                                    overlay={<Tooltip id="button-tooltip-2" className='text-left'>{
                                         <>
-                                            <>{consultantData.valued && ((Date.now() - new Date(consultantData.valued)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)} years</><br />
-                                            <>{consultantData.comment ? consultantData.comment : 'no comment'}</>
+                                            <>{consultantData.valued && ((Date.now() - new Date(consultantData.valued)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)} years ({consultantData.grade ? consultantData.grade : 'No grade information'})</><br /><br />
+                                            <>{consultantData.comment ? consultantData.comment : 'No staffing comment'}</><br /><br />
+                                            {/* <>Skills:</><br />
+                                            {consultantData.quality && consultantData.quality.map((skill, val) => (
+                                                <div key={val}>{`${skill.skill} ${skill.level}`}</div>
+                                            ))} */}
                                         </>
                                     }</Tooltip>}
                                 >
