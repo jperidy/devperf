@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -7,12 +6,9 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import ViewStaffs from './ViewStaffs';
-import { getAllStaffs } from '../actions/consultantActions';
-import ListGroup from 'react-bootstrap/ListGroup';
-import Loader from '../components/Loader';
 
 
-const StaffAConsultant = ({ history, onHide, show, alreadyStaff, consultant, updateStaff }) => {
+const StaffAConsultant = ({ history, onHide, show, alreadyStaff, consultant, addStaffHandler }) => {
 
     //const dispatch = useDispatch();
 
@@ -29,6 +25,7 @@ const StaffAConsultant = ({ history, onHide, show, alreadyStaff, consultant, upd
         }
     }, [dispatch, consultant]); */
 
+    /*
     const addStaffHandler = () => {
 
         let tampon = new Array(...alreadyStaff);
@@ -41,9 +38,10 @@ const StaffAConsultant = ({ history, onHide, show, alreadyStaff, consultant, upd
             priority: sdPriority,
             information: sdInformation
         });
-        updateStaff(tampon);
+        addStaffHandler(tampon);
         onHide();
     }
+    */
 
     //console.log('consultant', consultant);
 
@@ -175,7 +173,12 @@ const StaffAConsultant = ({ history, onHide, show, alreadyStaff, consultant, upd
 
             <Modal.Footer>
                 <Button onClick={onHide} variant='secondary'>Cancel</Button>
-                <Button onClick={addStaffHandler} variant='primary' disabled={!(sdResponsability !== '' && sdPriority !== '')}>Submit</Button>
+                <Button 
+                    onClick={() => addStaffHandler(sdResponsability, sdPriority, sdInformation)} 
+                    variant='primary' 
+                    disabled={!(sdResponsability !== '' && sdPriority !== '')}
+                >Submit</Button>
+                
             </Modal.Footer>
 
         </Modal>

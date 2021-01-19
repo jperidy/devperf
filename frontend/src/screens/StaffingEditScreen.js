@@ -17,7 +17,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import StaffAConsultant from '../components/StaffAConsultant';
 import ViewStaffs from '../components/ViewStaffs';
 
-const StaffingRequestScreen = ({ match, history }) => {
+const StaffingEditScreen = ({ match, history }) => {
 
     const dispatch = useDispatch();
 
@@ -31,7 +31,7 @@ const StaffingRequestScreen = ({ match, history }) => {
     const { loading: loadingUpdate, error: errorUpdate } = dealUpdate;
 
     const dealEdit = useSelector(state => state.dealEdit);
-    const { success: successEdit, deal: dealToEdit } = dealEdit;
+    const { success: successEdit, loading: loadingEdit, deal: dealToEdit } = dealEdit;
 
     const consultantPracticeList = useSelector(state => state.consultantPracticeList);
     const { practiceList } = consultantPracticeList;
@@ -57,12 +57,17 @@ const StaffingRequestScreen = ({ match, history }) => {
     const [sdStaff, setSdStaff] = useState([]);
 
     const [sdConsultant, setSdConsultant] = useState('');
+    //const [sdResponsability, setSdResponsability] = useState('');
+    //const [sdPriority, setSdPriority] = useState('');
+    //const [sdInformation, setSdInformation] = useState('');
 
     const [wonDate, setWonDate] = useState('');
 
     const [modalWindowShow, setModalWindowShow] = useState(false);
 
     const [editRequest, setEditRequest] = useState(match.params.id ? false : true);
+
+    const [dealChange, setDealChange] = useState(false);
 
     //ConsoDispo
     const duration = 3;
@@ -128,6 +133,52 @@ const StaffingRequestScreen = ({ match, history }) => {
         }
     }, [dispatch, history, success, createId]);
 
+    useEffect(() => {
+        if (match.params.id && dealChange) {
+            const deal = {
+                company: company,
+                client: client,
+                title: title,
+                status: status,
+                contacts:{
+                    primary:userInfo.consultantProfil._id,
+                    secondary:[]
+                },
+                probability: probability,
+                description: description,
+                proposalDate: proposalDate,
+                presentationDate: presentationDate,
+                wonDate: wonDate,
+                startDate: startDate,
+                mainPractice: mainPractice,
+                othersPractices: othersPractices,
+                location: location,
+                staffingRequest: {
+                    instructions: srInstruction,
+                    requestStatus: srStatus,
+                    ressources: srRessources
+                },
+                staffingDecision: {
+                    instructions: sdInstructions,
+                    staffingStatus: sdStatus,
+                    staff: sdStaff.map(staff => ({
+                        responsability: staff.responsability,
+                        idConsultant: staff.idConsultant._id,
+                        priority: staff.priority,
+                        information: staff.information
+                    }))
+                }
+            }
+            dispatch(updateDeal(match.params.id, deal));
+            setDealChange(false);
+            setModalWindowShow(false);
+        }
+
+    },[match, dispatch, userInfo, dealChange, company, client, title, status, probability, description, proposalDate, presentationDate, 
+        wonDate, startDate, mainPractice, othersPractices, location, srInstruction, srStatus, srRessources, sdInstructions,
+        sdStatus, sdStaff
+    ]);
+
     const updateOthersPractices = () => {
         const selectedList = [];
         const selectBox = document.getElementById('others-practices');
@@ -139,7 +190,6 @@ const StaffingRequestScreen = ({ match, history }) => {
         setOthersPractices(selectedList);
     }
 
-
     const addStaff = (consultant) => {
         const staffId = sdStaff.map(consultant => consultant.idConsultant._id);
         if (staffId.includes(consultant._id)) {
@@ -148,21 +198,39 @@ const StaffingRequestScreen = ({ match, history }) => {
             setModalWindowShow(true);
             setSdConsultant(consultant);
         }
-
     };
 
     const removeStaffHandler = (id) => {
         let tampon = new Array(...sdStaff);
         tampon = tampon.filter(consultant => consultant.idConsultant._id !== id);
         setSdStaff(tampon);
+        setDealChange(true);
     }
 
-    const submitHandler = (e) => {
-        e.preventDefault()
-        const deal = {
+    const addStaffHandler = (responsability, priority, information) => {
+        let tampon = new Array(...sdStaff);
+        tampon.push({
+            idConsultant: {
+                _id: sdConsultant._id,
+                name: sdConsultant.name,
+            },
+            responsability: responsability,
+            priority: priority,
+            information: information
+        });
+        setSdStaff(tampon);
+        setDealChange(true);
+    }
+
+    const prepareDeal = () => {
+        return {
             company: company,
             client: client,
             title: title,
+            contacts:{
+                primary:userInfo.consultantProfil._id,
+                secondary:[]
+            },
             status: status,
             probability: probability,
             description: description,
@@ -189,6 +257,11 @@ const StaffingRequestScreen = ({ match, history }) => {
                 }))
             }
         }
+    }
+
+    const submitHandler = (e) => {
+        e.preventDefault()
+        const deal = prepareDeal();
 
         if (match.params.id) {
             dispatch(updateDeal(match.params.id, deal));
@@ -214,12 +287,15 @@ const StaffingRequestScreen = ({ match, history }) => {
                     </Col>
                     <Col xs={0} md={8}></Col>
                     <Col xs={6} md={2}>
-                        <Button
-                            type='submit'
-                            variant='primary'
-                            block
-                        >{(loading || loadingUpdate) ? <Loader /> : match.params.id ? 'Update' : 'Submit staffing'}
-                        </Button>
+                        {!match.params.id && (
+                            <Button
+                                type='submit'
+                                variant='primary'
+                                block
+                            >{(loading) ? <Loader /> : 'Submit staffing'}
+                            </Button>
+                        )}
+                        {match.params.id && loadingUpdate && <Loader />}
                     </Col>
                 </Row>
 
@@ -230,14 +306,24 @@ const StaffingRequestScreen = ({ match, history }) => {
                     <Row><Col><Message variant='danger'>{errorUpdate}</Message></Col></Row>
                 )}
 
-                <Row className='mt-3'><Col>
-                    <Button
-                        onClick={() => setEditRequest(!editRequest)}
-                        variant='light'
-                    >{editRequest ? (<i className="far fa-check-circle"></i>) : (<i className="far fa-edit"></i>)}
-                    </Button>
-                </Col></Row>
-                
+                {match.params.id && (
+                    <Row className='mt-3'>
+                        <Col md={1}>
+                            <Button
+                                onClick={() => {
+                                    setEditRequest(!editRequest);
+                                    editRequest && setDealChange(true);
+                                }}
+                                variant='light'
+                            >{editRequest ? (<i className="far fa-check-circle"></i>) : (<i className="far fa-edit"></i>)}
+                            </Button>
+                        </Col>
+                        <Col className='text-left align-middle'>
+                            {editRequest && (<p> Please click to update</p>)}
+                        </Col>
+                    </Row>
+                )}
+
                 <Row className='mt-2'>
 
                     <Col xs={12} md={4}>
@@ -577,7 +663,10 @@ const StaffingRequestScreen = ({ match, history }) => {
                                         <Form.Control
                                             as='select'
                                             value={srStatus}
-                                            onChange={(e) => setSrStatus(e.target.value)}
+                                            onChange={(e) => {
+                                                setSrStatus(e.target.value)
+                                                setDealChange(true);
+                                            }}
                                             required
                                         >
                                             <option value=''>--Select--</option>
@@ -684,7 +773,7 @@ const StaffingRequestScreen = ({ match, history }) => {
                 alreadyStaff={sdStaff}
                 onHide={() => setModalWindowShow(false)}
                 consultant={sdConsultant}
-                updateStaff={setSdStaff}
+                addStaffHandler={addStaffHandler}
                 history={history}
             />
 
@@ -703,4 +792,4 @@ const StaffingRequestScreen = ({ match, history }) => {
     )
 }
 
-export default StaffingRequestScreen;
+export default StaffingEditScreen;

@@ -357,7 +357,7 @@ const DealList = ({ history, data = [] }) => {
                             <td className='align-middle'>{deal.title}</td>
                         </OverlayTrigger>
                         <td className='align-middle'>{deal.mainPractice} / ({deal.othersPractices.toString()})</td>
-                        <td className='align-middle'>{deal.contacts && deal.contacts.primary.name} {deal.contacts.secondary && '/ (' + deal.contacts.secondary.map(x => x.name).toString() + ')'}</td>
+                        <td className='align-middle'>{deal.contacts && deal.contacts.primary.name} {deal.contacts && deal.contacts.secondary && '/ (' + deal.contacts.secondary.map(x => x.name).toString() + ')'}</td>
                         <td className='align-middle'>{deal.company}</td>
                         <td className='align-middle'>{deal.client}</td>
                         <td className='align-middle'>{deal.status}</td>

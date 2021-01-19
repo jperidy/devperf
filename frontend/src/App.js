@@ -11,7 +11,7 @@ import ManageUsersScreen from './screens/ManageUsersScreen';
 import UserEditScreen from './screens/UserEditScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import DashboardScreen from './screens/DashboardScreen';
-import StaffingRequestScreen from './screens/StaffingRequestScreen';
+import StaffingEditScreen from './screens/StaffingEditScreen';
 import ManageSkillsScreen from './screens/ManageSkillsScreen';
 import PxxDetailsScreen from './screens/PxxDetailsScreen';
 import ManageDealsScreen from './screens/ManageDealsScreen';
@@ -24,8 +24,8 @@ const App = () => {
         <Container>
           <Route path='/login' component={LoginScreen} exact />
           <Route path='/register' component={RegisterScreen} exact />
-          <Route path='/staffing' component={StaffingRequestScreen} exact />
-          <Route path='/staffing/:id' component={StaffingRequestScreen} exact />
+          <Route path='/staffing' component={StaffingEditScreen} exact />
+          <Route path='/staffing/:id' component={StaffingEditScreen} exact />
           <Route path='/pxx' component={PxxEditScreen} exact />
           <Route path='/pxx/:id' component={PxxEditScreen} exact />
           <Route path='/pxxdetails/:id' component={PxxDetailsScreen} exact />
