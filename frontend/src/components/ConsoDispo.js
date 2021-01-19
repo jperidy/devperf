@@ -9,8 +9,8 @@ import Message from '../components/Message';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-//import Popover from 'react-bootstrap/Popover';
-import Tooltip from 'react-bootstrap/Tooltip';
+import Popover from 'react-bootstrap/Popover';
+//import Tooltip from 'react-bootstrap/Tooltip';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 
@@ -234,17 +234,23 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                             )}
                             <Col sm={10}>
                                 <OverlayTrigger
-                                    placement="bottom"
-                                    overlay={<Tooltip id="button-tooltip-2" className='text-left'>{
+                                    placement="right"
+                                    trigger='click'
+                                    overlay={<Popover id="popover-comment">{
                                         <>
-                                            <>{consultantData.valued && ((Date.now() - new Date(consultantData.valued)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)} years ({consultantData.grade ? consultantData.grade : 'No grade information'})</><br /><br />
-                                            <>{consultantData.comment ? consultantData.comment : 'No staffing comment'}</><br /><br />
-                                            {/* <>Skills:</><br />
-                                            {consultantData.quality && consultantData.quality.map((skill, val) => (
-                                                <div key={val}>{`${skill.skill} ${skill.level}`}</div>
-                                            ))} */}
+                                        <Popover.Title>
+                                            {consultantData.valued && ((Date.now() - new Date(consultantData.valued)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)} years ({consultantData.grade ? consultantData.grade : 'No grade information'})
+                                        </Popover.Title>
+                                        <Popover.Content>
+                                            <Row className='text-left pt-2'><Col>{consultantData.comment ? consultantData.comment : 'No staffing comment'}</Col></Row>
+                                            <Row className='text-left pt-2'><Col>Skills:{' '}
+                                                {consultantData.quality && consultantData.quality.map((skill, val) => (
+                                                    <span key={val}>{`#${skill.skill} ${new Array(skill.level).fill('+').join('')} `}</span>
+                                                ))}
+                                            </Col></Row>
+                                        </Popover.Content>
                                         </>
-                                    }</Tooltip>}
+                                    }</Popover>}
                                 >
                                     <Form.Control
                                         plaintext

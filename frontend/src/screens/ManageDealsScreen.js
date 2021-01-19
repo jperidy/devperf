@@ -138,12 +138,12 @@ const ManageDealsScreen = ({ history }) => {
 
     return (
         <>
+            {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+            {error && <Message variant='danger'>{error}</Message>}
+            {loading && <Loader />}
+            
             <DropDownTitleContainer title='Search options' close={true}>
                 <ListGroup.Item>
-                    {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
-                    {error && <Message variant='danger'>{error}</Message>}
-                    {loading && <Loader />}
-
                     <Row className='mt-3'>
                         <Col>
                             <Form onSubmit={filterLeads}>

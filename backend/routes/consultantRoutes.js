@@ -4,18 +4,19 @@ const {
     getMyConsultants, 
     getConsultant, 
     updateConsultant, 
-    getAllPracticeConsultants,
+    //getAllPracticeConsultants,
     createConsultant,
     getAllCDMData,
     getAllPracticesData,
     deleteConsultant,
-    getAllConsultantByPractice,
+    //getAllConsultantByPractice,
     getAllConsultants,
     updateConsultantComment,
     getAllSkills,
     addConsultantSkill,
     deleteConsultantSkill,
-    updateLevelConsultantSkill
+    updateLevelConsultantSkill,
+    getConsultantStaffings
 } = require('../controllers/consultantControllers');
 
 const router = express.Router();
@@ -23,7 +24,6 @@ const router = express.Router();
 router.route('/')
     .get(protect, getMyConsultants)
     .post(protect, adminLevelOne, createConsultant);
-
 
 router.route('/cdm/:practice').get(protect, getAllCDMData);
 
@@ -34,10 +34,11 @@ router.route('/:consultantId/skill/:skillId')
     .delete(protect, adminLevelOne, deleteConsultantSkill)
     .put(protect, adminLevelOne, updateLevelConsultantSkill);
 
-//delete('/:consultantId/skill/:skillId', protect, adminLevelOne, deleteConsultantSkill);
-
+    //delete('/:consultantId/skill/:skillId', protect, adminLevelOne, deleteConsultantSkill);
+    
 router.get('/practicelist', protect, getAllPracticesData);
 router.get('/skills', protect, adminLevelOne, getAllSkills);
+router.get('/staffings', protect, adminLevelOne, getConsultantStaffings);
 
 router.get('/admin/consultants', protect, adminLevelOne, getAllConsultants);
 

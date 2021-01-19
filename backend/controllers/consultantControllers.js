@@ -1,5 +1,6 @@
 const Consultant = require('../models/consultantModel');
 const Skill = require('../models/skillModels');
+const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
 //const { set } = require('mongoose');
@@ -338,6 +339,35 @@ const updateLevelConsultantSkill = asyncHandler(async(req,res) => {
 
 });
 
+// @desc    Get all staffings
+// @route   GET /api/consultants/staffings
+// @access  Private, Embeded
+const getConsultantStaffings = asyncHandler(async (req, res) => {
+
+    const consultantId = req.query.consultantId;
+    
+    const staffings = await Deal.find({'staffingDecision.staff.idConsultant': consultantId});
+    
+    const result = staffings.map( staff => ({
+        _id:staff._id,
+        company: staff.company,
+        title: staff.title,
+        probability: staff.probability,
+        startDate: staff.startDate,
+        mainPractice: staff.mainPractice,
+        requestStatus: staff.staffingRequest.requestStatus,
+        instructions: staff.staffingRequest.instructions
+    }))
+    //console.log('result', result)
+
+    if (staffings) {
+        res.status(200).json(result);
+    } else {
+        res.status(400).json('No others staffings founded');
+    }
+    
+});
+
 
 
 module.exports = { 
@@ -353,6 +383,7 @@ module.exports = {
     getAllSkills,
     addConsultantSkill,
     deleteConsultantSkill,
-    updateLevelConsultantSkill
+    updateLevelConsultantSkill,
+    getConsultantStaffings
     //getAllConsultantByPractice
 };

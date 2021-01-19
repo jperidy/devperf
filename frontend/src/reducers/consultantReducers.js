@@ -55,7 +55,11 @@ import {
     CONSULTANT_UPDATE_SKILL_REQUEST,
     CONSULTANT_UPDATE_SKILL_SUCCESS,
     CONSULTANT_UPDATE_SKILL_FAIL,
-    CONSULTANT_UPDATE_SKILL_RESET
+    CONSULTANT_UPDATE_SKILL_RESET,
+    CONSULTANT_ALL_STAFF_REQUEST,
+    CONSULTANT_ALL_STAFF_SUCCESS,
+    CONSULTANT_ALL_STAFF_FAIL,
+    CONSULTANT_ALL_STAFF_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {focus: 0}, action) => {
@@ -282,6 +286,21 @@ export const consultantAllSkillsReducer = (state = {}, action) => {
         case CONSULTANT_ALL_SKILLS_FAIL:
             return { loading: false, error: action.payload };
         case CONSULTANT_ALL_SKILLS_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const consultantAllStaffsReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_ALL_STAFF_REQUEST:
+            return { loading: true };
+        case CONSULTANT_ALL_STAFF_SUCCESS:
+            return { loading: false, staffings: action.payload };
+        case CONSULTANT_ALL_STAFF_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANT_ALL_STAFF_RESET:
             return {}
         default:
             return state;

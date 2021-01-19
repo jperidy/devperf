@@ -486,31 +486,43 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
     const data = [];
 
     //console.log(Date(Date.now()) + ' >> début requête availablePxx');
-
+    
     const availablePxx = await Pxx.find({
-            month: {$in: month.map(x => x._id)},
-            name: {$in: consultantId.map(x => x._id)},
-            availableDay: {$gt: 0}
+        month: {$in: month.map(x => x._id)},
+        name: {$in: consultantId.map(x => x._id)},
+        availableDay: {$gt: 0}
     }).select('_id name email grade valued practice quality availableDay comment')
-    .populate('month name').sort({availableDay: -1});
-
+    .populate('month name name.quality.skill')
+    .sort({availableDay: -1});
     //console.log(Date(Date.now()) + ' >> fin requête availablePxx');
-    //console.log(availablePxx);
+    
+    const allSkills = await Skill.find();
 
     if (availablePxx) {
         for (let incr = 0; incr < month.length; incr++) {
             let pxxLines = availablePxx.filter(x => x.month.name === month[incr].name);
-            pxxLines = pxxLines.map(x => ({
+            pxxLines = pxxLines.map(x => {
+                const qualities = x.name.quality.map(quality => {
+                    const filteredSkill = allSkills.filter(skill => skill._id.toString() === quality.skill.toString())
+                    if (filteredSkill) {
+                        return {
+                            skill: filteredSkill[0].name,
+                            level: quality.level
+                        }
+                    }
+                })
+
+                return {
                 _id: x.name._id,
                 name: x.name.name,
                 email: x.name.email,
                 grade: x.name.grade,
                 valued: x.name.valued,
                 practice: x.name.practice,
-                quality: x.name.quality,
+                quality: qualities,
                 availableDay: x.availableDay,
                 comment: x.name.comment
-            }));
+            }});
             const result = {
                 month: {firstDay: month[incr].firstDay, _id: month[incr]._id},
                 availabilities: pxxLines
