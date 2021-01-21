@@ -217,7 +217,7 @@ const deleteDeal = asyncHandler(async (req, res) => {
 const getADeal = asyncHandler(async (req, res) => { 
 
     const id = req.params.id;
-    const deal = await Deal.findById(id).populate('staffingDecision.staff.idConsultant');
+    const deal = await Deal.findById(id).populate('staffingDecision.staff.idConsultant contacts.primary contacts.secondary');
 
     if(deal) {
         res.status(200).json(deal);

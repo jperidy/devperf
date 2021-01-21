@@ -52,18 +52,20 @@ const getAllConsultants = asyncHandler(async (req, res) => {
         }
     } : {};
     
-    const practice = req.query.practice;
+    const practice = req.query.practice ? ({practice: req.query.practice}) : ({});
 
-    const count = await Consultant.countDocuments({ ...keyword, practice: practice });
+    //const count = await Consultant.countDocuments({ ...keyword, practice: practice });
+    const count = await Consultant.countDocuments({ ...keyword, ...practice });
 
-    let consultants = await Consultant.find({...keyword, practice: practice})
+    //let consultants = await Consultant.find({...keyword, practice: practice})
+    let consultants = await Consultant.find({...keyword, ...practice})
             .sort({'name': 1})
             .limit(pageSize).skip(pageSize * (page - 1));
 
     if (consultants) {
         res.status(200).json({consultants, page, pages: Math.ceil(count/pageSize), count});
     } else {
-        res.status(400).json({message: `No consultants found for practice: ${practice}` });
+        res.status(400).json({message: `No consultants found for practice: ${req.query.practice}` });
     }
 
 });

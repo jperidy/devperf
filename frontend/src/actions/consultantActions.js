@@ -48,14 +48,14 @@ import {
 } from '../constants/consultantConstants';
 
 
-export const getAllMyAdminConsultants = (keyword = '', pageNumber = '', pageSize = '15') => async (dispatch, getState) => {
+export const getAllMyAdminConsultants = (keyword = '', pageNumber = '', pageSize = '15', userPractice) => async (dispatch, getState) => {
 
     try {
 
         dispatch({ type: CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST });
 
         const { userLogin: { userInfo } } = getState();
-        const userPractice = userInfo.consultantProfil.practice;
+        //const userPractice = userInfo.consultantProfil.practice;
 
         const config = {
             headers: {

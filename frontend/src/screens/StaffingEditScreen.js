@@ -9,13 +9,14 @@ import Popover from 'react-bootstrap/Popover';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
-import { getAllPractice } from '../actions/consultantActions';
+import { getAllMyAdminConsultants, getAllPractice } from '../actions/consultantActions';
 import ConsoDispo from '../components/ConsoDispo';
 import { DEAL_CREATE_RESET } from '../constants/dealConstants';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
 import StaffAConsultant from '../components/StaffAConsultant';
 import ViewStaffs from '../components/ViewStaffs';
+import { Dropdown } from 'react-bootstrap';
 
 const StaffingEditScreen = ({ match, history }) => {
 
@@ -35,6 +36,9 @@ const StaffingEditScreen = ({ match, history }) => {
 
     const consultantPracticeList = useSelector(state => state.consultantPracticeList);
     const { practiceList } = consultantPracticeList;
+
+    const consultantsMyAdminList = useSelector(state => state.consultantsMyAdminList);
+    const { loading:loadingLeaders, error: errorLeaders, consultantsMyAdmin: consultantLeader } = consultantsMyAdminList;
 
     const [title, setTitle] = useState('');
     const [company, setCompany] = useState('');
@@ -68,6 +72,10 @@ const StaffingEditScreen = ({ match, history }) => {
     const [editRequest, setEditRequest] = useState(match.params.id ? false : true);
 
     const [dealChange, setDealChange] = useState(false);
+
+    const [searchName, setSearchName] = useState('');
+    const [leader, setLeader] = useState('');
+    const [coLeader, setCoLeader] = useState([]);
 
     //ConsoDispo
     const duration = 3;
@@ -104,6 +112,13 @@ const StaffingEditScreen = ({ match, history }) => {
     }, [dispatch, match])
 
     useEffect(() => {
+        
+            dispatch(getAllMyAdminConsultants(searchName, 1, 20, ''));
+        
+    },[dispatch, searchName])
+
+
+    useEffect(() => {
         if (match.params.id && successEdit) {
             setTitle(dealToEdit.title);
             setCompany(dealToEdit.company);
@@ -123,8 +138,9 @@ const StaffingEditScreen = ({ match, history }) => {
             setSdStatus(dealToEdit.staffingDecision.staffingStatus ? dealToEdit.staffingDecision.staffingStatus : '');
             setSdStatus(dealToEdit.staffingDecision.instructions ? dealToEdit.staffingDecision.instructions : '');
             setSdStaff(dealToEdit.staffingDecision.staff ? dealToEdit.staffingDecision.staff : []);
+            setLeader(dealToEdit.contacts.primary._id ? dealToEdit.contacts.primary._id : userInfo.consultantId._id)
         }
-    }, [successEdit, dealToEdit, match])
+    }, [successEdit, dealToEdit, userInfo, match])
 
     useEffect(() => {
         if (success) {
@@ -134,15 +150,16 @@ const StaffingEditScreen = ({ match, history }) => {
     }, [dispatch, history, success, createId]);
 
     useEffect(() => {
+        //console.log('leader', leader);
         if (match.params.id && dealChange) {
             const deal = {
                 company: company,
                 client: client,
                 title: title,
                 status: status,
-                contacts:{
-                    primary:userInfo.consultantProfil._id,
-                    secondary:[]
+                contacts: {
+                    primary: leader,
+                    secondary: []
                 },
                 probability: probability,
                 description: description,
@@ -174,9 +191,9 @@ const StaffingEditScreen = ({ match, history }) => {
             setModalWindowShow(false);
         }
 
-    },[match, dispatch, userInfo, dealChange, company, client, title, status, probability, description, proposalDate, presentationDate, 
+    }, [match, dispatch, userInfo, dealChange, company, client, title, status, probability, description, proposalDate, presentationDate,
         wonDate, startDate, mainPractice, othersPractices, location, srInstruction, srStatus, srRessources, sdInstructions,
-        sdStatus, sdStaff
+        sdStatus, sdStaff, leader
     ]);
 
     const updateOthersPractices = () => {
@@ -227,9 +244,9 @@ const StaffingEditScreen = ({ match, history }) => {
             company: company,
             client: client,
             title: title,
-            contacts:{
-                primary:userInfo.consultantProfil._id,
-                secondary:[]
+            contacts: {
+                primary: leader,
+                secondary: []
             },
             status: status,
             probability: probability,
@@ -447,16 +464,16 @@ const StaffingEditScreen = ({ match, history }) => {
                                         <option value={100}>100 %</option>
                                     </Form.Control>
                                 ) : (
-                                    <Form.Control
-                                        type='text'
-                                        value={`${probability} %`}
-                                        plaintext
-                                        readOnly
-                                    ></Form.Control>
-                                )}
+                                        <Form.Control
+                                            type='text'
+                                            value={`${probability} %`}
+                                            plaintext
+                                            readOnly
+                                        ></Form.Control>
+                                    )}
                             </Form.Group>
                         </ListGroup.Item>
-                        
+
                         <ListGroup.Item>
                             <Form.Group controlId='location' className='mb-0'>
                                 <Form.Label as='h5'>Location</Form.Label>
@@ -468,13 +485,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                         onChange={(e) => setLocation(e.target.value)}
                                     ></Form.Control>
                                 ) : (
-                                    <Form.Control
-                                        type='text'
-                                        plaintext
-                                        readOnly
-                                        value={location}
-                                    ></Form.Control>
-                                )}
+                                        <Form.Control
+                                            type='text'
+                                            plaintext
+                                            readOnly
+                                            value={location}
+                                        ></Form.Control>
+                                    )}
                             </Form.Group>
                         </ListGroup.Item>
 
@@ -497,13 +514,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                         ))}
                                     </Form.Control>
                                 ) : (
-                                    <Form.Control
-                                        type='text'
-                                        plaintext
-                                        readOnly
-                                        value={mainPractice}
-                                    ></Form.Control>
-                                )}
+                                        <Form.Control
+                                            type='text'
+                                            plaintext
+                                            readOnly
+                                            value={mainPractice}
+                                        ></Form.Control>
+                                    )}
                             </Form.Group>
                         </ListGroup.Item>
 
@@ -527,19 +544,57 @@ const StaffingEditScreen = ({ match, history }) => {
                                         ))}
                                     </Form.Control>
                                 ) : (
-                                    <Form.Control
-                                        type='Text'
-                                        value={othersPractices.join(', ')}
-                                        plaintext
-                                        readOnly
-                                    ></Form.Control>
-                                )}
+                                        <Form.Control
+                                            type='text'
+                                            value={othersPractices.join(', ')}
+                                            plaintext
+                                            readOnly
+                                        ></Form.Control>
+                                    )}
                             </Form.Group>
                         </ListGroup.Item>
 
                     </Col>
 
                     <Col xs={12} md={8}>
+
+                        <ListGroup.Item>
+                            <Row>
+                                <Col>                                    
+                                    <Form.Group controlId='leader' className='mb-0'>
+                                        <Form.Label as='h5'>Leader</Form.Label>
+
+                                        {editRequest ? (
+                                            <>
+                                                <Form.Control
+                                                    type='text'
+                                                    placeholder='Search by name'
+                                                    value={searchName ? searchName : ''}
+                                                    onChange={(e) => setSearchName(e.target.value)}
+                                                ></Form.Control>
+
+                                                {consultantLeader && consultantLeader.splice(0,5).map((leader) => (
+                                                    <ListGroup.Item 
+                                                        key={leader._id}
+                                                        onClick={() => setSearchName(leader.name)}
+                                                    >{leader.name}
+                                                    </ListGroup.Item>
+                                                ))}
+                                            </>
+                                        ) : (
+                                            <Form.Control
+                                                type='text'
+                                                plaintext
+                                                readOnly
+                                                value={''}
+                                            ></Form.Control>
+                                        )}
+
+                                    </Form.Group>
+                                </Col>
+                                
+                            </Row>
+                        </ListGroup.Item>
 
                         <ListGroup.Item>
                             <Form.Group controlId='description' className='mb-0'>
@@ -554,13 +609,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                         required
                                     ></Form.Control>
                                 ) : (
-                                    <Form.Control
-                                        type='text'
-                                        value={description}
-                                        plaintext
-                                        readOnly
-                                    ></Form.Control>
-                                )}
+                                        <Form.Control
+                                            type='text'
+                                            value={description}
+                                            plaintext
+                                            readOnly
+                                        ></Form.Control>
+                                    )}
                             </Form.Group>
                         </ListGroup.Item>
 
@@ -577,13 +632,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 onChange={(e) => setProposalDate(e.target.value)}
                                             ></Form.Control>
                                         ) : (
-                                            <Form.Control
-                                                type='date'
-                                                value={proposalDate}
-                                                plaintext
-                                                readOnly
-                                            ></Form.Control>
-                                        )}
+                                                <Form.Control
+                                                    type='date'
+                                                    value={proposalDate}
+                                                    plaintext
+                                                    readOnly
+                                                ></Form.Control>
+                                            )}
                                     </Form.Group>
                                 </Col>
 
@@ -598,13 +653,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 onChange={(e) => setPresentationDate(e.target.value)}
                                             ></Form.Control>
                                         ) : (
-                                            <Form.Control
-                                                type='date'
-                                                value={presentationDate}
-                                                plaintext
-                                                readOnly
-                                            ></Form.Control>
-                                        )}
+                                                <Form.Control
+                                                    type='date'
+                                                    value={presentationDate}
+                                                    plaintext
+                                                    readOnly
+                                                ></Form.Control>
+                                            )}
                                     </Form.Group>
                                 </Col>
 
@@ -620,18 +675,18 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 required
                                             ></Form.Control>
                                         ) : (
-                                            <Form.Control
-                                                type='date'
-                                                value={startDate}
-                                                plaintext
-                                                readOnly
-                                            ></Form.Control>
-                                        )}
+                                                <Form.Control
+                                                    type='date'
+                                                    value={startDate}
+                                                    plaintext
+                                                    readOnly
+                                                ></Form.Control>
+                                            )}
                                     </Form.Group>
                                 </Col>
                             </Row>
                         </ListGroup.Item>
-                        
+
                         <ListGroup.Item>
                             <Row>
                                 <Col xs={12} md={8}>
@@ -647,13 +702,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 required
                                             ></Form.Control>
                                         ) : (
-                                            <Form.Control
-                                                type='text'
-                                                value={srInstruction}
-                                                plaintext
-                                                readOnly
-                                            ></Form.Control>
-                                        )}
+                                                <Form.Control
+                                                    type='text'
+                                                    value={srInstruction}
+                                                    plaintext
+                                                    readOnly
+                                                ></Form.Control>
+                                            )}
                                     </Form.Group>
                                 </Col>
 
@@ -697,13 +752,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 placement="right"
                                                 trigger='click'
                                                 overlay={
-                                                    <Popover id='popover-others-staffs' style={{'maxWidth': '100%'}}>
+                                                    <Popover id='popover-others-staffs' style={{ 'maxWidth': '100%' }}>
                                                         <Popover.Title id="contained-modal-title-vcenter">
-                                                                Others staffs
+                                                            Others staffs
                                                         </Popover.Title>
 
                                                         <Popover.Content>
-                                                            <ViewStaffs 
+                                                            <ViewStaffs
                                                                 history={history}
                                                                 consultantId={consultant.idConsultant._id}
                                                                 onNavigate={() => ('')}
@@ -774,7 +829,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 </Row>
             </Form>
 
-            <StaffAConsultant 
+            <StaffAConsultant
                 show={modalWindowShow}
                 alreadyStaff={sdStaff}
                 onHide={() => setModalWindowShow(false)}

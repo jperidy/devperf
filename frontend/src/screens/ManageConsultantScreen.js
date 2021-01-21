@@ -37,7 +37,7 @@ const ManageConsultantScreen = ({ history, match }) => {
     useEffect(() => {
 
         if (userInfo && (userInfo.adminLevel <= 1)) {
-            dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize));
+            dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize, userInfo.consultantProfil.practice));
         } else {
             history.push('/login');
         }
@@ -46,10 +46,10 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     useEffect(() => {
         if (successConsultantDelete) {
-            dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize));
+            dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize, userInfo.consultantProfil.practice));
             dispatch({ type: CONSULTANT_DELETE_RESET });
         }
-    }, [dispatch, successConsultantDelete, keyword, pageNumber, pageSize]);
+    }, [dispatch, successConsultantDelete, keyword, pageNumber, pageSize, userInfo]);
 
     const addConsultantHandler = () => {
         history.push('/admin/consultant/add');
@@ -176,7 +176,7 @@ const ManageConsultantScreen = ({ history, match }) => {
                                 key={x + 1}
                                 active={x + 1 === page}
                                 onClick={() => {
-                                    dispatch(getAllMyAdminConsultants(keyword, x + 1, pageSize));
+                                    dispatch(getAllMyAdminConsultants(keyword, x + 1, pageSize, userInfo.consultantProfil.practice));
                                     setPageNumber(x + 1);
                                 }}
                             >{x + 1}</Pagination.Item>
