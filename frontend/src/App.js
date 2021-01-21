@@ -13,7 +13,7 @@ import RegisterScreen from './screens/RegisterScreen';
 import DashboardScreen from './screens/DashboardScreen';
 import StaffingEditScreen from './screens/StaffingEditScreen';
 import ManageSkillsScreen from './screens/ManageSkillsScreen';
-//import PxxDetailsScreen from './screens/PxxDetailsScreen';
+import PxxDetailsScreen from './screens/PxxDetailsScreen';
 import ManageDealsScreen from './screens/ManageDealsScreen';
 
 const App = () => {
@@ -28,7 +28,7 @@ const App = () => {
           <Route path='/staffing/:id' component={StaffingEditScreen} exact />
           <Route path='/pxx' component={PxxEditScreen} exact />
           <Route path='/pxx/:id' component={PxxEditScreen} exact />
-          {/* <Route path='/pxxdetails/:id' component={PxxDetailsScreen} exact /> */}
+          <Route path='/pxxdetails/:id' component={PxxDetailsScreen} exact />
           <Route path='/editconsultant/:id' component={ConsultantEditScreen} exact />
           <Route path='/admin/consultants' component={ManageConsultantScreen} exact />
           <Route path='/admin/consultants/:keyword/page/:pageNumber' component={DashboardScreen} exact />

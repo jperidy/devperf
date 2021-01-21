@@ -245,7 +245,7 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                                             <Row className='text-left pt-2'><Col>{consultantData.comment ? consultantData.comment : 'No staffing comment'}</Col></Row>
                                             <Row className='text-left pt-2'><Col>Skills:{' '}
                                                 {consultantData.quality && consultantData.quality.map((skill, val) => (
-                                                    <span key={val}>{`#${skill.skill} ${new Array(skill.level).fill('+').join('')} `}</span>
+                                                    <span key={val}>{`#${skill.skill}${new Array(skill.level).fill('+').join('')} `}</span>
                                                 ))}
                                             </Col></Row>
                                         </Popover.Content>
