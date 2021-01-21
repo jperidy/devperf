@@ -7,10 +7,9 @@ import Button from 'react-bootstrap/Button';
 import Loader from './Loader';
 import { getAllStaffs } from '../actions/consultantActions';
 
-const ViewStaffs = ({history, consultantId, onNavigate}) => {
+const ViewStaffs = ({history, consultantId, displayedDeal = '', onNavigate=()=>('')}) => {
 
     const dispatch = useDispatch();
-
     const consultantAllStaffs = useSelector(state => state.consultantAllStaffs);
     const { loading, staffings } = consultantAllStaffs;
 
@@ -35,11 +34,11 @@ const ViewStaffs = ({history, consultantId, onNavigate}) => {
                 </Row>
 
                 {loading && <Loader />}
-                {staffings && staffings.map(deal => (
+                {staffings && staffings.map(deal => (deal._id !== displayedDeal) && (
                     <ListGroup.Item
                         key={deal._id}
                     >
-                        <Row>
+                        <Row className='align-items-center'>
                             <Col>
                                 {deal.company}
                             </Col>

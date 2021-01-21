@@ -449,7 +449,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 ) : (
                                     <Form.Control
                                         type='text'
-                                        value={probability}
+                                        value={`${probability} %`}
                                         plaintext
                                         readOnly
                                     ></Form.Control>
@@ -529,7 +529,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 ) : (
                                     <Form.Control
                                         type='Text'
-                                        value={othersPractices.toString()}
+                                        value={othersPractices.join(', ')}
                                         plaintext
                                         readOnly
                                     ></Form.Control>
@@ -683,7 +683,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <h5>Staffing decision</h5>
-                            <Row className='mt-3'>
+                            <Row className='my-3'>
                                 <Col xs={4}><strong>Name</strong></Col>
                                 <Col xs={4}><strong>Responsability</strong></Col>
                                 <Col xs={2}><strong>Priority</strong></Col>
@@ -691,13 +691,13 @@ const StaffingEditScreen = ({ match, history }) => {
                             </Row>
                             {sdStaff && sdStaff.map((consultant, val) => (
                                 <ListGroup.Item key={val}>
-                                    <Row>
+                                    <Row className='align-items-center'>
                                         <Col xs={4}>
                                             <OverlayTrigger
                                                 placement="right"
                                                 trigger='click'
                                                 overlay={
-                                                    <Popover id='popover-others-staffs' style={{'max-width': '100%'}}>
+                                                    <Popover id='popover-others-staffs' style={{'maxWidth': '100%'}}>
                                                         <Popover.Title id="contained-modal-title-vcenter">
                                                                 Others staffs
                                                         </Popover.Title>
@@ -707,6 +707,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                                                 history={history}
                                                                 consultantId={consultant.idConsultant._id}
                                                                 onNavigate={() => ('')}
+                                                                displayedDeal={match.params.id}
                                                             />
                                                         </Popover.Content>
                                                     </Popover>
@@ -756,12 +757,17 @@ const StaffingEditScreen = ({ match, history }) => {
                         </ListGroup.Item>
 
                         {dealToEdit && (
-                            <Row className='mt-5'>
-                                <Col>
-                                    <strong>Created at: </strong>{dealToEdit.createdAt.substring(0, 19).replace('T', ' ')} <br />
-                                    <strong>Last update at: </strong>{dealToEdit.updatedAt.substring(0, 19).replace('T', ' ')}
-                                </Col>
-                            </Row>
+                            <ListGroup.Item>
+                                <Row className='my-1'>
+                                    <Col>
+                                        <strong>Last update at: </strong>{dealToEdit.updatedAt.substring(0, 19).replace('T', ' ')}
+                                        <ListGroup.Item className='my-3'>
+                                            Add here communication history
+                                        </ListGroup.Item>
+                                        <strong>Created at: </strong>{dealToEdit.createdAt.substring(0, 19).replace('T', ' ')} <br />
+                                    </Col>
+                                </Row>
+                            </ListGroup.Item>
                         )}
 
                     </Col>

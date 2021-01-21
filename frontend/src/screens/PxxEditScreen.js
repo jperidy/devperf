@@ -13,6 +13,7 @@ import Loader from '../components/Loader';
 import { getAllMyConsultants, updateComment } from '../actions/consultantActions';
 import { Container, FormControl, InputGroup } from 'react-bootstrap';
 import { setConsultantFocus } from '../actions/consultantActions';
+import ViewStaffs from '../components/ViewStaffs';
 
 const PxxEditScreen = ({ history }) => {
 
@@ -42,7 +43,7 @@ const PxxEditScreen = ({ history }) => {
     }, [dispatch, focus])
 
     useEffect(() => {
-        if(consultantsMy) {
+        if (consultantsMy) {
             setCommentText(consultantsMy[focus].comment);
         }
     }, [consultantsMy, focus]);
@@ -102,36 +103,36 @@ const PxxEditScreen = ({ history }) => {
 
                                 <Row className='mt-3'>
                                     <Col xs={12} md={4}>
-                                    <ListGroup.Item>
-                                        <Row className="my-3">
-                                            <Col className="text-left"><b>Arrival:</b> {consultantsMy[focus].arrival && consultantsMy[focus].arrival.substring(0, 10)}</Col>
-                                            <Col className="text-left"><b>Valued:</b> {consultantsMy[focus].valued && consultantsMy[focus].valued.substring(0, 10)}</Col>
-                                            <Col className="text-left"><b>Leaving:</b> {consultantsMy[focus].leaving && consultantsMy[focus].leaving.substring(0, 10)}</Col>
-                                        </Row>
-                                        <Row className="my-3">
-                                            <Col><b>Seniority:</b> {((new Date(Date.now()) - new Date(consultantsMy[focus].arrival.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4)} years</Col>
-                                        </Row>
+                                        <ListGroup.Item>
+                                            <Row className="my-3">
+                                                <Col className="text-left"><b>Arrival:</b> {consultantsMy[focus].arrival && consultantsMy[focus].arrival.substring(0, 10)}</Col>
+                                                <Col className="text-left"><b>Valued:</b> {consultantsMy[focus].valued && consultantsMy[focus].valued.substring(0, 10)}</Col>
+                                                <Col className="text-left"><b>Leaving:</b> {consultantsMy[focus].leaving && consultantsMy[focus].leaving.substring(0, 10)}</Col>
+                                            </Row>
+                                            <Row className="my-3">
+                                                <Col><b>Seniority:</b> {((new Date(Date.now()) - new Date(consultantsMy[focus].arrival.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4)} years</Col>
+                                            </Row>
 
-                                        <Row className="my-3">
-                                            <Col>
-                                                <label htmlFor="comment"><strong>Staffing comment</strong></label>
-                                                <InputGroup>
-                                                    <FormControl
-                                                        as='textarea'
-                                                        rows={4}
-                                                        id='comment'
-                                                        value={commentText}
-                                                        placeholder='Please enter a comment'
-                                                        onChange={(e) => {
-                                                            setCommentText(e.target.value);
-                                                            updateCommentHandler(consultantsMy[focus]._id, e.target.value)
-                                                        }}
-                                                    ></FormControl>
-                                                </InputGroup>
+                                            <Row className="my-3">
+                                                <Col>
+                                                    <label htmlFor="comment"><strong>Staffing comment</strong></label>
+                                                    <InputGroup>
+                                                        <FormControl
+                                                            as='textarea'
+                                                            rows={4}
+                                                            id='comment'
+                                                            value={commentText}
+                                                            placeholder='Please enter a comment'
+                                                            onChange={(e) => {
+                                                                setCommentText(e.target.value);
+                                                                updateCommentHandler(consultantsMy[focus]._id, e.target.value)
+                                                            }}
+                                                        ></FormControl>
+                                                    </InputGroup>
 
-                                            </Col>
-                                        </Row>
-                                    </ListGroup.Item>
+                                                </Col>
+                                            </Row>
+                                        </ListGroup.Item>
 
                                     </Col>
 
@@ -145,12 +146,23 @@ const PxxEditScreen = ({ history }) => {
                                     </Col>
                                 </Row>
 
+                                <Row>
+                                    <Col>
+                                        <ViewStaffs
+                                            history={history}
+                                            consultantId={consultantsMy[focus]._id}
+                                        />
+                                    </Col>
+                                </Row>
+
                                 <Row className="pt-5">
-                                    <ConsultantsTab
-                                        consultantsMy={consultantsMy}
-                                        history={history}
-                                        focusActive={true}
-                                    />
+                                    <Col>
+                                        <ConsultantsTab
+                                            consultantsMy={consultantsMy}
+                                            history={history}
+                                            focusActive={true}
+                                        />
+                                    </Col>
                                 </Row>
                             </>
                         )}

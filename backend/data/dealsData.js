@@ -7,7 +7,10 @@ function getDeals (nbDeal, consultants, practices) {
     const status = ['Lead', 'Proposal to send', 'Proposal sent', 'Won', 'Abandoned']
     const requestStatus = ['To do', 'Keep staffing', 'Retreat staffing', 'Release staffing'];
     const probability = [10, 30, 50, 70, 100];
-    const location = ['Lyon', 'Bruxelles', 'Paris', 'Marseille']
+    const location = ['Lyon', 'Bruxelles', 'Paris', 'Marseille'];
+
+    const responsability = ['Project director', 'Project manager', 'Project leader', 'X', 'Intern'];
+    const priority = ['P1', 'P2', 'P3'];
 
     const dealData = [];
 
@@ -28,11 +31,27 @@ function getDeals (nbDeal, consultants, practices) {
             }
         }
 
+        const currentStatus = status[Math.floor(Math.random() * status.length)];
+        const currentWonDate = (currentStatus === 'Won') ? ( new Date(Date.now()) ) : ( '' );
+
+        const nbTeam = Math.floor(Math.random() * 4);
+        const staffing = [];
+
+        for (let incr2 = 0 ; incr2 < nbTeam ; incr2++) {
+            staffing.push({
+                responsability: responsability[Math.floor(Math.random() * responsability.length)],
+                idConsultant: consultantsPractice[Math.floor(Math.random() * consultantsPractice.length)]._id,
+                priority: priority[Math.floor(Math.random() * priority.length)],
+                information: 'Information for staffing (actions, priority, etc.)'
+            })
+        }
+        //console.log("staffing", staffing);
+
         const deal = {
             company: company,
             client: client[Math.floor(Math.random() * client.length)],
             title: `Sfaffing request ${company} ${incr + 1}`,
-            status: status[Math.floor(Math.random() * status.length)],
+            status: currentStatus,
             contacts: {
                 primary: consultantsPractice[Math.floor(Math.random() * consultantsPractice.length)]._id,
                 secondary: [consultantsPractice[Math.floor(Math.random() * consultantsPractice.length)]._id]
@@ -41,7 +60,7 @@ function getDeals (nbDeal, consultants, practices) {
             description: 'Description de la mission, description des enjeux, etc.',
             proposalDate: proposalDate,
             presentationDate: new Date(Number(proposalDate) + 1000 * 3600 * 24 * 6),
-            wonDate: '',
+            wonDate: currentWonDate,
             startDate: new Date(Number(proposalDate) + 1000 * 3600 * 24 * 10),
             mainPractice: mainPractice,
             othersPractices: othersPractices,
@@ -52,6 +71,7 @@ function getDeals (nbDeal, consultants, practices) {
             },       
             staffingDecision: {
                 instructions: 'Vérifier la disponibilité de ... sauf démarrage autre mission ...',
+                staff: staffing
             }
         }
 

@@ -12,6 +12,7 @@ const {getConsultantData, getCDMData} = require('./data/consultantData');
 const { getUserData } = require('./data/userData');
 const { getSkills } = require('./data/skillData');
 const { getDeals } = require('./data/dealsData');
+const { controleAndCreatePxx } = require('./controllers/cronJobsControllers');
 
 dotenv.config();
 connectDB();
@@ -104,6 +105,9 @@ const importData = async () => {
         practices = [... new Set(practices)];
         dealsData = getDeals(nbDeals, allFinalConsultants, practices);
         dealsDataCreated = await Deal.insertMany(dealsData);
+
+        console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running >>> start');
+        await controleAndCreatePxx();
 
         console.log('Data imported');
         process.exit();

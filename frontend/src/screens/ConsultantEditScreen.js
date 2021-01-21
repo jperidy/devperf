@@ -5,7 +5,6 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import FormContainer from '../components/FormContainer';
-//import Alert from 'react-bootstrap/Alert';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -313,6 +312,7 @@ const ConsultantEditScreen = ({ history, match }) => {
             <FormContainer>
 
                 <Form onSubmit={submitHandler}>
+                    <h2>{name && name}</h2>
 
                     <DropDownTitleContainer title='Personal'>
                         <ListGroup.Item>
