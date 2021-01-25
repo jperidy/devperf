@@ -16,6 +16,7 @@ import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
 import StaffAConsultant from '../components/StaffAConsultant';
 import ViewStaffs from '../components/ViewStaffs';
+import SearchInput from '../components/SearchInput';
 import { Dropdown } from 'react-bootstrap';
 
 const StaffingEditScreen = ({ match, history }) => {
@@ -73,8 +74,9 @@ const StaffingEditScreen = ({ match, history }) => {
 
     const [dealChange, setDealChange] = useState(false);
 
-    const [searchName, setSearchName] = useState('');
+    const [searchLeader, setSearchLeader] = useState('');
     const [leader, setLeader] = useState('');
+
     const [coLeader, setCoLeader] = useState([]);
 
     //ConsoDispo
@@ -113,9 +115,9 @@ const StaffingEditScreen = ({ match, history }) => {
 
     useEffect(() => {
         
-            dispatch(getAllMyAdminConsultants(searchName, 1, 20, ''));
+            dispatch(getAllMyAdminConsultants(searchLeader, 1, 20, ''));
         
-    },[dispatch, searchName])
+    },[dispatch, searchLeader])
 
 
     useEffect(() => {
@@ -138,7 +140,9 @@ const StaffingEditScreen = ({ match, history }) => {
             setSdStatus(dealToEdit.staffingDecision.staffingStatus ? dealToEdit.staffingDecision.staffingStatus : '');
             setSdStatus(dealToEdit.staffingDecision.instructions ? dealToEdit.staffingDecision.instructions : '');
             setSdStaff(dealToEdit.staffingDecision.staff ? dealToEdit.staffingDecision.staff : []);
-            setLeader(dealToEdit.contacts.primary._id ? dealToEdit.contacts.primary._id : userInfo.consultantId._id)
+            setLeader(dealToEdit.contacts.primary ? 
+                {id: dealToEdit.contacts.primary._id, value: dealToEdit.contacts.primary.name} 
+                : {id: userInfo.consultantProfil._id, value: userInfo.consultantProfil.name})
         }
     }, [successEdit, dealToEdit, userInfo, match])
 
@@ -150,7 +154,6 @@ const StaffingEditScreen = ({ match, history }) => {
     }, [dispatch, history, success, createId]);
 
     useEffect(() => {
-        //console.log('leader', leader);
         if (match.params.id && dealChange) {
             const deal = {
                 company: company,
@@ -158,7 +161,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 title: title,
                 status: status,
                 contacts: {
-                    primary: leader,
+                    primary: leader.id,
                     secondary: []
                 },
                 probability: probability,
@@ -245,7 +248,7 @@ const StaffingEditScreen = ({ match, history }) => {
             client: client,
             title: title,
             contacts: {
-                primary: leader,
+                primary: leader.id,
                 secondary: []
             },
             status: status,
@@ -560,39 +563,16 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <Row>
-                                <Col>                                    
-                                    <Form.Group controlId='leader' className='mb-0'>
-                                        <Form.Label as='h5'>Leader</Form.Label>
-
-                                        {editRequest ? (
-                                            <>
-                                                <Form.Control
-                                                    type='text'
-                                                    placeholder='Search by name'
-                                                    value={searchName ? searchName : ''}
-                                                    onChange={(e) => setSearchName(e.target.value)}
-                                                ></Form.Control>
-
-                                                {consultantLeader && consultantLeader.splice(0,5).map((leader) => (
-                                                    <ListGroup.Item 
-                                                        key={leader._id}
-                                                        onClick={() => setSearchName(leader.name)}
-                                                    >{leader.name}
-                                                    </ListGroup.Item>
-                                                ))}
-                                            </>
-                                        ) : (
-                                            <Form.Control
-                                                type='text'
-                                                plaintext
-                                                readOnly
-                                                value={''}
-                                            ></Form.Control>
-                                        )}
-
-                                    </Form.Group>
+                                <Col>
+                                    <SearchInput
+                                        title='Leader'
+                                        searchValue={searchLeader ? searchLeader : leader ? leader.value : ''}
+                                        setSearchValue={setSearchLeader}
+                                        possibilities={consultantLeader && consultantLeader.map(consultant => ({ id: consultant._id, value: consultant.name }))}
+                                        updateResult={setLeader}
+                                        editMode={editRequest}
+                                    />
                                 </Col>
-                                
                             </Row>
                         </ListGroup.Item>
 

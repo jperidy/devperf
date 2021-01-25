@@ -32,6 +32,7 @@ const updateADeal = asyncHandler(async (req, res) => {
         deal.company = req.body.company;
         deal.client = req.body.client;
         deal.title = req.body.title;
+        deal.contacts = req.body.contacts;
         deal.status = req.body.status;
         deal.probability = req.body.probability;
         deal.description = req.body.description;

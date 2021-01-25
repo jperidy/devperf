@@ -9,7 +9,7 @@ const Consultant = require('../models/consultantModel');
 const authUser = asyncHandler(async(req,res) =>{
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).populate({ path:'consultantProfil', select:'practice' });
+    const user = await User.findOne({ email }).populate({ path:'consultantProfil', select:'practice name' });
     //console.log(user);
     if(user && (await user.matchPassword(password))) {
         if(user.status === 'Validated') {
