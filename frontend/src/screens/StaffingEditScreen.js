@@ -17,7 +17,6 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import StaffAConsultant from '../components/StaffAConsultant';
 import ViewStaffs from '../components/ViewStaffs';
 import SearchInput from '../components/SearchInput';
-import { Dropdown } from 'react-bootstrap';
 
 const StaffingEditScreen = ({ match, history }) => {
 
@@ -77,7 +76,8 @@ const StaffingEditScreen = ({ match, history }) => {
     const [searchLeader, setSearchLeader] = useState('');
     const [leader, setLeader] = useState('');
 
-    const [coLeader, setCoLeader] = useState([]);
+    const [searchCoLeader, setSearchCoLeader] = useState('');
+    const [coLeaders, setCoLeaders] = useState([]);
 
     //ConsoDispo
     const duration = 3;
@@ -119,6 +119,12 @@ const StaffingEditScreen = ({ match, history }) => {
         
     },[dispatch, searchLeader])
 
+    useEffect(() => {
+
+        dispatch(getAllMyAdminConsultants(searchCoLeader, 1, 20, ''));
+
+    }, [dispatch, searchCoLeader])
+
 
     useEffect(() => {
         if (match.params.id && successEdit) {
@@ -143,7 +149,10 @@ const StaffingEditScreen = ({ match, history }) => {
             setLeader(dealToEdit.contacts.primary ? 
                 {id: dealToEdit.contacts.primary._id, value: dealToEdit.contacts.primary.name} 
                 : {id: userInfo.consultantProfil._id, value: userInfo.consultantProfil.name})
+            setCoLeaders(dealToEdit.contacts.secondary ?
+                dealToEdit.contacts.secondary.map( coLeader => ({id: coLeader._id, value: coLeader.name})) : [])
         }
+        //console.log('coleaders', coLeaders)
     }, [successEdit, dealToEdit, userInfo, match])
 
     useEffect(() => {
@@ -162,7 +171,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 status: status,
                 contacts: {
                     primary: leader.id,
-                    secondary: []
+                    secondary: coLeaders.length ? coLeaders.map( x => x.id) : [],
                 },
                 probability: probability,
                 description: description,
@@ -249,7 +258,7 @@ const StaffingEditScreen = ({ match, history }) => {
             title: title,
             contacts: {
                 primary: leader.id,
-                secondary: []
+                secondary: coLeaders.length ? coLeaders.map( x => x.id) : [],
             },
             status: status,
             probability: probability,
@@ -276,6 +285,17 @@ const StaffingEditScreen = ({ match, history }) => {
                     information: staff.information
                 }))
             }
+        }
+    }
+
+    const updateCoLeadersHandler = (value) => {
+        if(value) {
+            const newList = coLeaders.slice();
+            newList.push(value);
+            setCoLeaders(newList)
+            
+            console.log('value', value)
+            console.log('coLeaders', newList)
         }
     }
 
@@ -563,7 +583,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <Row>
-                                <Col>
+                                <Col xs={12} md={6}>
                                     <SearchInput
                                         title='Leader'
                                         searchValue={searchLeader ? searchLeader : leader ? leader.value : ''}
@@ -573,6 +593,27 @@ const StaffingEditScreen = ({ match, history }) => {
                                         editMode={editRequest}
                                     />
                                 </Col>
+                            
+                                <Col xs={12} md={6}>
+                                    <SearchInput
+                                        title='Co-leader'
+                                        searchValue={searchCoLeader ? searchCoLeader : ''}
+                                        setSearchValue={setSearchCoLeader}
+                                        possibilities={consultantLeader && consultantLeader.map(consultant => ({ id: consultant._id, value: consultant.name }))}
+                                        updateResult={updateCoLeadersHandler}
+                                        editMode={editRequest}
+                                    />
+                                    {coLeaders && coLeaders.map(coLeader => (
+                                        <Form.Control
+                                            key={coLeader.id}
+                                            type='text'
+                                            plaintext
+                                            readOnly
+                                            value={coLeader.value}
+                                        ></Form.Control>
+                                    ))}
+                                </Col>
+
                             </Row>
                         </ListGroup.Item>
 
