@@ -4,7 +4,7 @@ function getDeals (nbDeal, consultants, practices) {
 
     const companies = ['TOTAL', 'SOCIETE GENERALE', 'ENGIE', 'BANQUE DE FRANCE', 'SNCF', "L'OREAL", 'EDF'];
     const client = ['Richard', 'Benoit', 'Jacques', 'Laurine', 'Isabelle', 'Jeanne', 'Arthur', 'Jessica', 'Jean', 'Paul', 'Marion', 'Julien', 'Sophie'];
-    const status = ['Lead', 'Proposal to send', 'Proposal sent', 'Won', 'Abandoned']
+    //const status = ['Lead', 'Proposal to send', 'Proposal sent', 'Won', 'Abandoned']
     //const requestStatus = ['To do', 'Keep staffing', 'Retreat staffing', 'Release staffing'];
     const REQUEST_STATUS = [
         {name: 'Identify Leader', staff: true},
@@ -12,6 +12,18 @@ function getDeals (nbDeal, consultants, practices) {
         {name: 'Staff validated by leader', staff: false},
         {name: 'Staff validated by client', staff: false},
         {name: 'You can staff elsewhere', staff: true}
+    ];
+    const TYPE_BUSINESS = [
+        {name: 'New business'},
+        {name: 'New position'},
+        {name: 'Replacement'}
+    ];
+    const DEAL_STATUS = [
+        {name: 'Lead'},
+        {name: 'Proposal to send'},
+        {name: 'Proposal sent'},
+        {name: 'Won'},
+        {name: 'Abandoned'},
     ];
     const probability = [10, 30, 50, 70, 100];
     const location = ['Lyon', 'Bruxelles', 'Paris', 'Marseille'];
@@ -38,7 +50,7 @@ function getDeals (nbDeal, consultants, practices) {
             }
         }
 
-        const currentStatus = status[Math.floor(Math.random() * status.length)];
+        const currentStatus = DEAL_STATUS[Math.floor(Math.random() * DEAL_STATUS.length)].name;
         const currentWonDate = (currentStatus === 'Won') ? ( new Date(Date.now()) ) : ( '' );
 
         const nbTeam = Math.floor(Math.random() * 4);
@@ -59,6 +71,7 @@ function getDeals (nbDeal, consultants, practices) {
             client: client[Math.floor(Math.random() * client.length)],
             title: `Sfaffing request ${company} ${incr + 1}`,
             status: currentStatus,
+            type: TYPE_BUSINESS[Math.floor(Math.random()) * TYPE_BUSINESS.length].name,
             contacts: {
                 primary: consultantsPractice[Math.floor(Math.random() * consultantsPractice.length)]._id,
                 secondary: [consultantsPractice[Math.floor(Math.random() * consultantsPractice.length)]._id]

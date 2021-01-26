@@ -11,7 +11,7 @@ import Message from '../components/Message';
 import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
 import { getAllMyAdminConsultants, getAllPractice } from '../actions/consultantActions';
 import ConsoDispo from '../components/ConsoDispo';
-import { DEAL_CREATE_RESET } from '../constants/dealConstants';
+import { DEAL_CREATE_RESET, DEAL_PROBABILITY, DEAL_STATUS, TYPE_BUSINESS } from '../constants/dealConstants';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
 import StaffAConsultant from '../components/StaffAConsultant';
@@ -44,6 +44,7 @@ const StaffingEditScreen = ({ match, history }) => {
     const [title, setTitle] = useState('');
     const [company, setCompany] = useState('');
     const [client, setClient] = useState('');
+    const [type, setType] = useState('');
     const [status, setStatus] = useState('');
     const [probability, setProbability] = useState('');
     const [description, setDescription] = useState('');
@@ -56,6 +57,9 @@ const StaffingEditScreen = ({ match, history }) => {
     const [srInstruction, setSrInstruction] = useState('');
     const [srStatus, setSrStatus] = useState('');
     const [srRessources, setSrRessources] = useState([]);
+    const [comments, setComments] = useState([]);
+
+    const [newComment, setNewComment] = useState('');
 
     const [sdInstructions, setSdInstructions] = useState('');
     const [sdStatus, setSdStatus] = useState('');
@@ -133,6 +137,7 @@ const StaffingEditScreen = ({ match, history }) => {
             setCompany(dealToEdit.company);
             setClient(dealToEdit.client);
             setStatus(dealToEdit.status);
+            setType(dealToEdit.type);
             setProbability(dealToEdit.probability);
             setDescription(dealToEdit.description);
             setProposalDate(dealToEdit.proposalDate ? dealToEdit.proposalDate.substring(0, 10) : "");
@@ -150,7 +155,8 @@ const StaffingEditScreen = ({ match, history }) => {
             setLeader(dealToEdit.contacts.primary ? 
                 {id: dealToEdit.contacts.primary._id, value: dealToEdit.contacts.primary.name} : '');
             setCoLeaders(dealToEdit.contacts.secondary ?
-                dealToEdit.contacts.secondary.map( coLeader => ({id: coLeader._id, value: coLeader.name})) : [])
+                dealToEdit.contacts.secondary.map( coLeader => ({id: coLeader._id, value: coLeader.name})) : []);
+            setComments(dealToEdit.comments ? dealToEdit.comments : []);
         }
         //console.log('coleaders', coLeaders)
     }, [successEdit, dealToEdit, userInfo, match])
@@ -168,6 +174,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 company: company,
                 client: client,
                 title: title,
+                type: type,
                 status: status,
                 contacts: {
                     primary: leader.id,
@@ -196,16 +203,17 @@ const StaffingEditScreen = ({ match, history }) => {
                         priority: staff.priority,
                         information: staff.information
                     }))
-                }
+                },
+                comments: comments
             }
             dispatch(updateDeal(match.params.id, deal));
             setDealChange(false);
             setModalWindowShow(false);
         }
 
-    }, [match, dispatch, userInfo, dealChange, company, client, title, status, probability, description, proposalDate, presentationDate,
+    }, [match, dispatch, userInfo, dealChange, company, type, client, title, status, probability, description, proposalDate, presentationDate,
         wonDate, startDate, mainPractice, othersPractices, location, srInstruction, srStatus, srRessources, sdInstructions,
-        sdStatus, sdStaff, leader, coLeaders
+        sdStatus, sdStaff, leader, coLeaders, comments
     ]);
 
     const updateOthersPractices = () => {
@@ -260,6 +268,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 primary: leader.id,
                 secondary: coLeaders.length ? coLeaders.map( x => x.id) : [],
             },
+            type: type,
             status: status,
             probability: probability,
             description: description,
@@ -284,7 +293,8 @@ const StaffingEditScreen = ({ match, history }) => {
                     priority: staff.priority,
                     information: staff.information
                 }))
-            }
+            },
+            comments: comments
         }
     }
 
@@ -322,6 +332,44 @@ const StaffingEditScreen = ({ match, history }) => {
             dispatch(createDeal(deal));
         }
     };
+
+    const addCommentHandler = () => {
+        const newComments = comments.slice();
+        newComments.push({
+            message: newComment,
+            sender:{
+                _id: userInfo._id,
+                name: userInfo.name
+            },
+            date: new Date(Date.now()).toISOString()
+        });
+        newComments.sort((a,b) => (Date.parse(b.date) - Date.parse(a.date)));
+        setComments(newComments);
+        setDealChange(true);
+    };
+
+    const deleteCommentHandler = (value) => {
+        let newComments = comments.slice();
+        newComments = newComments.filter(x => x.date !== value);
+        setComments(newComments);
+        setDealChange(true);
+    };
+
+    const formatName = (fullName) => {
+        const separateName = fullName.split(' ');
+        if (separateName.length === 1) {
+            return separateName[0];
+        } else {
+            const outName = separateName.map((word, indice1) => {
+                if (indice1 === 0) {
+                    return word[0].toUpperCase() + '.';
+                } else {
+                    return word.toUpperCase();
+                }
+            });
+            return outName.join(' ');
+        }
+    }
 
     return (
         <>
@@ -447,6 +495,35 @@ const StaffingEditScreen = ({ match, history }) => {
                         </ListGroup.Item>
 
                         <ListGroup.Item>
+                            <Form.Group controlId='type' className='mb-0'>
+                                <Form.Label as='h5'>Type of business</Form.Label>
+                                {editRequest ? (
+                                    <Form.Control
+                                        as='select'
+                                        value={type}
+                                        onChange={(e) => { setType(e.target.value) }}
+                                        required
+                                    >
+                                        <option value=''>--Select--</option>
+                                        {TYPE_BUSINESS.map(type => (
+                                            <option
+                                                key={type.name}
+                                                value={type.name}
+                                            >{type.name}</option>
+                                        ))}
+                                    </Form.Control>
+                                ) : (
+                                        <Form.Control
+                                            type='text'
+                                            plaintext
+                                            value={type}
+                                            readOnly
+                                        ></Form.Control>
+                                    )}
+                            </Form.Group>
+                        </ListGroup.Item>
+
+                        <ListGroup.Item>
                             <Form.Group controlId='status' className='mb-0'>
                                 <Form.Label as='h5'>Status</Form.Label>
                                 {editRequest ? (
@@ -465,11 +542,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                         required
                                     >
                                         <option value=''>--Select--</option>
-                                        <option value='Lead'>Lead</option>
-                                        <option value='Proposal to send'>Proposal to send</option>
-                                        <option value='Proposal sent'>Proposal sent</option>
-                                        <option value='Won'>Won</option>
-                                        <option value='Abandoned'>Abandoned</option>
+                                        {DEAL_STATUS.map( status => (
+                                            <option
+                                                key={status.name}
+                                                value={status.name}
+                                            >{status.name}</option>
+                                        ))}
                                     </Form.Control>
                                 ) : (
                                         <Form.Control
@@ -493,11 +571,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                         required
                                     >
                                         <option value=''>--Select--</option>
-                                        <option value={10}>10 %</option>
-                                        <option value={30}>30 %</option>
-                                        <option value={50}>50 %</option>
-                                        <option value={70}>70 %</option>
-                                        <option value={100}>100 %</option>
+                                        {DEAL_PROBABILITY.map( prob => (
+                                            <option 
+                                                key={prob.name}
+                                                value={prob.name}
+                                            >{prob.name} %</option>
+                                        ))}
                                     </Form.Control>
                                 ) : (
                                         <Form.Control
@@ -790,15 +869,16 @@ const StaffingEditScreen = ({ match, history }) => {
                         <ListGroup.Item>
                             <h5>Staffing decision</h5>
                             <Row className='my-3'>
-                                <Col xs={4}><strong>Name</strong></Col>
-                                <Col xs={4}><strong>Responsability</strong></Col>
-                                <Col xs={2}><strong>Priority</strong></Col>
-                                <Col xs={2}></Col>
+                                <Col xs={3} className='text-center'><strong>Name</strong></Col>
+                                <Col xs={2} className='text-center'><strong>Responsability</strong></Col>
+                                <Col xs={2} className='text-center'><strong>Priority</strong></Col>
+                                <Col xs={4} className='text-center'><strong>Comment</strong></Col>
+                                <Col xs={1} className='text-center'></Col>
                             </Row>
                             {sdStaff && sdStaff.map((consultant, val) => (
                                 <ListGroup.Item key={val}>
                                     <Row className='align-items-center'>
-                                        <Col xs={4}>
+                                        <Col xs={3}>
                                             <OverlayTrigger
                                                 placement="right"
                                                 trigger='click'
@@ -824,18 +904,20 @@ const StaffingEditScreen = ({ match, history }) => {
                                                         type='text'
                                                         plaintext
                                                         readOnly
-                                                        value={consultant.idConsultant.name}
+                                                        className='text-center'
+                                                        value={formatName(consultant.idConsultant.name)}
                                                     ></Form.Control>
                                                 </Form.Group>
                                             </OverlayTrigger>
                                         </Col>
 
-                                        <Col xs={4}>
+                                        <Col xs={2}>
                                             <Form.Group controlId='sd-responsability' className='mb-0'>
                                                 <Form.Control
                                                     type='text'
                                                     plaintext
                                                     readOnly
+                                                    className='text-center'
                                                     value={consultant.responsability}
                                                 ></Form.Control>
                                             </Form.Group>
@@ -846,14 +928,27 @@ const StaffingEditScreen = ({ match, history }) => {
                                                     type='text'
                                                     plaintext
                                                     readOnly
+                                                    className='text-center'
                                                     value={consultant.priority}
                                                 ></Form.Control>
                                             </Form.Group>
                                         </Col>
-                                        <Col xs={2}>
+                                        <Col xs={4} >
+                                            <Form.Group controlId='sd-comment' className='mb-0'>
+                                                <Form.Control
+                                                    type='text'
+                                                    plaintext
+                                                    readOnly
+                                                    className='text-center'
+                                                    value={consultant.comment}
+                                                ></Form.Control>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={1}>
                                             <Button
                                                 onClick={() => removeStaffHandler(consultant.idConsultant._id)}
                                                 variant='danger'
+                                                className='text-center'
                                                 size='sm'
                                             ><i className="fas fa-times"></i></Button>
                                         </Col>
@@ -867,9 +962,50 @@ const StaffingEditScreen = ({ match, history }) => {
                                 <Row className='my-1'>
                                     <Col>
                                         <strong>Last update at: </strong>{dealToEdit.updatedAt.substring(0, 19).replace('T', ' ')}
-                                        <ListGroup.Item className='my-3'>
-                                            Add here communication history
-                                        </ListGroup.Item>
+                                        
+                                            
+                                                    <Row className='align-items-center my-3'>
+                                                        <Col xs={11} >
+                                                            <Form.Group controlId='comment' className='mb-0'>
+                                                                <Form.Control
+                                                                    type='text'
+                                                                    placeholder='Add a comment'
+                                                                    value={newComment}
+                                                                    onChange={(e) => setNewComment(e.target.value)}
+                                                                    onKeyUp={(e) => (e.key === 'Enter') && addCommentHandler()}
+                                                                ></Form.Control>
+                                                            </Form.Group>
+                                                        </Col>
+                                                        <Col xs={1}>
+                                                            <Button
+                                                                variant='primary'
+                                                                onClick={() => addCommentHandler()}
+                                                                size='sm'
+                                                            ><i className="fas fa-plus"></i></Button>
+                                                        </Col>
+                                                    </Row>
+
+                                            <ListGroup className='my-3'>
+                                            {comments && comments.map( (comment, index) => (
+                                                <ListGroup.Item
+                                                    key={index}
+                                                    className='mb-0'
+                                                >
+                                                    
+                                                    <p>
+                                                        {comment.message}
+                                                    </p>
+                                                    <p style={{textAlign: 'right', marginBottom: '0'}}><i>By {comment.sender.name} the {comment.date.substring(0,19).replace('T', ' at ')}  {comment.sender._id === userInfo._id && (
+                                                            <Button
+                                                                size='sm'
+                                                                variant='ligth'
+                                                                style={{color:'red'}}
+                                                                onClick={() => deleteCommentHandler(comment.date)}
+                                                            >--delete--</Button>
+                                                    )}</i></p>
+                                                </ListGroup.Item>
+                                            ))}
+                                            </ListGroup>
                                         <strong>Created at: </strong>{dealToEdit.createdAt.substring(0, 19).replace('T', ' ')} <br />
                                     </Col>
                                 </Row>

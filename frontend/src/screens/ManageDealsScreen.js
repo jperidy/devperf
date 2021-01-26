@@ -29,7 +29,6 @@ const ManageDealsScreen = ({ history }) => {
 
     // search configuration
     const [searchTitle, setSearchTitle] = useState('');
-    const [searchPractice, setSearchPractice] = useState('');
     const [searchCompany, setSearchCompany] = useState('');
     const [searchClient, setSearchClient] = useState('');
     const [searchDealStatus, setSearchDealStatus] = useState('');
@@ -52,7 +51,7 @@ const ManageDealsScreen = ({ history }) => {
             const keyword = {
                 title: searchTitle,
                 mainPractice: userInfo.consultantProfil.practice,
-                othersPractices: searchPractice,
+                othersPractices: userInfo.consultantProfil.practice,
                 client: searchClient,
                 company: searchCompany,
                 status: searchDealStatus,
@@ -63,7 +62,7 @@ const ManageDealsScreen = ({ history }) => {
             history.push('/login');
         }
 
-    }, [dispatch, history, userInfo, globalFilter, searchTitle, searchPractice, searchCompany, searchClient, searchDealStatus, searchRequestStatus, pageNumber, pageSize]);
+    }, [dispatch, history, userInfo, globalFilter, searchTitle, searchCompany, searchClient, searchDealStatus, searchRequestStatus, pageNumber, pageSize]);
 
     useEffect(() => {
         if (deals) {
@@ -120,7 +119,8 @@ const ManageDealsScreen = ({ history }) => {
             const keyword = {
                 title: searchTitle,
                 mainPractice: userInfo.consultantProfil.practice,
-                othersPractices: searchPractice,
+                othersPractices: userInfo.consultantProfil.practice,
+                //othersPractices: searchPractice,
                 client: searchClient,
                 company: searchCompany,
                 status: searchDealStatus,
@@ -156,17 +156,6 @@ const ManageDealsScreen = ({ history }) => {
                                                 placeholder='Search title'
                                                 value={searchTitle && searchTitle}
                                                 onChange={(e) => setSearchTitle(e.target.value)}
-                                            ></Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col xs={6} md={2}>
-                                        <Form.Group controlId='filter-practice'>
-                                            <Form.Label>Others practice</Form.Label>
-                                            <Form.Control
-                                                type='text'
-                                                placeholder='Search practice'
-                                                value={searchPractice && searchPractice}
-                                                onChange={(e) => setSearchPractice(e.target.value)}
                                             ></Form.Control>
                                         </Form.Group>
                                     </Col>

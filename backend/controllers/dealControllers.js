@@ -23,15 +23,14 @@ const createDeal = asyncHandler(async (req, res) => {
 const updateADeal = asyncHandler(async (req, res) => { 
 
     const dealId = req.params.id;
-    const deal = await Deal.findById(dealId)
-
-    //console.log(req.body)
+    const deal = await Deal.findById(dealId);
 
     if (deal) {
 
         deal.company = req.body.company;
         deal.client = req.body.client;
         deal.title = req.body.title;
+        deal.type = req.body.type;
         deal.contacts = req.body.contacts;
         deal.status = req.body.status;
         deal.probability = req.body.probability;
@@ -49,11 +48,11 @@ const updateADeal = asyncHandler(async (req, res) => {
         deal.staffingDecision.instructions = req.body.staffingDecision.instructions;
         deal.staffingDecision.staffingStatus = req.body.staffingDecision.staffingStatus;
         deal.staffingDecision.staff = req.body.staffingDecision.staff;
-
-        //console.log(deal.staffingDecision.staff);
-
+        deal.comments = req.body.comments;
+        
         await deal.save();
         res.status(200).json({message: 'Deal updated'});
+
     } else {
         res.status(400).json({ message: "Can't update not registered deal" });
     }
@@ -165,8 +164,12 @@ const getAllDeals = asyncHandler(async (req, res) => {
 
     const count = await Deal.countDocuments({ 
         ...searchClient,
-        ...searchMainPractice,
-        ...searchOthersPractices,
+        //...searchMainPractice,
+        //...searchOthersPractices,
+        ...{$or:[
+            searchMainPractice,
+            searchOthersPractices
+        ]},
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,
@@ -176,8 +179,12 @@ const getAllDeals = asyncHandler(async (req, res) => {
 
     const deals = await Deal.find({ 
         ...searchClient,
-        ...searchMainPractice,
-        ...searchOthersPractices,
+        //...searchMainPractice,
+        //...searchOthersPractices,
+        ...{$or:[
+            searchMainPractice,
+            searchOthersPractices
+        ]},
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,

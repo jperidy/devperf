@@ -9,8 +9,12 @@ const SearchInput = ({ title, searchValue, setSearchValue, possibilities, update
 
     const onSearchValueChange = (value) => {
         setSearchValue(value);
-        setShow(true);
         updateResult(null);
+        if(value) {
+            setShow(true);
+        } else {
+            setShow(false);
+        }
         //setUpdate(true);
     }
 
@@ -28,17 +32,18 @@ const SearchInput = ({ title, searchValue, setSearchValue, possibilities, update
                 <>
                     <Form.Control
                         type='text'
+                        //type='search'
+                        //name='q'
                         placeholder='Search box...'
                         value={searchValue && searchValue}
                         onChange={(e) => onSearchValueChange(e.target.value)}
                     ></Form.Control>
-                    <ListGroup>
+                    <ListGroup style={{ position: 'relative', zIndex: '10' }}>
                         {show && possibilities && possibilities.splice(0, size).map(({ id, value }, index) => (
                             <ListGroup.Item
                                 key={id}
                                 action
                                 variant='light'
-                                style={{ position: 'relative', zIndex: '10' }}
                                 onClick={() => onClickHandler(index, id, value)}
                             >{value}</ListGroup.Item>
                         ))}

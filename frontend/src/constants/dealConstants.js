@@ -29,4 +29,26 @@ export const REQUEST_STATUS = [
     {name: 'Staff validated by leader', staff: false},
     {name: 'Staff validated by client', staff: false},
     {name: 'You can staff elsewhere', staff: true}
-]
+];
+
+export const TYPE_BUSINESS = [
+    {name: 'New business'},
+    {name: 'New position'},
+    {name: 'Replacement'}
+];
+
+export const DEAL_STATUS = [
+    {name: 'Lead'},
+    {name: 'Proposal to send'},
+    {name: 'Proposal sent'},
+    {name: 'Won'},
+    {name: 'Abandoned'},
+];
+
+export const DEAL_PROBABILITY = [
+    {name: 10},
+    {name: 30},
+    {name: 50},
+    {name: 70},
+    {name: 100},
+];

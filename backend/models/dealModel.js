@@ -14,6 +14,10 @@ const dealSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    type: {
+        type: String,
+        required: true
+    },
     status: {
         type: String,
         required: true,
@@ -113,8 +117,15 @@ const dealSchema = mongoose.Schema({
                 required: false
             }
         }]
-    }
-    
+    },
+    comments:[{
+        message:{type: String},
+        sender:{
+            _id:{type: mongoose.Schema.Types.ObjectId},
+            name:{type: String}
+        },
+        date:{type: Date}
+    }]
 }, {
     timestamps: true,
 });
