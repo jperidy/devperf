@@ -22,3 +22,11 @@ export const DEAL_EDIT_REQUEST = 'DEAL_EDIT_REQUEST';
 export const DEAL_EDIT_SUCCESS = 'DEAL_EDIT_SUCCESS';
 export const DEAL_EDIT_FAIL = 'DEAL_EDIT_FAIL';
 export const DEAL_EDIT_RESET = 'DEAL_EDIT_RESET';
+
+export const REQUEST_STATUS = [
+    {name: 'Identify Leader', staff: true},
+    {name: 'Identify Staff', staff: true},
+    {name: 'Staff validated by leader', staff: false},
+    {name: 'Staff validated by client', staff: false},
+    {name: 'You can staff elsewhere', staff: true}
+]

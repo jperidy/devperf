@@ -17,6 +17,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import StaffAConsultant from '../components/StaffAConsultant';
 import ViewStaffs from '../components/ViewStaffs';
 import SearchInput from '../components/SearchInput';
+import { REQUEST_STATUS } from '../constants/dealConstants';
 
 const StaffingEditScreen = ({ match, history }) => {
 
@@ -147,8 +148,7 @@ const StaffingEditScreen = ({ match, history }) => {
             setSdStatus(dealToEdit.staffingDecision.instructions ? dealToEdit.staffingDecision.instructions : '');
             setSdStaff(dealToEdit.staffingDecision.staff ? dealToEdit.staffingDecision.staff : []);
             setLeader(dealToEdit.contacts.primary ? 
-                {id: dealToEdit.contacts.primary._id, value: dealToEdit.contacts.primary.name} 
-                : {id: userInfo.consultantProfil._id, value: userInfo.consultantProfil.name})
+                {id: dealToEdit.contacts.primary._id, value: dealToEdit.contacts.primary.name} : '');
             setCoLeaders(dealToEdit.contacts.secondary ?
                 dealToEdit.contacts.secondary.map( coLeader => ({id: coLeader._id, value: coLeader.name})) : [])
         }
@@ -205,7 +205,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
     }, [match, dispatch, userInfo, dealChange, company, client, title, status, probability, description, proposalDate, presentationDate,
         wonDate, startDate, mainPractice, othersPractices, location, srInstruction, srStatus, srRessources, sdInstructions,
-        sdStatus, sdStaff, leader
+        sdStatus, sdStaff, leader, coLeaders
     ]);
 
     const updateOthersPractices = () => {
@@ -288,14 +288,27 @@ const StaffingEditScreen = ({ match, history }) => {
         }
     }
 
+    const deleteLeaderHandler = () => {
+        setLeader('');
+        setDealChange(true);
+    }
+
+    const deleteCoLeaderHandler = (coLeader) => {
+        let newList = coLeaders.slice();
+        newList = newList.filter( x => x.id !== coLeader.id)
+        setCoLeaders(newList);
+        setDealChange(true);
+    }
+
     const updateCoLeadersHandler = (value) => {
         if(value) {
             const newList = coLeaders.slice();
-            newList.push(value);
-            setCoLeaders(newList)
-            
-            console.log('value', value)
-            console.log('coLeaders', newList)
+            if (!newList.map( x => x.id).includes(value.id)) {
+                newList.push(value);
+                setCoLeaders(newList)
+            }            
+            //console.log('value', value)
+            //console.log('coLeaders', newList)
         }
     }
 
@@ -586,32 +599,47 @@ const StaffingEditScreen = ({ match, history }) => {
                                 <Col xs={12} md={6}>
                                     <SearchInput
                                         title='Leader'
-                                        searchValue={searchLeader ? searchLeader : leader ? leader.value : ''}
+                                        searchValue={searchLeader ? searchLeader : ''}
                                         setSearchValue={setSearchLeader}
                                         possibilities={consultantLeader && consultantLeader.map(consultant => ({ id: consultant._id, value: consultant.name }))}
                                         updateResult={setLeader}
                                         editMode={editRequest}
                                     />
+                                    {leader && (
+                                        <ListGroup variant='flush'>
+                                            <ListGroup.Item
+                                                variant='ligth'
+                                            >{leader.value}
+                                                <Button 
+                                                    variant='Dark'
+                                                    onClick={() => deleteLeaderHandler()}
+                                                ><i className="fas fa-user-times"></i></Button>
+                                            </ListGroup.Item>
+                                        </ListGroup>
+                                    )}
                                 </Col>
                             
                                 <Col xs={12} md={6}>
                                     <SearchInput
-                                        title='Co-leader'
+                                        title='Co-leader(s)'
                                         searchValue={searchCoLeader ? searchCoLeader : ''}
                                         setSearchValue={setSearchCoLeader}
                                         possibilities={consultantLeader && consultantLeader.map(consultant => ({ id: consultant._id, value: consultant.name }))}
                                         updateResult={updateCoLeadersHandler}
                                         editMode={editRequest}
                                     />
-                                    {coLeaders && coLeaders.map(coLeader => (
-                                        <Form.Control
-                                            key={coLeader.id}
-                                            type='text'
-                                            plaintext
-                                            readOnly
-                                            value={coLeader.value}
-                                        ></Form.Control>
-                                    ))}
+                                    <ListGroup variant='flush'>
+                                        {coLeaders && coLeaders.map(coLeader => (
+                                            <ListGroup.Item
+                                                key={coLeader.id}
+                                            >{coLeader.value}
+                                                <Button 
+                                                    variant='Dark'
+                                                    onClick={() => deleteCoLeaderHandler(coLeader)}
+                                                ><i className="fas fa-user-times"></i></Button>
+                                            </ListGroup.Item>
+                                        ))}
+                                    </ListGroup>
                                 </Col>
 
                             </Row>
@@ -746,10 +774,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                             required
                                         >
                                             <option value=''>--Select--</option>
-                                            <option value='To do'>To do</option>
-                                            <option value='Keep staffing'>Keep staffing</option>
-                                            <option value='Retreat staffing'>Keep</option>
-                                            <option value='Release staffing'>Available</option>
+                                            {REQUEST_STATUS.map(({name}) => (
+                                                <option
+                                                    key={name}
+                                                    value={name}
+                                                >{name}</option>
+                                            ))}
 
                                         </Form.Control>
                                     </Form.Group>

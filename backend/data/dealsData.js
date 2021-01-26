@@ -5,7 +5,14 @@ function getDeals (nbDeal, consultants, practices) {
     const companies = ['TOTAL', 'SOCIETE GENERALE', 'ENGIE', 'BANQUE DE FRANCE', 'SNCF', "L'OREAL", 'EDF'];
     const client = ['Richard', 'Benoit', 'Jacques', 'Laurine', 'Isabelle', 'Jeanne', 'Arthur', 'Jessica', 'Jean', 'Paul', 'Marion', 'Julien', 'Sophie'];
     const status = ['Lead', 'Proposal to send', 'Proposal sent', 'Won', 'Abandoned']
-    const requestStatus = ['To do', 'Keep staffing', 'Retreat staffing', 'Release staffing'];
+    //const requestStatus = ['To do', 'Keep staffing', 'Retreat staffing', 'Release staffing'];
+    const REQUEST_STATUS = [
+        {name: 'Identify Leader', staff: true},
+        {name: 'Identify Staff', staff: true},
+        {name: 'Staff validated by leader', staff: false},
+        {name: 'Staff validated by client', staff: false},
+        {name: 'You can staff elsewhere', staff: true}
+    ];
     const probability = [10, 30, 50, 70, 100];
     const location = ['Lyon', 'Bruxelles', 'Paris', 'Marseille'];
 
@@ -67,12 +74,14 @@ function getDeals (nbDeal, consultants, practices) {
             location: location[Math.floor(Math.random() * location.length)],
             staffingRequest: {
                 instructions: 'Description du dispositif et des compétences. Description des marges de manoeuvre. etc.',
-                requestStatus: requestStatus[Math.floor(Math.random() * requestStatus.length)],
+                requestStatus: REQUEST_STATUS.map(x=>x.name)[Math.floor(Math.random() * REQUEST_STATUS.length)],
             },       
             staffingDecision: {
                 instructions: 'Vérifier la disponibilité de ... sauf démarrage autre mission ...',
                 staff: staffing
-            }
+            },
+            createdAt: new Date(Number(proposalDate) - 1000 * 3600 * 24 * ( 20 + 6 * Math.floor(Math.random()))),
+            updatedAt: new Date(Number(proposalDate) - 1000 * 3600 * 24 * ( 5 + 14 * Math.floor(Math.random())))
         }
 
         dealData.push(deal);

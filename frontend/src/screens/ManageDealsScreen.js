@@ -13,9 +13,8 @@ import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import Tooltip from 'react-bootstrap/Tooltip';
 import ListGroup from 'react-bootstrap/ListGroup';
-//import InputGroup from 'react-bootstrap/InputGroup';
-//import FormControl from 'react-bootstrap/FormControl';
 import { deleteDeal, getAllDeals } from '../actions/dealActions';
+import { REQUEST_STATUS } from '../constants/dealConstants';
 
 const ManageDealsScreen = ({ history }) => {
 
@@ -80,7 +79,8 @@ const ManageDealsScreen = ({ history }) => {
 
                 switch (tabsFilter[incr]) {
                     case tabsFilter[0]:
-                        dealsFiltered = deals.filter(deal => deal.staffingRequest.requestStatus === 'To do');
+                        const needStaff = REQUEST_STATUS.filter(x => x.staff === true)
+                        dealsFiltered = deals.filter(deal => needStaff.map(x => x.name).includes(deal.staffingRequest.requestStatus));
                         break;
                     case tabsFilter[1]:
                         dealsFiltered = deals.filter(deal => new Date(deal.updatedAt) >= lastWeekDate);

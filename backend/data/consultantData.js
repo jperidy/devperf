@@ -9,10 +9,17 @@ function getCDMData (nbCdm, skills, practice) {
     for (let incr = 0 ; incr < nbCdm ; incr++) {
         const quality = [];
         for (let incr = 0 ; incr < 5 ; incr++) {
-            quality.push({
+            const newSkill = skills[(Math.round(Math.random() * (skills.length -1)))]._id;
+            if (!quality.map(x => x.skill).includes(newSkill)) {
+                quality.push({
+                    skill: newSkill,
+                    level: Number(1 + Math.round(Math.random() * 2))
+                })
+            }
+            /*quality.push({
                 skill: skills[(Math.round(Math.random() * (skills.length -1)))]._id,
                 level: Number(1 + Math.round(Math.random() * 2))
-            })
+            })*/
         }
         
         let arrival = new Date( 2019 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 11), Math.floor(Math.random() * 20))
@@ -50,11 +57,11 @@ function getConsultantData (nbUsers, cdmId, skills, practice) {
     for (let iter = 0 ; iter < nbUsers ; iter++){
         const quality = [];
         for (let incr = 0 ; incr < 5 ; incr++) {
-            const skill = skills[(Math.round(Math.random() * (skills.length -1)))]._id;
-            
-            if (!quality.map(x => x.skill).includes(skill)) {
+
+            const newSkill = skills[(Math.round(Math.random() * (skills.length -1)))]._id;
+            if (!quality.map(x => x.skill).includes(newSkill)) {
                 quality.push({
-                    skill: skills[(Math.round(Math.random() * (skills.length -1)))]._id,
+                    skill: newSkill,
                     level: Number(1 + Math.round(Math.random() * 2))
                 })
             }

@@ -16,7 +16,7 @@ const SearchInput = ({ title, searchValue, setSearchValue, possibilities, update
 
     const onClickHandler = (index, id, value) => {
         updateResult({id, value});
-        setSearchValue(value);
+        setSearchValue('');
         setShow(false);
     }
 
@@ -24,7 +24,7 @@ const SearchInput = ({ title, searchValue, setSearchValue, possibilities, update
 
         <Form.Group controlId='search-box' className='mb-0'>
             <Form.Label as='h5'>{title}</Form.Label>
-            {editMode ? (
+            {editMode && (
                 <>
                     <Form.Control
                         type='text'
@@ -32,22 +32,19 @@ const SearchInput = ({ title, searchValue, setSearchValue, possibilities, update
                         value={searchValue && searchValue}
                         onChange={(e) => onSearchValueChange(e.target.value)}
                     ></Form.Control>
-
-                    {show && possibilities && possibilities.splice(0, size).map(({ id, value }, index) => (
-                        <ListGroup.Item
-                            key={id}
-                            onClick={() => onClickHandler(index, id, value)}
-                        >{value}</ListGroup.Item>
-                    ))}
+                    <ListGroup>
+                        {show && possibilities && possibilities.splice(0, size).map(({ id, value }, index) => (
+                            <ListGroup.Item
+                                key={id}
+                                action
+                                variant='light'
+                                style={{ position: 'relative', zIndex: '10' }}
+                                onClick={() => onClickHandler(index, id, value)}
+                            >{value}</ListGroup.Item>
+                        ))}
+                    </ListGroup>
                 </>
-            ) : (
-                    <Form.Control
-                        type='text'
-                        plaintext
-                        readOnly
-                        value={searchValue && searchValue}
-                    ></Form.Control>
-                )}
+            )}
         </Form.Group>
     )
 }
