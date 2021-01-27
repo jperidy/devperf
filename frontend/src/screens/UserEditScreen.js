@@ -9,6 +9,7 @@ import FormContainer from '../components/FormContainer';
 import { getUserDetails, updateUser } from '../actions/userActions';
 import { getAllConsultantByPractice } from '../actions/consultantActions';
 import { USER_UPDATE_RESET } from '../constants/userConstants';
+import { getAllAccess } from '../actions/accessActions';
 
 const UserEditScreen = ({ match, history }) => {
 
@@ -20,6 +21,7 @@ const UserEditScreen = ({ match, history }) => {
     const [email, setEmail] = useState('');
     const [practice, setPractice] = useState('');
     const [linkConsultant, setLinkConsultant] = useState('');
+    const [profil, setProfil] = useState('');
     const [adminLevel, setAdminLevel] = useState('');
     const [status, setStatus] = useState('');
 
@@ -36,6 +38,9 @@ const UserEditScreen = ({ match, history }) => {
 
     const consultantAllPractice = useSelector(state => state.consultantAllPractice);
     const { error: errorConsultantAllPractice, consultants } = consultantAllPractice;
+
+    const accessList = useSelector(state => state.accessList);
+    const { error: erroraccessList, access } = accessList;
 
     useEffect(() => {
 
@@ -60,6 +65,7 @@ const UserEditScreen = ({ match, history }) => {
             setName(user.name);
             setEmail(user.email);
             setAdminLevel(user.adminLevel);
+            setProfil(user.profil);
             setStatus(user.status);
             if (user.consultantProfil) {
                 setPractice(user.consultantProfil.practice);
@@ -68,6 +74,7 @@ const UserEditScreen = ({ match, history }) => {
                 setPractice('Undefined');
                 setLinkConsultant('');
             }
+            //console.log(user.profil);
         }
 
     }, [user]);
@@ -98,6 +105,18 @@ const UserEditScreen = ({ match, history }) => {
 
     }, [dispatch, practice, user, userId]);
 
+    useEffect(() => {
+        if (!access) {
+            dispatch(getAllAccess());
+        }
+        //console.log(access)
+    },[dispatch, access]);
+
+    const updateProfilHandler = (profil) => {
+        const newProfil = access.filter(x => x.profil === profil)[0];
+        setProfil(newProfil);
+        //console.log('updateProfil');
+    }
 
     const goBackHandler = () => {
         history.go(-1);
@@ -111,6 +130,7 @@ const UserEditScreen = ({ match, history }) => {
             name: name,
             email: email,
             consultantProfil: linkConsultant,
+            profil: profil._id,
             adminLevel: adminLevel,
             status: status
         };
@@ -195,6 +215,24 @@ const UserEditScreen = ({ match, history }) => {
                             </InputGroup.Append>
                         </InputGroup>
 
+                    </Form.Group>
+
+                    <Form.Group controlId='user-profil'>
+                        <Form.Label><b>User profil</b></Form.Label>
+                        <Form.Control
+                            as='select'
+                            value={profil.profil ? profil.profil : ''}
+                            onChange={(e) => updateProfilHandler(e.target.value)}
+                            required
+                        >
+                            <option value=''>--Select--</option>
+                            {access && access.map( x => (
+                                <option
+                                    key={x._id}
+                                    value={x.profil}
+                                >{x.profil}</option>
+                            ))}
+                        </Form.Control>
                     </Form.Group>
 
                     <Form.Group controlId='adminLevel'>

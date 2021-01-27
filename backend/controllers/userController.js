@@ -3,6 +3,7 @@ const generateToken = require('../utils/generateToken');
 const User = require('../models/userModel.js');
 const Consultant = require('../models/consultantModel');
 const Access = require('../models/accessModel');
+const { myAccessConsultants } = require('../utils/usersFunctions');
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -149,38 +150,9 @@ const getUsers = asyncHandler(async(req,res) =>{
         }
     } : {};
     
-    /*
-    const practice = req.query.practice ? { practice: req.query.practice } : {};
-    const consultants = await Consultant.find(practice).select('_id');
-    const consultantsId = consultants.map (consultant => consultant._id);
-    //consultantsId.push(''); // for non affected consultants
-    //console.log('length', consultantsId.length)
-    */
-
-    //const profil = await Access.findById(req.user.profil);
-    console.log(req.user);
-    
     const access = req.user.profil.api.filter(x => x.name === 'getUsers')[0].data;
-    let consultantsId = [];
-    switch (access) {
-        case 'my':
-            consultantsId = [req.user._id];
-            break;
-        case 'team':
-            consultantsId = await Consultant.find({ cdmId: req.user.consultantProfil._id }).select('_id');
-            break;
-        case 'departmen':
-            consultantsId = await Consultant.find({ practice: req.user.consultantProfil.practice }).select('_id');
-            break;
-        case 'domaine': // to implement
-            consultantsId = await Consultant.find({}).select('_id');
-            break;
-        case 'all':
-            consultantsId = await Consultant.find({}).select('_id');
-            break;
-        default:
-            break;
-    }
+
+    const consultantsId = await myAccessConsultants(access, req);
 
     const count = await User.countDocuments({ ...keyword, consultantProfil: {$in: consultantsId} });
     
@@ -221,7 +193,10 @@ const deleteUser = asyncHandler(async(req,res) =>{
 // @access  Private/AdminLevelZero
 const getUserById = asyncHandler(async(req,res) =>{
     
-    const user = await User.findById(req.params.id).populate('consultantProfil').select('-password');
+    const user = await User.findById(req.params.id)
+        .populate('consultantProfil')
+        .populate('profil')
+        .select('-password');
     if(user) {
         res.json(user);
     } else {
@@ -241,6 +216,7 @@ const updateUser = asyncHandler(async(req,res) =>{
     if (user) {
         user.name = req.body.name;
         user.email = req.body.email;
+        user.profil = req.body.profil;
         user.adminLevel = req.body.adminLevel;
         user.consultantProfil = req.body.consultantProfil;
         user.status = req.body.status;

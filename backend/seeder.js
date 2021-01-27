@@ -167,6 +167,7 @@ const profilUpdate = async () => {
         for (let incr = 0; incr < profilData.length; incr++) {
             const searchProfil = await Access.findOne({profil: profilData[incr].profil});
             if (searchProfil) {
+                searchProfil.level = profilData[incr].level;
                 searchProfil.navbar = profilData[incr].navbar;
                 searchProfil.dashboards = profilData[incr].dashboards;
                 searchProfil.pxx = profilData[incr].pxx;

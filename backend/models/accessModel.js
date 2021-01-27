@@ -5,6 +5,7 @@ const accessSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    level: {type: Number, required: true},
     navbar:{
         staffingrequest:[{
             mode: {type: String, required: true, enum: ['no', 'read', 'write']},

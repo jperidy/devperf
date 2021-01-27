@@ -35,7 +35,7 @@ const ManageUsersScreen = ({ history }) => {
 
     useEffect(() => {
 
-        if (userInfo && (userInfo.adminLevel === 0)) {
+        if (userInfo) {
             dispatch(listUsers(userInfo.consultantProfil.practice, keyword, pageNumber, pageSize));
         } else {
             history.push('/login');

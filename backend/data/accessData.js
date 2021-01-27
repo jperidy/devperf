@@ -3,6 +3,7 @@ function getAccessData() {
     const accessData = [
         {
             profil: 'admin',
+            level: 0,
             navbar:{
                 staffingrequest:[{mode: 'write', data:'all'}],
                 editmypxx:[{mode: 'write', data:'all'}],
@@ -29,6 +30,7 @@ function getAccessData() {
         },
         {
             profil: 'coordinator',
+            level: 1,
             navbar:{
                 staffingrequest:[{mode: 'write', data:'department'}],
                 editmypxx:[{mode: 'write', data:'department'}],
@@ -55,6 +57,7 @@ function getAccessData() {
         },
         {
             profil: 'cdm',
+            level: 2,
             navbar:{
                 staffingrequest:[{mode: 'write', data:'team'}],
                 editmypxx:[{mode: 'write', data:'team'}],
@@ -81,6 +84,7 @@ function getAccessData() {
         },
         {
             profil: 'manager',
+            level: 3,
             navbar:{
                 staffingrequest:[{mode: 'write', data:'department'}],
                 editmypxx:[{mode: 'no', data:'department'}],
@@ -107,6 +111,7 @@ function getAccessData() {
         },
         {
             profil: 'consultant',
+            level: 4,
             navbar:{
                 staffingrequest:[{mode: 'write', data:'my'}],
                 editmypxx:[{mode: 'no', data:'my'}],
