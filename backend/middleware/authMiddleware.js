@@ -13,7 +13,10 @@ const protect = asyncHandler (async (req, res, next) => {
             token = req.headers.authorization.split(' ')[1]; // delete of first keyword Bearer seperated with space with token
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             //console.log('decode.id', decoded.id);
-            req.user = await User.findById(decoded.id).select('-password'); // we don't want to add password in the req
+            req.user = await User.findById(decoded.id)
+                .populate('profil')
+                .populate('consultantProfil')
+                .select('-password'); // we don't want to add password in the req
             //console.log('req.user', req.user);
             next();
         } catch (error) {
@@ -55,14 +58,8 @@ const adminLevelOne = (req, res, next) => {
 
 const empowered = asyncHandler(
     async (req, res, next) => {
-        //console.log('start empowered middleware');
 
         let isEmpowered = false;
-
-        //console.log('req.user', req.user);
-        //console.log('req.body', req.body);
-        //console.log('req.body.consultantId', req.body.consultantId);
-        //console.log('req.params.consultantId', req.params.consultantId);
         if (req.user && (req.body.consultantId || req.params.consultantId)) {
             // Collect list of consultant managed by the login user
             const consultantList = await Consultant.find({cdmId: req.user.consultantProfil}).select('_id');

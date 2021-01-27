@@ -13,13 +13,13 @@ const { getUserData } = require('./data/userData');
 const { getSkills } = require('./data/skillData');
 const { getDeals } = require('./data/dealsData');
 const { controleAndCreatePxx } = require('./controllers/cronJobsControllers');
+const Access = require('./models/accessModel');
+const { getAccessData } = require('./data/accessData');
 
 dotenv.config();
 connectDB();
 
 const importData = async () => {
-
-    
     
     // DELETE ALL CURRENT DATA
     try {
@@ -139,8 +139,56 @@ const destroyData = async () => {
 
 }
 
+const profilImport = async () => {
+
+    try {
+        await Access.deleteMany();
+        console.log('Profil data deleted');
+    } catch (error) {
+        console.error(error);
+        process.exit(1);
+    }
+
+    try {
+        const profilData = getAccessData();
+        const profilDataCreated = await Access.insertMany(profilData);
+        console.log('Profil data imported');
+        process.exit();
+    } catch (error) {
+        console.error(error);
+        process.exit(1);
+    }
+}
+
+const profilUpdate = async () => {
+
+    try {
+        const profilData = getAccessData();
+        for (let incr = 0; incr < profilData.length; incr++) {
+            const searchProfil = await Access.findOne({profil: profilData[incr].profil});
+            if (searchProfil) {
+                searchProfil.navbar = profilData[incr].navbar;
+                searchProfil.dashboards = profilData[incr].dashboards;
+                searchProfil.pxx = profilData[incr].pxx;
+                searchProfil.api = profilData[incr].api;
+
+                await searchProfil.save();
+            }
+        }
+        console.log('Profil data updated');
+        process.exit();
+    } catch (error) {
+        console.error(error);
+        process.exit(1);
+    }
+}
+
 if (process.argv[2] === '-d') {
     destroyData();
+} else if (process.argv[2] === '-iprofil') {
+    profilImport();
+} else if (process.argv[2] === '-uprofil') {
+    profilUpdate();
 } else {
     importData();
 }

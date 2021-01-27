@@ -199,6 +199,9 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
 
 
 const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) => {
+
+    const userLogin = useSelector(state => state.userLogin);
+    const { userInfo } = userLogin;
     
     const formatName = (fullName) => {
         const separateName = fullName.split(' ');
@@ -242,7 +245,11 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                                             {consultantData.valued && ((Date.now() - new Date(consultantData.valued)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)} years ({consultantData.grade ? consultantData.grade : 'No grade information'})
                                         </Popover.Title>
                                         <Popover.Content>
-                                            <Row className='text-left pt-2'><Col>{consultantData.comment ? consultantData.comment : 'No staffing comment'}</Col></Row>
+                                            {consultantData._id && consultantData._id !== userInfo.consultantProfil._id && (
+                                                userInfo.profil.pxx.comment.filter( x => ['write', 'read'].includes(x.mode)).length > 0 && (
+                                                    <Row className='text-left pt-2'><Col>{consultantData.comment ? consultantData.comment : 'No staffing comment'}</Col></Row>
+                                                )
+                                            )}
                                             <Row className='text-left pt-2'><Col>Skills:{' '}
                                                 {consultantData.quality && consultantData.quality.map((skill, val) => (
                                                     <span key={val}>{`#${skill.skill}${new Array(skill.level).fill('+').join('')} `}</span>

@@ -17,6 +17,10 @@ const connectDB = async () => {
 require('../models/monthModel');
 require('../models/pxxModel');
 require('../models/userModel');
+require('../models/skillModels');
+require('../models/accessModel');
+require('../models/dealModel');
+require('../models/consultantModel');
 
 /*
 

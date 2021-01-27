@@ -37,14 +37,13 @@ const Header = () => {
                                 <Nav.Link>Edit My Pxx</Nav.Link>
                             </LinkContainer>
 
-
                             {userInfo ? (
                                 <NavDropdown title={userInfo.name || 'no user'} id="username">
                                     <LinkContainer to='/profile'>
                                         <NavDropdown.Item>Edit My Profil</NavDropdown.Item>
                                     </LinkContainer>
 
-                                    {(userInfo.adminLevel <= 1) && (
+                                    {userInfo.profil.navbar.manageconsultant.filter(x => x.mode !== 'no').length > 0 && (
                                         <>
                                             <NavDropdown.Divider />
                                             <LinkContainer to='/admin/consultants'>
@@ -53,25 +52,33 @@ const Header = () => {
                                         </>
                                     )}
 
-                                    {(userInfo.adminLevel === 0) && (
+                                    {userInfo.profil.navbar.manageuser.filter(x => x.mode !== 'no').length > 0 && (
                                         <>
                                             <NavDropdown.Divider />
                                             <LinkContainer to='/admin/users'>
                                                 <NavDropdown.Item>Manage Users</NavDropdown.Item>
                                             </LinkContainer>
+                                        </>
+                                    )}
 
+                                    {userInfo.profil.navbar.manageskills.filter(x => x.mode !== 'no').length > 0 && (
+                                        <>
                                             <NavDropdown.Divider />
                                             <LinkContainer to='/admin/skills'>
                                                 <NavDropdown.Item>Manage Skills</NavDropdown.Item>
                                             </LinkContainer>
+                                        </>
+                                    )}
 
+                                    {userInfo.profil.navbar.managedeals.filter(x => x.mode !== 'no').length > 0 && (
+                                        <>
                                             <NavDropdown.Divider />
                                             <LinkContainer to='/admin/deals'>
                                                 <NavDropdown.Item>Manage Deals</NavDropdown.Item>
                                             </LinkContainer>
                                         </>
                                     )}
-                                    
+
                                     <NavDropdown.Divider />
                                     <LinkContainer to='/login'>
                                         <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
@@ -79,12 +86,10 @@ const Header = () => {
                                 </NavDropdown>
 
                             ) : (
-                                <LinkContainer to = '/login'>
-                                    <Nav.Link><i className='fas fa-user'></i>Sign In</Nav.Link>
-                                </LinkContainer>)}
-
+                                    <LinkContainer to='/login'>
+                                        <Nav.Link><i className='fas fa-user'></i>Sign In</Nav.Link>
+                                    </LinkContainer>)}
                         </Nav>
-                        
                     </Navbar.Collapse>
                 </Container>
             </Navbar>

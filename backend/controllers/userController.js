@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/userModel.js');
 const Consultant = require('../models/consultantModel');
+const Access = require('../models/accessModel');
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -9,7 +10,9 @@ const Consultant = require('../models/consultantModel');
 const authUser = asyncHandler(async(req,res) =>{
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).populate({ path:'consultantProfil', select:'practice name' });
+    const user = await User.findOne({ email })
+        .populate({ path:'consultantProfil', select:'practice name' })
+        .populate('profil');
     //console.log(user);
     if(user && (await user.matchPassword(password))) {
         if(user.status === 'Validated') {
@@ -17,6 +20,7 @@ const authUser = asyncHandler(async(req,res) =>{
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                profil: user.profil,
                 adminLevel: user.adminLevel,
                 consultantProfil: user.consultantProfil,
                 status: user.status,
@@ -136,7 +140,6 @@ const updateUserProfile = asyncHandler(async(req,res) =>{
 // @access  Private/Admin
 const getUsers = asyncHandler(async(req,res) =>{
 
-    const practice = req.query.practice ? { practice: req.query.practice } : {};
     const pageSize = Number(req.query.pageSize);
     const page = Number(req.query.pageNumber) || 1; // by default on page 1
     const keyword = req.query.keyword ? {
@@ -145,11 +148,39 @@ const getUsers = asyncHandler(async(req,res) =>{
             $options: 'i'
         }
     } : {};
-
+    
+    /*
+    const practice = req.query.practice ? { practice: req.query.practice } : {};
     const consultants = await Consultant.find(practice).select('_id');
     const consultantsId = consultants.map (consultant => consultant._id);
     //consultantsId.push(''); // for non affected consultants
     //console.log('length', consultantsId.length)
+    */
+
+    //const profil = await Access.findById(req.user.profil);
+    console.log(req.user);
+    
+    const access = req.user.profil.api.filter(x => x.name === 'getUsers')[0].data;
+    let consultantsId = [];
+    switch (access) {
+        case 'my':
+            consultantsId = [req.user._id];
+            break;
+        case 'team':
+            consultantsId = await Consultant.find({ cdmId: req.user.consultantProfil._id }).select('_id');
+            break;
+        case 'departmen':
+            consultantsId = await Consultant.find({ practice: req.user.consultantProfil.practice }).select('_id');
+            break;
+        case 'domaine': // to implement
+            consultantsId = await Consultant.find({}).select('_id');
+            break;
+        case 'all':
+            consultantsId = await Consultant.find({}).select('_id');
+            break;
+        default:
+            break;
+    }
 
     const count = await User.countDocuments({ ...keyword, consultantProfil: {$in: consultantsId} });
     

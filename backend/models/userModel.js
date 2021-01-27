@@ -19,6 +19,10 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Consultant'
     },
+    profil: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Access'
+    },
     adminLevel: {
         type: Number,
         required: true

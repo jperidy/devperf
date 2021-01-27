@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
-import { getTace, getAvailabilities } from '../actions/pxxActions';
+import { getTace } from '../actions/pxxActions';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Meta from '../components/Meta';
@@ -33,11 +33,10 @@ const DashboardScreen = ({ history }) => {
     const [start, setStart] = useState(startDefault);
     const [end, setEnd] = useState(endDefault);
 
-    const [focus, setFocus] = useState('');
-    //const [skill, setSkill] = useState('');
-    const [searchSkills, setSearchSkills] = useState('');
-    const [searchExperienceStart, setSearchExperienceStart] = useState('');
-    const [searchExperienceEnd, setSearchExperienceEnd] = useState('');
+    //const [focus, setFocus] = useState('');
+    //const [searchSkills, setSearchSkills] = useState('');
+    //const [searchExperienceStart, setSearchExperienceStart] = useState('');
+    //const [searchExperienceEnd, setSearchExperienceEnd] = useState('');
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -52,7 +51,7 @@ const DashboardScreen = ({ history }) => {
 
     useEffect(() => {
 
-        if (!userInfo || userInfo.adminLevel > 2) {
+        if (!userInfo) {
             history.push('/login');
         } else {
             setPractice(userInfo.consultantProfil.practice);
@@ -60,7 +59,7 @@ const DashboardScreen = ({ history }) => {
     }, [dispatch, history, userInfo]);
 
     useEffect(() => {
-        if (!loadingTACE) {
+        if (userInfo && !loadingTACE) {
             dispatch(getTace(userInfo.consultantProfil.practice, start, end));
         }
     // eslint-disable-next-line
@@ -79,7 +78,6 @@ const DashboardScreen = ({ history }) => {
     return (
         <>
             <Meta />
-
 
             <Row>
 
@@ -128,30 +126,33 @@ const DashboardScreen = ({ history }) => {
                 </Col>
             </Row>
 
-            <DropDownTitleContainer title='TACE' close={false}>
-                <Row className='mt-3'>
-                    <Col>
-                        <h4>TACE ({userInfo && userInfo.consultantProfil.practice})</h4>
-                    </Col>
-                </Row>
+            {userInfo && userInfo.profil.dashboards.tace.filter( x => x.mode !== 'no').length > 0 && (
+                <DropDownTitleContainer title='TACE' close={false}>
+                    <Row className='mt-3'>
+                        <Col>
+                            <h4>TACE ({userInfo && userInfo.consultantProfil.practice})</h4>
+                        </Col>
+                    </Row>
 
-                <Row className='mt-1'>
-                    {loadingTACE ? <Loader /> : errorTACE ? <Message variant='danger'>{errorTACE}</Message> : (
-                        tace && tace.map((x, val) => (
-                            <Tace key={val} tace={x} />
-                        ))
-                    )}
-                </Row>
-            </DropDownTitleContainer>
+                    <Row className='mt-1'>
+                        {loadingTACE ? <Loader /> : errorTACE ? <Message variant='danger'>{errorTACE}</Message> : (
+                            tace && tace.map((x, val) => (
+                                <Tace key={val} tace={x} />
+                            ))
+                        )}
+                    </Row>
+                </DropDownTitleContainer>
+            )}
 
-            <DropDownTitleContainer title='Availabilities' close={true}>
-                <ConsoDispo
-                    practice={practice}
-                    start={start}
-                    end={end}
-                />
-            </DropDownTitleContainer>
-
+            {userInfo && userInfo.profil.dashboards.consodispo.filter( x => x.mode !== 'no').length > 0 && (
+                <DropDownTitleContainer title='Availabilities' close={true}>
+                    <ConsoDispo
+                        practice={practice}
+                        start={start}
+                        end={end}
+                    />
+                </DropDownTitleContainer>
+            )}
         </>
     )
 }
