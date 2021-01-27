@@ -3,6 +3,7 @@ const Skill = require('../models/skillModels');
 const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
+const { myAccessConsultants } = require('../utils/usersFunctions');
 //const { set } = require('mongoose');
 
 // @desc    Create a consultant data by Id
@@ -51,14 +52,13 @@ const getAllConsultants = asyncHandler(async (req, res) => {
             $options: 'i'
         }
     } : {};
-    
-    const practice = req.query.practice ? ({practice: req.query.practice}) : ({});
 
-    //const count = await Consultant.countDocuments({ ...keyword, practice: practice });
-    const count = await Consultant.countDocuments({ ...keyword, ...practice });
+    const access = req.user.profil.api.filter(x => x.name === 'getAllConsultants')[0].data;
+    const consultantsId = await myAccessConsultants(access, req);
 
-    //let consultants = await Consultant.find({...keyword, practice: practice})
-    let consultants = await Consultant.find({...keyword, ...practice})
+    const count = await Consultant.countDocuments({ ...keyword, _id: {$in: consultantsId} });
+
+    let consultants = await Consultant.find({...keyword, _id: {$in: consultantsId}})
             .sort({'name': 1})
             .limit(pageSize).skip(pageSize * (page - 1));
 

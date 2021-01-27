@@ -9,12 +9,12 @@ const { myAccessConsultants } = require('../utils/usersFunctions');
 // @route   POST /api/users/login
 // @access  Public
 const authUser = asyncHandler(async(req,res) =>{
+
     const { email, password } = req.body;
 
     const user = await User.findOne({ email })
         .populate({ path:'consultantProfil', select:'practice name' })
         .populate('profil');
-    //console.log(user);
     if(user && (await user.matchPassword(password))) {
         if(user.status === 'Validated') {
             res.json({
@@ -52,7 +52,6 @@ const registerUser = asyncHandler(async(req,res) =>{
     // try to associate registered user to consultant profil
     const consultantProfilExist = await Consultant.findOne({ email });
     let consultantProfil = 0;
-    //console.log('consultantProfilExist', consultantProfilExist);
     if (consultantProfilExist) {
         consultantProfil = consultantProfilExist._id;
     } 
@@ -83,63 +82,10 @@ const registerUser = asyncHandler(async(req,res) =>{
     }
 });
 
-/*
-// @desc    get user profile
-// @route   GET /api/users/profile
-// @access  Private
-const getUserProfile = asyncHandler(async(req,res) =>{
-    
-    const user = await User.findById(req.user._id); // with protect middleware we had _id in the req
-    
-    if (user) {
-        res.json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            adminLevel: user.adminLevel,
-        })
-    } else {
-        res.status(404);
-        throw new Error('User not found');
-    }
-});
-*/
-
-/*
-// @desc    Update user profile
-// @route   PUT /api/users/profile
-// @access  Private
-const updateUserProfile = asyncHandler(async(req,res) =>{
-    
-    const user = await User.findById(req.user._id); // with protect middleware we had _id in the req
-    
-    if (user) {
-        user.name = req.body.name || user.name; // in the case if you do not change the name
-        user.email = req.body.email || user.email;
-        if (req.body.password) {
-            user.password = req.body.password;
-        }
-    const updateUser = await user.save();
-
-    res.json({
-        _id: updateUser._id,
-        name: updateUser.name,
-        email: updateUser.email,
-        adminLevel: updateUser.adminLevel,
-        token: generateToken(updateUser._id),
-    });
-
-    } else {
-        res.status(404);
-        throw new Error('User not found');
-    }
-});
-*/
-
 // @desc    get all users
 // @route   GET /api/users
 // @access  Private/Admin
-const getUsers = asyncHandler(async(req,res) =>{
+const getUsers = asyncHandler(async(req,res) => {
 
     const pageSize = Number(req.query.pageSize);
     const page = Number(req.query.pageNumber) || 1; // by default on page 1
@@ -151,7 +97,6 @@ const getUsers = asyncHandler(async(req,res) =>{
     } : {};
     
     const access = req.user.profil.api.filter(x => x.name === 'getUsers')[0].data;
-
     const consultantsId = await myAccessConsultants(access, req);
 
     const count = await User.countDocuments({ ...keyword, consultantProfil: {$in: consultantsId} });
@@ -175,33 +120,44 @@ const getUsers = asyncHandler(async(req,res) =>{
 const deleteUser = asyncHandler(async(req,res) =>{
     
     const user = await User.findById(req.params.id);
+    const access = req.user.profil.api.filter(x => x.name === 'deleteUser')[0].data;
+    const consultantsId = await myAccessConsultants(access, req);
 
     if (user) {
-        await user.remove();
-        res.json({ message: 'User removed' })
+        if (consultantsId.map(x => x._id.toString()).includes(user.consultantProfil._id.toString())) {
+            await user.remove();
+            res.json({ message: 'User removed' })
+        } else {
+            res.status(400).json({message: 'you are not allowed to delete this user'});
+        }
     } else {
-        res.status(404);
-        throw new Error('User not found');
+        res.status(404).json({message: 'User not found'});
     }
     
 });
-
 
 
 // @desc    get user by Id
 // @route   GET /api/users/:id
 // @access  Private/AdminLevelZero
 const getUserById = asyncHandler(async(req,res) =>{
+
+    const access = req.user.profil.api.filter(x => x.name === 'getUserById')[0].data;
+    const consultantsId = await myAccessConsultants(access, req);
     
     const user = await User.findById(req.params.id)
         .populate('consultantProfil')
         .populate('profil')
         .select('-password');
+
     if(user) {
-        res.json(user);
+        if (consultantsId.map(x => x._id.toString()).includes(user.consultantProfil._id.toString())) {
+            res.json(user);
+        } else {
+            res.status(404).json({message: 'you are not allowed to access this data'});
+        }
     } else {
-        res.status(404);
-        throw new Error('User not found');
+        res.status(404).json({message: 'User not found'});
     }
 });
 
@@ -212,28 +168,31 @@ const getUserById = asyncHandler(async(req,res) =>{
 const updateUser = asyncHandler(async(req,res) =>{
     
     const user = await User.findById(req.params.id);
+
+    const access = req.user.profil.api.filter(x => x.name === 'updateUser')[0].data;
+    const consultantsId = await myAccessConsultants(access, req);
     
     if (user) {
-        user.name = req.body.name;
-        user.email = req.body.email;
-        user.profil = req.body.profil;
-        user.adminLevel = req.body.adminLevel;
-        user.consultantProfil = req.body.consultantProfil;
-        user.status = req.body.status;
-        const updateUser = await user.save();
-        res.json({updateUser});
+        if (consultantsId.map(x => x._id.toString()).includes(user.consultantProfil._id.toString())) {
+            user.name = req.body.name;
+            user.email = req.body.email;
+            user.profil = req.body.profil;
+            user.adminLevel = req.body.adminLevel;
+            user.consultantProfil = req.body.consultantProfil;
+            user.status = req.body.status;
+            const updateUser = await user.save();
+            res.json({updateUser});
+        } else {
+            res.json(400).json({message: 'you are not allowed to update this user'});
+        }
     } else {
-        res.status(404);
-        throw new Error('User not found');
+        res.status(404).json({message: 'User not found'});
     }
 });
 
-
 module.exports = { 
     authUser, 
-    //getUserProfile, 
     registerUser, 
-    //updateUserProfile, 
     getUsers, 
     deleteUser, 
     getUserById, 

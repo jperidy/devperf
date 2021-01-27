@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, adminLevelOne, adminLevelZero, empowered } = require('../middleware/authMiddleware');
+const { protect, empowered } = require('../middleware/authMiddleware');
 const { 
     getMyConsultants, 
     getConsultant, 
@@ -23,30 +23,30 @@ const router = express.Router();
 
 router.route('/')
     .get(protect, getMyConsultants)
-    .post(protect, adminLevelOne, createConsultant);
+    .post(protect, createConsultant);
 
 router.route('/cdm/:practice').get(protect, getAllCDMData);
 
 router.route('/:consultantId/skill')
-    .put(protect, adminLevelOne, addConsultantSkill);
+    .put(protect, addConsultantSkill);
 
 router.route('/:consultantId/skill/:skillId')
-    .delete(protect, adminLevelOne, deleteConsultantSkill)
-    .put(protect, adminLevelOne, updateLevelConsultantSkill);
+    .delete(protect, deleteConsultantSkill)
+    .put(protect, updateLevelConsultantSkill);
 
-    //delete('/:consultantId/skill/:skillId', protect, adminLevelOne, deleteConsultantSkill);
+    //delete('/:consultantId/skill/:skillId', protect, deleteConsultantSkill);
     
 router.get('/practicelist', protect, getAllPracticesData);
-router.get('/skills', protect, adminLevelOne, getAllSkills);
-router.get('/staffings', protect, adminLevelOne, getConsultantStaffings);
+router.get('/skills', protect, getAllSkills);
+router.get('/staffings', protect, getConsultantStaffings);
 
-router.get('/admin/consultants', protect, adminLevelOne, getAllConsultants);
+router.get('/admin/consultants', protect, getAllConsultants);
 
 
 router.route('/:consultantId')
     .get(protect, empowered, getConsultant)
     .put(protect, empowered, updateConsultant)
-    .delete(protect, adminLevelOne, deleteConsultant);
+    .delete(protect, deleteConsultant);
 
 router.put('/comment/:consultantId', protect, empowered, updateConsultantComment);
    

@@ -3,12 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup'
-//import Col from 'react-bootstrap/Col';
 import Alert from 'react-bootstrap/Alert';
 import FormContainer from '../components/FormContainer';
 import { getUserDetails, updateUser } from '../actions/userActions';
-import { getAllConsultantByPractice } from '../actions/consultantActions';
-import { USER_UPDATE_RESET } from '../constants/userConstants';
+import { getAllMyAdminConsultants } from '../actions/consultantActions';
+import { USER_STATUS, USER_UPDATE_RESET } from '../constants/userConstants';
 import { getAllAccess } from '../actions/accessActions';
 
 const UserEditScreen = ({ match, history }) => {
@@ -19,7 +18,6 @@ const UserEditScreen = ({ match, history }) => {
 
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [practice, setPractice] = useState('');
     const [linkConsultant, setLinkConsultant] = useState('');
     const [profil, setProfil] = useState('');
     const [adminLevel, setAdminLevel] = useState('');
@@ -36,24 +34,15 @@ const UserEditScreen = ({ match, history }) => {
     const userUpdate = useSelector(state => state.userUpdate);
     const { error: errorUpdate, success: successUpdate } = userUpdate;
 
-    const consultantAllPractice = useSelector(state => state.consultantAllPractice);
-    const { error: errorConsultantAllPractice, consultants } = consultantAllPractice;
+    const consultantsMyAdminList = useSelector(state => state.consultantsMyAdminList);
+    const { error:errorMyAdmin, consultantsMyAdmin } = consultantsMyAdminList;
 
     const accessList = useSelector(state => state.accessList);
-    const { error: erroraccessList, access } = accessList;
+    const { error: errorAccessList, access } = accessList;
 
     useEffect(() => {
 
-        // only admin level 0 and 1 are authorized to manage consultants
-        if (userInfo && !(userInfo.adminLevel <= 1)) {
-            history.push('/login');
-        }
-
-    }, [history, userInfo]);
-
-    useEffect(() => {
-
-        if (!loading && (!user || user._id !== userId)) {
+        if (!loading && !error && (!user || user._id !== userId)) {
             dispatch(getUserDetails(userId));
         }
 
@@ -68,10 +57,8 @@ const UserEditScreen = ({ match, history }) => {
             setProfil(user.profil);
             setStatus(user.status);
             if (user.consultantProfil) {
-                setPractice(user.consultantProfil.practice);
                 setLinkConsultant(user.consultantProfil._id);
             } else {
-                setPractice('Undefined');
                 setLinkConsultant('');
             }
             //console.log(user.profil);
@@ -84,8 +71,8 @@ const UserEditScreen = ({ match, history }) => {
         if (error) {
             setMessage({ message: error, type: 'danger' });
         }
-        if (errorConsultantAllPractice) {
-            setMessage({ message: errorConsultantAllPractice, type: 'danger' });
+        if (errorMyAdmin) {
+            setMessage({ message: errorMyAdmin, type: 'danger' });
         }
         if (errorUpdate) {
             setMessage({ message: errorUpdate, type: 'danger' });
@@ -95,15 +82,15 @@ const UserEditScreen = ({ match, history }) => {
             dispatch({type: USER_UPDATE_RESET});
         }
 
-    }, [dispatch, error, errorConsultantAllPractice, errorUpdate, successUpdate]);
+    }, [dispatch, error, errorMyAdmin, errorUpdate, successUpdate]);
 
     useEffect(() => {
 
-        if (practice && user && user._id === userId) {
-            dispatch(getAllConsultantByPractice(practice));
+        if (user && user._id === userId) {
+            dispatch(getAllMyAdminConsultants('','',10000));
         }
 
-    }, [dispatch, practice, user, userId]);
+    }, [dispatch, user, userId]);
 
     useEffect(() => {
         if (!access) {
@@ -179,18 +166,6 @@ const UserEditScreen = ({ match, history }) => {
                         ></Form.Control>
                     </Form.Group>
 
-                    <Form.Group controlId='practice'>
-                        <Form.Label><b>Practice</b></Form.Label>
-                        <Form.Control
-                            type='practice'
-                            placeholder='Enter practice'
-                            value={practice && practice}
-                            onChange={(e) => setPractice(e.target.value)}
-                            required
-                            disabled={userInfo && userInfo.adminLevel >= 1}
-                        ></Form.Control>
-                    </Form.Group>
-
                     <Form.Group controlId='consultantProfil'>
                         <Form.Label><b>Linked Consultant Profil</b></Form.Label>
                         <InputGroup>
@@ -201,7 +176,7 @@ const UserEditScreen = ({ match, history }) => {
                                 onChange={(e) => setLinkConsultant(e.target.value)}
                                 required
                             >
-                                {consultants && consultants.map(
+                                {consultantsMyAdmin && consultantsMyAdmin.map(
                                     x => (
                                         <option
                                             key={x._id}
@@ -256,9 +231,12 @@ const UserEditScreen = ({ match, history }) => {
                             onChange={(e) => setStatus(e.target.value)}
                             required
                         >
-                            <option value='Waiting approval'>Waiting approval</option>
-                            <option value='Validated'>Validated</option>
-                            <option value='Refused'>Refused</option>
+                            {USER_STATUS.map( x => (
+                                <option
+                                    key={x}
+                                    value={x}
+                                >{x}</option>
+                            ))}
                         </Form.Control>
                     </Form.Group>
 

@@ -36,10 +36,10 @@ import {
     CONSULTANT_UPDATE_COMMENT_SUCCESS,
     CONSULTANT_UPDATE_COMMENT_FAIL,
     CONSULTANT_UPDATE_COMMENT_RESET,
-    CONSULTANT_ALL_PRACTICE_REQUEST,
-    CONSULTANT_ALL_PRACTICE_SUCCESS,
-    CONSULTANT_ALL_PRACTICE_FAIL,
-    CONSULTANT_ALL_PRACTICE_RESET,
+    CONSULTANT_ALL_ACCESS_REQUEST,
+    CONSULTANT_ALL_ACCESS_SUCCESS,
+    CONSULTANT_ALL_ACCESS_FAIL,
+    CONSULTANT_ALL_ACCESS_RESET,
     CONSULTANT_ALL_SKILLS_REQUEST,
     CONSULTANT_ALL_SKILLS_SUCCESS,
     CONSULTANT_ALL_SKILLS_FAIL,
@@ -74,27 +74,6 @@ export const consultantsMyListReducer = (state = {focus: 0}, action) => {
             return { ...state, focus: action.payload }
         case CONSULTANTS_MY_DETAILS_RESET:
             return { focus: 0 }
-        default:
-            return state;
-    }
-};
-
-export const consultantsMyAdminListReducer = (state = {}, action) => {
-    switch (action.type) {
-        case CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST:
-            return { loading: true };
-        case CONSULTANTS_ALL_ADMIN_DETAILS_SUCCESS:
-            return { 
-                loading: false, 
-                consultantsMyAdmin: action.payload.consultants,
-                pages: action.payload.pages,
-                page: action.payload.page,
-                count: action.payload.count
-            };
-        case CONSULTANTS_ALL_ADMIN_DETAILS_FAIL:
-            return { loading: false, error: action.payload };
-        case CONSULTANTS_ALL_ADMIN_DETAILS_RESET:
-            return {}
         default:
             return state;
     }
@@ -262,20 +241,43 @@ export const consultantUpdateCommentReducer = (state = { }, action) => {
     }
 };
 
-export const consultantAllPracticeReducer = (state = {}, action) => {
+export const consultantsMyAdminListReducer = (state = {}, action) => {
     switch (action.type) {
-        case CONSULTANT_ALL_PRACTICE_REQUEST:
+        case CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST:
             return { loading: true };
-        case CONSULTANT_ALL_PRACTICE_SUCCESS:
-            return { loading: false, consultants: action.payload };
-        case CONSULTANT_ALL_PRACTICE_FAIL:
+        case CONSULTANTS_ALL_ADMIN_DETAILS_SUCCESS:
+            return { 
+                loading: false, 
+                consultantsMyAdmin: action.payload.consultants,
+                pages: action.payload.pages,
+                page: action.payload.page,
+                count: action.payload.count
+            };
+        case CONSULTANTS_ALL_ADMIN_DETAILS_FAIL:
             return { loading: false, error: action.payload };
-        case CONSULTANT_ALL_PRACTICE_RESET:
+        case CONSULTANTS_ALL_ADMIN_DETAILS_RESET:
             return {}
         default:
             return state;
     }
 };
+
+/*
+export const consultantAllAccessReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_ALL_ACCESS_REQUEST:
+            return { loading: true };
+        case CONSULTANT_ALL_ACCESS_SUCCESS:
+            return { loading: false, consultants: action.payload };
+        case CONSULTANT_ALL_ACCESS_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANT_ALL_ACCESS_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+*/
 
 export const consultantAllSkillsReducer = (state = {}, action) => {
     switch (action.type) {

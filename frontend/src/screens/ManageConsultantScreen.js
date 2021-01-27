@@ -37,7 +37,7 @@ const ManageConsultantScreen = ({ history, match }) => {
     useEffect(() => {
 
         if (userInfo && (userInfo.adminLevel <= 1)) {
-            dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize, userInfo.consultantProfil.practice));
+            dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize));
         } else {
             history.push('/login');
         }
@@ -46,7 +46,7 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     useEffect(() => {
         if (successConsultantDelete) {
-            dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize, userInfo.consultantProfil.practice));
+            dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize));
             dispatch({ type: CONSULTANT_DELETE_RESET });
         }
     }, [dispatch, successConsultantDelete, keyword, pageNumber, pageSize, userInfo]);
@@ -149,13 +149,19 @@ const ManageConsultantScreen = ({ history, match }) => {
                                                 consultant.valued ? ((new Date(Date.now()) - new Date(consultant.valued.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4) : 0
                                             } years</td>
                                             <td className='align-middle'>
-                                                <Button className='btn btn-primary p-1' onClick={() => onClickEditHandler(consultant._id)}>
-                                                    <i className="fas fa-user-edit"></i>
+                                                <Button 
+                                                    className='btn btn-primary p-1' 
+                                                    onClick={() => onClickEditHandler(consultant._id)}
+                                                    size='sm'
+                                                ><i className="fas fa-user-edit"></i>
                                                 </Button>
                                             </td>
                                             <td className='align-middle'>
-                                                <Button className='btn btn-danger p-1' onClick={() => onClickDeleteHandler(consultant)}>
-                                                    <i className="fas fa-user-times"></i>
+                                                <Button 
+                                                    className='btn btn-danger p-1' 
+                                                    onClick={() => onClickDeleteHandler(consultant)}
+                                                    size='sm'
+                                                ><i className="fas fa-user-times"></i>
                                                 </Button>
                                             </td>
                                         </tr>
@@ -176,7 +182,7 @@ const ManageConsultantScreen = ({ history, match }) => {
                                 key={x + 1}
                                 active={x + 1 === page}
                                 onClick={() => {
-                                    dispatch(getAllMyAdminConsultants(keyword, x + 1, pageSize, userInfo.consultantProfil.practice));
+                                    dispatch(getAllMyAdminConsultants(keyword, x + 1, pageSize));
                                     setPageNumber(x + 1);
                                 }}
                             >{x + 1}</Pagination.Item>

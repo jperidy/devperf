@@ -158,13 +158,19 @@ const ManageUsersScreen = ({ history }) => {
                                         }</td>
                                     <td className='align-middle text-center'>{user.adminLevel && user.adminLevel}</td>
                                     <td className='align-middle'>
-                                        <Button className='btn btn-primary p-1' onClick={() => onClickEditHandler(user._id)}>
-                                            <i className="fas fa-user-edit"></i>
+                                        <Button 
+                                            className='btn btn-primary p-1' 
+                                            onClick={() => onClickEditHandler(user._id)}
+                                            size='sm'
+                                        ><i className="fas fa-user-edit"></i>
                                         </Button>
                                     </td>
                                     <td className='align-middle'>
-                                        <Button className='btn btn-danger p-1' onClick={() => onClickDeleteHandler(user)}>
-                                            <i className="fas fa-user-times"></i>
+                                        <Button 
+                                            className='btn btn-danger p-1' 
+                                            onClick={() => onClickDeleteHandler(user)}
+                                            size='sm'
+                                        ><i className="fas fa-user-times"></i>
                                         </Button>
                                     </td>
                                 </tr>

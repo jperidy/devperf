@@ -26,6 +26,10 @@ function getAccessData() {
             },
             api:[
                 { name: 'getUsers', data: 'all' },
+                { name: 'getAllConsultants', data: 'all' },
+                { name: 'getUserById', data: 'all' },
+                { name: 'updateUser', data: 'all' },
+                { name: 'deleteUser', data: 'all' },
             ]
         },
         {
@@ -53,6 +57,10 @@ function getAccessData() {
             },
             api:[
                 { name: 'getUsers', data: 'department' },
+                { name: 'getAllConsultants', data: 'department' },
+                { name: 'getUserById', data: 'department' },
+                { name: 'updateUser', data: 'department' },
+                { name: 'updateUser', data: 'department' },
             ]
         },
         {
@@ -80,6 +88,10 @@ function getAccessData() {
             },
             api:[
                 { name: 'getUsers', data: 'team' },
+                { name: 'getAllConsultants', data: 'team' },
+                { name: 'getUserById', data: 'team' },
+                { name: 'updateUser', data: 'team' },
+                { name: 'updateUser', data: 'team' },
             ]
         },
         {
@@ -107,6 +119,10 @@ function getAccessData() {
             },
             api:[
                 { name: 'getUsers', data: 'my' },
+                { name: 'getAllConsultants', data: 'my' },
+                { name: 'getUserById', data: 'my' },
+                { name: 'updateUser', data: 'my' },
+                { name: 'updateUser', data: 'my' },
             ]
         },
         {
@@ -134,6 +150,10 @@ function getAccessData() {
             },
             api: [
                 { name: 'getUsers', data: 'my' },
+                { name: 'getAllConsultants', data: 'my' },
+                { name: 'getUserById', data: 'my' },
+                { name: 'updateUser', data: 'my' },
+                { name: 'updateUser', data: 'my' },
             ]
         }
     ];

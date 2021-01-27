@@ -28,9 +28,9 @@ import {
     CONSULTANT_UPDATE_COMMENT_REQUEST,
     CONSULTANT_UPDATE_COMMENT_SUCCESS,
     CONSULTANT_UPDATE_COMMENT_FAIL,
-    CONSULTANT_ALL_PRACTICE_REQUEST,
-    CONSULTANT_ALL_PRACTICE_SUCCESS,
-    CONSULTANT_ALL_PRACTICE_FAIL,
+    //CONSULTANT_ALL_ACCESS_REQUEST,
+    //CONSULTANT_ALL_ACCESS_SUCCESS,
+    //CONSULTANT_ALL_ACCESS_FAIL,
     CONSULTANT_ALL_SKILLS_REQUEST,
     CONSULTANT_ALL_SKILLS_SUCCESS,
     CONSULTANT_ALL_SKILLS_FAIL,
@@ -46,36 +46,6 @@ import {
     CONSULTANT_ALL_STAFF_SUCCESS,
     CONSULTANT_ALL_STAFF_FAIL
 } from '../constants/consultantConstants';
-
-
-export const getAllMyAdminConsultants = (keyword = '', pageNumber = '', pageSize = '15', userPractice) => async (dispatch, getState) => {
-
-    try {
-
-        dispatch({ type: CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST });
-
-        const { userLogin: { userInfo } } = getState();
-        //const userPractice = userInfo.consultantProfil.practice;
-
-        const config = {
-            headers: {
-                'Content-type': 'Application/json',
-                Authorization: `Bearer ${userInfo.token}`
-            }
-        };
-
-        const { data } = await axios.get(`/api/consultants/admin/consultants?practice=${userPractice}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);
-        dispatch({ type: CONSULTANTS_ALL_ADMIN_DETAILS_SUCCESS, payload: data });
-
-    } catch (error) {
-        dispatch({
-            type: CONSULTANTS_ALL_ADMIN_DETAILS_FAIL,
-            payload: error.response && error.response.data.message
-                ? error.response.data.message
-                : error.message
-        });
-    }
-};
 
 export const getAllMyConsultants = () => async (dispatch, getState) => {
 
@@ -348,11 +318,11 @@ export const updateComment = (consultantId, commentText) => async(dispatch, getS
     }
 };
 
-export const getAllConsultantByPractice = (practice) => async (dispatch, getState) => {
+export const getAllMyAdminConsultants = (keyword = '', pageNumber = '', pageSize = '15') => async (dispatch, getState) => {
 
     try {
 
-        dispatch({ type: CONSULTANT_ALL_PRACTICE_REQUEST });
+        dispatch({ type: CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST });
 
         const { userLogin: { userInfo } } = getState();
 
@@ -362,20 +332,48 @@ export const getAllConsultantByPractice = (practice) => async (dispatch, getStat
             }
         };
 
-        const { data } = await axios.get(`/api/consultants/admin/consultants?practice=${practice}&keyword=&pageNumber=&pageSize=`, config);
-        //const { data } = await axios.get(`/api/consultants/practice/${practice}`, config);
-
-        dispatch({ type: CONSULTANT_ALL_PRACTICE_SUCCESS, payload: data.consultants });
+        const { data } = await axios.get(`/api/consultants/admin/consultants?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);
+        dispatch({ type: CONSULTANTS_ALL_ADMIN_DETAILS_SUCCESS, payload: data });
 
     } catch (error) {
         dispatch({
-            type: CONSULTANT_ALL_PRACTICE_FAIL,
+            type: CONSULTANTS_ALL_ADMIN_DETAILS_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message
         });
     }
 };
+
+/*
+export const getAllConsultantByAccess = () => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_ALL_ACCESS_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.get(`/api/consultants/admin/consultants?keyword=&pageNumber=&pageSize=`, config);
+
+        dispatch({ type: CONSULTANT_ALL_ACCESS_SUCCESS, payload: data.consultants });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_ALL_ACCESS_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+*/
 
 export const getAllConsultantSkills = () => async (dispatch, getState) => {
 
