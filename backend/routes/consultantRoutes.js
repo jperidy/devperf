@@ -32,7 +32,7 @@ router.route('/:consultantId/skill')
 
 router.route('/:consultantId/skill/:skillId')
     .delete(protect, authorizeActionOnConsultant, deleteConsultantSkill)
-    .put(protect, updateLevelConsultantSkill);
+    .put(protect, authorizeActionOnConsultant, updateLevelConsultantSkill);
 
     //delete('/:consultantId/skill/:skillId', protect, deleteConsultantSkill);
     

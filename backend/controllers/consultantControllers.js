@@ -333,28 +333,33 @@ const updateLevelConsultantSkill = asyncHandler(async(req,res) => {
 // @access  Private, 
 const getConsultantStaffings = asyncHandler(async (req, res) => {
 
+    const access = req.user.profil.api.filter(x => x.name === 'getAllConsultants')[0].data;
+    const consultantsId = await myAccessConsultants(access, req);
+
     const consultantId = req.query.consultantId;
     
-    const staffings = await Deal.find({'staffingDecision.staff.idConsultant': consultantId});
+    if (consultantsId.map(x => x._id.toString()).includes(consultantId)) {
+        const staffings = await Deal.find({'staffingDecision.staff.idConsultant': consultantId});
+        
+        const result = staffings.map( staff => ({
+            _id:staff._id,
+            company: staff.company,
+            title: staff.title,
+            probability: staff.probability,
+            startDate: staff.startDate,
+            mainPractice: staff.mainPractice,
+            requestStatus: staff.staffingRequest.requestStatus,
+            instructions: staff.staffingRequest.instructions
+        }));
     
-    const result = staffings.map( staff => ({
-        _id:staff._id,
-        company: staff.company,
-        title: staff.title,
-        probability: staff.probability,
-        startDate: staff.startDate,
-        mainPractice: staff.mainPractice,
-        requestStatus: staff.staffingRequest.requestStatus,
-        instructions: staff.staffingRequest.instructions
-    }))
-    //console.log('result', result)
-
-    if (staffings) {
-        res.status(200).json(result);
+        if (staffings) {
+            res.status(200).json(result);
+        } else {
+            res.status(400).json('No others staffings founded');
+        }
     } else {
-        res.status(400).json('No others staffings founded');
-    }
-    
+        res.status(401).json({message: 'you are not allowed to access these data'});
+    }    
 });
 
 
