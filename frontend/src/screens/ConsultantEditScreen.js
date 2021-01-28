@@ -72,7 +72,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     const { userInfo } = userLogin;
 
     const consultantMy = useSelector(state => state.consultantMy);
-    const { loading, consultant } = consultantMy;
+    const { loading, error, consultant } = consultantMy;
 
     const consultantMyUpdate = useSelector(state => state.consultantMyUpdate);
     const { loading: loadingUpdate, error: errorUpdate, success: successUpdate } = consultantMyUpdate;
@@ -96,8 +96,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     const { loading: loadingConsultantUpdateSkill, error: errorConsultantUpdateSkill } = consultantUpdateSkill;
 
     useEffect(() => {
-        // only admin level 0 and 1 are authorized to manage consultants
-        if (userInfo && !(userInfo.adminLevel <= 2)) {
+        if (userInfo && !(['admin', 'domain', 'coordinator', 'cdm'].includes(userInfo.profil.profil))) {
             history.push('/login');
         }
     }, [history, userInfo]);
@@ -105,9 +104,11 @@ const ConsultantEditScreen = ({ history, match }) => {
     useEffect(() => {
         // In edit mode we want to load the consultant informations
         if ((match.params.id) && !loading && (!consultant || consultant._id !== consultantId)) {
-            dispatch(getMyConsultant(consultantId));
+            if (!error) {
+                dispatch(getMyConsultant(consultantId));
+            }
         }
-    }, [dispatch, match, valueEditType, loading, consultant, consultantId]);
+    }, [dispatch, match, valueEditType, loading, error, consultant, consultantId]);
 
     useEffect(() => {
         if ((match.params.id) && successUpdate) {
@@ -298,6 +299,7 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     return (
         <>
+            {error && <Message variant='danger'>{error}</Message>}
             {errorMessage && <Message variant='danger'>{errorMessage.message}</Message>}
 
             {errorCDM && <Message variant='danger'>{errorCDM}</Message>}

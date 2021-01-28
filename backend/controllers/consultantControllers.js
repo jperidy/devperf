@@ -3,28 +3,28 @@ const Skill = require('../models/skillModels');
 const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
-const { myAccessConsultants } = require('../utils/usersFunctions');
-//const { set } = require('mongoose');
+const { myAccessConsultants, myAuthorizedActionsConsultant } = require('../utils/usersFunctions');
 
 // @desc    Create a consultant data by Id
 // @route   POST /api/consultants
-// @access  Private, Admin
+// @access  Private, authorizeActionOnConsultant
 const createConsultant = asyncHandler(async (req, res) => {
 
     const consultantToCreate = req.body;
-    //Verify if consultant already exist
-    const checkConsultantExist = await Consultant.find({email: consultantToCreate.email}).select('email');
+    const checkConsultantExist = await Consultant.find({ email: consultantToCreate.email }).select('email');
+
     if (checkConsultantExist.length === 0) {
         const createdConsultant = await Consultant.create(consultantToCreate);
         res.status(201).json(createdConsultant);
     } else {
-        res.status(409).json({message: 'Consultant already exist'});
-    }    
+        res.status(409).json({ message: 'Consultant already exist' });
+    }
+
 });
 
 // @desc    Delete a consultant
 // @route   DELETE /api/consultants/:id
-// @access  Private, Admin
+// @access  Private, authorizeActionOnConsultant
 const deleteConsultant = asyncHandler(async (req, res) => {
 
     const consultant = await Consultant.findById(req.params.consultantId);
@@ -33,15 +33,14 @@ const deleteConsultant = asyncHandler(async (req, res) => {
         await consultant.remove()
         res.json({ message: 'Consultant removed: ' + req.params.consultantId });
     } else {
-        res.status(404).json({message: 'Consultant not found: ' + req.params.consultantId});
+        res.status(404).json({ message: 'Consultant not found: ' + req.params.consultantId });
         throw new Error('Consultant not found: ' + req.params.consultantId);
     }
-
 });
 
 // @desc    Get the list of consultant in a Practice
 // @route   GET /api/consultants/practice/:practice
-// @access  Private/AdminLevelOne
+// @access  Private
 const getAllConsultants = asyncHandler(async (req, res) => {
     
     const pageSize = Number(req.query.pageSize);
@@ -70,31 +69,11 @@ const getAllConsultants = asyncHandler(async (req, res) => {
 
 });
 
-/*
-// @desc    Get the list of consultant in a Practice
-// @route   GET /api/consultants/practice/:practice
-// @access  Private/AdminLevelOne
-const getAllConsultantByPractice = asyncHandler(async (req, res) => {
-    
-    const practice = req.params.practice;
-    let consultants = await Consultant.find({practice: practice}).sort({'name': 1});
-
-    if (consultants) {
-        res.status(200).json(consultants);
-    } else {
-        res.status(400).json({message: `No consultants found for practice: ${practice}` });
-    }
-
-});
-*/
-
 // @desc    Get my consultant data
 // @route   GET /api/consultants
 // @access  Private
 const getMyConsultants = asyncHandler(async (req, res) => {
 
-    //console.log(req.user);
-    //const myUser = await User.findById(req.user._id);
     const myConsultants = await Consultant.find({ cdmId: req.user.consultantProfil })
                                                     .sort({'name': 1});
     res.json(myConsultants);
@@ -103,24 +82,25 @@ const getMyConsultants = asyncHandler(async (req, res) => {
 
 // @desc    Get a consultant data by Id
 // @route   GET /api/consultants/:consultantId
-// @access  Private, Embeded
+// @access  Private, authorizeActionOnConsultant
 const getConsultant = asyncHandler(async (req, res) => {
 
     const myConsultant = await Consultant.findById(req.params.consultantId)
         .populate('quality.skill');
+
     res.json(myConsultant);
-    
 });
 
 // @desc    Update a consultant data by Id
 // @route   PUT /api/consultants/:consultantId
-// @access  Private, Embeded
+// @access  Private, authorizeActionOnConsultant
 const updateConsultant = asyncHandler(async (req, res) => {
 
     const consultantToUpdate = req.body;
     let myConsultant = await Consultant.findById(req.params.consultantId);
 
-    if(myConsultant) {
+    if (myConsultant) {
+
 
         const partialTimeChange = myConsultant.isPartialTime.value != consultantToUpdate.isPartialTime.value;
         const mondayChange = myConsultant.isPartialTime.week[0].worked != consultantToUpdate.isPartialTime.week[0].worked;
@@ -149,18 +129,18 @@ const updateConsultant = asyncHandler(async (req, res) => {
                 await resetAllPxx(myConsultant);
             } catch (error) {
                 //console.log('Error: resetAllPxx fail:', error);
-                res.status(500).json({message: 'Error: resetAllPxx fail'});
+                res.status(500).json({ message: 'Error: resetAllPxx fail' });
             }
         }
 
         if (consultantToUpdate.isPartialTime.value &&
             (mondayChange
-            || tuesdayChange
-            || wednesdayChange
-            || thursdayChange
-            || fridayChange
-            || startChange
-            || endChange)
+                || tuesdayChange
+                || wednesdayChange
+                || thursdayChange
+                || fridayChange
+                || startChange
+                || endChange)
         ) {
             //console.log('partialTime detected with changement');
             try {
@@ -174,17 +154,17 @@ const updateConsultant = asyncHandler(async (req, res) => {
                 //console.log('Error: updatePartialTimePxx fail', error);
                 res.status(500).json({ message: 'Error: updatePartialTimePxx fail' });
             }
-        } 
+        }
 
         // 
-        if ((partialTimeChange 
-            || mondayChange 
-            || tuesdayChange 
-            || wednesdayChange 
-            || thursdayChange 
+        if ((partialTimeChange
+            || mondayChange
+            || tuesdayChange
+            || wednesdayChange
+            || thursdayChange
             || fridayChange
             || startChange
-            || endChange ) 
+            || endChange)
             && !consultantToUpdate.isPartialTime.value) {
             //console.log('suppression du partial time');
             try {
@@ -194,15 +174,16 @@ const updateConsultant = asyncHandler(async (req, res) => {
                 res.status(500).json({ message: 'Error: resetPartialTimePxx fail' });
             }
         }
-        
+
         const updatedConsultant = await myConsultant.save();
         res.status(200).json(updatedConsultant);
- 
+
     } else {
         res.status(404).json({ message: 'Consultant not found. Please try later' });
         throw new Error('Consultant not found. Please try later');
     }
-    
+
+
 });
 
 // @desc    Get the list of consultants that are CDM
@@ -265,7 +246,7 @@ const updateConsultantComment = asyncHandler(async(req,res) =>{
 
 // @desc    Get all registered skills
 // @route   GET /api/consultants/skills
-// @access  Private/AdminLevelOne
+// @access  Private
 const getAllSkills = asyncHandler(async(req,res) =>{
     
     const skills = await Skill.find().sort({category: 1});
@@ -281,7 +262,7 @@ const getAllSkills = asyncHandler(async(req,res) =>{
 
 // @desc    Add a skill for a consultant
 // @route   PUT /api/consultants/:consultantId/skill
-// @access  Private/AdminLevelOne
+// @access  Private
 const addConsultantSkill = asyncHandler(async(req,res) => {
     
     const consultantId = req.params.consultantId;
@@ -302,7 +283,7 @@ const addConsultantSkill = asyncHandler(async(req,res) => {
 
 // @desc    Delete a skill for a consultant
 // @route   PUT /api/consultants/:consultantId/skill
-// @access  Private/AdminLevelOne
+// @access  Private
 const deleteConsultantSkill = asyncHandler(async(req,res) => {
     
     const consultantId = req.params.consultantId;
@@ -319,7 +300,7 @@ const deleteConsultantSkill = asyncHandler(async(req,res) => {
 
 // @desc    Update a level skill for a consultant
 // @route   PUT /api/consultants/:consultantId/skill
-// @access  Private/AdminLevelOne
+// @access  Private
 const updateLevelConsultantSkill = asyncHandler(async(req,res) => {
     
     const consultantId = req.params.consultantId;
@@ -343,7 +324,7 @@ const updateLevelConsultantSkill = asyncHandler(async(req,res) => {
 
 // @desc    Get all staffings
 // @route   GET /api/consultants/staffings
-// @access  Private, Embeded
+// @access  Private, 
 const getConsultantStaffings = asyncHandler(async (req, res) => {
 
     const consultantId = req.query.consultantId;

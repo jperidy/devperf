@@ -12,7 +12,7 @@ const myAccessConsultants = async (data, req) => {
         case 'department':
             consultantsId = await Consultant.find({ practice: req.user.consultantProfil.practice }).select('_id');
             break;
-        case 'domaine': // to implement
+        case 'domain': // to implement
             consultantsId = await Consultant.find({}).select('_id');
             break;
         case 'all':
@@ -24,4 +24,7 @@ const myAccessConsultants = async (data, req) => {
     return consultantsId;
 }
 
-module.exports = {myAccessConsultants}
+
+module.exports = { 
+    myAccessConsultants, 
+}

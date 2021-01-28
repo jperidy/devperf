@@ -32,6 +32,63 @@ const protect = asyncHandler (async (req, res, next) => {
     }
 });
 
+const authorizeActionOnConsultant = asyncHandler (async (req, res, next) => {
+
+    const access = req.user.profil.api.filter(x => x.name === 'crudConsultant')[0].data;
+    let authorization = false;
+
+    // add body if not include in the request
+    if (!req.body.cdmId) {
+        if(req.params.consultantId) {
+            const consultant = await Consultant.findById(req.params.consultantId)
+            req.body = consultant;
+        } else {
+            res.status(500).json({message: 'your call API need a consultantId param'})
+            return
+        }
+    }
+
+    switch (access) {
+        case 'all':
+            authorization = true;
+            break;
+        case 'domain':
+            authorization = true;
+            break;
+        case 'department':
+            if (req.body.practice === req.user.consultantProfil.practice) {
+                authorization = true;
+            }
+            break;
+        case 'team':
+            if (req.body.cdmId.toString() === req.user.consultantProfil._id.toString()) {
+                authorization = true;
+            }
+            break;
+        case 'my':
+            authorization = false;
+            break;
+        default:
+            authorization = false;
+            break;
+    }
+
+    if (authorization) {
+        next()
+    } else {
+        res.status(401).json({message: 'Not authorized to proceed this action'});
+    }
+})
+
+
+
+
+
+
+
+
+
+// to delete
 const adminLevelZero = (req, res, next) => {
     //console.log('start admin middleware');
     if(req.user && (req.user.adminLevel === 0)) {
@@ -93,4 +150,4 @@ const empowered = asyncHandler(
     }
 ) 
 
-module.exports = { protect, adminLevelOne, adminLevelZero, empowered };
+module.exports = { protect, authorizeActionOnConsultant, adminLevelOne, adminLevelZero, empowered };

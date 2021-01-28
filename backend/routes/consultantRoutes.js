@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, empowered } = require('../middleware/authMiddleware');
+const { protect, authorizeActionOnConsultant } = require('../middleware/authMiddleware');
 const { 
     getMyConsultants, 
     getConsultant, 
@@ -23,7 +23,7 @@ const router = express.Router();
 
 router.route('/')
     .get(protect, getMyConsultants)
-    .post(protect, createConsultant);
+    .post(protect, authorizeActionOnConsultant, createConsultant);
 
 router.route('/cdm/:practice').get(protect, getAllCDMData);
 
@@ -31,7 +31,7 @@ router.route('/:consultantId/skill')
     .put(protect, addConsultantSkill);
 
 router.route('/:consultantId/skill/:skillId')
-    .delete(protect, deleteConsultantSkill)
+    .delete(protect, authorizeActionOnConsultant, deleteConsultantSkill)
     .put(protect, updateLevelConsultantSkill);
 
     //delete('/:consultantId/skill/:skillId', protect, deleteConsultantSkill);
@@ -44,10 +44,10 @@ router.get('/admin/consultants', protect, getAllConsultants);
 
 
 router.route('/:consultantId')
-    .get(protect, empowered, getConsultant)
-    .put(protect, empowered, updateConsultant)
+    .get(protect, authorizeActionOnConsultant, getConsultant)
+    .put(protect, authorizeActionOnConsultant, updateConsultant)
     .delete(protect, deleteConsultant);
 
-router.put('/comment/:consultantId', protect, empowered, updateConsultantComment);
+router.put('/comment/:consultantId', protect, updateConsultantComment);
    
 module.exports = router;

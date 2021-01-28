@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/userModel.js');
 const Consultant = require('../models/consultantModel');
-const Access = require('../models/accessModel');
+//const Access = require('../models/accessModel');
 const { myAccessConsultants } = require('../utils/usersFunctions');
 
 // @desc    Auth user & get token
@@ -32,7 +32,6 @@ const authUser = asyncHandler(async(req,res) =>{
         }
     } else {
         res.status(401).json({message: 'Invalid email or password'});
-        throw new Error('Invalid email or password')
     }
 });
 
@@ -45,8 +44,7 @@ const registerUser = asyncHandler(async(req,res) =>{
     const userExists = await User.findOne({ email });
 
     if(userExists) {
-        res.status(400);
-        throw new Error('User already exists')
+        res.status(400).json({message: 'User already exists'});
     }
 
     // try to associate registered user to consultant profil
@@ -77,8 +75,7 @@ const registerUser = asyncHandler(async(req,res) =>{
             token: generateToken(user._id)
         });
     } else {
-        res.status(400);
-        throw new Error('Invalid user data');
+        res.status(400).json({message: 'Invalid user data'});
     }
 });
 
