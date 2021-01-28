@@ -1,13 +1,13 @@
 const express = require('express');
 const { createDeal, getAllDeals, deleteDeal, getADeal, updateADeal } = require('../controllers/dealControllers');
-const { protect, adminLevelOne, adminLevelZero, empowered } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 router.route('/')
-    .get(protect, adminLevelOne, getAllDeals)
+    .get(protect, getAllDeals)
     .post(protect, createDeal)
-    .delete(protect, adminLevelOne, deleteDeal);
+    .delete(protect, deleteDeal);
 
 router.route('/:id')
     .get(protect, getADeal)

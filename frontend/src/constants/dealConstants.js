@@ -24,31 +24,32 @@ export const DEAL_EDIT_FAIL = 'DEAL_EDIT_FAIL';
 export const DEAL_EDIT_RESET = 'DEAL_EDIT_RESET';
 
 export const REQUEST_STATUS = [
-    {name: 'Identify Leader', staff: true},
-    {name: 'Identify Staff', staff: true},
-    {name: 'Staff validated by leader', staff: false},
-    {name: 'Staff validated by client', staff: false},
-    {name: 'You can staff elsewhere', staff: true}
+    {name: 'Identify Leader', staff: true, priority: 10},
+    {name: 'Identify Staff', staff: true, priority: 5},
+    {name: 'Staff validated by leader', staff: false, priority: 0},
+    {name: 'Staff validated by client', staff: false, priority: 0},
+    {name: 'You can staff elsewhere', staff: true, priority: 0},
+    {name: 'Close', staff: false, priority: 0}
 ];
 
 export const TYPE_BUSINESS = [
-    {name: 'New business'},
-    {name: 'New position'},
-    {name: 'Replacement'}
+    {name: 'New business', priority: 10},
+    {name: 'New position', priority: 5},
+    {name: 'Replacement', priority: 1}
 ];
 
 export const DEAL_STATUS = [
-    {name: 'Lead'},
-    {name: 'Proposal to send'},
-    {name: 'Proposal sent'},
-    {name: 'Won'},
-    {name: 'Abandoned'},
+    {name: 'Lead', priority: 0},
+    {name: 'Proposal to send', priority: 5},
+    {name: 'Proposal sent', priority: 5},
+    {name: 'Won', priority: 10},
+    {name: 'Abandoned', priority: 0},
 ];
 
 export const DEAL_PROBABILITY = [
-    {name: 10},
-    {name: 30},
-    {name: 50},
-    {name: 70},
-    {name: 100},
+    {name: 10, priority: 1},
+    {name: 30, priority: 3},
+    {name: 50, priority: 5},
+    {name: 70, priority: 7},
+    {name: 100, priority: 10},
 ];

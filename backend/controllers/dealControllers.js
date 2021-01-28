@@ -1,5 +1,6 @@
 const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
+const { myAccessDeals,calculatePriority } = require('../utils/dealsFunctions');
 
 // @desc    Create a Deal 
 // @route   POST /api/deals
@@ -8,13 +9,15 @@ const createDeal = asyncHandler(async (req, res) => {
 
     const deal = req.body;
 
+    const priority = calculatePriority(deal);
+    deal.priority = priority;
+
     if (deal) {
         const newDeal = await Deal.create(deal);
         res.status(201).json(newDeal);
     } else {
         res.status(400).json({message: 'missing data to create a deal'});
-    }
-    
+    } 
 });
 
 // @desc    Update a Deal 
@@ -25,8 +28,9 @@ const updateADeal = asyncHandler(async (req, res) => {
     const dealId = req.params.id;
     const deal = await Deal.findById(dealId);
 
+    
     if (deal) {
-
+        
         deal.company = req.body.company;
         deal.client = req.body.client;
         deal.title = req.body.title;
@@ -49,6 +53,9 @@ const updateADeal = asyncHandler(async (req, res) => {
         deal.staffingDecision.staffingStatus = req.body.staffingDecision.staffingStatus;
         deal.staffingDecision.staff = req.body.staffingDecision.staff;
         deal.comments = req.body.comments;
+
+        const priority = calculatePriority(deal);
+        deal.priority = priority;
         
         await deal.save();
         res.status(200).json({message: 'Deal updated'});
@@ -63,6 +70,10 @@ const updateADeal = asyncHandler(async (req, res) => {
 // @route   GET /api/deals
 // @access  Private/AdminLevelOne
 const getAllDeals = asyncHandler(async (req, res) => {
+
+    const access = req.user.profil.api.filter(x => x.name === 'getAllDeals')[0].data;
+    const dealsId = await myAccessDeals(access, req);
+    //console.log(dealsId);
     
     const pageSize = Number(req.query.pageSize) || 10000; // by default a lot
     const page = Number(req.query.pageNumber) || 1; // by default on page 1
@@ -166,32 +177,34 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...searchClient,
         //...searchMainPractice,
         //...searchOthersPractices,
-        ...{$or:[
+        /* ...{$or:[
             searchMainPractice,
             searchOthersPractices
-        ]},
+        ]}, */
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,
         ...searchRequest,
-        ...globalFilter
+        ...globalFilter,
+        _id: {$in: dealsId}
     });
 
     const deals = await Deal.find({ 
         ...searchClient,
         //...searchMainPractice,
         //...searchOthersPractices,
-        ...{$or:[
+        /* ...{$or:[
             searchMainPractice,
             searchOthersPractices
-        ]},
+        ]}, */
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,
         ...searchRequest,
-        ...globalFilter
+        ...globalFilter,
+        _id: {$in: dealsId}
     }).populate('contacts.primary contacts.secondary')
-        .sort({'name': 1})
+        .sort({'priority': -1})
         .limit(pageSize).skip(pageSize * (page - 1));
 
     if (deals) {

@@ -1,3 +1,5 @@
+const { calculatePriority } = require("../utils/dealsFunctions");
+
 function getDeals (nbDeal, consultants, practices) {
     //console.log('consultants', consultants);
     //console.log('practices', practices);
@@ -66,7 +68,7 @@ function getDeals (nbDeal, consultants, practices) {
         }
         //console.log("staffing", staffing);
 
-        const deal = {
+        let deal = {
             company: company,
             client: client[Math.floor(Math.random() * client.length)],
             title: `Sfaffing request ${company} ${incr + 1}`,
@@ -96,6 +98,8 @@ function getDeals (nbDeal, consultants, practices) {
             createdAt: new Date(Number(proposalDate) - 1000 * 3600 * 24 * ( 20 + 6 * Math.floor(Math.random()))),
             updatedAt: new Date(Number(proposalDate) - 1000 * 3600 * 24 * ( 5 + 14 * Math.floor(Math.random())))
         }
+        const priority = calculatePriority(deal);
+        deal.priority = priority;
 
         dealData.push(deal);
     }

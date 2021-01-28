@@ -33,6 +33,7 @@ function getAccessData() {
                 { name: 'crudConsultant', data: 'all' },
                 { name: 'getAllCDMData', data: 'all'},
                 { name: 'getConsultantStaffings', data: 'all'},
+                { name: 'getAllDeals', data: 'all' },
                 
             ]
         },
@@ -68,6 +69,7 @@ function getAccessData() {
                 { name: 'crudConsultant', data: 'department' },
                 { name: 'getAllCDMData', data: 'department'},
                 { name: 'getConsultantStaffings', data: 'department'},
+                { name: 'getAllDeals', data: 'department' },
             ]
         },
         {
@@ -102,6 +104,7 @@ function getAccessData() {
                 { name: 'crudConsultant', data: 'team' },
                 { name: 'getAllCDMData', data: 'team'},
                 { name: 'getConsultantStaffings', data: 'department'},
+                { name: 'getAllDeals', data: 'team' },
             ]
         },
         {
@@ -136,6 +139,7 @@ function getAccessData() {
                 { name: 'crudConsultant', data: 'my' },
                 { name: 'getAllCDMData', data: 'my'},
                 { name: 'getConsultantStaffings', data: 'department'},
+                { name: 'getAllDeals', data: 'department' },
             ]
         },
         {
@@ -170,6 +174,7 @@ function getAccessData() {
                 { name: 'crudConsultant', data: 'my' },
                 { name: 'getAllCDMData', data: 'my'},
                 { name: 'getConsultantStaffings', data: 'my'},
+                { name: 'getAllDeals', data: 'my' },
             ]
         }
     ];

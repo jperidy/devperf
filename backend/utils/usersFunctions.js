@@ -4,7 +4,7 @@ const myAccessConsultants = async (data, req) => {
     let consultantId = [];
     switch (data) {
         case 'my':
-            consultantsId = [req.user._id];
+            consultantsId = [req.user.consultantProfil._id];
             break;
         case 'team':
             consultantsId = await Consultant.find({ cdmId: req.user.consultantProfil._id }).select('_id');

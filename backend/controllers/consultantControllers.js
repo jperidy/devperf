@@ -57,6 +57,8 @@ const getAllConsultants = asyncHandler(async (req, res) => {
 
     const count = await Consultant.countDocuments({ ...keyword, _id: {$in: consultantsId} });
 
+    //console.log(consultantsId);
+    
     let consultants = await Consultant.find({...keyword, _id: {$in: consultantsId}})
             .sort({'name': 1})
             .limit(pageSize).skip(pageSize * (page - 1));

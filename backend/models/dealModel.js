@@ -125,7 +125,10 @@ const dealSchema = mongoose.Schema({
             name:{type: String}
         },
         date:{type: Date}
-    }]
+    }],
+    priority: {
+        type: Number
+    }
 }, {
     timestamps: true,
 });

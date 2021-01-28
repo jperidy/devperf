@@ -177,7 +177,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 type: type,
                 status: status,
                 contacts: {
-                    primary: leader.id,
+                    primary: leader ? leader.id : null,
                     secondary: coLeaders.length ? coLeaders.map( x => x.id) : [],
                 },
                 probability: probability,
@@ -265,7 +265,7 @@ const StaffingEditScreen = ({ match, history }) => {
             client: client,
             title: title,
             contacts: {
-                primary: leader.id,
+                primary: leader ? leader.id : null,
                 secondary: coLeaders.length ? coLeaders.map( x => x.id) : [],
             },
             type: type,

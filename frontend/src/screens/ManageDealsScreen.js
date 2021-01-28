@@ -47,7 +47,7 @@ const ManageDealsScreen = ({ history }) => {
     const { error: errorDelete, success: successDelete } = dealDelete;
 
     useEffect(() => {
-        if (userInfo && (userInfo.adminLevel <= 1)) {
+        if (userInfo) {
             const keyword = {
                 title: searchTitle,
                 mainPractice: userInfo.consultantProfil.practice,
@@ -228,25 +228,6 @@ const ManageDealsScreen = ({ history }) => {
                                             readOnly
                                             value={count ? `${count} Deals found` : '0 deals found'} />
                                     </Col>
-
-                                    {/* <Col xs={6} md={2}>
-                                <InputGroup>
-                                    <FormControl
-                                        as='select'
-                                        id='number-c'
-                                        className="mb-3"
-                                        value={pageSize && pageSize}
-                                        onChange={(e) => setPageSize(e.target.value)}
-                                    >
-                                        {[5, 10, 15, 20, 50].map(x => (
-                                            <option
-                                                key={x}
-                                                value={x}
-                                            >{x} / page</option>
-                                        ))}
-                                    </FormControl>
-                                </InputGroup>
-                            </Col> */}
                                 </Row>
                             </Form>
                         </Col>
@@ -316,6 +297,22 @@ const DealList = ({ history, data = [] }) => {
         }
     }
 
+    const formatName = (fullName) => {
+        const separateName = fullName.split(' ');
+        if (separateName.length === 1) {
+            return separateName[0];
+        } else {
+            const outName = separateName.map((word, indice1) => {
+                if (indice1 === 0) {
+                    return word[0].toUpperCase() + '.';
+                } else {
+                    return word.toUpperCase();
+                }
+            });
+            return outName.join(' ');
+        }
+    }
+
     return (
         <Table responsive hover striped>
             <thead>
@@ -324,7 +321,6 @@ const DealList = ({ history, data = [] }) => {
                     <th className='align-middle text-light'>Practice</th>
                     <th className='align-middle text-light'>Contacts</th>
                     <th className='align-middle text-light'>Company</th>
-                    <th className='align-middle text-light'>Client</th>
                     <th className='align-middle text-light'>Status</th>
                     <th className='align-middle text-light'>Probability</th>
                     <th className='align-middle text-light'>Request</th>
@@ -346,9 +342,8 @@ const DealList = ({ history, data = [] }) => {
                             <td className='align-middle'>{deal.title}</td>
                         </OverlayTrigger>
                         <td className='align-middle'>{deal.mainPractice} / ({deal.othersPractices.toString()})</td>
-                        <td className='align-middle'>{deal.contacts && deal.contacts.primary.name} {deal.contacts && deal.contacts.secondary && '/ (' + deal.contacts.secondary.map(x => x.name).toString() + ')'}</td>
+                        <td className='align-middle'>{deal.contacts.primary ? formatName(deal.contacts.primary.name) : 'Please identify'} {deal.contacts && deal.contacts.secondary && '/ (' + deal.contacts.secondary.map(x => formatName(x.name.toString())).join(', ') + ')'}</td>
                         <td className='align-middle'>{deal.company}</td>
-                        <td className='align-middle'>{deal.client}</td>
                         <td className='align-middle'>{deal.status}</td>
                         <td className='align-middle'>{deal.probability}</td>
                         <OverlayTrigger
@@ -361,13 +356,19 @@ const DealList = ({ history, data = [] }) => {
                         </OverlayTrigger>
                         <td className='align-middle'>{deal.startDate.substring(0, 10)}</td>
                         <td className='align-middle'>
-                            <Button variant='primary' onClick={() => history.push(`/staffing/${deal._id}`)}>
-                                <i className="fas fa-edit"></i>
+                            <Button 
+                                variant='primary' 
+                                onClick={() => history.push(`/staffing/${deal._id}`)}
+                                size='sm'
+                            ><i className="fas fa-edit"></i>
                             </Button>
                         </td>
                         <td className='align-middle'>
-                            <Button variant='danger' onClick={() => onClickDeleteHandler(deal)}>
-                                <i className="fas fa-times"></i>
+                            <Button 
+                                variant='danger' 
+                                onClick={() => onClickDeleteHandler(deal)}
+                                size='sm'
+                            ><i className="fas fa-times"></i>
                             </Button>
                         </td>
                     </tr>
