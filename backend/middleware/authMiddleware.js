@@ -37,11 +37,13 @@ const authorizeActionOnConsultant = asyncHandler (async (req, res, next) => {
     const access = req.user.profil.api.filter(x => x.name === 'crudConsultant')[0].data;
     let authorization = false;
 
+    //console.log(access)
     // add body if not include in the request
     if (!req.body.cdmId) {
         if(req.params.consultantId) {
             const consultant = await Consultant.findById(req.params.consultantId)
-            req.body = consultant;
+            req.body.practice = consultant.practice;
+            req.body.cdmId = consultant.cdmId;
         } else {
             res.status(500).json({message: 'your call API need a consultantId param'})
             return

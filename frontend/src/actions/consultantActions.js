@@ -44,7 +44,8 @@ import {
     CONSULTANT_UPDATE_SKILL_SUCCESS,
     CONSULTANT_ALL_STAFF_REQUEST,
     CONSULTANT_ALL_STAFF_SUCCESS,
-    CONSULTANT_ALL_STAFF_FAIL
+    CONSULTANT_ALL_STAFF_FAIL,
+    CONSULTANT_DELETE_SKILL_SUCCESS
 } from '../constants/consultantConstants';
 
 export const getAllMyConsultants = () => async (dispatch, getState) => {
@@ -301,9 +302,6 @@ export const updateComment = (consultantId, commentText) => async(dispatch, getS
                 Authorization: `Bearer ${userInfo.token}`
             }
         };
-
-        console.log('consultantId', consultantId);
-        console.log('commentText', commentText);
         await axios.put(`/api/consultants/comment/${consultantId}`, {commentText}, config);
 
         dispatch({ type: CONSULTANT_UPDATE_COMMENT_SUCCESS });
@@ -455,7 +453,7 @@ export const consultantDeleteSkill = (consultantId, skillId) => async (dispatch,
 
         await axios.delete(`/api/consultants/${consultantId}/skill/${skillId}`, config);
 
-        dispatch({ type: CONSULTANT_DELETE_SUCCESS });
+        dispatch({ type: CONSULTANT_DELETE_SKILL_SUCCESS });
 
     } catch (error) {
         dispatch({

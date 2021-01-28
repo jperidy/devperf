@@ -191,16 +191,24 @@ const updateConsultant = asyncHandler(async (req, res) => {
 // @access  Private
 const getAllCDMData = asyncHandler(async (req, res) => {
 
+    const access = req.user.profil.api.filter(x => x.name === 'getAllCDMData')[0].data;
+    const consultantsId = await myAccessConsultants(access, req);
+
     //console.log('getAllCDMData', req.params)
     const practice = req.params.practice;
-    const CDMList = await Consultant.find({practice: practice, isCDM: true}).select('_id name');
+    //const CDMList = await Consultant.find({practice: practice, isCDM: true}).select('_id name');
+    const CDMList = await Consultant.find({_id: {$in: consultantsId}, isCDM: true}).select('_id name');
     
+    if (req.user.consultantProfil.isCDM) {
+        //console.log(req.user.consultantProfil)
+        const myProfil = {_id: req.user.consultantProfil._id, name: req.user.consultantProfil.name}
+    }
+
     if (CDMList) {
         res.status(200).json(CDMList);
     } else {
-        res.status(400).json({message: `CDM List not found for: ${practice}` });
+        res.status(400).json({message: `You have no access to this data` });
     }
-
 });
 
 // @desc    Get the list of registered Practices
@@ -218,17 +226,15 @@ const getAllPracticesData = asyncHandler(async (req, res) => {
     } else {
         res.status(400).json({message: `Practice List not found` });
     }
-
 });
 
 // @desc    Update user
 // @route   PUT /api/consultants/comment
-// @access  Private
+// @access  Private, authorizeActionOnConsultant
 const updateConsultantComment = asyncHandler(async(req,res) =>{
     
-    //console.log('req.params.id', req.params.consultantId);
     const consultant = await Consultant.findById(req.params.consultantId); 
-    //console.log('consultant', consultant);
+    
     if (consultant) {
 
         consultant.comment = req.body.commentText;

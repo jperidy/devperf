@@ -30,8 +30,6 @@ import {
 
 const ConsultantEditScreen = ({ history, match }) => {
 
-    const consultantId = match.params.id;
-
     const dispatch = useDispatch();
 
     const [name, setName] = useState('');
@@ -46,7 +44,6 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [skillLevel, setSkillLevel] = useState(1);
     const [skillCategoryList, setSkillCategoryList] = useState([]);
 
-    const [displayQuality, setDisplayQuality] = useState(false);
     const [cdm, setCdm] = useState('');
     const [arrival, setArrival] = useState('');
     const [valued, setValued] = useState('');
@@ -65,6 +62,8 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+
+    const [update, setUpdate] = useState(false);
 
     const valueEditType = match.params.id ? 'edit' : 'create';
 
@@ -90,10 +89,13 @@ const ConsultantEditScreen = ({ history, match }) => {
     const { skills } = consultantAllSkills;
 
     const consultantAddSkill = useSelector(state => state.consultantAddSkill);
-    const { loading: loadingConsultantAddSkill, error: errorConsultantAddSkill } = consultantAddSkill;
+    const { loading: loadingConsultantAddSkill, success: successConsultantAddSkill, error: errorConsultantAddSkill } = consultantAddSkill;
 
     const consultantUpdateSkill = useSelector(state => state.consultantUpdateSkill);
-    const { loading: loadingConsultantUpdateSkill, error: errorConsultantUpdateSkill } = consultantUpdateSkill;
+    const { loading: loadingConsultantUpdateSkill, success: successConsultantUpdateSkill, error: errorConsultantUpdateSkill } = consultantUpdateSkill;
+
+    const consultantDeleteSkillReducer = useSelector(state => state.consultantDeleteSkill);
+    const { success: successConsultantDeleteSkill } = consultantDeleteSkillReducer;
 
     useEffect(() => {
         if (userInfo && !(['admin', 'domain', 'coordinator', 'cdm'].includes(userInfo.profil.profil))) {
@@ -102,20 +104,40 @@ const ConsultantEditScreen = ({ history, match }) => {
     }, [history, userInfo]);
 
     useEffect(() => {
-        // In edit mode we want to load the consultant informations
-        if ((match.params.id) && !loading && (!consultant || consultant._id !== consultantId)) {
-            if (!error) {
-                dispatch(getMyConsultant(consultantId));
+        if (match.params.id) {
+            if (!consultant) {
+                if (!loading) {
+                    dispatch(getMyConsultant(match.params.id));
+                    setUpdate(false);
+                }
+            } else {
+                if (consultant._id !== match.params.id) {
+                    dispatch(getMyConsultant(match.params.id));
+                    setUpdate(false);
+                }
             }
         }
-    }, [dispatch, match, valueEditType, loading, error, consultant, consultantId]);
+    }, [dispatch, match, consultant, loading]);
 
     useEffect(() => {
-        if ((match.params.id) && successUpdate) {
-            dispatch(getMyConsultant(consultantId));
-            //dispatch({ type: CONSULTANT_MY_UPDATE_RESET });
+        if(update) {
+            dispatch(getMyConsultant(match.params.id));
+            setUpdate(false);
         }
-    }, [dispatch, match, successUpdate, consultantId, valueEditType]);
+    }, [dispatch, update, match]);
+
+
+    useEffect(() => {
+        if ((match.params.id) && (successUpdate || successConsultantAddSkill || successConsultantUpdateSkill || successConsultantDeleteSkill)) {
+            setUpdate(true);
+        }
+    }, [
+        match, 
+        successUpdate,
+        successConsultantAddSkill,
+        successConsultantUpdateSkill,
+        successConsultantDeleteSkill
+    ]);
 
     useEffect(() => {
         // Only in admin Level 0 access we can modify consultant Practice
@@ -186,8 +208,7 @@ const ConsultantEditScreen = ({ history, match }) => {
         practice,
         practiceList,
         cdm,
-        cdmList,
-        //addPractice
+        cdmList
     ]);
 
     useEffect(() => {
@@ -278,16 +299,13 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     const handleAddSkill = (consultantId, skillId, skillLevel) => {
         dispatch(consultantAddASkill(consultantId, skillId, skillLevel));
-        dispatch(getMyConsultant(consultantId));
     }
 
     const handlerDeleteConsultantSkill = (consultantId, skillId) => {
         dispatch(consultantDeleteSkill(consultantId, skillId));
-        dispatch(getMyConsultant(consultantId));
     }
 
     const handleUpdateSkillLevel = (consultantId, skillId, level) => {
-        //console.log('update skill level to implement');
         dispatch(consultantUpdateASkillLevel(consultantId, skillId, level));
     }
 
@@ -306,6 +324,8 @@ const ConsultantEditScreen = ({ history, match }) => {
             {errorPractice && <Message variant='danger'>{errorPractice}</Message>}
             {errorConsultantAddSkill && <Message variant='danger'>{errorConsultantAddSkill}</Message>}
             {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
+
+            {loading && <Loader />}
 
             <Button className='mb-3' onClick={() => goBackHandler()}>
                 Go Back
@@ -459,7 +479,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                             <InputGroup>
                                                 <Button
                                                     block
-                                                    onClick={() => handleAddSkill(consultantId, skillId, skillLevel)}
+                                                    onClick={() => handleAddSkill(match.params.id, skillId, skillLevel)}
                                                 >{loadingConsultantAddSkill ? <Loader /> : 'Add'}</Button>
                                             </InputGroup>
                                         </Form.Group>
@@ -479,7 +499,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                         {quality.map((x, val) => (
 
                                             <SkillDisplayLine
-                                                consultantId={consultantId}
+                                                consultantId={match.params.id}
                                                 key={val}
                                                 skill={x}
                                                 val={val}
@@ -606,7 +626,6 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                 min={valued}
                                                 onChange={(e) => {
                                                     setArrival(e.target.value);
-                                                    //console.log(e.target.value)
                                                 }}
                                                 required
                                             ></Form.Control>

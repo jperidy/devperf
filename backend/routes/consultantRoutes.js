@@ -28,7 +28,7 @@ router.route('/')
 router.route('/cdm/:practice').get(protect, getAllCDMData);
 
 router.route('/:consultantId/skill')
-    .put(protect, addConsultantSkill);
+    .put(protect, authorizeActionOnConsultant, addConsultantSkill);
 
 router.route('/:consultantId/skill/:skillId')
     .delete(protect, authorizeActionOnConsultant, deleteConsultantSkill)
@@ -46,8 +46,8 @@ router.get('/admin/consultants', protect, getAllConsultants);
 router.route('/:consultantId')
     .get(protect, authorizeActionOnConsultant, getConsultant)
     .put(protect, authorizeActionOnConsultant, updateConsultant)
-    .delete(protect, deleteConsultant);
+    .delete(protect, authorizeActionOnConsultant, deleteConsultant);
 
-router.put('/comment/:consultantId', protect, updateConsultantComment);
+router.put('/comment/:consultantId', protect, authorizeActionOnConsultant, updateConsultantComment);
    
 module.exports = router;
