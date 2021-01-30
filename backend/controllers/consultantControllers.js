@@ -219,7 +219,10 @@ const getAllCDMData = asyncHandler(async (req, res) => {
 const getAllPracticesData = asyncHandler(async (req, res) => {
 
     //const practice = req.params.practice;
-    let practiceListAll = await Consultant.find().select('practice');
+    const access = req.user.profil.api.filter(x => x.name === 'getAllPracticesData')[0].data;
+    const consultantsId = await myAccessConsultants(access, req);
+
+    let practiceListAll = await Consultant.find({_id: {$in: consultantsId}}).select('practice');
     practiceListAll = practiceListAll.map( x => x.practice);
     const practiceUniqueList = [...new Set(practiceListAll)];
     

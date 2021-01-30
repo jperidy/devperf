@@ -98,8 +98,8 @@ function getDeals (nbDeal, consultants, practices) {
             createdAt: new Date(Number(proposalDate) - 1000 * 3600 * 24 * ( 20 + 6 * Math.floor(Math.random()))),
             updatedAt: new Date(Number(proposalDate) - 1000 * 3600 * 24 * ( 5 + 14 * Math.floor(Math.random())))
         }
-        const priority = calculatePriority(deal);
-        deal.priority = priority;
+        const priorityDeal = calculatePriority(deal);
+        deal.priority = priorityDeal;
 
         dealData.push(deal);
     }

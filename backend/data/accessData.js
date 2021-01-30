@@ -34,6 +34,7 @@ function getAccessData() {
                 { name: 'getAllCDMData', data: 'all'},
                 { name: 'getConsultantStaffings', data: 'all'},
                 { name: 'getAllDeals', data: 'all' },
+                { name: 'getAllPracticesData', data: 'all' },
                 
             ]
         },
@@ -70,6 +71,7 @@ function getAccessData() {
                 { name: 'getAllCDMData', data: 'department'},
                 { name: 'getConsultantStaffings', data: 'department'},
                 { name: 'getAllDeals', data: 'department' },
+                { name: 'getAllPracticesData', data: 'department' },
             ]
         },
         {
@@ -105,6 +107,7 @@ function getAccessData() {
                 { name: 'getAllCDMData', data: 'team'},
                 { name: 'getConsultantStaffings', data: 'department'},
                 { name: 'getAllDeals', data: 'team' },
+                { name: 'getAllPracticesData', data: 'team' },
             ]
         },
         {
@@ -140,6 +143,7 @@ function getAccessData() {
                 { name: 'getAllCDMData', data: 'my'},
                 { name: 'getConsultantStaffings', data: 'department'},
                 { name: 'getAllDeals', data: 'department' },
+                { name: 'getAllPracticesData', data: 'my' },
             ]
         },
         {
@@ -175,6 +179,7 @@ function getAccessData() {
                 { name: 'getAllCDMData', data: 'my'},
                 { name: 'getConsultantStaffings', data: 'my'},
                 { name: 'getAllDeals', data: 'my' },
+                { name: 'getAllPracticesData', data: 'my' },
             ]
         }
     ];

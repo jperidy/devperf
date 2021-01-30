@@ -142,7 +142,7 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     useEffect(() => {
         // Only in admin Level 0 access we can modify consultant Practice
-        if (userInfo && (userInfo.adminLevel === 0) && !practiceList) {
+        if (!practiceList) {
             dispatch(getAllPractice());
         }
     }, [dispatch, userInfo, practiceList]);
@@ -199,10 +199,12 @@ const ConsultantEditScreen = ({ history, match }) => {
         if (!practice && userInfo && practiceList) {
             setPractice(practiceList[0]);
         }
+        /*
         // set default Practice if admin Level > 0
         if (!practice && userInfo && userInfo.adminLevel > 0) {
             setPractice(userInfo.consultantProfil.practice);
         }
+        */
 
     }, [
         userInfo,
@@ -532,7 +534,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                     <Form.Control
                                                         as='select'
                                                         value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ""}
-                                                        disabled={userInfo && !(userInfo.adminLevel === 0)}
+                                                        //disabled={userInfo && !(userInfo.adminLevel === 0)}
                                                         onChange={(e) => {
                                                             setPractice(e.target.value)
                                                         }}
@@ -585,7 +587,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                 <Form.Control
                                                     as='select'
                                                     value={cdm ? cdm : 'default'}
-                                                    disabled={userInfo && !(userInfo.adminLevel <= 2)}
+                                                    //disabled={userInfo && !(userInfo.adminLevel <= 2)}
                                                     onChange={(e) => setCdm(e.target.value)}
                                                     required
                                                 >
