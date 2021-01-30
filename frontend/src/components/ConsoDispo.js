@@ -117,6 +117,26 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
             </Row>
 
             <Tabs defaultActiveKey="Analysts" id="uncontrolled-tab-example">
+                
+                <Tab eventKey="Intern" title="Intern">
+                    <Row className='mt-3'>
+                        {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
+                            availabilities && availabilities.map((x, xVal) => (
+                                <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
+                                    <ConsoDispoUnit
+                                        monthData={x}
+                                        grades={['Analyst']}
+                                        mode={mode}
+                                        addStaff={addStaff}
+                                        focus={focus}
+                                        setFocus={setFocus}
+                                    />
+                                </Col>
+                            ))
+                        )}
+                    </Row>
+                </Tab>
+
                 <Tab eventKey="Analysts" title="Analysts">
                     <Row className='mt-3'>
                         {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
