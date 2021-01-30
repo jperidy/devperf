@@ -110,7 +110,7 @@ function getAccessData() {
                 { name: 'crudConsultant', data: 'team' },
                 { name: 'getAllCDMData', data: 'team'},
                 { name: 'getConsultantStaffings', data: 'department'},
-                { name: 'getAllDeals', data: 'team' },
+                { name: 'getAllDeals', data: 'department' },
                 { name: 'getAllPracticesData', data: 'team' },
                 { name: 'getAllSkills', data: 'my'},
                 { name: 'crudSkill', data: 'my' },

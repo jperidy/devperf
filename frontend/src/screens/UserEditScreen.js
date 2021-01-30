@@ -16,19 +16,18 @@ const UserEditScreen = ({ match, history }) => {
 
     const dispatch = useDispatch();
 
+    
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [linkConsultant, setLinkConsultant] = useState('');
     const [profil, setProfil] = useState('');
     const [status, setStatus] = useState('');
-
+    
     const [message, setMessage] = useState('');
-
-    /*
+    
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
-    */
-
+    
     const userDetails = useSelector(state => state.userDetails);
     const { error, loading, user } = userDetails;
 
@@ -40,6 +39,12 @@ const UserEditScreen = ({ match, history }) => {
 
     const accessList = useSelector(state => state.accessList);
     const { access } = accessList;
+
+    useEffect(() => {
+        if (!userInfo) {
+            history.push('/login');
+        }
+    }, [history, userInfo]);
 
     useEffect(() => {
 
