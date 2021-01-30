@@ -1,11 +1,11 @@
 const express = require('express');
 const { getAllSkills, deleteSkill, createASkill } = require('../controllers/skillsControllers');
 const router = express.Router();
-const { protect, adminLevelOne, adminLevelZero } = require('../middleware/authMiddleware');
+const { protect, authorizeActionOnSkill } = require('../middleware/authMiddleware');
 
-router.get('/', protect, adminLevelOne, getAllSkills)
-router.post('/', protect, adminLevelZero, createASkill);
+router.get('/', protect, getAllSkills)
+router.post('/', protect, authorizeActionOnSkill, createASkill);
 
-router.delete('/:skillId', protect, adminLevelOne, deleteSkill);
+router.delete('/:skillId', protect, authorizeActionOnSkill, deleteSkill);
 
 module.exports = router;

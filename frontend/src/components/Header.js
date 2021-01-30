@@ -38,6 +38,7 @@ const Header = () => {
                             </LinkContainer>
 
                             {userInfo ? (
+
                                 <NavDropdown title={`${userInfo.name} (${userInfo.profil.profil && userInfo.profil.profil})` || 'no user'} id="username">
                                     <LinkContainer to='/profile'>
                                         <NavDropdown.Item>Edit My Profil</NavDropdown.Item>
@@ -48,24 +49,6 @@ const Header = () => {
                                             <NavDropdown.Divider />
                                             <LinkContainer to='/admin/consultants'>
                                                 <NavDropdown.Item>Manage Consultant</NavDropdown.Item>
-                                            </LinkContainer>
-                                        </>
-                                    )}
-
-                                    {userInfo.profil.navbar.manageuser.filter(x => x.mode !== 'no').length > 0 && (
-                                        <>
-                                            <NavDropdown.Divider />
-                                            <LinkContainer to='/admin/users'>
-                                                <NavDropdown.Item>Manage Users</NavDropdown.Item>
-                                            </LinkContainer>
-                                        </>
-                                    )}
-
-                                    {userInfo.profil.navbar.manageskills.filter(x => x.mode !== 'no').length > 0 && (
-                                        <>
-                                            <NavDropdown.Divider />
-                                            <LinkContainer to='/admin/skills'>
-                                                <NavDropdown.Item>Manage Skills</NavDropdown.Item>
                                             </LinkContainer>
                                         </>
                                     )}
@@ -89,6 +72,29 @@ const Header = () => {
                                     <LinkContainer to='/login'>
                                         <Nav.Link><i className='fas fa-user'></i>Sign In</Nav.Link>
                                     </LinkContainer>)}
+
+                            {userInfo && ['admin', 'coordinator'].includes(userInfo.profil.profil) && (
+                                <NavDropdown title='admin'>
+                                    {userInfo.profil.navbar.manageuser.filter(x => x.mode !== 'no').length > 0 && (
+                                        <>
+                                            <LinkContainer to='/admin/users'>
+                                                <NavDropdown.Item>Manage Users</NavDropdown.Item>
+                                            </LinkContainer>
+                                        </>
+                                    )}
+
+                                    {userInfo.profil.navbar.manageskills.filter(x => x.mode !== 'no').length > 0 && (
+                                        <>
+                                            <NavDropdown.Divider />
+                                            <LinkContainer to='/admin/skills'>
+                                                <NavDropdown.Item>Manage Skills</NavDropdown.Item>
+                                            </LinkContainer>
+                                        </>
+                                    )}
+
+                                </NavDropdown>
+                            )}
+
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

@@ -37,7 +37,7 @@ const PxxDetailsScreen = ({ history, match }) => {
 
     useEffect(() => {
 
-        if (userInfo && (userInfo.adminLevel === 0)) {
+        if (userInfo) {
             dispatch(getAllPxx(userInfo.consultantProfil.practice, monthId, keyword, pageSize, pageNumber));
         } else {
             history.push('/login');

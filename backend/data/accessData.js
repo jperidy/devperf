@@ -35,6 +35,8 @@ function getAccessData() {
                 { name: 'getConsultantStaffings', data: 'all'},
                 { name: 'getAllDeals', data: 'all' },
                 { name: 'getAllPracticesData', data: 'all' },
+                { name: 'getAllSkills', data: 'all'},
+                { name: 'crudSkill', data: 'all' },
                 
             ]
         },
@@ -49,7 +51,7 @@ function getAccessData() {
                 manageuser:[{mode: 'write', data:'department'}],
                 manageskills:[{mode: 'write', data:'department'}],
                 managedeals:[{mode: 'write', data:'department'}],
-                logout:[{mode: 'write', data:'department'}]
+                logout:[{mode: 'write', data:'all'}]
             },
             dashboards:{
                 tace:[{mode: 'write', data:'department'}],
@@ -72,6 +74,8 @@ function getAccessData() {
                 { name: 'getConsultantStaffings', data: 'department'},
                 { name: 'getAllDeals', data: 'department' },
                 { name: 'getAllPracticesData', data: 'department' },
+                { name: 'getAllSkills', data: 'all'},
+                { name: 'crudSkill', data: 'all' },
             ]
         },
         {
@@ -85,7 +89,7 @@ function getAccessData() {
                 manageuser:[{mode: 'no', data:'team'}],
                 manageskills:[{mode: 'no', data:'team'}],
                 managedeals:[{mode: 'read', data:'team'}],
-                logout:[{mode: 'write', data:'team'}]
+                logout:[{mode: 'write', data:'my'}]
             },
             dashboards:{
                 tace:[{mode: 'read', data:'department'}],
@@ -108,6 +112,8 @@ function getAccessData() {
                 { name: 'getConsultantStaffings', data: 'department'},
                 { name: 'getAllDeals', data: 'team' },
                 { name: 'getAllPracticesData', data: 'team' },
+                { name: 'getAllSkills', data: 'my'},
+                { name: 'crudSkill', data: 'my' },
             ]
         },
         {
@@ -144,6 +150,8 @@ function getAccessData() {
                 { name: 'getConsultantStaffings', data: 'department'},
                 { name: 'getAllDeals', data: 'department' },
                 { name: 'getAllPracticesData', data: 'my' },
+                { name: 'getAllSkills', data: 'my'},
+                { name: 'crudSkill', data: 'my' },
             ]
         },
         {
@@ -180,6 +188,8 @@ function getAccessData() {
                 { name: 'getConsultantStaffings', data: 'my'},
                 { name: 'getAllDeals', data: 'my' },
                 { name: 'getAllPracticesData', data: 'my' },
+                { name: 'getAllSkills', data: 'my'},
+                { name: 'crudSkill', data: 'my' },
             ]
         }
     ];
