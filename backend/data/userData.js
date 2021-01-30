@@ -27,7 +27,7 @@ function getUserData(consultants) {
             consultantProfil: consultantCdmProfil[incr]._id,
             isCDM: consultantCdmProfil[incr].isCDM,
             profil: access.filter(x => x.profil === 'cdm')[0]._id,
-            adminLevel: consultantCdmProfil[incr].name === ('cdmptc11000@mail.com' || 'cdmptc21000@mail.com') ? 0 : 2,
+            //adminLevel: consultantCdmProfil[incr].name === ('cdmptc11000@mail.com' || 'cdmptc21000@mail.com') ? 0 : 2,
             status: consultantCdmProfil[incr].name === ('cdmptc11000' || 'cdmptc21000') ? 'Validated' : 'Waiting approval'
         };
         listOfUser.push(userCDM);
@@ -37,15 +37,15 @@ function getUserData(consultants) {
     if (listOfUser && listOfUser.length >= 3) {
         
         // Super Admin
-        listOfUser[0].adminLevel = 0; 
+        //listOfUser[0].adminLevel = 0; 
         listOfUser[0].profil = access.filter( x => x.profil === 'admin')[0]._id;
 
         // Practice Admin
-        listOfUser[1].adminLevel = 1;
+        //listOfUser[1].adminLevel = 1;
         listOfUser[1].profil = access.filter( x => x.profil === 'coordinator')[0]._id;
         
         // Cdm Admin
-        listOfUser[2].adminLevel = 2; 
+        //listOfUser[2].adminLevel = 2; 
         listOfUser[2].profil = access.filter( x => x.profil === 'cdm')[0]._id;
 
     }

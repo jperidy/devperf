@@ -100,6 +100,7 @@ const getUsers = asyncHandler(async(req,res) => {
     
     const users = await User.find({ ...keyword, consultantProfil: {$in: consultantsId} })
         .populate('consultantProfil').select('-password')
+        .populate('profil')
         .limit(pageSize).skip(pageSize * (page - 1));
 
     if (users) {

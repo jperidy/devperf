@@ -83,7 +83,7 @@ function getAccessData() {
                 editmyprofil:[{mode: 'write', data:'team'}],
                 manageconsultant:[{mode: 'write', data:'team'}],
                 manageuser:[{mode: 'no', data:'team'}],
-                manageskills:[{mode: 'read', data:'team'}],
+                manageskills:[{mode: 'no', data:'team'}],
                 managedeals:[{mode: 'read', data:'team'}],
                 logout:[{mode: 'write', data:'team'}]
             },

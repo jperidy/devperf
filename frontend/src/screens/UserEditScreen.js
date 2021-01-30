@@ -20,13 +20,14 @@ const UserEditScreen = ({ match, history }) => {
     const [email, setEmail] = useState('');
     const [linkConsultant, setLinkConsultant] = useState('');
     const [profil, setProfil] = useState('');
-    const [adminLevel, setAdminLevel] = useState('');
     const [status, setStatus] = useState('');
 
     const [message, setMessage] = useState('');
 
+    /*
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
+    */
 
     const userDetails = useSelector(state => state.userDetails);
     const { error, loading, user } = userDetails;
@@ -38,7 +39,7 @@ const UserEditScreen = ({ match, history }) => {
     const { error:errorMyAdmin, consultantsMyAdmin } = consultantsMyAdminList;
 
     const accessList = useSelector(state => state.accessList);
-    const { error: errorAccessList, access } = accessList;
+    const { access } = accessList;
 
     useEffect(() => {
 
@@ -46,14 +47,13 @@ const UserEditScreen = ({ match, history }) => {
             dispatch(getUserDetails(userId));
         }
 
-    }, [dispatch, user, userId, loading]);
+    }, [dispatch, user, error, userId, loading]);
 
     useEffect(() => {
 
         if (user) {
             setName(user.name);
             setEmail(user.email);
-            setAdminLevel(user.adminLevel);
             setProfil(user.profil);
             setStatus(user.status);
             if (user.consultantProfil) {
@@ -118,7 +118,6 @@ const UserEditScreen = ({ match, history }) => {
             email: email,
             consultantProfil: linkConsultant,
             profil: profil._id,
-            adminLevel: adminLevel,
             status: status
         };
         dispatch(updateUser(updatedUser));
@@ -208,18 +207,6 @@ const UserEditScreen = ({ match, history }) => {
                                 >{x.profil}</option>
                             ))}
                         </Form.Control>
-                    </Form.Group>
-
-                    <Form.Group controlId='adminLevel'>
-                        <Form.Label><b>Admin Level</b></Form.Label>
-                        <Form.Control
-                            type='number'
-                            value={adminLevel}
-                            min={0}
-                            max={3}
-                            onChange={(e) => setAdminLevel(e.target.value)}
-                            required
-                        ></Form.Control>
                     </Form.Group>
 
                     <Form.Group controlId='status'>

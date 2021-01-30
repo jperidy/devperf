@@ -23,10 +23,6 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Access'
     },
-    adminLevel: {
-        type: Number,
-        required: true
-    },
     status: {
         type: String,
         required:true,

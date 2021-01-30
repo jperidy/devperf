@@ -48,13 +48,12 @@ const ManageSkillsScreen = ({ history }) => {
     const { loading: loadingSkills, skills: skillsList } = consultantAllSkills;
 
     useEffect(() => {
-        if (userInfo && (userInfo.adminLevel <= 1)) {
-            dispatch(getAllSkills(category, name, pageNumber, pageSize));
-        } else {
+        if (!userInfo || !['admin', 'coordinator'].includes(userInfo.profil.profil)) {
             history.push('/login');
+        } else {
+            dispatch(getAllSkills(category, name, pageNumber, pageSize));
         }
-
-    }, [dispatch, history, userInfo, pageNumber, pageSize, category, name]);
+    }, [dispatch, history, userInfo, category, name, pageNumber, pageSize]);
 
     useEffect(() => {
         if (success) {
