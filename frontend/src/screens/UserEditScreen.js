@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup'
-import Alert from 'react-bootstrap/Alert';
+//import Alert from 'react-bootstrap/Alert';
+import Message from '../components/Message';
 import FormContainer from '../components/FormContainer';
 import { getUserDetails, updateUser } from '../actions/userActions';
 import { getAllMyAdminConsultants } from '../actions/consultantActions';
@@ -15,7 +16,6 @@ const UserEditScreen = ({ match, history }) => {
     const userId = match.params.id;
 
     const dispatch = useDispatch();
-
     
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -23,7 +23,7 @@ const UserEditScreen = ({ match, history }) => {
     const [profil, setProfil] = useState('');
     const [status, setStatus] = useState('');
     
-    const [message, setMessage] = useState('');
+    //const [message, setMessage] = useState('');
     
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -71,6 +71,7 @@ const UserEditScreen = ({ match, history }) => {
 
     }, [user]);
 
+    /*
     useEffect(() => {
 
         if (error) {
@@ -88,6 +89,7 @@ const UserEditScreen = ({ match, history }) => {
         }
 
     }, [dispatch, error, errorMyAdmin, errorUpdate, successUpdate]);
+    */
 
     useEffect(() => {
 
@@ -112,6 +114,7 @@ const UserEditScreen = ({ match, history }) => {
 
     const goBackHandler = () => {
         history.go(-1);
+        dispatch({type: USER_UPDATE_RESET});
     };
 
     const submitHandler = (e) => {
@@ -131,16 +134,10 @@ const UserEditScreen = ({ match, history }) => {
 
     return (
         <>
-            {message && message.message && (
-
-                <Alert variant={message.type} onClose={() => setMessage({})} dismissible>
-                    <Alert.Heading>Notification</Alert.Heading>
-                    <p>
-                        {message.message}
-                    </p>
-                </Alert>
-
-            )}
+            {error && <Message variant='danger'>{error}</Message>}
+            {errorMyAdmin && <Message variant='danger'>{errorMyAdmin}</Message>}
+            {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
+            {successUpdate && <Message variant='success'>User updated with success</Message>}
 
             <Button className='mb-3' onClick={() => goBackHandler()}>
                 Go Back

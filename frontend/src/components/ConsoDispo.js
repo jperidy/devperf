@@ -125,7 +125,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                 <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
                                     <ConsoDispoUnit
                                         monthData={x}
-                                        grades={['Analyst']}
+                                        grades={['Intern']}
                                         mode={mode}
                                         addStaff={addStaff}
                                         focus={focus}

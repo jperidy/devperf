@@ -13,7 +13,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
     return (
         <>
             <Form.Row key={val}>
-                <Col xs={12} md={3}>
+                <Col xs={3}>
                     <Form.Group controlId='skillcategory'>
                         <Form.Control
                             plaintext
@@ -22,7 +22,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                         ></Form.Control>
                     </Form.Group>
                 </Col>
-                <Col xs={12} md={3}>
+                <Col xs={3}>
                     <Form.Group controlId='skillName'>
                         <Form.Control
                             plaintext
@@ -31,7 +31,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                         ></Form.Control>
                     </Form.Group>
                 </Col>
-                <Col xs={12} md={3}>
+                <Col xs={3}>
                     <Form.Group controlId='skillLevel'>
                         <Form.Control
                             type='Number'
@@ -45,12 +45,13 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                         ></Form.Control>
                     </Form.Group>
                 </Col>
-                <Col xs={12} md={3}>
+                <Col xs={3}>
                     <Form.Group>
                         <InputGroup>
                             <Button
                                 block
-                                variant="danger"
+                                style={{color:'grey'}}
+                                variant="white"
                                 onClick={() => handlerDeleteConsultantSkill(consultantId, skill.skill._id)}
                             ><i className="fas fa-times-circle"></i></Button>
                         </InputGroup>

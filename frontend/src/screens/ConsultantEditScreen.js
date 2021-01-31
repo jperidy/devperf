@@ -409,16 +409,11 @@ const ConsultantEditScreen = ({ history, match }) => {
 
                                     <ListGroup.Item>
                                         <h4>Add skills</h4>
-                                        <Form.Row>
-                                            <Col xs={12} md={3} className='text-center'><strong>Category</strong></Col>
-                                            <Col xs={12} md={3} className='text-center'><strong>Skill</strong></Col>
-                                            <Col xs={12} md={3} className='text-center'><strong>Level</strong></Col>
-                                            <Col xs={12} md={3} className='text-center'><strong></strong></Col>
-                                        </Form.Row>
 
-                                        <Form.Row className='mt-3'>
+                                        <Form.Row className='mt-3 align-items-end'>
                                             <Col xs={12} md={3}>
                                                 <Form.Group controlId='skillCategory'>
+                                                    <Form.Label><strong>Category</strong></Form.Label>
                                                     <Form.Control
                                                         as='select'
                                                         value={skillCategory ? skillCategory : 'default'}
@@ -439,6 +434,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                             </Col>
                                             <Col xs={12} md={3} >
                                                 <Form.Group controlId='skillName'>
+                                                    <Form.Label><strong>Skill</strong></Form.Label>
                                                     <OverlayTrigger
                                                         placement="top"
                                                         overlay={<Tooltip id="button-tooltip-2">{skillId && skills ? skills.map(x => (x._id === skillId) && x.description) : 'no description'}</Tooltip>}
@@ -466,6 +462,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                             </Col>
                                             <Col xs={12} md={3} >
                                                 <Form.Group controlId='skillLevel'>
+                                                    <Form.Label><strong>Level</strong></Form.Label>
                                                     <Form.Control
                                                         as='select'
                                                         value={skillLevel ? skillLevel : 1}
@@ -479,7 +476,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                     </Form.Control>
                                                 </Form.Group>
                                             </Col>
-                                            <Col xs={12} md={3} >
+                                            <Col xs={12} md={3} className='align-items-bottom'>
                                                 <Form.Group>
                                                     <InputGroup>
                                                         <Button
@@ -500,9 +497,9 @@ const ConsultantEditScreen = ({ history, match }) => {
 
                                     <ListGroup.Item>
                                         {quality && quality.length && (
-                                            <>
+                                            <ListGroup variant='flush'>
                                                 {quality.map((x, val) => (
-
+                                                    <ListGroup.Item key={val}>
                                                     <SkillDisplayLine
                                                         consultantId={match.params.id}
                                                         key={val}
@@ -511,13 +508,13 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                         handleUpdateSkillLevel={handleUpdateSkillLevel}
                                                         handlerDeleteConsultantSkill={handlerDeleteConsultantSkill}
                                                     />
-
+                                                    </ListGroup.Item>
                                                 ))}
                                                 <Form.Row>
                                                     <Col xs={6} md={8}></Col>
                                                     <Col xs={6} md={4} className='text-center'>{loadingConsultantUpdateSkill && <Loader />}</Col>
                                                 </Form.Row>
-                                            </>
+                                            </ListGroup>
                                         )}
                                     </ListGroup.Item>
                                 </DropDownTitleContainer>

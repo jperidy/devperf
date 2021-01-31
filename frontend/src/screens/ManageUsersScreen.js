@@ -4,12 +4,13 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Alert from 'react-bootstrap/Alert';
+//import Alert from 'react-bootstrap/Alert';
 import Pagination from 'react-bootstrap/Pagination';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
+import Message from '../components/Message';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { deleteUser, listUsers } from '../actions/userActions';
 
@@ -17,7 +18,7 @@ const ManageUsersScreen = ({ history }) => {
 
     const dispatch = useDispatch();
 
-    const [message, setMessage] = useState({});
+    //const [message, setMessage] = useState({});
 
     const [pageSize, setPageSize] = useState(10);
     const [pageNumber, setPageNumber] = useState(1);
@@ -43,6 +44,7 @@ const ManageUsersScreen = ({ history }) => {
 
     }, [dispatch, history, userInfo, success, keyword, pageNumber, pageSize]);
 
+    /*
     useEffect(() => {
 
         if (error) {
@@ -53,7 +55,7 @@ const ManageUsersScreen = ({ history }) => {
         }
 
     }, [error, success]);
-
+    */
 
     const onClickEditHandler = (userId) => {
         history.push(`/admin/edituser/${userId}`);
@@ -66,24 +68,14 @@ const ManageUsersScreen = ({ history }) => {
         }
     };
 
-
     return (
         <>
+            {error && (<Message variant='danger'>{error}</Message>)}
+
             <DropDownTitleContainer title='Manage users' close={false}>
                 <ListGroup.Item>
-                    {message && message.message && (
-
-                        <Alert variant={message.type} onClose={() => setMessage({})} dismissible>
-                            <Alert.Heading>Notification</Alert.Heading>
-                            <p>
-                                {message.message}
-                            </p>
-                        </Alert>
-
-                    )}
 
                     <Row>
-
 
                         <Col xs={6} md={3}>
                             <InputGroup>
