@@ -26,6 +26,7 @@ import {
 } from '../actions/consultantActions';
 import {
     CONSULTANT_CREATE_RESET,
+    CONSULTANT_GRADE,
     CONSULTANT_MY_UPDATE_RESET
 } from '../constants/consultantConstants';
 
@@ -565,13 +566,9 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                     onChange={(e) => setGrade(e.target.value)}
                                                     required
                                                 >
-                                                    <option value='Analyst'>Analyst</option>
-                                                    <option value='Consultant'>Consultant</option>
-                                                    <option value='Senior consultant'>Senior consultant</option>
-                                                    <option value='Manager'>Manager</option>
-                                                    <option value='Senior manager'>Senior manager</option>
-                                                    <option value='Director'>Director</option>
-                                                    <option value='Partner'>Partner</option>
+                                                    {CONSULTANT_GRADE.map( x => (
+                                                        <option key={x} value={x}>{x}</option>
+                                                    ))}
                                                 </Form.Control>
                                             </Form.Group>
                                         </Col>
