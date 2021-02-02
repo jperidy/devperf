@@ -252,7 +252,7 @@ const ManageSkillsScreen = ({ history }) => {
                         disabled={page === 1}
                     />
                     {[...Array(pages).keys()].map(x => (
-
+                        [0, 1, pages - 2, pages - 1].includes(x) ? (
                         <Pagination.Item
                             key={x + 1}
                             active={x + 1 === page}
@@ -261,7 +261,9 @@ const ManageSkillsScreen = ({ history }) => {
                                 setPageNumber(x + 1);
                             }}
                         >{x + 1}</Pagination.Item>
-
+                        ) : (pages > 4 && x === 2) && (
+                            <Pagination.Ellipsis key={x + 1} />
+                        )
                     ))}
                     <Pagination.Next
                         onClick={() => setPageNumber(page + 1)}

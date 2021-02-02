@@ -21,8 +21,7 @@ const ViewStaffs = ({history, consultantId, displayedDeal = '', onNavigate=()=>(
 
     return (
         <Row>
-            <Col className='mt-5'>
-                <h4>Others staffings</h4>
+            <Col >
                 <Row className='mt-3'>
                     <Col><strong>Company</strong></Col>
                     <Col><strong>Title</strong></Col>

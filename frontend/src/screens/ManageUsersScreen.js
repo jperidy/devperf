@@ -4,7 +4,6 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-//import Alert from 'react-bootstrap/Alert';
 import Pagination from 'react-bootstrap/Pagination';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
@@ -150,16 +149,16 @@ const ManageUsersScreen = ({ history }) => {
                                         }</td>
                                     <td className='align-middle text-center'>{user.profil.profil && user.profil.profil}</td>
                                     <td className='align-middle'>
-                                        <Button 
-                                            className='btn btn-primary p-1' 
+                                        <Button
+                                            className='btn btn-primary p-1'
                                             onClick={() => onClickEditHandler(user._id)}
                                             size='sm'
                                         ><i className="fas fa-user-edit"></i>
                                         </Button>
                                     </td>
                                     <td className='align-middle'>
-                                        <Button 
-                                            className='btn btn-danger p-1' 
+                                        <Button
+                                            className='btn btn-danger p-1'
                                             onClick={() => onClickDeleteHandler(user)}
                                             size='sm'
                                         ><i className="fas fa-user-times"></i>
@@ -176,16 +175,18 @@ const ManageUsersScreen = ({ history }) => {
                             disabled={page === 1}
                         />
                         {[...Array(pages).keys()].map(x => (
-
-                            <Pagination.Item
-                                key={x + 1}
-                                active={x + 1 === page}
-                                onClick={() => {
-                                    dispatch(listUsers(userInfo.consultantProfil.practice, keyword, x + 1, pageSize));
-                                    setPageNumber(x + 1);
-                                }}
-                            >{x + 1}</Pagination.Item>
-
+                            [0, 1, pages - 2, pages - 1].includes(x) ? (
+                                <Pagination.Item
+                                    key={x + 1}
+                                    active={x + 1 === page}
+                                    onClick={() => {
+                                        dispatch(listUsers(userInfo.consultantProfil.practice, keyword, x + 1, pageSize));
+                                        setPageNumber(x + 1);
+                                    }}
+                                >{x + 1}</Pagination.Item>
+                            ) : (pages > 4 && x === 2) && (
+                                <Pagination.Ellipsis key={x + 1} />
+                            )
                         ))}
                         <Pagination.Next
                             onClick={() => setPageNumber(page + 1)}

@@ -45,7 +45,10 @@ import {
     CONSULTANT_ALL_STAFF_REQUEST,
     CONSULTANT_ALL_STAFF_SUCCESS,
     CONSULTANT_ALL_STAFF_FAIL,
-    CONSULTANT_DELETE_SKILL_SUCCESS
+    CONSULTANT_DELETE_SKILL_SUCCESS,
+    CONSULTANT_SKILLS_REQUEST,
+    CONSULTANT_SKILLS_FAIL,
+    CONSULTANT_SKILLS_SUCCESS
 } from '../constants/consultantConstants';
 
 export const getAllMyConsultants = () => async (dispatch, getState) => {
@@ -372,6 +375,34 @@ export const getAllConsultantByAccess = () => async (dispatch, getState) => {
     }
 };
 */
+
+export const getConsultantSkills = (consultantId) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_SKILLS_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.get(`/api/consultants/${consultantId}/skill`, config);
+
+        dispatch({ type: CONSULTANT_SKILLS_SUCCESS, payload: data.quality });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_SKILLS_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
 
 export const getAllConsultantSkills = () => async (dispatch, getState) => {
 

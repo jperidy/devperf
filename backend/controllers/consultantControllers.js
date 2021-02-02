@@ -93,6 +93,18 @@ const getConsultant = asyncHandler(async (req, res) => {
     res.json(myConsultant);
 });
 
+// @desc    Get a consultant all skills
+// @route   GET /api/consultants/:consultantId/skills
+// @access  Private, authorizeActionOnConsultant
+const getConsultantSkills = asyncHandler(async (req, res) => {
+
+    const myConsultant = await Consultant.findById(req.params.consultantId)
+        .populate('quality.skill')
+        .select('quality');
+
+    res.json(myConsultant);
+});
+
 // @desc    Update a consultant data by Id
 // @route   PUT /api/consultants/:consultantId
 // @access  Private, authorizeActionOnConsultant
@@ -316,11 +328,11 @@ const updateLevelConsultantSkill = asyncHandler(async(req,res) => {
     
     const consultantId = req.params.consultantId;
     const skillId = req.params.skillId;
-    const level = req.body;
+    const level = req.body.level;
 
     const consultant = await Consultant.findById(consultantId);
     const updatedQuality = consultant.quality.map( x => {
-        if (x.skill === skillId) {
+        if (x.skill.toString() === skillId.toString()) {
             return {skill: skillId, level: level}
         } else {
             return x
@@ -371,7 +383,8 @@ const getConsultantStaffings = asyncHandler(async (req, res) => {
 
 module.exports = { 
     getMyConsultants, 
-    getConsultant, 
+    getConsultant,
+    getConsultantSkills,
     updateConsultant,
     getAllConsultants,
     createConsultant,

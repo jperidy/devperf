@@ -4,12 +4,11 @@ const {
     getMyConsultants, 
     getConsultant, 
     updateConsultant, 
-    //getAllPracticeConsultants,
+    getConsultantSkills,
     createConsultant,
     getAllCDMData,
     getAllPracticesData,
     deleteConsultant,
-    //getAllConsultantByPractice,
     getAllConsultants,
     updateConsultantComment,
     getAllSkills,
@@ -28,7 +27,8 @@ router.route('/')
 router.route('/cdm/:practice').get(protect, getAllCDMData);
 
 router.route('/:consultantId/skill')
-    .put(protect, authorizeActionOnConsultant, addConsultantSkill);
+    .put(protect, authorizeActionOnConsultant, addConsultantSkill)
+    .get(protect, authorizeActionOnConsultant, getConsultantSkills);
 
 router.route('/:consultantId/skill/:skillId')
     .delete(protect, authorizeActionOnConsultant, deleteConsultantSkill)

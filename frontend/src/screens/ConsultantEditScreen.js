@@ -6,20 +6,20 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+//import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+//import Tooltip from 'react-bootstrap/Tooltip';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import SkillDisplayLine from '../components/SkillDisplayLine';
+//import SkillDisplayLine from '../components/SkillDisplayLine';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import {
-    consultantAddASkill,
-    consultantDeleteSkill,
-    consultantUpdateASkillLevel,
+    //consultantAddASkill,
+    //consultantDeleteSkill,
+    //consultantUpdateASkillLevel,
     createConsultant,
     getAllCDM,
-    getAllConsultantSkills,
+    //getAllConsultantSkills,
     getAllPractice,
     getMyConsultant,
     updateMyConsultant
@@ -29,6 +29,7 @@ import {
     CONSULTANT_GRADE,
     CONSULTANT_MY_UPDATE_RESET
 } from '../constants/consultantConstants';
+import SkillsDetails from '../components/SkillsDetails';
 
 const ConsultantEditScreen = ({ history, match }) => {
 
@@ -40,11 +41,13 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [practice, setPractice] = useState('');
     const [grade, setGrade] = useState('Analyst');
 
+    /*
     const [quality, setQuality] = useState([]);
     const [skillCategory, setSkillCategory] = useState('default');
     const [skillId, setSkillId] = useState('default');
     const [skillLevel, setSkillLevel] = useState(1);
     const [skillCategoryList, setSkillCategoryList] = useState([]);
+    */
 
     const [cdm, setCdm] = useState('');
     const [arrival, setArrival] = useState('');
@@ -87,6 +90,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     const consultantPracticeList = useSelector(state => state.consultantPracticeList);
     const { error: errorPractice, practiceList } = consultantPracticeList;
 
+    /*
     const consultantAllSkills = useSelector(state => state.consultantAllSkills);
     const { skills } = consultantAllSkills;
 
@@ -98,6 +102,7 @@ const ConsultantEditScreen = ({ history, match }) => {
 
     const consultantDeleteSkillReducer = useSelector(state => state.consultantDeleteSkill);
     const { success: successConsultantDeleteSkill } = consultantDeleteSkillReducer;
+    */
 
     useEffect(() => {
         if (userInfo && !(['admin', 'domain', 'coordinator', 'cdm'].includes(userInfo.profil.profil))) {
@@ -129,6 +134,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     }, [dispatch, update, match]);
 
 
+    /*
     useEffect(() => {
         if ((match.params.id) && (successUpdate || successConsultantAddSkill || successConsultantUpdateSkill || successConsultantDeleteSkill)) {
             setUpdate(true);
@@ -139,6 +145,16 @@ const ConsultantEditScreen = ({ history, match }) => {
         successConsultantAddSkill,
         successConsultantUpdateSkill,
         successConsultantDeleteSkill
+    ]);
+    */
+
+    useEffect(() => {
+        if ((match.params.id) && (successUpdate)) {
+            setUpdate(true);
+        }
+    }, [
+        match,
+        successUpdate
     ]);
 
     useEffect(() => {
@@ -155,12 +171,15 @@ const ConsultantEditScreen = ({ history, match }) => {
         }
     }, [dispatch, practice]);
 
+    /*
     useEffect(() => {
         if (!skills) {
             dispatch(getAllConsultantSkills());
         }
     }, [dispatch, skills]);
+    */
 
+    /*
     useEffect(() => {
         if (skills) {
             let categoryList = skills.map(x => x.category);
@@ -168,6 +187,7 @@ const ConsultantEditScreen = ({ history, match }) => {
             setSkillCategoryList(categoryList);
         }
     }, [skills]);
+    */
 
     useEffect(() => {
         if ((match.params.id) && consultant) {
@@ -176,7 +196,7 @@ const ConsultantEditScreen = ({ history, match }) => {
             setMatricule(consultant.matricule);
             setPractice(consultant.practice);
             setGrade(consultant.grade);
-            setQuality(consultant.quality || []);
+            //setQuality(consultant.quality || []);
             setCdm(consultant.cdmId ? consultant.cdmId : ''); //'waiting affectation'
             setArrival(consultant.arrival.substring(0, 10));
             setValued(consultant.valued ? consultant.valued.substring(0, 10) : '');
@@ -200,12 +220,6 @@ const ConsultantEditScreen = ({ history, match }) => {
         if (!practice && userInfo && practiceList) {
             setPractice(practiceList[0]);
         }
-        /*
-        // set default Practice if admin Level > 0
-        if (!practice && userInfo && userInfo.adminLevel > 0) {
-            setPractice(userInfo.consultantProfil.practice);
-        }
-        */
 
     }, [
         userInfo,
@@ -301,6 +315,7 @@ const ConsultantEditScreen = ({ history, match }) => {
         setSeniority(((new Date(Date.now()) - new Date(e.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4));
     }
 
+    /*
     const handleAddSkill = (consultantId, skillId, skillLevel) => {
         dispatch(consultantAddASkill(consultantId, skillId, skillLevel));
     }
@@ -312,6 +327,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     const handleUpdateSkillLevel = (consultantId, skillId, level) => {
         dispatch(consultantUpdateASkillLevel(consultantId, skillId, level));
     }
+    */
 
     const goBackHandler = () => {
         history.go(-1);
@@ -326,8 +342,6 @@ const ConsultantEditScreen = ({ history, match }) => {
 
             {errorCDM && <Message variant='danger'>{errorCDM}</Message>}
             {errorPractice && <Message variant='danger'>{errorPractice}</Message>}
-            {errorConsultantAddSkill && <Message variant='danger'>{errorConsultantAddSkill}</Message>}
-            {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
 
             {loading && <Loader />}
 
@@ -342,7 +356,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                         <Form onSubmit={submitHandler}>
                             <h2>{name && name}</h2>
 
-                            <DropDownTitleContainer title='Personal'>
+                            <DropDownTitleContainer title='Personal' close={valueEditType !== 'create'}>
                                 <ListGroup.Item>
                                     <Form.Row>
                                         <Col>
@@ -403,7 +417,11 @@ const ConsultantEditScreen = ({ history, match }) => {
                                 </ListGroup.Item>
                             </DropDownTitleContainer>
 
-                            {(valueEditType !== 'create') && (
+                            {consultant && valueEditType !== 'create' && (
+                                <SkillsDetails consultantId={consultant._id} />
+                            )}
+
+                            {/*(valueEditType !== 'create') && (
                                 <DropDownTitleContainer title='Skills' close={false}>
 
                                     {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
@@ -520,7 +538,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                     </ListGroup.Item>
                                 </DropDownTitleContainer>
 
-                            )}
+                                                )*/}
 
                             <DropDownTitleContainer title='Profil' close={false}>
                                 <ListGroup.Item>

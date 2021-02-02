@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
 import ListGroup from 'react-bootstrap/ListGroup';
 import PxxEditor from '../components/PxxEditor';
+import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ConsultantsTab from '../components/ConsultantsTab';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
@@ -14,6 +15,7 @@ import { getAllMyConsultants, updateComment } from '../actions/consultantActions
 import { Container, FormControl, InputGroup } from 'react-bootstrap';
 import { setConsultantFocus } from '../actions/consultantActions';
 import ViewStaffs from '../components/ViewStaffs';
+import SkillsDetails from '../components/SkillsDetails';
 
 const PxxEditScreen = ({ history }) => {
 
@@ -68,6 +70,7 @@ const PxxEditScreen = ({ history }) => {
     return (
 
         <Container>
+
             {loadingConsultantsMyList ? <Loader /> :
                 errorConsultantsMyList ? <Message variant='danger'>{errorConsultantsMyList}</Message>
                     : !consultantsMy || consultantsMy.length === 0 ?
@@ -148,12 +151,16 @@ const PxxEditScreen = ({ history }) => {
 
                                 <Row>
                                     <Col>
-                                        <ViewStaffs
-                                            history={history}
-                                            consultantId={consultantsMy[focus]._id}
-                                        />
+                                        <DropDownTitleContainer title='Others staffs' close={true}>
+                                            <ViewStaffs
+                                                history={history}
+                                                consultantId={consultantsMy[focus]._id}
+                                            />
+                                        </DropDownTitleContainer>
                                     </Col>
                                 </Row>
+
+                                <SkillsDetails consultantId={consultantsMy[focus]._id} />
 
                                 <Row className="pt-5">
                                     <Col>
