@@ -15,6 +15,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { deleteDeal, getAllDeals } from '../actions/dealActions';
 import { REQUEST_STATUS } from '../constants/dealConstants';
+import { FormControl, InputGroup } from 'react-bootstrap';
 
 const ManageDealsScreen = ({ history }) => {
 
@@ -38,6 +39,9 @@ const ManageDealsScreen = ({ history }) => {
     const [notUpdateFilter, setNotUpdateFilter] = useState(30);
     const [newDealFilter, setNewDealFilter] = useState(7);
     const [wonDealFilter, setWonDealFilter] = useState(7);
+
+    const [calculate, setCalculate] = useState(false);
+    const [changePeriod, setChangePeriod] = useState(false);
 
     //const [tabsFilter] = useState(['Waiting staffing', 'Updated (7d)', 'Not updated (30d)', 'New deal (7d)', 'New deal (30d)', 'Won (7d)', 'Won (30d)', 'All']);
     const [tabsFilter] = useState(['Waiting staffing', `Updated (${updateFilter}d)`, `Not updated (${notUpdateFilter}d)`, `New deal (${newDealFilter}d)`, `Won (${wonDealFilter}d)`, 'All']);
@@ -64,7 +68,7 @@ const ManageDealsScreen = ({ history }) => {
                 status: searchDealStatus,
                 request: searchRequestStatus
             }
-            dispatch(getAllDeals(keyword, globalFilter, pageNumber, pageSize));
+            dispatch(getAllDeals(keyword, globalFilter, pageNumber, pageSize, 'active'));
         } else {
             history.push('/login');
         }
@@ -80,6 +84,8 @@ const ManageDealsScreen = ({ history }) => {
             const lastMonthDate = new Date(Date.now());
             lastMonthDate.setUTCDate(lastMonthDate.getUTCDate() - 30);
             */
+
+            setCalculate(true);
 
             const updateTime = new Date(Date.now());
             updateTime.setUTCDate(updateTime.getUTCDate() - updateFilter);
@@ -155,6 +161,7 @@ const ManageDealsScreen = ({ history }) => {
                 filteredData.push({ filter: tabsFilter[incr], data: dealsFiltered, count: dealsFiltered.deals.length });
             }
             setDataFiltered(filteredData);
+            setCalculate(false);
             //console.log('filteredData', filteredData);
         }
     }, [deals, tabsFilter, newDealFilter, notUpdateFilter, updateFilter, wonDealFilter]);
@@ -187,6 +194,7 @@ const ManageDealsScreen = ({ history }) => {
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
             {error && <Message variant='danger'>{error}</Message>}
             {loading && <Loader />}
+            {calculate && <Loader />}
             
             <DropDownTitleContainer title='Search options' close={true}>
                 <ListGroup.Item>
@@ -281,41 +289,56 @@ const ManageDealsScreen = ({ history }) => {
                 </ListGroup.Item>
             </DropDownTitleContainer>
 
-            <DropDownTitleContainer title='Manage deals' close={false}>
+            <DropDownTitleContainer 
+                title='Manage Deals'
+                close={false}>
                 <ListGroup.Item className='p-0'>
                     <Tabs defaultActiveKey={tabsFilter[0]} id="uncontrolled-tab-example" variant='tabs'>
+                        
                         {dataFiltered.length > 0 && dataFiltered.map((data, val) => (
                             <Tab 
-                                eventKey={`${data.filter}`} title= {
-                                    <>
-                                        {data.filter.split(/[0-9]+/i)[0]}
-                                        
-                                        {data.data.param && (
-                                            <Form.Group controlId='select-duration'>
-                                                <Form.Control
-                                                    as='select'
-                                                    value={data.data.param}
-                                                    onChange={(e) => data.data.setParam(e.target.value)}
-                                                >
-                                                    {[...new Array(30).keys()].map(x => (
-                                                        <option key={x + 1} value={x + 1}>{x + 1}</option>
-                                                    ))}
-                                                </Form.Control>
-                                            </Form.Group>
-                                        )}
-
-                                        {data.filter.split(/[0-9]+/i)[1]}
-                                    </>
+                                key={val}
+                                className='mx-3'
+                                eventKey={`${data.filter}`} 
+                                title= {
+                                    
+                                        <Row className='align-text-middle'>
+                                            <span className='ml-3 align-middle'>{data.filter.split(/[0-9]+/i)[0]}</span>
+                                            
+                                            {changePeriod ? (
+                                                <span>{data.data.param && (
+                                                    <InputGroup>
+                                                        <FormControl
+                                                            as='select'
+                                                            //min={0}
+                                                            //max={60}
+                                                            value={data.data.param}
+                                                            onChange={(e) => data.data.setParam(e.target.value)}
+                                                        >
+                                                            {[...new Array(30).keys()].map(x => (
+                                                                <option key={x + 1} value={x + 1}>{x + 1}</option>
+                                                            ))}
+                                                        </FormControl>
+                                                    </InputGroup>
+                                                )}
+                                                </span>) : data.data.param}
+                                            <span>{(data.filter.split(/[0-9]+/i)[1] && data.filter.split(/[0-9]+/i)[1])}</span>
+                                            <span className='mr-3'>{' > ' + data.count}</span>
+                                        </Row>
                                    } 
-                                
-                                key={val}>
+                                >
+
+                                <Button
+                                    variant='ligth'
+                                    onClick={() => setChangePeriod(!changePeriod)}
+                                ><i className="fas fa-edit">  Modify filters</i></Button>
+
                                 <DealList
                                     history={history}
                                     data={data.data}
                                 />
                             </Tab>
                         ))}
-
                     </Tabs>
 
                     {/* <Pagination>

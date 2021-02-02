@@ -123,6 +123,12 @@ const getAllDeals = asyncHandler(async (req, res) => {
         }
     } : {};
 
+    const requestState = req.query.state === 'active' ? {
+        'staffingRequest.requestStatus': {
+            $ne: 'Close'
+        }
+    } : {};
+
     let globalFilter = {};
     
     if (req.query.globalFilter) {
@@ -185,6 +191,7 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...searchTitle,
         ...searchStatus,
         ...searchRequest,
+        ...requestState,
         ...globalFilter,
         _id: {$in: dealsId}
     });
@@ -201,6 +208,7 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...searchTitle,
         ...searchStatus,
         ...searchRequest,
+        ...requestState,
         ...globalFilter,
         _id: {$in: dealsId}
     }).populate('contacts.primary contacts.secondary')
