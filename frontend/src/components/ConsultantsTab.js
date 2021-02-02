@@ -15,18 +15,19 @@ const ConsultantsTab = ({ history, consultantsMy, focusActive }) => {
     };
 
     return (
-        <Table responsive hover striped>
+
+        <Table responsive hover striped className='mt-3'>
             <thead>
-                <tr className='table-primary'>
-                    <th className='align-middle text-light'>Consultant name</th>
-                    <th className='align-middle text-light'>Matricule</th>
-                    <th className='align-middle text-light'>Practice</th>
-                    <th className='align-middle text-light'>Valued</th>
-                    <th className='align-middle text-light'>Arrival</th>
-                    <th className='align-middle text-light'>Leaving</th>
-                    <th className='align-middle text-light'>Seniority</th>
-                    <th className='align-middle text-light'>Comment</th>
-                    <th className='align-middle text-light'></th>
+                <tr className='table-light'>
+                    <th className='align-middle text-dark'>Consultant name</th>
+                    <th className='align-middle text-dark'>Matricule</th>
+                    <th className='align-middle text-dark'>Practice</th>
+                    <th className='align-middle text-dark'>Valued</th>
+                    <th className='align-middle text-dark'>Arrival</th>
+                    <th className='align-middle text-dark'>Leaving</th>
+                    <th className='align-middle text-dark'>Seniority</th>
+                    <th className='align-middle text-dark'>Comment</th>
+                    <th className='align-middle text-dark'></th>
                 </tr>
             </thead>
 

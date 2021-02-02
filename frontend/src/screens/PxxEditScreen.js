@@ -89,7 +89,7 @@ const PxxEditScreen = ({ history }) => {
                                     <Col className="text-center" xs={8}>
                                         <LinkContainer to={`/editconsultant/${consultantsMy[focus]._id}`}>
                                             <Nav.Link>
-                                                <b>{consultantsMy[focus].name} <i>({consultantsMy[focus].matricule})</i></b>
+                                                <h4>{consultantsMy[focus].name} <i>({consultantsMy[focus].matricule})</i></h4>
                                             </Nav.Link>
                                         </LinkContainer>
                                     </Col>
@@ -151,7 +151,7 @@ const PxxEditScreen = ({ history }) => {
 
                                 <Row>
                                     <Col>
-                                        <DropDownTitleContainer title='Others staffs' close={true}>
+                                        <DropDownTitleContainer title='Staffings on track' close={true}>
                                             <ViewStaffs
                                                 history={history}
                                                 consultantId={consultantsMy[focus]._id}
@@ -162,13 +162,15 @@ const PxxEditScreen = ({ history }) => {
 
                                 <SkillsDetails consultantId={consultantsMy[focus]._id} />
 
-                                <Row className="pt-5">
+                                <Row>
                                     <Col>
-                                        <ConsultantsTab
-                                            consultantsMy={consultantsMy}
-                                            history={history}
-                                            focusActive={true}
-                                        />
+                                        <DropDownTitleContainer title='Others consultants' close={true}>
+                                            <ConsultantsTab
+                                                consultantsMy={consultantsMy}
+                                                history={history}
+                                                focusActive={true}
+                                            />
+                                        </DropDownTitleContainer>
                                     </Col>
                                 </Row>
                             </>

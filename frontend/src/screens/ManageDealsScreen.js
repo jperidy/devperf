@@ -34,7 +34,14 @@ const ManageDealsScreen = ({ history }) => {
     const [searchDealStatus, setSearchDealStatus] = useState('');
     const [searchRequestStatus, setSearchRequestStatus] = useState('');
 
-    const [tabsFilter] = useState(['Waiting staffing', 'Updated (7d)', 'Not updated (30d)', 'New deal (7d)', 'New deal (30d)', 'Won (7d)', 'Won (30d)', 'All']);
+    const [updateFilter, setUpdateFilter] = useState(7);
+    const [notUpdateFilter, setNotUpdateFilter] = useState(30);
+    const [newDealFilter, setNewDealFilter] = useState(7);
+    const [wonDealFilter, setWonDealFilter] = useState(7);
+
+    //const [tabsFilter] = useState(['Waiting staffing', 'Updated (7d)', 'Not updated (30d)', 'New deal (7d)', 'New deal (30d)', 'Won (7d)', 'Won (30d)', 'All']);
+    const [tabsFilter] = useState(['Waiting staffing', `Updated (${updateFilter}d)`, `Not updated (${notUpdateFilter}d)`, `New deal (${newDealFilter}d)`, `Won (${wonDealFilter}d)`, 'All']);
+    
     const [dataFiltered, setDataFiltered] = useState([]);
 
     const userLogin = useSelector(state => state.userLogin);
@@ -65,53 +72,92 @@ const ManageDealsScreen = ({ history }) => {
     }, [dispatch, history, userInfo, globalFilter, searchTitle, searchCompany, searchClient, searchDealStatus, searchRequestStatus, pageNumber, pageSize]);
 
     useEffect(() => {
+
         if (deals) {
+            /*
             const lastWeekDate = new Date(Date.now());
             lastWeekDate.setUTCDate(lastWeekDate.getUTCDate() - 7);
-
             const lastMonthDate = new Date(Date.now());
             lastMonthDate.setUTCDate(lastMonthDate.getUTCDate() - 30);
+            */
+
+            const updateTime = new Date(Date.now());
+            updateTime.setUTCDate(updateTime.getUTCDate() - updateFilter);
+
+            const notUpdateTime = new Date(Date.now());
+            notUpdateTime.setUTCDate(notUpdateTime.getUTCDate() - notUpdateFilter);
+
+            const newDealTime = new Date(Date.now());
+            newDealTime.setUTCDate(newDealTime.getUTCDate() - newDealFilter);
+
+            const wonDealTime = new Date(Date.now());
+            wonDealTime.setUTCDate(wonDealTime.getUTCDate() - wonDealFilter);
+
+
             const filteredData = []
 
             for (let incr = 0; incr < tabsFilter.length; incr++) {
                 let dealsFiltered = [];
 
                 switch (tabsFilter[incr]) {
-                    case tabsFilter[0]:
+                    case tabsFilter[0]: // Deals waiting a staff
                         const needStaff = REQUEST_STATUS.filter(x => x.staff === true)
-                        dealsFiltered = deals.filter(deal => needStaff.map(x => x.name).includes(deal.staffingRequest.requestStatus));
+                        dealsFiltered = {
+                            deals: deals.filter(deal => needStaff.map(x => x.name).includes(deal.staffingRequest.requestStatus)),
+                            param: null,
+                            setParam: null
+                        };
                         break;
-                    case tabsFilter[1]:
-                        dealsFiltered = deals.filter(deal => new Date(deal.updatedAt) >= lastWeekDate);
+                    case tabsFilter[1]: // Update
+                        dealsFiltered = {
+                            deals: deals.filter(deal => new Date(deal.updatedAt) >= updateTime),
+                            param: updateFilter,
+                            setParam: setUpdateFilter
+                        }
                         break;
-                    case tabsFilter[2]:
-                        dealsFiltered = deals.filter(deal => new Date(deal.updatedAt) <= lastMonthDate);
+                    case tabsFilter[2]: // Not Update
+                        dealsFiltered = {
+                            deals: deals.filter(deal => new Date(deal.updatedAt) <= notUpdateTime),
+                            param: notUpdateFilter,
+                            setParam: setNotUpdateFilter
+                        }
                         break;
-                    case tabsFilter[3]:
-                        dealsFiltered = deals.filter(deal => new Date(deal.createdAt) >= lastWeekDate);
+                    case tabsFilter[3]: // newDeal
+                        dealsFiltered = {
+                            deals: deals.filter(deal => new Date(deal.createdAt) >= newDealTime),
+                            param: newDealFilter,
+                            setParam: setNewDealFilter
+                        }
                         break;
-                    case tabsFilter[4]:
+                    /* case tabsFilter[4]:
                         dealsFiltered = deals.filter(deal => new Date(deal.createdAt) >= lastMonthDate);
+                        break; */
+                    case tabsFilter[4]: // Won
+                        dealsFiltered = {
+                            deals: deals.filter(deal => new Date(deal.wonDate) >= wonDealTime),
+                            param: wonDealFilter,
+                            setParam: setWonDealFilter
+                        }
                         break;
-                    case tabsFilter[5]:
-                        dealsFiltered = deals.filter(deal => new Date(deal.wonDate) >= lastWeekDate);
-                        break;
-                    case tabsFilter[6]:
+                    /* case tabsFilter[6]:
                         dealsFiltered = deals.filter(deal => new Date(deal.wonDate) >= lastMonthDate);
-                        break;
-                    case tabsFilter[7]:
-                        dealsFiltered = deals;
+                        break; */
+                    case tabsFilter[5]: // All >>> mettre une redirection
+                        dealsFiltered = { 
+                            deals: deals,
+                            param: null,
+                            setParam: null
+                        }
                         break;
                     default:
                         dealsFiltered = [];
                 }
-                filteredData.push({ filter: tabsFilter[incr], data: dealsFiltered, count: dealsFiltered.length });
+                filteredData.push({ filter: tabsFilter[incr], data: dealsFiltered, count: dealsFiltered.deals.length });
             }
-            //console.log('filteredData', filteredData);
             setDataFiltered(filteredData);
-            //console.log('dataFiltered', dataFiltered)
+            //console.log('filteredData', filteredData);
         }
-    }, [deals, tabsFilter]);
+    }, [deals, tabsFilter, newDealFilter, notUpdateFilter, updateFilter, wonDealFilter]);
 
     useEffect(() => {
 
@@ -238,9 +284,31 @@ const ManageDealsScreen = ({ history }) => {
             <DropDownTitleContainer title='Manage deals' close={false}>
                 <ListGroup.Item className='p-0'>
                     <Tabs defaultActiveKey={tabsFilter[0]} id="uncontrolled-tab-example" variant='tabs'>
-
                         {dataFiltered.length > 0 && dataFiltered.map((data, val) => (
-                            <Tab eventKey={`${data.filter}`} title={`${data.filter} > ${data.count}`} key={val}>
+                            <Tab 
+                                eventKey={`${data.filter}`} title= {
+                                    <>
+                                        {data.filter.split(/[0-9]+/i)[0]}
+                                        
+                                        {data.data.param && (
+                                            <Form.Group controlId='select-duration'>
+                                                <Form.Control
+                                                    as='select'
+                                                    value={data.data.param}
+                                                    onChange={(e) => data.data.setParam(e.target.value)}
+                                                >
+                                                    {[...new Array(30).keys()].map(x => (
+                                                        <option key={x + 1} value={x + 1}>{x + 1}</option>
+                                                    ))}
+                                                </Form.Control>
+                                            </Form.Group>
+                                        )}
+
+                                        {data.filter.split(/[0-9]+/i)[1]}
+                                    </>
+                                   } 
+                                
+                                key={val}>
                                 <DealList
                                     history={history}
                                     data={data.data}
@@ -331,7 +399,7 @@ const DealList = ({ history, data = [] }) => {
             </thead>
 
             <tbody>
-                {data && data.map((deal) => (
+                {data && data.deals.map((deal) => (
                     <tr key={deal._id}>
                         <OverlayTrigger
                             placement="bottom"
