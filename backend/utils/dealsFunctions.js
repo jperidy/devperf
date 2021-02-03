@@ -58,7 +58,6 @@ const calculatePriority = (deal) => {
 
     const oneDay = 1000 * 3600 * 24;
     const deltaStart = Date.parse(new Date(deal.startDate)) - Date.now();
-    //console.log('deltaStart', deltaStart);
 
     const pDealStatus = [
         {name: 'Lead', priority: 0},

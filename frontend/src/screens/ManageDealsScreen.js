@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-//import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
@@ -9,17 +8,12 @@ import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
-//import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
-//import Tooltip from 'react-bootstrap/Tooltip';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { 
-    //deleteDeal, 
-    getAllDeals 
-} from '../actions/dealActions';
-import { REQUEST_STATUS } from '../constants/dealConstants';
+import { getAllDeals } from '../actions/dealActions';
 import { FormControl, InputGroup } from 'react-bootstrap';
+import { DEAL_STATUS, REQUEST_STATUS } from '../constants/dealConstants';
 
 const ManageDealsScreen = ({ history }) => {
 
@@ -32,9 +26,10 @@ const ManageDealsScreen = ({ history }) => {
     // search configuration
     const [searchTitle, setSearchTitle] = useState('');
     const [searchCompany, setSearchCompany] = useState('');
-    const [searchClient, setSearchClient] = useState('');
+    const [searchContact, setSearchContact] = useState('');
     const [searchDealStatus, setSearchDealStatus] = useState('');
     const [searchRequestStatus, setSearchRequestStatus] = useState('');
+    const [searchMyDeals, setSearchMyDeals] = useState(false);
 
     const [updateFilter, setUpdateFilter] = useState(7);
     const [notUpdateFilter, setNotUpdateFilter] = useState(30);
@@ -62,13 +57,15 @@ const ManageDealsScreen = ({ history }) => {
         if (userInfo) {
             const keyword = {
                 title: searchTitle,
-                mainPractice: userInfo.consultantProfil.practice,
-                othersPractices: userInfo.consultantProfil.practice,
-                client: searchClient,
+                //mainPractice: userInfo.consultantProfil.practice,
+                //othersPractices: userInfo.consultantProfil.practice,
+                contact: searchContact,
                 company: searchCompany,
                 status: searchDealStatus,
-                request: searchRequestStatus
+                request: searchRequestStatus,
+                filterMy: searchMyDeals
             }
+            console.log(keyword);
             if(update) {
                 dispatch(getAllDeals(keyword, pageNumber, pageSize, 'active'));
                 setUpdate(false);
@@ -83,12 +80,13 @@ const ManageDealsScreen = ({ history }) => {
         userInfo, 
         searchTitle, 
         searchCompany, 
-        searchClient, 
+        searchContact, 
         searchDealStatus, 
         searchRequestStatus, 
         pageNumber, 
         pageSize,
-        update
+        update,
+        searchMyDeals
     ]);
 
     useEffect(() => {
@@ -108,9 +106,7 @@ const ManageDealsScreen = ({ history }) => {
             wonDealTime.setUTCDate(wonDealTime.getUTCDate() - wonDealFilter);
 
 
-            const filteredData = []
-
-            //console.log('start calcultation', new Date(Date.now()).toISOString());
+            const filteredData = [];
 
             for (let incr = 0; incr < tabsFilter.length; incr++) {
                 let dealsFiltered = [];
@@ -177,10 +173,11 @@ const ManageDealsScreen = ({ history }) => {
                 title: searchTitle,
                 mainPractice: userInfo.consultantProfil.practice,
                 othersPractices: userInfo.consultantProfil.practice,
-                client: searchClient,
+                contact: searchContact,
                 company: searchCompany,
                 status: searchDealStatus,
-                request: searchRequestStatus
+                request: searchRequestStatus,
+                filterMy: searchMyDeals
             }
             dispatch(getAllDeals(keyword, pageNumber, pageSize));
         }
@@ -204,9 +201,9 @@ const ManageDealsScreen = ({ history }) => {
                     <Row className='mt-3'>
                         <Col>
                             <Form onSubmit={(e) => filterLeads(e)}>
-                                <Row>
+                                <Row className='align-items-end'>
                                     <Col xs={6} md={2}>
-                                        <Form.Group controlId='filter-title'>
+                                        <Form.Group controlId='filter-title' className='mb-0'>
                                             <Form.Label>Title</Form.Label>
                                             <Form.Control
                                                 type='text'
@@ -217,7 +214,7 @@ const ManageDealsScreen = ({ history }) => {
                                         </Form.Group>
                                     </Col>
                                     <Col xs={6} md={2}>
-                                        <Form.Group controlId='filter-company'>
+                                        <Form.Group controlId='filter-company' className='mb-0'>
                                             <Form.Label>Company</Form.Label>
                                             <Form.Control
                                                 type='text'
@@ -228,57 +225,60 @@ const ManageDealsScreen = ({ history }) => {
                                         </Form.Group>
                                     </Col>
                                     <Col xs={6} md={2}>
-                                        <Form.Group controlId='filter-client'>
-                                            <Form.Label>Client</Form.Label>
+                                        <Form.Group controlId='filter-contact' className='mb-0'>
+                                            <Form.Label>Contact</Form.Label>
                                             <Form.Control
                                                 type='text'
-                                                placeholder='Search client'
-                                                value={searchClient && searchClient}
-                                                onChange={(e) => setSearchClient(e.target.value)}
+                                                placeholder='Search contact'
+                                                value={searchContact && searchContact}
+                                                onChange={(e) => setSearchContact(e.target.value)}
                                             ></Form.Control>
                                         </Form.Group>
                                     </Col>
                                     <Col xs={6} md={2}>
                                         <Form.Label>Status</Form.Label>
-                                        <Form.Group controlId='filter-status'>
+                                        <Form.Group controlId='filter-status' className='mb-0'>
                                             <Form.Control
                                                 as='select'
                                                 value={searchDealStatus && searchDealStatus}
-                                                onChange={(e) => setSearchDealStatus(e.target.value)}
+                                                onChange={(e) => {
+                                                    setSearchDealStatus(e.target.value)
+                                                    setUpdate(true)
+                                                }}
                                             >
                                                 <option value=''>--Select--</option>
-                                                <option value='Lead'>Lead</option>
-                                                <option value='Proposal to send'>Proposal to send</option>
-                                                <option value='Proposal sent'>Proposal sent</option>
-                                                <option value='Won'>Won</option>
-                                                <option value='Abandoned'>Abandoned</option>
+                                                {DEAL_STATUS.map(x => (
+                                                    <option key={x.name} value={x.name}>{x.name}</option>
+                                                ))}
                                             </Form.Control>
                                         </Form.Group>
                                     </Col>
                                     <Col xs={6} md={2}>
-                                        <Form.Group controlId='filter-request'>
+                                        <Form.Group controlId='filter-request' className='mb-0'>
                                             <Form.Label>Request</Form.Label>
                                             <Form.Control
                                                 as='select'
                                                 value={searchRequestStatus && searchRequestStatus}
-                                                onChange={(e) => setSearchRequestStatus(e.target.value)}
+                                                onChange={(e) => {
+                                                    setSearchRequestStatus(e.target.value)
+                                                    setUpdate(true)
+                                                }}
                                             >
                                                 <option value=''>--Select--</option>
-                                                <option value='To do'>To do</option>
-                                                <option value='Keep staffing'>Keep staffing</option>
-                                                <option value='Retreat staffing'>Keep</option>
-                                                <option value='Release staffing'>Available</option>
+                                                {REQUEST_STATUS.map(x => (
+                                                    <option key={x.name} value={x.name}>{x.name}</option>
+                                                ))}
                                             </Form.Control>
                                         </Form.Group>
+                                    </Col>
+
+                                    <Col xs={12} md={2} className='text-right'>
+                                        <Button type='submit' variant='primary' block>Search</Button>
                                     </Col>
 
                                 </Row>
 
                                 <Row>
-                                    <Col xs={12} md={2} className='text-right'>
-                                        <Button type='submit' variant='primary' block>Search</Button>
-                                    </Col>
-
                                     <Col xs={6} md={8}>
                                         <Form.Control
                                             plaintext
@@ -328,12 +328,25 @@ const ManageDealsScreen = ({ history }) => {
                                 <Button
                                     variant='ligth'
                                     onClick={() => setChangePeriod(!changePeriod)}
-                                ><i className="fas fa-edit"></i>  Modify filters</Button>
+                                ><i className="fas fa-edit"></i>  Configure tabs</Button>
 
                                 <Button
                                     variant='ligth'
                                     onClick={() => history.push('/admin/deals/history')}
                                 ><i className="fas fa-history"></i>  History</Button>
+
+                                <Button
+                                    variant='ligth'
+                                    onClick={() => {
+                                        setSearchMyDeals(!searchMyDeals)
+                                        setUpdate(true)
+                                    }}
+                                >{searchMyDeals ? (
+                                    <div><i className="fas fa-backspace"></i>  Get all deals</div>
+                                ) : (
+                                    <div><i className="fas fa-filter"></i>  Filter my deals</div>
+                                )}
+                                </Button>
 
                                 <DealList
                                     history={history}

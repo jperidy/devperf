@@ -12,8 +12,8 @@ import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { getAllDeals } from '../actions/dealActions';
+import { DEAL_STATUS, REQUEST_STATUS } from '../constants/dealConstants';
 import ReactExport from "react-export-excel";
-
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -30,7 +30,7 @@ const DealsHistoryScreen = ({history}) => {
     // search configuration
     const [searchTitle, setSearchTitle] = useState('');
     const [searchCompany, setSearchCompany] = useState('');
-    const [searchClient, setSearchClient] = useState('');
+    const [searchContact, setSearchContact] = useState('');
     const [searchDealStatus, setSearchDealStatus] = useState('');
     const [searchRequestStatus, setSearchRequestStatus] = useState('');
 
@@ -55,7 +55,7 @@ const DealsHistoryScreen = ({history}) => {
                 title: searchTitle,
                 mainPractice: userInfo.consultantProfil.practice,
                 othersPractices: userInfo.consultantProfil.practice,
-                client: searchClient,
+                contact: searchContact,
                 company: searchCompany,
                 status: searchDealStatus,
                 request: searchRequestStatus
@@ -74,7 +74,7 @@ const DealsHistoryScreen = ({history}) => {
         userInfo, 
         searchTitle, 
         searchCompany, 
-        searchClient, 
+        searchContact, 
         searchDealStatus, 
         searchRequestStatus, 
         pageNumber, 
@@ -125,7 +125,7 @@ const DealsHistoryScreen = ({history}) => {
                 title: searchTitle,
                 mainPractice: userInfo.consultantProfil.practice,
                 othersPractices: userInfo.consultantProfil.practice,
-                client: searchClient,
+                contact: searchContact,
                 company: searchCompany,
                 status: searchDealStatus,
                 request: searchRequestStatus
@@ -178,13 +178,13 @@ const DealsHistoryScreen = ({history}) => {
                                         </Form.Group>
                                     </Col>
                                     <Col xs={6} md={2}>
-                                        <Form.Group controlId='filter-client' className='mb-0'>
-                                            <Form.Label>Client</Form.Label>
+                                        <Form.Group controlId='filter-contact' className='mb-0'>
+                                            <Form.Label>Contact</Form.Label>
                                             <Form.Control
                                                 type='text'
-                                                placeholder='Search client'
-                                                value={searchClient && searchClient}
-                                                onChange={(e) => setSearchClient(e.target.value)}
+                                                placeholder='Search contact'
+                                                value={searchContact && searchContact}
+                                                onChange={(e) => setSearchContact(e.target.value)}
                                             ></Form.Control>
                                         </Form.Group>
                                     </Col>
@@ -194,14 +194,15 @@ const DealsHistoryScreen = ({history}) => {
                                             <Form.Control
                                                 as='select'
                                                 value={searchDealStatus && searchDealStatus}
-                                                onChange={(e) => setSearchDealStatus(e.target.value)}
+                                                onChange={(e) => {
+                                                    setSearchDealStatus(e.target.value)
+                                                    setUpdate(true)
+                                                }}
                                             >
                                                 <option value=''>--Select--</option>
-                                                <option value='Lead'>Lead</option>
-                                                <option value='Proposal to send'>Proposal to send</option>
-                                                <option value='Proposal sent'>Proposal sent</option>
-                                                <option value='Won'>Won</option>
-                                                <option value='Abandoned'>Abandoned</option>
+                                                {DEAL_STATUS.map(x => (
+                                                    <option key={x.name} value={x.name}>{x.name}</option>
+                                                ))}
                                             </Form.Control>
                                         </Form.Group>
                                     </Col>
@@ -211,13 +212,16 @@ const DealsHistoryScreen = ({history}) => {
                                             <Form.Control
                                                 as='select'
                                                 value={searchRequestStatus && searchRequestStatus}
-                                                onChange={(e) => setSearchRequestStatus(e.target.value)}
+                                                onChange={(e) => {
+                                                    setSearchRequestStatus(e.target.value)
+                                                    setUpdate(true)
+                                                }}
                                             >
                                                 <option value=''>--Select--</option>
-                                                <option value='To do'>To do</option>
-                                                <option value='Keep staffing'>Keep staffing</option>
-                                                <option value='Retreat staffing'>Keep</option>
-                                                <option value='Release staffing'>Available</option>
+                                                {REQUEST_STATUS.map(x => (
+                                                    <option key={x.name} value={x.name}>{x.name}</option>
+                                                ))}
+
                                             </Form.Control>
                                         </Form.Group>
                                     </Col>

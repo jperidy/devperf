@@ -1,6 +1,7 @@
 const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { myAccessDeals,calculatePriority } = require('../utils/dealsFunctions');
+const Consultant = require('../models/consultantModel');
 
 // @desc    Create a Deal 
 // @route   POST /api/deals
@@ -73,9 +74,12 @@ const getAllDeals = asyncHandler(async (req, res) => {
 
     //console.log('start getAll', new Date(Date.now()).toISOString())
 
-    const access = req.user.profil.api.filter(x => x.name === 'getAllDeals')[0].data;
+    let access = req.user.profil.api.filter(x => x.name === 'getAllDeals')[0].data;
+    if (req.query.filterMy === 'true') {
+        access = 'my'
+    }
+
     const dealsId = await myAccessDeals(access, req);
-    //console.log(dealsId);
     
     const pageSize = Number(req.query.pageSize) || 10000; // by default a lot
     const page = Number(req.query.pageNumber) || 1; // by default on page 1
@@ -86,12 +90,7 @@ const getAllDeals = asyncHandler(async (req, res) => {
             $options: 'i'
         }
     } : {};
-    const searchClient = req.query.client ? {
-        client: {
-            $regex: req.query.client,
-            $options: 'i'
-        }
-    } : {};
+
     const searchCompany = req.query.company ? {
         company: {
             $regex: req.query.company,
@@ -111,79 +110,26 @@ const getAllDeals = asyncHandler(async (req, res) => {
         }
     } : {};
 
-    const searchMainPractice = req.query.mainPractice ? {
-        mainPractice: {
-            $regex: req.query.mainPractice,
-            $options: 'i'
-        }
-    } : {};
-    
-    const searchOthersPractices = req.query.othersPractices ? {
-        othersPractices: {
-            $regex: req.query.othersPractices,
-            $options: 'i'
-        }
-    } : {};
-
     const requestState = req.query.state === 'active' ? {
         'staffingRequest.requestStatus': {
             $ne: 'Close'
         }
     } : {};
 
-    let globalFilter = {};
-    
-    /*
-    if (req.query.globalFilter) {
-
-        const currentDate = new Date(Date.now());
-    
-        const lastWeekDate = new Date(Date.now());
-        lastWeekDate.setUTCDate(lastWeekDate.getUTCDate() - 7);
-    
-        const lastMonthDate = new Date(Date.now());
-        lastMonthDate.setUTCMonth(lastMonthDate.getUTCMonth() - 1);
-
-        switch (req.query.globalFilter) {
-            case 'updatedDeal':
-                globalFilter = {
-                    updatedAt: { $gte: lastWeekDate }
-                };
-                break;
-            case 'notUpdatedDeal':
-                globalFilter = {
-                    updatedAt: { $lte: lastMonthDate }
-                };
-                break;
-            case 'newDealWeek':
-                globalFilter = {
-                    createdAt: { $gte: lastWeekDate }
-                };
-                break;
-            case 'newDealMonth':
-                globalFilter = {
-                    createdAt: { $gte: lastMonthDate }
-                };
-                break;
-            case 'wonWeek':
-                globalFilter = {
-                    wonDate: { $gte: lastWeekDate }
-                };
-                break;
-            case 'wonMonth':
-                globalFilter = {
-                    wonDate: { $gte: lastMonthDate }
-                };
-                break;
-            default:
-                globalFilter = {};
+    let searchContact = {};
+    if(req.query.contact) {
+        const contactsId = await Consultant.find({name: {$regex: req.query.contact, $options: 'i'}})
+        searchContact = {
+            $or: [
+                { 'contacts.primary': {$in: contactsId} },
+                { 'contacts.secondary': {$in: contactsId} }
+            ]
         }
     }
-    */
 
     //console.log('start count', new Date(Date.now()).toISOString())
     const count = await Deal.countDocuments({ 
-        ...searchClient,
+        ...searchContact,
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,
@@ -191,11 +137,9 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...requestState,
         _id: {$in: dealsId}
     });
-    //console.log('End count', new Date(Date.now()).toISOString())
-
-    //console.log('start find', new Date(Date.now()).toISOString())
+    
     const deals = await Deal.find({ 
-        ...searchClient,
+        ...searchContact,
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,
@@ -206,10 +150,6 @@ const getAllDeals = asyncHandler(async (req, res) => {
         .populate('staffingDecision.staff.idConsultant')
         .sort({'priority': -1})
         .limit(pageSize).skip(pageSize * (page - 1));
-
-    //console.log('End find', new Date(Date.now()).toISOString())
-    
-    //console.log('End get All', new Date(Date.now()).toISOString())
 
     if (deals) {
         res.status(200).json({deals, page, pages: Math.ceil(count/pageSize), count});
