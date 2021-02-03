@@ -82,7 +82,7 @@ export const getAllDeals = (keyword = {
                                 othersPractices:'', 
                                 client:'', company:'', 
                                 status:'', request:'' 
-            }, globalFilter = '', pageNumber = 1, pageSize = 20, state = '') => async (dispatch, getState) => {
+            }, pageNumber = 1, pageSize = 20, state = '') => async (dispatch, getState) => {
 
     try {
 
@@ -96,7 +96,7 @@ export const getAllDeals = (keyword = {
             }
         };
 
-        const { data } = await axios.get(`/api/deals?globalFilter=${globalFilter}&mainPractice=${keyword.mainPractice}&othersPractices=${keyword.othersPractices}&title=${keyword.title}&company=${keyword.company}&client=${keyword.client}&status=${keyword.status}&request=${keyword.request}&pageNumber=${pageNumber}&pageSize=${pageSize}$state=${state}`, config);
+        const { data } = await axios.get(`/api/deals?mainPractice=${keyword.mainPractice}&othersPractices=${keyword.othersPractices}&title=${keyword.title}&company=${keyword.company}&client=${keyword.client}&status=${keyword.status}&request=${keyword.request}&pageNumber=${pageNumber}&pageSize=${pageSize}$state=${state}`, config);
 
        dispatch({ type: DEAL_ALL_LIST_SUCCESS, payload: data });
 

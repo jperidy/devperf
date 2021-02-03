@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Table from 'react-bootstrap/Table'
+//import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import DealList from '../components/DealList';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+//import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
-import Tooltip from 'react-bootstrap/Tooltip';
+//import Tooltip from 'react-bootstrap/Tooltip';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { deleteDeal, getAllDeals } from '../actions/dealActions';
+import { 
+    //deleteDeal, 
+    getAllDeals 
+} from '../actions/dealActions';
 import { REQUEST_STATUS } from '../constants/dealConstants';
 import { FormControl, InputGroup } from 'react-bootstrap';
 
@@ -24,9 +28,6 @@ const ManageDealsScreen = ({ history }) => {
     // pagination configuration
     const [pageSize, setPageSize] = useState('');
     const [pageNumber, setPageNumber] = useState('');
-
-    // global filter
-    const [globalFilter, setGlobalFilter] = useState('');
 
     // search configuration
     const [searchTitle, setSearchTitle] = useState('');
@@ -40,13 +41,13 @@ const ManageDealsScreen = ({ history }) => {
     const [newDealFilter, setNewDealFilter] = useState(7);
     const [wonDealFilter, setWonDealFilter] = useState(7);
 
-    const [calculate, setCalculate] = useState(false);
     const [changePeriod, setChangePeriod] = useState(false);
 
-    //const [tabsFilter] = useState(['Waiting staffing', 'Updated (7d)', 'Not updated (30d)', 'New deal (7d)', 'New deal (30d)', 'Won (7d)', 'Won (30d)', 'All']);
     const [tabsFilter] = useState(['Waiting staffing', `Updated (${updateFilter}d)`, `Not updated (${notUpdateFilter}d)`, `New deal (${newDealFilter}d)`, `Won (${wonDealFilter}d)`, 'All']);
-    
+
     const [dataFiltered, setDataFiltered] = useState([]);
+
+    const [update, setUpdate] = useState(true);
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -68,24 +69,31 @@ const ManageDealsScreen = ({ history }) => {
                 status: searchDealStatus,
                 request: searchRequestStatus
             }
-            dispatch(getAllDeals(keyword, globalFilter, pageNumber, pageSize, 'active'));
+            if(update) {
+                dispatch(getAllDeals(keyword, pageNumber, pageSize, 'active'));
+                setUpdate(false);
+            }
         } else {
             history.push('/login');
         }
 
-    }, [dispatch, history, userInfo, globalFilter, searchTitle, searchCompany, searchClient, searchDealStatus, searchRequestStatus, pageNumber, pageSize]);
+    }, [
+        dispatch, 
+        history, 
+        userInfo, 
+        searchTitle, 
+        searchCompany, 
+        searchClient, 
+        searchDealStatus, 
+        searchRequestStatus, 
+        pageNumber, 
+        pageSize,
+        update
+    ]);
 
     useEffect(() => {
 
         if (deals) {
-            /*
-            const lastWeekDate = new Date(Date.now());
-            lastWeekDate.setUTCDate(lastWeekDate.getUTCDate() - 7);
-            const lastMonthDate = new Date(Date.now());
-            lastMonthDate.setUTCDate(lastMonthDate.getUTCDate() - 30);
-            */
-
-            setCalculate(true);
 
             const updateTime = new Date(Date.now());
             updateTime.setUTCDate(updateTime.getUTCDate() - updateFilter);
@@ -101,6 +109,8 @@ const ManageDealsScreen = ({ history }) => {
 
 
             const filteredData = []
+
+            //console.log('start calcultation', new Date(Date.now()).toISOString());
 
             for (let incr = 0; incr < tabsFilter.length; incr++) {
                 let dealsFiltered = [];
@@ -135,9 +145,6 @@ const ManageDealsScreen = ({ history }) => {
                             setParam: setNewDealFilter
                         }
                         break;
-                    /* case tabsFilter[4]:
-                        dealsFiltered = deals.filter(deal => new Date(deal.createdAt) >= lastMonthDate);
-                        break; */
                     case tabsFilter[4]: // Won
                         dealsFiltered = {
                             deals: deals.filter(deal => new Date(deal.wonDate) >= wonDealTime),
@@ -145,11 +152,8 @@ const ManageDealsScreen = ({ history }) => {
                             setParam: setWonDealFilter
                         }
                         break;
-                    /* case tabsFilter[6]:
-                        dealsFiltered = deals.filter(deal => new Date(deal.wonDate) >= lastMonthDate);
-                        break; */
                     case tabsFilter[5]: // All >>> mettre une redirection
-                        dealsFiltered = { 
+                        dealsFiltered = {
                             deals: deals,
                             param: null,
                             setParam: null
@@ -161,7 +165,7 @@ const ManageDealsScreen = ({ history }) => {
                 filteredData.push({ filter: tabsFilter[incr], data: dealsFiltered, count: dealsFiltered.deals.length });
             }
             setDataFiltered(filteredData);
-            setCalculate(false);
+            //console.log('End calcultation', new Date(Date.now()).toISOString());
             //console.log('filteredData', filteredData);
         }
     }, [deals, tabsFilter, newDealFilter, notUpdateFilter, updateFilter, wonDealFilter]);
@@ -173,20 +177,20 @@ const ManageDealsScreen = ({ history }) => {
                 title: searchTitle,
                 mainPractice: userInfo.consultantProfil.practice,
                 othersPractices: userInfo.consultantProfil.practice,
-                //othersPractices: searchPractice,
                 client: searchClient,
                 company: searchCompany,
                 status: searchDealStatus,
                 request: searchRequestStatus
             }
-            dispatch(getAllDeals(keyword, globalFilter, pageNumber, pageSize));
+            dispatch(getAllDeals(keyword, pageNumber, pageSize));
         }
         // eslint-disable-next-line
     }, [dispatch, successDelete])
 
 
-    const filterLeads = () => {
-        console.log('dispatch here filter');
+    const filterLeads = (e) => {
+        e.preventDefault();
+        setUpdate(true);
     }
 
     return (
@@ -194,13 +198,12 @@ const ManageDealsScreen = ({ history }) => {
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
             {error && <Message variant='danger'>{error}</Message>}
             {loading && <Loader />}
-            {calculate && <Loader />}
-            
+
             <DropDownTitleContainer title='Search options' close={true}>
                 <ListGroup.Item>
                     <Row className='mt-3'>
                         <Col>
-                            <Form onSubmit={filterLeads}>
+                            <Form onSubmit={(e) => filterLeads(e)}>
                                 <Row>
                                     <Col xs={6} md={2}>
                                         <Form.Group controlId='filter-title'>
@@ -289,49 +292,48 @@ const ManageDealsScreen = ({ history }) => {
                 </ListGroup.Item>
             </DropDownTitleContainer>
 
-            <DropDownTitleContainer 
+            <DropDownTitleContainer
                 title='Manage Deals'
                 close={false}>
                 <ListGroup.Item className='p-0'>
                     <Tabs defaultActiveKey={tabsFilter[0]} id="uncontrolled-tab-example" variant='tabs'>
-                        
                         {dataFiltered.length > 0 && dataFiltered.map((data, val) => (
-                            <Tab 
+                            <Tab
                                 key={val}
                                 className='mx-3'
-                                eventKey={`${data.filter}`} 
-                                title= {
-                                    
-                                        <Row className='align-text-middle'>
-                                            <span className='ml-3 align-middle'>{data.filter.split(/[0-9]+/i)[0]}</span>
-                                            
-                                            {changePeriod ? (
-                                                <span>{data.data.param && (
-                                                    <InputGroup>
-                                                        <FormControl
-                                                            as='select'
-                                                            //min={0}
-                                                            //max={60}
-                                                            value={data.data.param}
-                                                            onChange={(e) => data.data.setParam(e.target.value)}
-                                                        >
-                                                            {[...new Array(30).keys()].map(x => (
-                                                                <option key={x + 1} value={x + 1}>{x + 1}</option>
-                                                            ))}
-                                                        </FormControl>
-                                                    </InputGroup>
-                                                )}
-                                                </span>) : data.data.param}
-                                            <span>{(data.filter.split(/[0-9]+/i)[1] && data.filter.split(/[0-9]+/i)[1])}</span>
-                                            <span className='mr-3'>{' > ' + data.count}</span>
-                                        </Row>
-                                   } 
-                                >
-
+                                eventKey={`${data.filter}`}
+                                title={
+                                    <Row className='align-text-middle'>
+                                        <span className='ml-3 align-middle'>{data.filter.split(/[0-9]+/i)[0]}</span>
+                                        {changePeriod ? (
+                                            <span>{data.data.param && (
+                                                <InputGroup>
+                                                    <FormControl
+                                                        as='select'
+                                                        value={data.data.param}
+                                                        onChange={(e) => data.data.setParam(e.target.value)}
+                                                    >
+                                                        {[...new Array(30).keys()].map(x => (
+                                                            <option key={x + 1} value={x + 1}>{x + 1}</option>
+                                                        ))}
+                                                    </FormControl>
+                                                </InputGroup>
+                                            )}
+                                            </span>) : data.data.param}
+                                        <span>{(data.filter.split(/[0-9]+/i)[1] && data.filter.split(/[0-9]+/i)[1])}</span>
+                                        <span className='mr-3'>{' > ' + data.count}</span>
+                                    </Row>
+                                }
+                            >
                                 <Button
                                     variant='ligth'
                                     onClick={() => setChangePeriod(!changePeriod)}
-                                ><i className="fas fa-edit">  Modify filters</i></Button>
+                                ><i className="fas fa-edit"></i>  Modify filters</Button>
+
+                                <Button
+                                    variant='ligth'
+                                    onClick={() => history.push('/admin/deals/history')}
+                                ><i className="fas fa-history"></i>  History</Button>
 
                                 <DealList
                                     history={history}
@@ -340,45 +342,13 @@ const ManageDealsScreen = ({ history }) => {
                             </Tab>
                         ))}
                     </Tabs>
-
-                    {/* <Pagination>
-                <Pagination.Prev
-                    onClick={() => setPageNumber(page - 1)}
-                    disabled={page === 1}
-                />
-                {[...Array(pages).keys()].map(x => (
-
-                    <Pagination.Item
-                        key={x + 1}
-                        active={x + 1 === page}
-                        onClick={() => {
-                            const keyword = {
-                                title: searchTitle,
-                                mainPractice: userInfo.consultantProfil.practice,
-                                othersPractices: searchPractice,
-                                client: searchClient,
-                                company: searchCompany,
-                                status: searchDealStatus,
-                                request: searchRequestStatus
-                            }
-                            dispatch(getAllDeals(keyword, globalFilter, pageNumber, pageSize));
-                            setPageNumber(x + 1);
-                        }}
-                    >{x + 1}</Pagination.Item>
-
-                ))}
-                <Pagination.Next
-                    onClick={() => setPageNumber(page + 1)}
-                    disabled={page === pages}
-                />
-            </Pagination> */}
                 </ListGroup.Item>
             </DropDownTitleContainer>
         </>
     )
 }
 
-const DealList = ({ history, data = [] }) => {
+/* const DealList = ({ history, data = [] }) => {
 
     const dispatch = useDispatch();
 
@@ -387,7 +357,6 @@ const DealList = ({ history, data = [] }) => {
             dispatch(deleteDeal(deal._id));
         }
     }
-
     const formatName = (fullName) => {
         const separateName = fullName.split(' ');
         if (separateName.length === 1) {
@@ -447,16 +416,16 @@ const DealList = ({ history, data = [] }) => {
                         </OverlayTrigger>
                         <td className='align-middle'>{deal.startDate.substring(0, 10)}</td>
                         <td className='align-middle'>
-                            <Button 
-                                variant='primary' 
+                            <Button
+                                variant='primary'
                                 onClick={() => history.push(`/staffing/${deal._id}`)}
                                 size='sm'
                             ><i className="fas fa-edit"></i>
                             </Button>
                         </td>
                         <td className='align-middle'>
-                            <Button 
-                                variant='danger' 
+                            <Button
+                                variant='danger'
                                 onClick={() => onClickDeleteHandler(deal)}
                                 size='sm'
                             ><i className="fas fa-times"></i>
@@ -467,6 +436,6 @@ const DealList = ({ history, data = [] }) => {
             </tbody>
         </Table>
     )
-}
+} */
 
 export default ManageDealsScreen

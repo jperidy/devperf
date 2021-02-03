@@ -71,6 +71,8 @@ const updateADeal = asyncHandler(async (req, res) => {
 // @access  Private/AdminLevelOne
 const getAllDeals = asyncHandler(async (req, res) => {
 
+    //console.log('start getAll', new Date(Date.now()).toISOString())
+
     const access = req.user.profil.api.filter(x => x.name === 'getAllDeals')[0].data;
     const dealsId = await myAccessDeals(access, req);
     //console.log(dealsId);
@@ -131,6 +133,7 @@ const getAllDeals = asyncHandler(async (req, res) => {
 
     let globalFilter = {};
     
+    /*
     if (req.query.globalFilter) {
 
         const currentDate = new Date(Date.now());
@@ -176,44 +179,37 @@ const getAllDeals = asyncHandler(async (req, res) => {
                 globalFilter = {};
         }
     }
+    */
 
-    //console.log(globalFilter);
-
+    //console.log('start count', new Date(Date.now()).toISOString())
     const count = await Deal.countDocuments({ 
         ...searchClient,
-        //...searchMainPractice,
-        //...searchOthersPractices,
-        /* ...{$or:[
-            searchMainPractice,
-            searchOthersPractices
-        ]}, */
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,
         ...searchRequest,
         ...requestState,
-        ...globalFilter,
         _id: {$in: dealsId}
     });
+    //console.log('End count', new Date(Date.now()).toISOString())
 
+    //console.log('start find', new Date(Date.now()).toISOString())
     const deals = await Deal.find({ 
         ...searchClient,
-        //...searchMainPractice,
-        //...searchOthersPractices,
-        /* ...{$or:[
-            searchMainPractice,
-            searchOthersPractices
-        ]}, */
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,
         ...searchRequest,
         ...requestState,
-        ...globalFilter,
         _id: {$in: dealsId}
     }).populate('contacts.primary contacts.secondary')
+        .populate('staffingDecision.staff.idConsultant')
         .sort({'priority': -1})
         .limit(pageSize).skip(pageSize * (page - 1));
+
+    //console.log('End find', new Date(Date.now()).toISOString())
+    
+    //console.log('End get All', new Date(Date.now()).toISOString())
 
     if (deals) {
         res.status(200).json({deals, page, pages: Math.ceil(count/pageSize), count});
