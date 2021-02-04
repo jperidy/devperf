@@ -28,11 +28,12 @@ const DealsHistoryScreen = ({history}) => {
     const [pageNumber, setPageNumber] = useState('');
 
     // search configuration
-    const [searchTitle, setSearchTitle] = useState('');
-    const [searchCompany, setSearchCompany] = useState('');
-    const [searchContact, setSearchContact] = useState('');
-    const [searchDealStatus, setSearchDealStatus] = useState('');
-    const [searchRequestStatus, setSearchRequestStatus] = useState('');
+    const [searchTitle, setSearchTitle] = useState(localStorage.getItem('DealsHistoryScreen.filter') ? JSON.parse(localStorage.getItem('DealsHistoryScreen.filter')).title : '');
+    const [searchCompany, setSearchCompany] = useState(localStorage.getItem('DealsHistoryScreen.filter') ? JSON.parse(localStorage.getItem('DealsHistoryScreen.filter')).company : '');
+    const [searchContact, setSearchContact] = useState(localStorage.getItem('DealsHistoryScreen.filter') ? JSON.parse(localStorage.getItem('DealsHistoryScreen.filter')).contact : '');
+    const [searchDealStatus, setSearchDealStatus] = useState(localStorage.getItem('DealsHistoryScreen.filter') ? JSON.parse(localStorage.getItem('DealsHistoryScreen.filter')).dealStatus : '');
+    const [searchRequestStatus, setSearchRequestStatus] = useState(localStorage.getItem('DealsHistoryScreen.filter') ? JSON.parse(localStorage.getItem('DealsHistoryScreen.filter')).requestStatus : '');
+    const [searchMyDeals, setSearchMyDeals] = useState(localStorage.getItem('DealsHistoryScreen.filter') ? JSON.parse(localStorage.getItem('DealsHistoryScreen.filter')).myDeals : '');
 
     const [tabsFilter] = useState([...new Array(5).keys()].map(x => new Date(Date.now()).getFullYear() - x));
 
@@ -62,6 +63,14 @@ const DealsHistoryScreen = ({history}) => {
             }
             if(update) {
                 dispatch(getAllDeals(keyword, pageNumber, pageSize, 'all'));
+                localStorage.setItem('DealsHistoryScreen.filter', JSON.stringify({
+                    title: searchTitle, 
+                    company: searchCompany,
+                    contact: searchContact,
+                    dealStatus: searchDealStatus,
+                    requestStatus: searchRequestStatus,
+                    myDeals: searchMyDeals,
+                }));
                 setUpdate(false);
             }
         } else {
@@ -148,7 +157,7 @@ const DealsHistoryScreen = ({history}) => {
             {error && <Message variant='danger'>{error}</Message>}
             {loading && <Loader />}
 
-            <DropDownTitleContainer title='Search options' close={true}>
+            <DropDownTitleContainer title='Search options' close={false}>
                 <ListGroup.Item>
                     <Row className='mt-3'>
                         <Col>

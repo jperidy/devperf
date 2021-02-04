@@ -24,12 +24,12 @@ const ManageDealsScreen = ({ history }) => {
     const [pageNumber, setPageNumber] = useState('');
 
     // search configuration
-    const [searchTitle, setSearchTitle] = useState('');
-    const [searchCompany, setSearchCompany] = useState('');
-    const [searchContact, setSearchContact] = useState('');
-    const [searchDealStatus, setSearchDealStatus] = useState('');
-    const [searchRequestStatus, setSearchRequestStatus] = useState('');
-    const [searchMyDeals, setSearchMyDeals] = useState(false);
+    const [searchTitle, setSearchTitle] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).title : '');
+    const [searchCompany, setSearchCompany] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).company : '');
+    const [searchContact, setSearchContact] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).contact : '');
+    const [searchDealStatus, setSearchDealStatus] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).dealStatus : '');
+    const [searchRequestStatus, setSearchRequestStatus] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).requestStatus : '');
+    const [searchMyDeals, setSearchMyDeals] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).myDeals : '');
 
     const [updateFilter, setUpdateFilter] = useState(7);
     const [notUpdateFilter, setNotUpdateFilter] = useState(30);
@@ -65,9 +65,17 @@ const ManageDealsScreen = ({ history }) => {
                 request: searchRequestStatus,
                 filterMy: searchMyDeals
             }
-            console.log(keyword);
+            //console.log(keyword);
             if(update) {
                 dispatch(getAllDeals(keyword, pageNumber, pageSize, 'active'));
+                localStorage.setItem('ManageDealsScreen.filter', JSON.stringify({
+                    title: searchTitle, 
+                    company: searchCompany,
+                    contact: searchContact,
+                    dealStatus: searchDealStatus,
+                    requestStatus: searchRequestStatus,
+                    myDeals: searchMyDeals,
+                }));
                 setUpdate(false);
             }
         } else {
@@ -196,7 +204,7 @@ const ManageDealsScreen = ({ history }) => {
             {error && <Message variant='danger'>{error}</Message>}
             {loading && <Loader />}
 
-            <DropDownTitleContainer title='Search options' close={true}>
+            <DropDownTitleContainer title='Search options' close={false}>
                 <ListGroup.Item>
                     <Row className='mt-3'>
                         <Col>
@@ -209,7 +217,7 @@ const ManageDealsScreen = ({ history }) => {
                                                 type='text'
                                                 placeholder='Search title'
                                                 value={searchTitle && searchTitle}
-                                                onChange={(e) => setSearchTitle(e.target.value)}
+                                                onChange={(e) => {setSearchTitle(e.target.value)}}
                                             ></Form.Control>
                                         </Form.Group>
                                     </Col>
