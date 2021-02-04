@@ -203,7 +203,7 @@ const DealList = ({ history, data = [], filter }) => {
                             placement="bottom"
                             overlay={<Tooltip id="button-tooltip-2">{
                                 deal.staffingDecision.staff.length > 0 ? (
-                                    deal.staffingDecision.staff.map(x => ({ name: formatName(x.idConsultant.name), responsability: x.responsability, priority: x.priority })).map(x => <div className='text-left'>{`${x.responsability}: ${x.name} (${x.priority})`}</div>)
+                                    deal.staffingDecision.staff.map(x => ({ name: formatName(x.idConsultant.name), responsability: x.responsability, priority: x.priority })).map((x, index) => <div className='text-left' key={index}>{`${x.responsability}: ${x.name} (${x.priority})`}</div>)
                                 ) : ('-')}</Tooltip>
                             }
                         >
