@@ -5,6 +5,7 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import DealList from '../components/DealList';
+import Meta from '../components/Meta';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -152,6 +153,8 @@ const DealsHistoryScreen = ({history}) => {
 
     return (
         <>
+            <Meta />
+
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
             {error && <Message variant='danger'>{error}</Message>}
             {loading && <Loader />}
@@ -159,11 +162,11 @@ const DealsHistoryScreen = ({history}) => {
             <DropDownTitleContainer
                 title='Manage Deals'
                 close={false}>
-                <ListGroup.Item className='p-0'>
+                <ListGroup.Item className='p-0 mt-3'>
                     <Tabs 
                         //defaultActiveKey={tabsFilter[0]} 
                         id="uncontrolled-tab-example" 
-                        variant='tabs'
+                        variant='pills'
                         activeKey={defaultTabs}
                         onSelect={(k) => {
                             setDefaultTabs(k)

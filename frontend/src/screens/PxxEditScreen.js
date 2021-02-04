@@ -10,6 +10,7 @@ import PxxEditor from '../components/PxxEditor';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ConsultantsTab from '../components/ConsultantsTab';
 import Message from '../components/Message';
+import Meta from '../components/Meta';
 import Loader from '../components/Loader';
 import { getAllMyConsultants, updateComment } from '../actions/consultantActions';
 import { Container, FormControl, InputGroup } from 'react-bootstrap';
@@ -70,7 +71,7 @@ const PxxEditScreen = ({ history }) => {
     return (
 
         <Container>
-
+            <Meta />
             {loadingConsultantsMyList ? <Loader /> :
                 errorConsultantsMyList ? <Message variant='danger'>{errorConsultantsMyList}</Message>
                     : !consultantsMy || consultantsMy.length === 0 ?

@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import Meta from '../components/Meta';
 import DealList from '../components/DealList';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import Row from 'react-bootstrap/Row';
@@ -198,6 +199,8 @@ const ManageDealsScreen = ({ history }) => {
 
     return (
         <>
+            <Meta />
+
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
             {error && <Message variant='danger'>{error}</Message>}
             {loading && <Loader />}
@@ -205,11 +208,12 @@ const ManageDealsScreen = ({ history }) => {
             <DropDownTitleContainer
                 title='Manage Deals'
                 close={false}>
-                <ListGroup.Item className='p-0'>
+                <ListGroup.Item className='p-0 mt-3'>
                     <Tabs 
                         //defaultActiveKey={defaultTabs} 
                         id="uncontrolled-tab-example" 
-                        variant='tabs'
+                        //variant='tabs'
+                        variant='pills'
                         activeKey={defaultTabs}
                         onSelect={(k) => {
                             setDefaultTabs(k)
