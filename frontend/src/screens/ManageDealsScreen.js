@@ -7,29 +7,29 @@ import DealList from '../components/DealList';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { getAllDeals } from '../actions/dealActions';
 import { FormControl, InputGroup } from 'react-bootstrap';
-import { DEAL_STATUS, REQUEST_STATUS } from '../constants/dealConstants';
+import { REQUEST_STATUS } from '../constants/dealConstants';
 
 const ManageDealsScreen = ({ history }) => {
 
     const dispatch = useDispatch();
 
     // pagination configuration
-    const [pageSize, setPageSize] = useState('');
-    const [pageNumber, setPageNumber] = useState('');
+    const [pageSize] = useState('');
+    const [pageNumber] = useState('');
 
     // search configuration
-    const [searchTitle, setSearchTitle] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).title : '');
-    const [searchCompany, setSearchCompany] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).company : '');
-    const [searchContact, setSearchContact] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).contact : '');
-    const [searchDealStatus, setSearchDealStatus] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).dealStatus : '');
-    const [searchRequestStatus, setSearchRequestStatus] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).requestStatus : '');
-    const [searchMyDeals, setSearchMyDeals] = useState(localStorage.getItem('ManageDealsScreen.filter') ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).myDeals : '');
+    const [searchTitle, setSearchTitle] = useState(localStorage.getItem('ManageDealsScreen.filter') && JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).title ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).title : '');
+    const [searchCompany, setSearchCompany] = useState(localStorage.getItem('ManageDealsScreen.filter') && JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).company ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).company : '');
+    const [searchContact, setSearchContact] = useState(localStorage.getItem('ManageDealsScreen.filter') && JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).contact ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).contact : '');
+    const [searchDealStatus, setSearchDealStatus] = useState(localStorage.getItem('ManageDealsScreen.filter') && JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).dealStatus ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).dealStatus : '');
+    const [searchRequestStatus, setSearchRequestStatus] = useState(localStorage.getItem('ManageDealsScreen.filter') && JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).requestStatus ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).requestStatus : '');
+    const [searchMyDeals, setSearchMyDeals] = useState(localStorage.getItem('ManageDealsScreen.filter') && JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).myDeals ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).myDeals : '');
+    const [searchStaff, setSearchStaff] = useState(localStorage.getItem('ManageDealsScreen.filter') && JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).searchStaff ? JSON.parse(localStorage.getItem('ManageDealsScreen.filter')).searchStaff : '');
 
     const [updateFilter, setUpdateFilter] = useState(7);
     const [notUpdateFilter, setNotUpdateFilter] = useState(30);
@@ -40,6 +40,8 @@ const ManageDealsScreen = ({ history }) => {
 
     const [tabsFilter] = useState(['Waiting staffing', `Updated (${updateFilter}d)`, `Not updated (${notUpdateFilter}d)`, `New deal (${newDealFilter}d)`, `Won (${wonDealFilter}d)`, 'All']);
 
+    const [defaultTabs, setDefaultTabs] = useState(localStorage.getItem('ManageDealsScreen.defaultTab') ? localStorage.getItem('ManageDealsScreen.defaultTab') : tabsFilter[0])
+
     const [dataFiltered, setDataFiltered] = useState([]);
 
     const [update, setUpdate] = useState(true);
@@ -48,36 +50,36 @@ const ManageDealsScreen = ({ history }) => {
     const { userInfo } = userLogin;
 
     const dealAllList = useSelector(state => state.dealAllList);
-    const { error, loading, deals, page, pages, count } = dealAllList;
+    const { error, loading, deals } = dealAllList;
 
     const dealDelete = useSelector(state => state.dealDelete);
     const { error: errorDelete, success: successDelete } = dealDelete;
 
     useEffect(() => {
+
         if (userInfo) {
             const keyword = {
                 title: searchTitle,
-                //mainPractice: userInfo.consultantProfil.practice,
-                //othersPractices: userInfo.consultantProfil.practice,
                 contact: searchContact,
                 company: searchCompany,
                 status: searchDealStatus,
                 request: searchRequestStatus,
+                staff: searchStaff,
                 filterMy: searchMyDeals
             }
-            //console.log(keyword);
-            if(update) {
-                dispatch(getAllDeals(keyword, pageNumber, pageSize, 'active'));
-                localStorage.setItem('ManageDealsScreen.filter', JSON.stringify({
-                    title: searchTitle, 
-                    company: searchCompany,
-                    contact: searchContact,
-                    dealStatus: searchDealStatus,
-                    requestStatus: searchRequestStatus,
-                    myDeals: searchMyDeals,
-                }));
-                setUpdate(false);
-            }
+
+            dispatch(getAllDeals(keyword, pageNumber, pageSize, 'active'));
+            localStorage.setItem('ManageDealsScreen.filter', JSON.stringify({
+                title: searchTitle,
+                company: searchCompany,
+                contact: searchContact,
+                dealStatus: searchDealStatus,
+                requestStatus: searchRequestStatus,
+                searchStaff: searchStaff,
+                myDeals: searchMyDeals,
+            }));
+            setUpdate(false);
+
         } else {
             history.push('/login');
         }
@@ -90,7 +92,8 @@ const ManageDealsScreen = ({ history }) => {
         searchCompany, 
         searchContact, 
         searchDealStatus, 
-        searchRequestStatus, 
+        searchRequestStatus,
+        searchStaff,
         pageNumber, 
         pageSize,
         update,
@@ -185,18 +188,13 @@ const ManageDealsScreen = ({ history }) => {
                 company: searchCompany,
                 status: searchDealStatus,
                 request: searchRequestStatus,
+                staff: searchStaff,
                 filterMy: searchMyDeals
             }
             dispatch(getAllDeals(keyword, pageNumber, pageSize));
         }
         // eslint-disable-next-line
-    }, [dispatch, successDelete])
-
-
-    const filterLeads = (e) => {
-        e.preventDefault();
-        setUpdate(true);
-    }
+    }, [dispatch, successDelete]);
 
     return (
         <>
@@ -204,112 +202,26 @@ const ManageDealsScreen = ({ history }) => {
             {error && <Message variant='danger'>{error}</Message>}
             {loading && <Loader />}
 
-            <DropDownTitleContainer title='Search options' close={false}>
-                <ListGroup.Item>
-                    <Row className='mt-3'>
-                        <Col>
-                            <Form onSubmit={(e) => filterLeads(e)}>
-                                <Row className='align-items-end'>
-                                    <Col xs={6} md={2}>
-                                        <Form.Group controlId='filter-title' className='mb-0'>
-                                            <Form.Label>Title</Form.Label>
-                                            <Form.Control
-                                                type='text'
-                                                placeholder='Search title'
-                                                value={searchTitle && searchTitle}
-                                                onChange={(e) => {setSearchTitle(e.target.value)}}
-                                            ></Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col xs={6} md={2}>
-                                        <Form.Group controlId='filter-company' className='mb-0'>
-                                            <Form.Label>Company</Form.Label>
-                                            <Form.Control
-                                                type='text'
-                                                placeholder='Search company'
-                                                value={searchCompany && searchCompany}
-                                                onChange={(e) => setSearchCompany(e.target.value)}
-                                            ></Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col xs={6} md={2}>
-                                        <Form.Group controlId='filter-contact' className='mb-0'>
-                                            <Form.Label>Contact</Form.Label>
-                                            <Form.Control
-                                                type='text'
-                                                placeholder='Search contact'
-                                                value={searchContact && searchContact}
-                                                onChange={(e) => setSearchContact(e.target.value)}
-                                            ></Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col xs={6} md={2}>
-                                        <Form.Label>Status</Form.Label>
-                                        <Form.Group controlId='filter-status' className='mb-0'>
-                                            <Form.Control
-                                                as='select'
-                                                value={searchDealStatus && searchDealStatus}
-                                                onChange={(e) => {
-                                                    setSearchDealStatus(e.target.value)
-                                                    setUpdate(true)
-                                                }}
-                                            >
-                                                <option value=''>--Select--</option>
-                                                {DEAL_STATUS.map(x => (
-                                                    <option key={x.name} value={x.name}>{x.name}</option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-                                    <Col xs={6} md={2}>
-                                        <Form.Group controlId='filter-request' className='mb-0'>
-                                            <Form.Label>Request</Form.Label>
-                                            <Form.Control
-                                                as='select'
-                                                value={searchRequestStatus && searchRequestStatus}
-                                                onChange={(e) => {
-                                                    setSearchRequestStatus(e.target.value)
-                                                    setUpdate(true)
-                                                }}
-                                            >
-                                                <option value=''>--Select--</option>
-                                                {REQUEST_STATUS.map(x => (
-                                                    <option key={x.name} value={x.name}>{x.name}</option>
-                                                ))}
-                                            </Form.Control>
-                                        </Form.Group>
-                                    </Col>
-
-                                    <Col xs={12} md={2} className='text-right'>
-                                        <Button type='submit' variant='primary' block>Search</Button>
-                                    </Col>
-
-                                </Row>
-
-                                <Row>
-                                    <Col xs={6} md={8}>
-                                        <Form.Control
-                                            plaintext
-                                            readOnly
-                                            value={count ? `${count} Deals found` : '0 deals found'} />
-                                    </Col>
-                                </Row>
-                            </Form>
-                        </Col>
-                    </Row>
-                </ListGroup.Item>
-            </DropDownTitleContainer>
-
             <DropDownTitleContainer
                 title='Manage Deals'
                 close={false}>
                 <ListGroup.Item className='p-0'>
-                    <Tabs defaultActiveKey={tabsFilter[0]} id="uncontrolled-tab-example" variant='tabs'>
+                    <Tabs 
+                        //defaultActiveKey={defaultTabs} 
+                        id="uncontrolled-tab-example" 
+                        variant='tabs'
+                        activeKey={defaultTabs}
+                        onSelect={(k) => {
+                            setDefaultTabs(k)
+                            localStorage.setItem('ManageDealsScreen.defaultTab', k)
+                        }}
+                    >
                         {dataFiltered.length > 0 && dataFiltered.map((data, val) => (
                             <Tab
                                 key={val}
                                 className='mx-3'
                                 eventKey={`${data.filter}`}
+                                
                                 title={
                                     <Row className='align-text-middle'>
                                         <span className='ml-3 align-middle'>{data.filter.split(/[0-9]+/i)[0]}</span>
@@ -333,32 +245,50 @@ const ManageDealsScreen = ({ history }) => {
                                     </Row>
                                 }
                             >
-                                <Button
-                                    variant='ligth'
-                                    onClick={() => setChangePeriod(!changePeriod)}
-                                ><i className="fas fa-edit"></i>  Configure tabs</Button>
+                                <Row className='mt-3'>
+                                    <Col>
+                                        <Button
+                                            variant='ligth'
+                                            onClick={() => setChangePeriod(!changePeriod)}
+                                        ><i className="fas fa-edit"></i>  Configure tabs</Button>
 
-                                <Button
-                                    variant='ligth'
-                                    onClick={() => history.push('/admin/deals/history')}
-                                ><i className="fas fa-history"></i>  History</Button>
+                                        <Button
+                                            variant='ligth'
+                                            onClick={() => history.push('/admin/deals/history')}
+                                        ><i className="fas fa-history"></i>  History</Button>
 
-                                <Button
-                                    variant='ligth'
-                                    onClick={() => {
-                                        setSearchMyDeals(!searchMyDeals)
-                                        setUpdate(true)
-                                    }}
-                                >{searchMyDeals ? (
-                                    <div><i className="fas fa-backspace"></i>  Get all deals</div>
-                                ) : (
-                                    <div><i className="fas fa-filter"></i>  Filter my deals</div>
-                                )}
-                                </Button>
+                                        <Button
+                                            variant='ligth'
+                                            onClick={() => {
+                                                setSearchMyDeals(!searchMyDeals)
+                                                setUpdate(true)
+                                            }}
+                                        >{searchMyDeals ? (
+                                            <div><i className="fas fa-backspace"></i>  Get all deals</div>
+                                        ) : (
+                                                <div><i className="fas fa-filter"></i>  Filter my deals</div>
+                                            )}
+                                        </Button>
+                                    </Col>
+                                </Row>
 
                                 <DealList
                                     history={history}
                                     data={data.data}
+                                    filter={{
+                                        searchTitle: searchTitle,
+                                        setSearchTitle: setSearchTitle,
+                                        searchCompany: searchCompany, 
+                                        setSearchCompany: setSearchCompany,
+                                        searchContact: searchContact,
+                                        setSearchContact: setSearchContact,
+                                        searchDealStatus: searchDealStatus,
+                                        setSearchDealStatus: setSearchDealStatus,
+                                        searchRequestStatus: searchRequestStatus,
+                                        setSearchRequestStatus: setSearchRequestStatus,
+                                        searchStaff: searchStaff,
+                                        setSearchStaff: setSearchStaff
+                                    }}
                                 />
                             </Tab>
                         ))}

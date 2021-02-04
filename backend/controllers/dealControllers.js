@@ -76,7 +76,7 @@ const getAllDeals = asyncHandler(async (req, res) => {
 
     let access = req.user.profil.api.filter(x => x.name === 'getAllDeals')[0].data;
     if (req.query.filterMy === 'true') {
-        access = 'my'
+        access = 'team'
     }
 
     const dealsId = await myAccessDeals(access, req);
@@ -127,6 +127,14 @@ const getAllDeals = asyncHandler(async (req, res) => {
         }
     }
 
+    let searchStaff = {};
+    if(req.query.staff) {
+        const staffId = await Consultant.find({name: {$regex: req.query.staff, $options: 'i'}})
+        searchStaff = {
+            'staffingDecision.staff.idConsultant': {$in: staffId}    
+        }
+    }
+
     //console.log('start count', new Date(Date.now()).toISOString())
     const count = await Deal.countDocuments({ 
         ...searchContact,
@@ -135,6 +143,7 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...searchStatus,
         ...searchRequest,
         ...requestState,
+        ...searchStaff,
         _id: {$in: dealsId}
     });
     
@@ -145,6 +154,7 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...searchStatus,
         ...searchRequest,
         ...requestState,
+        ...searchStaff,
         _id: {$in: dealsId}
     }).populate('contacts.primary contacts.secondary')
         .populate('staffingDecision.staff.idConsultant')
