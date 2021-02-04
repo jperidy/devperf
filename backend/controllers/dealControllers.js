@@ -156,8 +156,8 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...requestState,
         ...searchStaff,
         _id: {$in: dealsId}
-    }).populate('contacts.primary contacts.secondary')
-        .populate('staffingDecision.staff.idConsultant')
+    }).populate({path: 'contacts.primary contacts.secondary', select: 'name matricule practice'})
+        .populate({path: 'staffingDecision.staff.idConsultant', select: 'name matricule practice'})
         .sort({'priority': -1})
         .limit(pageSize).skip(pageSize * (page - 1));
 
