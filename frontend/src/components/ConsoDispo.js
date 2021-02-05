@@ -13,6 +13,7 @@ import Popover from 'react-bootstrap/Popover';
 //import Tooltip from 'react-bootstrap/Tooltip';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
+import SkillsDetails from './SkillsDetails';
 
 const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
 
@@ -271,9 +272,13 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                                                 )
                                             )}
                                             <Row className='text-left pt-2'><Col>Skills:{' '}
-                                                {consultantData.quality && consultantData.quality.map((skill, val) => (
+                                                    <SkillsDetails
+                                                        consultantId={consultantData._id}
+                                                        editable={false}
+                                                    />
+                                                {/*consultantData.quality && consultantData.quality.map((skill, val) => (
                                                     <span key={val}>{`#${skill.skill}${new Array(skill.level).fill('+').join('')} `}</span>
-                                                ))}
+                                                ))*/}
                                             </Col></Row>
                                         </Popover.Content>
                                         </>

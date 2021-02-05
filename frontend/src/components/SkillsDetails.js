@@ -12,8 +12,9 @@ import Tooltip from 'react-bootstrap/Tooltip';
 
 import ListGroup from 'react-bootstrap/ListGroup';
 import { consultantAddASkill, consultantDeleteSkill, consultantUpdateASkillLevel, getAllConsultantSkills, getConsultantSkills } from '../actions/consultantActions';
+import Rating from './Rating';
 
-const SkillsDetails = ({consultantId, close=true}) => {
+const SkillsDetails = ({consultantId, close=true, editable=true}) => {
 
     const dispatch = useDispatch();
 
@@ -21,7 +22,9 @@ const SkillsDetails = ({consultantId, close=true}) => {
     const [skillId, setSkillId] = useState('default');
     const [skillLevel, setSkillLevel] = useState(1);
     const [skillCategoryList, setSkillCategoryList] = useState([]);
-    const [quality, setQuality] = useState([]);
+    //const [quality, setQuality] = useState([]);
+
+    const [qualityOrdonned, setQualityOrdonned] = useState([]);
 
     const [update, setUpdate] = useState(false);
 
@@ -51,7 +54,11 @@ const SkillsDetails = ({consultantId, close=true}) => {
         if (!skills && !loading) {
             dispatch(getConsultantSkills(consultantId));
         } else {
-            setQuality(skills)
+            if (skills) {
+                //setQuality(skills)
+                const ordonnedSkills = orderSkills(skills);
+                setQualityOrdonned(ordonnedSkills);
+            }
         }
     }, [dispatch, skills, consultantId, loading]);
 
@@ -80,6 +87,18 @@ const SkillsDetails = ({consultantId, close=true}) => {
         successConsultantDeleteSkill,
     ]);
 
+    const orderSkills = (skills) => {
+        const categoryList = [...new Set(skills.map(x => x.skill.category))]
+        const orderSkills = []
+        for (let incr = 0 ; incr < categoryList.length ; incr++) {
+            orderSkills.push({
+                category: categoryList[incr],
+                data: skills.filter( x => x.skill.category === categoryList[incr])
+            })
+        }
+        return orderSkills;
+    }
+
     const handleAddSkill = (consultantId, skillId, skillLevel) => {
         dispatch(consultantAddASkill(consultantId, skillId, skillLevel));
     }
@@ -97,94 +116,121 @@ const SkillsDetails = ({consultantId, close=true}) => {
 
         <DropDownTitleContainer title='Skills' close={close}>
 
-            <ListGroup.Item>
-                <h4>Add skills</h4> 
+            {editable && (
+                <ListGroup.Item>
+                    <h4>Add skills</h4>
 
-                <Form.Row className='mt-3 align-items-end'>
-                    <Col xs={12} md={3}>
-                        <Form.Group controlId='skillCategory'>
-                            <Form.Label><strong>Category</strong></Form.Label>
-                            <Form.Control
-                                as='select'
-                                value={skillCategory ? skillCategory : 'default'}
-                                onChange={(e) => setSkillCategory(e.target.value)}
-                                required
-                            >
-                                <option value='default'>Please Select</option>
-                                {skillCategoryList && (
-                                    skillCategoryList.map((x, val) => (
-                                        <option
-                                            value={x}
-                                            key={val}
-                                            onChange={(e) => { setSkillCategory(e.target.value) }}
-                                        >{x}</option>
-                                    )))}
-                            </Form.Control>
-                        </Form.Group>
-                    </Col>
-                    <Col xs={12} md={3} >
-                        <Form.Group controlId='skillName'>
-                            <Form.Label><strong>Skill</strong></Form.Label>
-                            <OverlayTrigger
-                                placement="top"
-                                overlay={<Tooltip id="button-tooltip-2">{skillId && skillsAll ? skillsAll.map(x => (x._id === skillId) && x.description) : 'no description'}</Tooltip>}
-                            >
+                    <Form.Row className='mt-3 align-items-end'>
+                        <Col xs={12} md={3}>
+                            <Form.Group controlId='skillCategory'>
+                                <Form.Label><strong>Category</strong></Form.Label>
                                 <Form.Control
                                     as='select'
-                                    value={skillId ? skillId : 'default'}
-                                    onChange={(e) => setSkillId(e.target.value)}
+                                    value={skillCategory ? skillCategory : 'default'}
+                                    onChange={(e) => setSkillCategory(e.target.value)}
                                     required
                                 >
                                     <option value='default'>Please Select</option>
-                                    {skillsAll && skillCategory && (
-                                        skillsAll.map((x, val) => (
-                                            x.category === skillCategory && (
-                                                <option
-                                                    value={x._id}
-                                                    key={val}
-                                                >{x.name}</option>
-                                            )
+                                    {skillCategoryList && (
+                                        skillCategoryList.map((x, val) => (
+                                            <option
+                                                value={x}
+                                                key={val}
+                                                onChange={(e) => { setSkillCategory(e.target.value) }}
+                                            >{x}</option>
                                         )))}
+                                </Form.Control>
+                            </Form.Group>
+                        </Col>
+                        <Col xs={12} md={3} >
+                            <Form.Group controlId='skillName'>
+                                <Form.Label><strong>Skill</strong></Form.Label>
+                                <OverlayTrigger
+                                    placement="top"
+                                    overlay={<Tooltip id="button-tooltip-2">{skillId && skillsAll ? skillsAll.map(x => (x._id === skillId) && x.description) : 'no description'}</Tooltip>}
+                                >
+                                    <Form.Control
+                                        as='select'
+                                        value={skillId ? skillId : 'default'}
+                                        onChange={(e) => setSkillId(e.target.value)}
+                                        required
+                                    >
+                                        <option value='default'>Please Select</option>
+                                        {skillsAll && skillCategory && (
+                                            skillsAll.map((x, val) => (
+                                                x.category === skillCategory && (
+                                                    <option
+                                                        value={x._id}
+                                                        key={val}
+                                                    >{x.name}</option>
+                                                )
+                                            )))}
+
+                                    </Form.Control>
+                                </OverlayTrigger>
+                            </Form.Group>
+                        </Col>
+                        <Col xs={12} md={3} >
+                            <Form.Group controlId='skillLevel'>
+                                <Form.Label><strong>Level</strong></Form.Label>
+                                <Form.Control
+                                    as='select'
+                                    value={skillLevel ? skillLevel : 1}
+                                    onChange={(e) => setSkillLevel(e.target.value)}
+                                    required
+                                >
+                                    {[...new Array(10).keys()].map(x => (
+                                        <option key={(x + 1) / 2} value={(x + 1) / 2}>{(x + 1) / 2}</option>
+                                    ))}
 
                                 </Form.Control>
-                            </OverlayTrigger>
-                        </Form.Group>
-                    </Col>
-                    <Col xs={12} md={3} >
-                        <Form.Group controlId='skillLevel'>
-                            <Form.Label><strong>Level</strong></Form.Label>
-                            <Form.Control
-                                as='select'
-                                value={skillLevel ? skillLevel : 1}
-                                onChange={(e) => setSkillLevel(e.target.value)}
-                                required
-                            >
-                                <option value={1}>1</option>
-                                <option value={2}>2</option>
-                                <option value={3}>3</option>
+                            </Form.Group>
+                        </Col>
+                        <Col xs={12} md={3} className='align-items-bottom'>
+                            <Form.Group>
+                                <InputGroup>
+                                    <Button
+                                        block
+                                        onClick={() => handleAddSkill(consultantId, skillId, skillLevel)}
+                                    >{loadingConsultantAddSkill ? <Loader /> : 'Add'}</Button>
+                                </InputGroup>
+                            </Form.Group>
+                        </Col>
+                    </Form.Row>
 
-                            </Form.Control>
-                        </Form.Group>
-                    </Col>
-                    <Col xs={12} md={3} className='align-items-bottom'>
-                        <Form.Group>
-                            <InputGroup>
-                                <Button
-                                    block
-                                    onClick={() => handleAddSkill(consultantId, skillId, skillLevel)}
-                                >{loadingConsultantAddSkill ? <Loader /> : 'Add'}</Button>
-                            </InputGroup>
-                        </Form.Group>
-                    </Col>
-                </Form.Row>
+                    {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
+                    {errorConsultantAddSkill && <Message variant='danger'>{errorConsultantAddSkill}</Message>}
+                    {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
 
-                {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
-                {errorConsultantAddSkill && <Message variant='danger'>{errorConsultantAddSkill}</Message>}
-                {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
+                </ListGroup.Item>
 
+            )}
+            
+            
+            <ListGroup.Item>
+                {qualityOrdonned && qualityOrdonned.length ? (
+                    <ListGroup variant='flush'>
+                        {qualityOrdonned.map((categoryList,val) => (
+                            <ListGroup.Item key={val}>
+                                <h4>{categoryList.category}</h4>
+                                {categoryList.data.map( (x,val) => (
+                                    <SkillDisplayLine 
+                                        consultantId={consultantId}
+                                        key={val}
+                                        skill={x}
+                                        val={val}
+                                        handleUpdateSkillLevel={handleUpdateSkillLevel}
+                                        handlerDeleteConsultantSkill={handlerDeleteConsultantSkill}
+                                    />
+                                ))}
+                            </ListGroup.Item>
+                        ))}
+                    </ListGroup>
+                ) : <p>Please add quality</p>}
             </ListGroup.Item>
 
-            <ListGroup.Item>
+
+            {/* <ListGroup.Item>
                 {quality && quality.length ? (
                     <ListGroup variant='flush'>
                         {quality.map((x, val) => (
@@ -205,7 +251,7 @@ const SkillsDetails = ({consultantId, close=true}) => {
                         </Form.Row>
                     </ListGroup>
                 ) : <p>Please add qualities</p>}
-            </ListGroup.Item>
+            </ListGroup.Item> */}
         </DropDownTitleContainer>
     )
 }
@@ -214,10 +260,15 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
 
     const [level, setLevel] = useState(skill.level);
 
+    const updateLevel = (newLevel) => {
+        setLevel(newLevel);
+        handleUpdateSkillLevel(consultantId, skill.skill._id, newLevel)
+    }
+
     return (
         <>
             <Form.Row key={val}>
-                <Col xs={3}>
+                {/* <Col xs={3}>
                     <Form.Group controlId='skillcategory'>
                         <Form.Control
                             plaintext
@@ -225,7 +276,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                             value={skill.skill && skill.skill.category}
                         ></Form.Control>
                     </Form.Group>
-                </Col>
+                </Col> */}
                 <Col xs={3}>
                     <Form.Group controlId='skillName'>
                         <Form.Control
@@ -235,28 +286,34 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                         ></Form.Control>
                     </Form.Group>
                 </Col>
-                <Col xs={3}>
+                <Col>
+                    <Rating
+                        value={Number(level)}
+                        setValue={updateLevel}
+                    />
+                </Col>
+                {/* <Col xs={3}>
                     <Form.Group controlId='skillLevel'>
                         <Form.Control
                             type='Number'
-                            min={1}
-                            max={3}
+                            min={0.5}
+                            max={5}
+                            step={0.5}
                             value={Number(level)}
                             onChange={(e) => {
                                 setLevel(e.target.value);
-                                //console.log(consultantId, skill.skill._id, e.target.value)
-                                handleUpdateSkillLevel(consultantId, skill.skill._id, e.target.value)
+                                //handleUpdateSkillLevel(consultantId, skill.skill._id, e.target.value)
                             }}
                         ></Form.Control>
                     </Form.Group>
-                </Col>
-                <Col xs={3}>
+                </Col> */}
+                <Col>
                     <Form.Group>
                         <InputGroup>
                             <Button
-                                block
-                                style={{color:'grey'}}
-                                variant="white"
+                                //style={{color:'grey'}}
+                                variant="secondary"
+                                size='sm'
                                 onClick={() => handlerDeleteConsultantSkill(consultantId, skill.skill._id)}
                             ><i className="fas fa-times-circle"></i></Button>
                         </InputGroup>

@@ -15,7 +15,7 @@ const DropDownTitleContainer = ({children, title, close = true}) => {
                     variant='light'
                     className='text-left'
                     block
-                ><h3>{hide ? (
+                > <h3>{hide ? (
                     <><i className="fas fa-caret-down"></i> {title}</>
                 ) : (
                         <><i className="fas fa-caret-up"></i> {title}</>
