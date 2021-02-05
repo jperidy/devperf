@@ -33,13 +33,13 @@ const StaffingEditScreen = ({ match, history }) => {
     const { loading: loadingUpdate, error: errorUpdate } = dealUpdate;
 
     const dealEdit = useSelector(state => state.dealEdit);
-    const { success: successEdit, loading: loadingEdit, deal: dealToEdit } = dealEdit;
+    const { success: successEdit, deal: dealToEdit } = dealEdit;
 
     const consultantPracticeList = useSelector(state => state.consultantPracticeList);
     const { practiceList } = consultantPracticeList;
 
     const consultantsMyAdminList = useSelector(state => state.consultantsMyAdminList);
-    const { loading:loadingLeaders, error: errorLeaders, consultantsMyAdmin: consultantLeader } = consultantsMyAdminList;
+    const { consultantsMyAdmin: consultantLeader } = consultantsMyAdminList;
 
     const [title, setTitle] = useState('');
     const [company, setCompany] = useState('');
@@ -61,14 +61,11 @@ const StaffingEditScreen = ({ match, history }) => {
 
     const [newComment, setNewComment] = useState('');
 
-    const [sdInstructions, setSdInstructions] = useState('');
+    const [sdInstructions] = useState('');
     const [sdStatus, setSdStatus] = useState('');
     const [sdStaff, setSdStaff] = useState([]);
 
     const [sdConsultant, setSdConsultant] = useState('');
-    //const [sdResponsability, setSdResponsability] = useState('');
-    //const [sdPriority, setSdPriority] = useState('');
-    //const [sdInformation, setSdInformation] = useState('');
 
     const [wonDate, setWonDate] = useState('');
 
@@ -96,9 +93,9 @@ const StaffingEditScreen = ({ match, history }) => {
     endDefault.setUTCMonth(endDefault.getUTCMonth() + duration);
     endDefault = endDefault.toISOString().substring(0, 10);
 
-    const [practice, setPractice] = useState('PTC1');
-    const [start, setStart] = useState(startDefault);
-    const [end, setEnd] = useState(endDefault);
+    const [practice] = useState('PTC1');
+    const [start] = useState(startDefault);
+    const [end] = useState(endDefault);
 
     useEffect(() => {
         if (!userInfo) {
@@ -158,7 +155,6 @@ const StaffingEditScreen = ({ match, history }) => {
                 dealToEdit.contacts.secondary.map( coLeader => ({id: coLeader._id, value: coLeader.name})) : []);
             setComments(dealToEdit.comments ? dealToEdit.comments : []);
         }
-        //console.log('coleaders', coLeaders)
     }, [successEdit, dealToEdit, userInfo, match])
 
     useEffect(() => {
@@ -316,9 +312,7 @@ const StaffingEditScreen = ({ match, history }) => {
             if (!newList.map( x => x.id).includes(value.id)) {
                 newList.push(value);
                 setCoLeaders(newList)
-            }            
-            //console.log('value', value)
-            //console.log('coLeaders', newList)
+            }
         }
     }
 
@@ -1018,7 +1012,6 @@ const StaffingEditScreen = ({ match, history }) => {
 
             <StaffAConsultant
                 show={modalWindowShow}
-                alreadyStaff={sdStaff}
                 onHide={() => setModalWindowShow(false)}
                 consultant={sdConsultant}
                 addStaffHandler={addStaffHandler}

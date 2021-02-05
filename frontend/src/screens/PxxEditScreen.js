@@ -152,7 +152,7 @@ const PxxEditScreen = ({ history }) => {
 
                                 <Row>
                                     <Col>
-                                        <DropDownTitleContainer title='Staffings on track' close={true}>
+                                        <DropDownTitleContainer title='Staffings on track' close={false}>
                                             <ViewStaffs
                                                 history={history}
                                                 consultantId={consultantsMy[focus]._id}

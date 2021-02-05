@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -6,46 +6,18 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
 import ViewStaffs from './ViewStaffs';
+import SkillsDetails from './SkillsDetails';
+import DropDownTitleContainer from '../components/DropDownTitleContainer';
 
 
-const StaffAConsultant = ({ history, onHide, show, alreadyStaff, consultant, addStaffHandler }) => {
-
-    //const dispatch = useDispatch();
+const StaffAConsultant = ({ history, onHide, show, consultant, addStaffHandler }) => {
 
     const [sdResponsability, setSdResponsability] = useState('');
     const [sdPriority, setSdPriority] = useState('');
     const [sdInformation, setSdInformation] = useState('');
 
-    //const consultantAllStaffs = useSelector(state => state.consultantAllStaffs);
-    //const { loading, staffings } = consultantAllStaffs;
-
-    /* useEffect(() => {
-        if (consultant) {
-            dispatch(getAllStaffs(consultant._id));
-        }
-    }, [dispatch, consultant]); */
-
-    /*
-    const addStaffHandler = () => {
-
-        let tampon = new Array(...alreadyStaff);
-        tampon.push({
-            idConsultant: {
-                _id: consultant._id,
-                name: consultant.name,
-            },
-            responsability: sdResponsability,
-            priority: sdPriority,
-            information: sdInformation
-        });
-        addStaffHandler(tampon);
-        onHide();
-    }
-    */
-
-    //console.log('consultant', consultant);
-
     return (
+
         <Modal
             show={show}
             size="lg"
@@ -112,63 +84,19 @@ const StaffAConsultant = ({ history, onHide, show, alreadyStaff, consultant, add
                     </Col>
                 </Row>
 
-                <ViewStaffs 
-                    history={history}
+                <SkillsDetails
                     consultantId={consultant._id}
-                    onNavigate={onHide}
+                    editable={false}
                 />
 
-                {/* <Row>
-                    <Col className='mt-5'>
-                        <h4>Others staffings</h4>
-                        <Row className='mt-3'>
-                            <Col><strong>Company</strong></Col>
-                            <Col><strong>Title</strong></Col>
-                            <Col><strong>Practice</strong></Col>
-                            <Col><strong>Probability</strong></Col>
-                            <Col><strong>Start</strong></Col>
-                            <Col><strong>Request status</strong></Col>
-                            <Col></Col>
-                        </Row>
-
-                        {loading && <Loader />}
-                        {staffings && staffings.map( deal => (
-                            <ListGroup.Item
-                                key={deal._id}
-                            >
-                                <Row>
-                                    <Col>
-                                        {deal.company}
-                                    </Col>
-                                    <Col>
-                                        {deal.title}
-                                    </Col>
-                                    <Col>
-                                        {deal.mainPractice}
-                                    </Col>
-                                    <Col>
-                                        {deal.probability} %
-                                    </Col>
-                                    <Col>
-                                        {deal.startDate.substring(0,10)}
-                                    </Col>
-                                    <Col>
-                                        {deal.requestStatus}
-                                    </Col>
-                                    <Col>
-                                        <Button
-                                            onClick={() => {
-                                                history.push(`/staffing/${deal._id}`);
-                                                onHide();
-                                            }}
-                                            variant='light'
-                                        ><i className="fas fa-edit"></i></Button>
-                                    </Col>
-                                </Row>
-                            </ListGroup.Item>
-                        ))}
-                    </Col>
-                </Row> */}
+                <DropDownTitleContainer title='Others staffings' close={false}>
+                    <ViewStaffs
+                        history={history}
+                        consultantId={consultant._id}
+                        onNavigate={onHide}
+                    />
+                </DropDownTitleContainer>
+                
             </Modal.Body>
 
             <Modal.Footer>

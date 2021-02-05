@@ -13,8 +13,6 @@ const Rating = ({ value, setValue, text, color }) => {
     while (valueList.length < 5) {
         valueList.push(0)
     }
-    //console.log('value', value)
-    //console.log('valueList', valueList)
 
     return (
         

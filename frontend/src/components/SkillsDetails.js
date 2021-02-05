@@ -22,7 +22,6 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
     const [skillId, setSkillId] = useState('default');
     const [skillLevel, setSkillLevel] = useState(1);
     const [skillCategoryList, setSkillCategoryList] = useState([]);
-    //const [quality, setQuality] = useState([]);
 
     const [qualityOrdonned, setQualityOrdonned] = useState([]);
 
@@ -39,7 +38,7 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
     const { loading: loadingConsultantAddSkill, success: successConsultantAddSkill, error: errorConsultantAddSkill } = consultantAddSkill;
 
     const consultantUpdateSkill = useSelector(state => state.consultantUpdateSkill);
-    const { loading: loadingConsultantUpdateSkill, success: successConsultantUpdateSkill, error: errorConsultantUpdateSkill } = consultantUpdateSkill;
+    const { error: errorConsultantUpdateSkill } = consultantUpdateSkill;
 
     const consultantDeleteSkillReducer = useSelector(state => state.consultantDeleteSkill);
     const { success: successConsultantDeleteSkill } = consultantDeleteSkillReducer;
@@ -83,7 +82,6 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
         }
     }, [
         successConsultantAddSkill,
-        //successConsultantUpdateSkill,
         successConsultantDeleteSkill,
     ]);
 
@@ -108,7 +106,6 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
     }
 
     const handleUpdateSkillLevel = (consultantId, skillId, level) => {
-        //console.log(consultantId, skillId, level)
         dispatch(consultantUpdateASkillLevel(consultantId, skillId, level));
     }
 
@@ -136,7 +133,7 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
                                             <option
                                                 value={x}
                                                 key={val}
-                                                onChange={(e) => { setSkillCategory(e.target.value) }}
+                                                //onChange={(e) => { setSkillCategory(e.target.value) }}
                                             >{x}</option>
                                         )))}
                                 </Form.Control>
@@ -174,16 +171,14 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
                             <Form.Group controlId='skillLevel'>
                                 <Form.Label><strong>Level</strong></Form.Label>
                                 <Form.Control
-                                    as='select'
+                                    type='number'
+                                    min={0}
+                                    max={5}
+                                    step={0.5}
                                     value={skillLevel ? skillLevel : 1}
                                     onChange={(e) => setSkillLevel(e.target.value)}
                                     required
-                                >
-                                    {[...new Array(10).keys()].map(x => (
-                                        <option key={(x + 1) / 2} value={(x + 1) / 2}>{(x + 1) / 2}</option>
-                                    ))}
-
-                                </Form.Control>
+                                ></Form.Control>
                             </Form.Group>
                         </Col>
                         <Col xs={12} md={3} className='align-items-bottom'>
@@ -221,6 +216,7 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
                                         val={val}
                                         handleUpdateSkillLevel={handleUpdateSkillLevel}
                                         handlerDeleteConsultantSkill={handlerDeleteConsultantSkill}
+                                        editable={editable}
                                     />
                                 ))}
                             </ListGroup.Item>
@@ -229,34 +225,11 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
                 ) : <p>Please add quality</p>}
             </ListGroup.Item>
 
-
-            {/* <ListGroup.Item>
-                {quality && quality.length ? (
-                    <ListGroup variant='flush'>
-                        {quality.map((x, val) => (
-                            <ListGroup.Item key={val}>
-                                <SkillDisplayLine
-                                    consultantId={consultantId}
-                                    key={val}
-                                    skill={x}
-                                    val={val}
-                                    handleUpdateSkillLevel={handleUpdateSkillLevel}
-                                    handlerDeleteConsultantSkill={handlerDeleteConsultantSkill}
-                                />
-                            </ListGroup.Item>
-                        ))}
-                        <Form.Row>
-                            <Col xs={6} md={8}></Col>
-                            <Col xs={6} md={4} className='text-center'>{loadingConsultantUpdateSkill && <Loader />}</Col>
-                        </Form.Row>
-                    </ListGroup>
-                ) : <p>Please add qualities</p>}
-            </ListGroup.Item> */}
         </DropDownTitleContainer>
     )
 }
 
-const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, handlerDeleteConsultantSkill}) => {
+const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, handlerDeleteConsultantSkill, editable=true}) => {
 
     const [level, setLevel] = useState(skill.level);
 
@@ -268,15 +241,6 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
     return (
         <>
             <Form.Row key={val}>
-                {/* <Col xs={3}>
-                    <Form.Group controlId='skillcategory'>
-                        <Form.Control
-                            plaintext
-                            readOnly
-                            value={skill.skill && skill.skill.category}
-                        ></Form.Control>
-                    </Form.Group>
-                </Col> */}
                 <Col xs={3}>
                     <Form.Group controlId='skillName'>
                         <Form.Control
@@ -292,32 +256,20 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                         setValue={updateLevel}
                     />
                 </Col>
-                {/* <Col xs={3}>
-                    <Form.Group controlId='skillLevel'>
-                        <Form.Control
-                            type='Number'
-                            min={0.5}
-                            max={5}
-                            step={0.5}
-                            value={Number(level)}
-                            onChange={(e) => {
-                                setLevel(e.target.value);
-                                //handleUpdateSkillLevel(consultantId, skill.skill._id, e.target.value)
-                            }}
-                        ></Form.Control>
-                    </Form.Group>
-                </Col> */}
+
                 <Col>
-                    <Form.Group>
-                        <InputGroup>
-                            <Button
-                                //style={{color:'grey'}}
-                                variant="secondary"
-                                size='sm'
-                                onClick={() => handlerDeleteConsultantSkill(consultantId, skill.skill._id)}
-                            ><i className="fas fa-times-circle"></i></Button>
-                        </InputGroup>
-                    </Form.Group>
+                    {editable && (
+                        <Form.Group>
+                            <InputGroup>
+                                <Button
+                                    //style={{color:'grey'}}
+                                    variant="secondary"
+                                    size='sm'
+                                    onClick={() => handlerDeleteConsultantSkill(consultantId, skill.skill._id)}
+                                ><i className="fas fa-times-circle"></i></Button>
+                            </InputGroup>
+                        </Form.Group>
+                    )}
                 </Col>
             </Form.Row>
         </>
