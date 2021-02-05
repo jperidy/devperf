@@ -241,7 +241,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
         <>
             <Form.Row key={val}>
                 <Col xs={3}>
-                    <Form.Group controlId='skillName'>
+                    <Form.Group controlId='skillName' className='mb-0'>
                         <Form.Control
                             plaintext
                             readOnly
@@ -259,7 +259,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
 
                 <Col>
                     {editable && (
-                        <Form.Group>
+                        <Form.Group className='mb-0'>
                             <InputGroup>
                                 <Button
                                     //style={{color:'grey'}}

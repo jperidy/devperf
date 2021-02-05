@@ -451,7 +451,7 @@ const getProdChart = asyncHandler(async (req, res) => {
 // @access  Private
 const getAvailabilityChart = asyncHandler(async (req, res) => {
 
-    console.log(Date(Date.now()) + ' >> Début get availabilities');
+    //console.log(Date(Date.now()) + ' >> Début get availabilities');
 
     const start = req.query.start; // '2021-01-01'
     const end = req.query.end; //'2021-03-01'
@@ -492,9 +492,10 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
         name: {$in: consultantId.map(x => x._id)},
         availableDay: {$gt: 0}
     }).select('_id name email grade valued practice quality availableDay comment')
-    .populate('month name name.quality.skill')
+    .populate('month name')
     .sort({availableDay: -1});
     //console.log(Date(Date.now()) + ' >> fin requête availablePxx');
+    //console.log('availablePxx', availablePxx[0].name)
     
     const allSkills = await Skill.find();
 

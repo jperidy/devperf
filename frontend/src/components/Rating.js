@@ -16,7 +16,7 @@ const Rating = ({ value, setValue, text, color, editable }) => {
 
     return (
         
-            <Form.Group>
+            <Form.Group className='mb-0'>
                 <InputGroup>
                     {valueList && valueList.map((x, val) => (
                         <span key={val}>

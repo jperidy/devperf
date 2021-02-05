@@ -9,7 +9,8 @@ import Message from '../components/Message';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
+//import Popover from 'react-bootstrap/Popover';
+import Tooltip from 'react-bootstrap/Tooltip';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import StaffAConsultant from './StaffAConsultant';
@@ -139,12 +140,11 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
             </Row>
 
             <Tabs defaultActiveKey="Analysts" id="uncontrolled-tab-example">
-                
                 <Tab eventKey="Intern" title="Intern">
                     <Row className='mt-3'>
                         {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
                             availabilities && availabilities.map((x, xVal) => (
-                                <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
+                                <Col sm={12} md={4} key={xVal}>
                                     <ConsoDispoUnit
                                         monthData={x}
                                         grades={['Intern']}
@@ -164,7 +164,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
                     <Row className='mt-3'>
                         {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
                             availabilities && availabilities.map((x, xVal) => (
-                                <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
+                                <Col key={xVal} sm={12} md={4}>
                                     <ConsoDispoUnit
                                         monthData={x}
                                         grades={['Analyst']}
@@ -184,7 +184,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
                     <Row className='mt-3'>
                         {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
                             availabilities && availabilities.map((x, xVal) => (
-                                <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
+                                <Col key={xVal} sm={12} md={4}>
                                     <ConsoDispoUnit
                                         monthData={x}
                                         grades={['Consultant']}
@@ -204,7 +204,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
                     <Row className='mt-3'>
                         {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
                             availabilities && availabilities.map((x, xVal) => (
-                                <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
+                                <Col key={xVal} sm={12} md={4}>
                                     <ConsoDispoUnit
                                         monthData={x}
                                         grades={['Senior consultant']}
@@ -224,7 +224,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
                     <Row className='mt-3'>
                         {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
                             availabilities && availabilities.map((x, xVal) => (
-                                <Col key={xVal} sm={12} md={6} lg={4} xl={3}>
+                                <Col key={xVal} sm={12} md={4}>
                                     <ConsoDispoUnit
                                         monthData={x}
                                         grades={['Manager', 'Senior manager', 'Director', 'Partner']}
@@ -266,46 +266,45 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
         }
     }
 
+    const calculateExperience = (date) => {
+
+        if (date) {
+            return ((Date.now() - new Date(date)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)
+        } else {
+            return '-';
+        }
+    }
+
     return (
         <Card className='my-1 rounded' >
             <Card.Header as="h5">{monthData.month.firstDay.toString().substring(0, 7)}</Card.Header>
             <Card.Body>
                 {monthData.availabilities.map((consultantData, yVal) => (
                     grades.includes(consultantData.grade) && (
-                        <Row key={yVal}>
+                        <Row key={yVal} className='align-items-middle'>
                             {(mode === 'staffing' || mode === 'consultation') && (
-                                <Col sm={2}>
+                                <Col sm={1}>
                                     <Button
                                         size='sm'
                                         variant='ligth'
+                                        className='mx-0 px-0'
                                         onClick={() => addStaff(consultantData)}
                                     ><i className="fas fa-plus-square"></i></Button>
                                 </Col>
                             )}
                             <Col sm={10}>
+
                                 <OverlayTrigger
-                                    placement="right"
-                                    trigger='click'
-                                    overlay={<Popover id="popover-comment">{
-                                        <>
-                                        <Popover.Title>
-                                            {consultantData.valued && ((Date.now() - new Date(consultantData.valued)) / (1000 * 24 * 3600 * 365.25)).toString().substring(0, 4)} years ({consultantData.grade ? consultantData.grade : 'No grade information'})
-                                        </Popover.Title>
-                                        <Popover.Content>
-                                            {consultantData._id && consultantData._id !== userInfo.consultantProfil._id && (
-                                                userInfo.profil.pxx.comment.filter( x => ['write', 'read'].includes(x.mode)).length > 0 && (
-                                                    <Row className='text-left pt-2'><Col>{consultantData.comment ? consultantData.comment : 'No staffing comment'}</Col></Row>
-                                                )
-                                            )}
-                                        </Popover.Content>
-                                        </>
-                                    }</Popover>}
+                                    overlay={<Tooltip id="tooltip-disabled">{
+                                        userInfo.profil.pxx.comment.filter(x => ['write', 'read'].includes(x.mode)).length > 0 && (
+                                            consultantData.comment ? consultantData.comment : 'No staffing comment'
+                                        )}</Tooltip>}
                                 >
                                     <Form.Control
                                         plaintext
                                         readOnly
                                         id={consultantData.email}
-                                        value={consultantData.availableDay.toString() + ' days : ' + formatName(consultantData.name)}
+                                        value={consultantData.availableDay.toString() + ' days : ' + formatName(consultantData.name) + ' (' + calculateExperience(consultantData.valued) + ' years)'}
                                         style={(consultantData.email === focus) ? { background: '#464277', color: 'white' } : { color: 'black' }}
                                         onFocus={(e) => {
                                             setFocus(e.target.id)

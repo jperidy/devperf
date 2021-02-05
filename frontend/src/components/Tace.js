@@ -11,7 +11,7 @@ const Tace = ({ tace }) => {
 
     return (
 
-        <Col sm={12} md={6} lg={4} xl={3}>
+        <Col sm={12} md={4}>
             <Card className='my-3 p-3 rounded'>
                 <Card.Header as="h5">{tace.month.firstDay.toString().substring(0, 7)}</Card.Header>
                 <Card.Body>

@@ -26,7 +26,7 @@ const DashboardScreen = ({ history }) => {
 
     let endDefault = new Date(Date.now());
     endDefault.setUTCDate(1);
-    endDefault.setUTCMonth(endDefault.getUTCMonth() + duration);
+    endDefault.setUTCMonth(endDefault.getUTCMonth() + duration - 1);
     endDefault = endDefault.toISOString().substring(0, 10);
 
     const [practice, setPractice] = useState('');
@@ -146,13 +146,17 @@ const DashboardScreen = ({ history }) => {
 
             {userInfo && userInfo.profil.dashboards.consodispo.filter( x => x.mode !== 'no').length > 0 && (
                 <DropDownTitleContainer title='Availabilities' close={true}>
-                    <ConsoDispo
-                        practice={practice}
-                        start={start}
-                        end={end}
-                        mode='consultation'
-                        history={history}
-                    />
+                    <Row>
+                        <Col>
+                            <ConsoDispo
+                                practice={practice}
+                                start={start}
+                                end={end}
+                                mode='consultation'
+                                history={history}
+                            />
+                        </Col>
+                    </Row>
                 </DropDownTitleContainer>
             )}
         </>
