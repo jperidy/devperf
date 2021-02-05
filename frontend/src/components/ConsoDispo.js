@@ -12,8 +12,9 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
+import StaffAConsultant from './StaffAConsultant';
 
-const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
+const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) => {
 
     const dispatch = useDispatch();
 
@@ -21,6 +22,13 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
     const [searchSkills, setSearchSkills] = useState('');
     const [searchExperienceStart, setSearchExperienceStart] = useState('');
     const [searchExperienceEnd, setSearchExperienceEnd] = useState('');
+
+
+
+    const [modalWindowShow, setModalWindowShow] = useState(false);
+    const [sdConsultant, setSdConsultant] = useState('');
+
+
 
     const pxxAvailabilities = useSelector(state => state.pxxAvailabilities);
     const { loading: loadingAvailabilities, error: errorAvailabilities, availabilities } = pxxAvailabilities;
@@ -44,8 +52,22 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
         dispatch(getAvailabilities(practice, start, end, searchSkills, searchExperienceStart, searchExperienceEnd));
     };
 
+    const moreConsultantDetails = (consultant) => {
+        setModalWindowShow(true);
+        setSdConsultant(consultant);
+    };
+
     return (
         <>
+            <StaffAConsultant
+                show={modalWindowShow}
+                onHide={() => setModalWindowShow(false)}
+                consultant={sdConsultant}
+                mode={mode}
+                addStaffHandler={addStaffHandler}
+                history={history}
+            />
+
             <Row className='mt-5'>
                 <Col md={12}>
                     <Form onSubmit={handlerSkillsSubmit}>
@@ -65,6 +87,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                     ><i className="fas fa-keyboard"></i></Button>
                                 )}
                             </Col>
+
                             <Col md={4}>
                                 <Form.Group controlId='skill-search'>
                                     <Form.Control
@@ -126,7 +149,8 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                         monthData={x}
                                         grades={['Intern']}
                                         mode={mode}
-                                        addStaff={addStaff}
+                                        //addStaff={addStaff}
+                                        addStaff={moreConsultantDetails}
                                         focus={focus}
                                         setFocus={setFocus}
                                     />
@@ -145,7 +169,8 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                         monthData={x}
                                         grades={['Analyst']}
                                         mode={mode}
-                                        addStaff={addStaff}
+                                        //addStaff={addStaff}
+                                        addStaff={moreConsultantDetails}
                                         focus={focus}
                                         setFocus={setFocus}
                                     />
@@ -164,7 +189,8 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                         monthData={x}
                                         grades={['Consultant']}
                                         mode={mode}
-                                        addStaff={addStaff}
+                                        //addStaff={addStaff}
+                                        addStaff={moreConsultantDetails}
                                         focus={focus}
                                         setFocus={setFocus}
                                     />
@@ -183,7 +209,8 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                         monthData={x}
                                         grades={['Senior consultant']}
                                         mode={mode}
-                                        addStaff={addStaff}
+                                        //addStaff={addStaff}
+                                        addStaff={moreConsultantDetails}
                                         focus={focus}
                                         setFocus={setFocus}
                                     />
@@ -202,7 +229,8 @@ const ConsoDispo = ({ practice, start, end, mode, addStaff }) => {
                                         monthData={x}
                                         grades={['Manager', 'Senior manager', 'Director', 'Partner']}
                                         mode={mode}
-                                        addStaff={addStaff}
+                                        //addStaff={addStaff}
+                                        addStaff={moreConsultantDetails}
                                         focus={focus}
                                         setFocus={setFocus}
                                     />
@@ -245,7 +273,7 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                 {monthData.availabilities.map((consultantData, yVal) => (
                     grades.includes(consultantData.grade) && (
                         <Row key={yVal}>
-                            {mode === 'staffing' && (
+                            {(mode === 'staffing' || mode === 'consultation') && (
                                 <Col sm={2}>
                                     <Button
                                         size='sm'

@@ -150,6 +150,8 @@ const DashboardScreen = ({ history }) => {
                         practice={practice}
                         start={start}
                         end={end}
+                        mode='consultation'
+                        history={history}
                     />
                 </DropDownTitleContainer>
             )}

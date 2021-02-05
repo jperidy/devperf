@@ -10,7 +10,7 @@ import SkillsDetails from './SkillsDetails';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 
 
-const StaffAConsultant = ({ history, onHide, show, consultant, addStaffHandler }) => {
+const StaffAConsultant = ({ history, onHide, show, consultant, mode, addStaffHandler }) => {
 
     const [sdResponsability, setSdResponsability] = useState('');
     const [sdPriority, setSdPriority] = useState('');
@@ -33,56 +33,60 @@ const StaffAConsultant = ({ history, onHide, show, consultant, addStaffHandler }
 
             <Modal.Body>
                 <h4>{consultant.name ? consultant.name : ''}</h4>
-                <Row>
-                    <Col className='mt-3'>
-                        <label htmlFor='sd-responsability'><strong>Responsability *</strong></label>
-                        <InputGroup id='sd-responsability'>
-                            <FormControl
-                                as='select'
-                                value={sdResponsability}
-                                onChange={(e) => setSdResponsability(e.target.value)}
-                            >
-                                <option value=''>--Select--</option>
-                                <option value={'Project director'}>Project director</option>
-                                <option value={'Project manager'}>Project manager</option>
-                                <option value={'Project leader'}>Project leader</option>
-                                <option value={'X'}>X</option>
-                                <option value={'Intern'}>Intern</option>
+                {mode === 'staffing' && (
+                    <>
+                        <Row>
+                            <Col className='mt-3'>
+                                <label htmlFor='sd-responsability'><strong>Responsability *</strong></label>
+                                <InputGroup id='sd-responsability'>
+                                    <FormControl
+                                        as='select'
+                                        value={sdResponsability}
+                                        onChange={(e) => setSdResponsability(e.target.value)}
+                                    >
+                                        <option value=''>--Select--</option>
+                                        <option value={'Project director'}>Project director</option>
+                                        <option value={'Project manager'}>Project manager</option>
+                                        <option value={'Project leader'}>Project leader</option>
+                                        <option value={'X'}>X</option>
+                                        <option value={'Intern'}>Intern</option>
 
-                            </FormControl>
-                        </InputGroup>
-                    </Col>
+                                    </FormControl>
+                                </InputGroup>
+                            </Col>
 
-                    <Col className='mt-3'>
-                        <label htmlFor='sd-priority'><strong>Priority *</strong></label>
-                        <InputGroup id='sd-priority'>
-                            <FormControl
-                                as='select'
-                                value={sdPriority}
-                                onChange={(e) => setSdPriority(e.target.value)}
-                            >
-                                <option value=''>--Select--</option>
-                                <option value={'P1'}>P1</option>
-                                <option value={'P2'}>P2</option>
-                                <option value={'P3'}>P3</option>
+                            <Col className='mt-3'>
+                                <label htmlFor='sd-priority'><strong>Priority *</strong></label>
+                                <InputGroup id='sd-priority'>
+                                    <FormControl
+                                        as='select'
+                                        value={sdPriority}
+                                        onChange={(e) => setSdPriority(e.target.value)}
+                                    >
+                                        <option value=''>--Select--</option>
+                                        <option value={'P1'}>P1</option>
+                                        <option value={'P2'}>P2</option>
+                                        <option value={'P3'}>P3</option>
 
-                            </FormControl>
-                        </InputGroup>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col className='mt-3'>
-                        <label><strong>Comment</strong></label>
-                        <InputGroup id='sd-information'>
-                            <FormControl
-                                as='textarea'
-                                rows={3}
-                                value={sdInformation}
-                                onChange={(e) => setSdInformation(e.target.value)}
-                            ></FormControl>
-                        </InputGroup>
-                    </Col>
-                </Row>
+                                    </FormControl>
+                                </InputGroup>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col className='mt-3'>
+                                <label><strong>Comment</strong></label>
+                                <InputGroup id='sd-information'>
+                                    <FormControl
+                                        as='textarea'
+                                        rows={3}
+                                        value={sdInformation}
+                                        onChange={(e) => setSdInformation(e.target.value)}
+                                    ></FormControl>
+                                </InputGroup>
+                            </Col>
+                        </Row>
+                    </>
+                )}
 
                 <SkillsDetails
                     consultantId={consultant._id}
@@ -101,11 +105,16 @@ const StaffAConsultant = ({ history, onHide, show, consultant, addStaffHandler }
 
             <Modal.Footer>
                 <Button onClick={onHide} variant='secondary'>Cancel</Button>
-                <Button 
-                    onClick={() => addStaffHandler(sdResponsability, sdPriority, sdInformation)} 
-                    variant='primary' 
-                    disabled={!(sdResponsability !== '' && sdPriority !== '')}
-                >Submit</Button>
+                {mode === 'staffing' && (
+                    <Button 
+                        onClick={() => {
+                            addStaffHandler(consultant, sdResponsability, sdPriority, sdInformation);
+                            onHide();
+                        }} 
+                        variant='primary' 
+                        disabled={!(sdResponsability !== '' && sdPriority !== '')}
+                    >Submit</Button>
+                )}
                 
             </Modal.Footer>
 

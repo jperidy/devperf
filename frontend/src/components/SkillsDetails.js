@@ -133,7 +133,6 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
                                             <option
                                                 value={x}
                                                 key={val}
-                                                //onChange={(e) => { setSkillCategory(e.target.value) }}
                                             >{x}</option>
                                         )))}
                                 </Form.Control>
@@ -254,6 +253,7 @@ const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, ha
                     <Rating
                         value={Number(level)}
                         setValue={updateLevel}
+                        editable={editable}
                     />
                 </Col>
 

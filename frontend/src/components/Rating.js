@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-const Rating = ({ value, setValue, text, color }) => {
+const Rating = ({ value, setValue, text, color, editable }) => {
 
     const valueList = [...new Array(Math.floor(value)).fill(1)];
     if (value % 1 >= 0.5) {
@@ -23,13 +23,13 @@ const Rating = ({ value, setValue, text, color }) => {
                             <Button
                                 className='mx-0 px-0'
                                 variant='ligth'
-                                onClick={() => {
+                                onClick={() => { editable && (
                                     x >= 1
                                         ? setValue(val)
                                         : x >= 0.5
                                             ? setValue(val + 1)
                                             : setValue(val + 0.5)
-                                }}
+                                )}}
                             ><i style={{ color }}
                                 className={
                                     x >= 1
@@ -53,7 +53,8 @@ const Rating = ({ value, setValue, text, color }) => {
 
 Rating.defaultProps = {
     color: '#f8e825',
-    text: ''
+    text: '',
+    editable: true,
 };
 
 

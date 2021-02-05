@@ -10,11 +10,11 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
 import { getAllMyAdminConsultants, getAllPractice } from '../actions/consultantActions';
-import ConsoDispo from '../components/ConsoDispo';
 import { DEAL_CREATE_RESET, DEAL_PROBABILITY, DEAL_STATUS, TYPE_BUSINESS } from '../constants/dealConstants';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
-import StaffAConsultant from '../components/StaffAConsultant';
+//import StaffAConsultant from '../components/StaffAConsultant';
+import ConsoDispo from '../components/ConsoDispo';
 import ViewStaffs from '../components/ViewStaffs';
 import SearchInput from '../components/SearchInput';
 import { REQUEST_STATUS } from '../constants/dealConstants';
@@ -65,11 +65,11 @@ const StaffingEditScreen = ({ match, history }) => {
     const [sdStatus, setSdStatus] = useState('');
     const [sdStaff, setSdStaff] = useState([]);
 
-    const [sdConsultant, setSdConsultant] = useState('');
+    //const [sdConsultant, setSdConsultant] = useState('');
 
     const [wonDate, setWonDate] = useState('');
 
-    const [modalWindowShow, setModalWindowShow] = useState(false);
+    //const [modalWindowShow, setModalWindowShow] = useState(false);
 
     const [editRequest, setEditRequest] = useState(match.params.id ? false : true);
 
@@ -204,7 +204,7 @@ const StaffingEditScreen = ({ match, history }) => {
             }
             dispatch(updateDeal(match.params.id, deal));
             setDealChange(false);
-            setModalWindowShow(false);
+            //setModalWindowShow(false);
         }
 
     }, [match, dispatch, userInfo, dealChange, company, type, client, title, status, probability, description, proposalDate, presentationDate,
@@ -223,16 +223,6 @@ const StaffingEditScreen = ({ match, history }) => {
         setOthersPractices(selectedList);
     }
 
-    const addStaff = (consultant) => {
-        const staffId = sdStaff.map(consultant => consultant.idConsultant._id);
-        if (staffId.includes(consultant._id)) {
-            window.confirm('Consultant already added')
-        } else {
-            setModalWindowShow(true);
-            setSdConsultant(consultant);
-        }
-    };
-
     const removeStaffHandler = (id) => {
         let tampon = new Array(...sdStaff);
         tampon = tampon.filter(consultant => consultant.idConsultant._id !== id);
@@ -240,17 +230,27 @@ const StaffingEditScreen = ({ match, history }) => {
         setDealChange(true);
     }
 
-    const addStaffHandler = (responsability, priority, information) => {
+    const addStaffHandler = (consultant, responsability, priority, information) => {
+        
         let tampon = new Array(...sdStaff);
+
+        // Rule if consultant already added in staff
+        if(sdStaff.map(x => x.idConsultant._id).includes(consultant._id)) {
+            tampon = tampon.filter(x => x.idConsultant._id !== consultant._id);            
+        }
+
         tampon.push({
             idConsultant: {
-                _id: sdConsultant._id,
-                name: sdConsultant.name,
+                _id: consultant._id,
+                name: consultant.name,
             },
             responsability: responsability,
             priority: priority,
             information: information
         });
+
+        //tampon.sort((a,b) => a.priority - b.priority)
+
         setSdStaff(tampon);
         setDealChange(true);
     }
@@ -1010,14 +1010,6 @@ const StaffingEditScreen = ({ match, history }) => {
                 </Row>
             </Form>
 
-            <StaffAConsultant
-                show={modalWindowShow}
-                onHide={() => setModalWindowShow(false)}
-                consultant={sdConsultant}
-                addStaffHandler={addStaffHandler}
-                history={history}
-            />
-
             {match.params.id && (
                 <DropDownTitleContainer title='Availabilities' close={false}>
                     <ConsoDispo
@@ -1025,7 +1017,8 @@ const StaffingEditScreen = ({ match, history }) => {
                         start={start}
                         end={end}
                         mode='staffing'
-                        addStaff={addStaff}
+                        addStaffHandler={addStaffHandler}
+                        history={history}
                     />
                 </DropDownTitleContainer>
             )}
