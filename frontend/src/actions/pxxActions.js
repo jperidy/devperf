@@ -282,7 +282,7 @@ export const getTace = (practice, start, end) => async (dispatch, getState) => {
     }
 };
 
-export const getAvailabilities = (practice, start, end, skills, experienceStart, experienceEnd) => async (dispatch, getState) => {
+export const getAvailabilities = (practice, start, end, skills, experienceStart, experienceEnd, searchMode) => async (dispatch, getState) => {
 
     try {
 
@@ -301,7 +301,7 @@ export const getAvailabilities = (practice, start, end, skills, experienceStart,
             searchExperience = searchExperience + '-' + experienceEnd.toString()
         }
 
-        const { data } = await axios.get(`/api/pxx/chart/availability?practice=${practice}&start=${start}&end=${end}&skills=${skills}&experience=${searchExperience}`, config);
+        const { data } = await axios.get(`/api/pxx/chart/availability?practice=${practice}&start=${start}&end=${end}&skills=${skills}&experience=${searchExperience}&filterMode=${searchMode}`, config);
 
         dispatch({ type: PXX_AVAILABILITIES_SUCCESS, payload: data });
 

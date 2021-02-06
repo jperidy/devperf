@@ -18,6 +18,7 @@ import ConsoDispo from '../components/ConsoDispo';
 import ViewStaffs from '../components/ViewStaffs';
 import SearchInput from '../components/SearchInput';
 import { REQUEST_STATUS } from '../constants/dealConstants';
+import StaffAConsultant from '../components/StaffAConsultant';
 
 const StaffingEditScreen = ({ match, history }) => {
 
@@ -65,11 +66,13 @@ const StaffingEditScreen = ({ match, history }) => {
     const [sdStatus, setSdStatus] = useState('');
     const [sdStaff, setSdStaff] = useState([]);
 
-    //const [sdConsultant, setSdConsultant] = useState('');
-
     const [wonDate, setWonDate] = useState('');
 
-    //const [modalWindowShow, setModalWindowShow] = useState(false);
+
+    const [modalWindowShow, setModalWindowShow] = useState(false);
+    const [sdConsultant, setSdConsultant] = useState('');
+    const [loadingSdConsultantData, setLoadingSdConsultantData] = useState({})
+
 
     const [editRequest, setEditRequest] = useState(match.params.id ? false : true);
 
@@ -90,7 +93,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
     let endDefault = new Date(Date.now());
     endDefault.setUTCDate(1);
-    endDefault.setUTCMonth(endDefault.getUTCMonth() + duration);
+    endDefault.setUTCMonth(endDefault.getUTCMonth() + duration - 1);
     endDefault = endDefault.toISOString().substring(0, 10);
 
     const [practice] = useState('PTC1');
@@ -367,7 +370,19 @@ const StaffingEditScreen = ({ match, history }) => {
 
     return (
         <>
-            <h1>Staffing request (/!\ work in progress)</h1>
+            {modalWindowShow && (
+                <StaffAConsultant
+                    show={modalWindowShow}
+                    onHide={() => setModalWindowShow(false)}
+                    consultant={sdConsultant}
+                    loadingData={loadingSdConsultantData}
+                    mode='staffing'
+                    addStaffHandler={addStaffHandler}
+                    history={history}
+                />
+            )}
+
+            <h1>Staffing request</h1>
             <Form onSubmit={submitHandler}>
                 <Row className='mt-3'>
                     <Col xs={6} md={2}>
@@ -425,7 +440,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <Form.Group controlId='title' className='mb-0'>
-                                <Form.Label as='h5'>Title</Form.Label>
+                                <Form.Label as='h5'>Title {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
                                         type='text'
@@ -447,7 +462,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <Form.Group controlId='company' className='mb-0'>
-                                <Form.Label as='h5'>Company</Form.Label>
+                                <Form.Label as='h5'>Company {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
                                         type='text'
@@ -490,7 +505,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <Form.Group controlId='type' className='mb-0'>
-                                <Form.Label as='h5'>Type of business</Form.Label>
+                                <Form.Label as='h5'>Type of business {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
                                         as='select'
@@ -519,7 +534,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <Form.Group controlId='status' className='mb-0'>
-                                <Form.Label as='h5'>Status</Form.Label>
+                                <Form.Label as='h5'>Status {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
                                         as='select'
@@ -556,7 +571,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <Form.Group controlId='probability' className='mb-0'>
-                                <Form.Label as='h5'>Probability</Form.Label>
+                                <Form.Label as='h5'>Probability {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
                                         as='select'
@@ -606,7 +621,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <Form.Group controlId='main-practice' className='mb-0'>
-                                <Form.Label as='h5'>Main Practice</Form.Label>
+                                <Form.Label as='h5'>Main Practice {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
                                         as='select'
@@ -683,10 +698,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                             <ListGroup.Item
                                                 variant='ligth'
                                             >{leader.value}
-                                                <Button 
-                                                    variant='Dark'
-                                                    onClick={() => deleteLeaderHandler()}
-                                                ><i className="fas fa-user-times"></i></Button>
+                                                {editRequest && (
+                                                    <Button 
+                                                        variant='Dark'
+                                                        onClick={() => deleteLeaderHandler()}
+                                                    ><i className="fas fa-user-times"></i></Button>
+                                                )}
                                             </ListGroup.Item>
                                         </ListGroup>
                                     )}
@@ -706,10 +723,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                             <ListGroup.Item
                                                 key={coLeader.id}
                                             >{coLeader.value}
-                                                <Button 
-                                                    variant='Dark'
-                                                    onClick={() => deleteCoLeaderHandler(coLeader)}
-                                                ><i className="fas fa-user-times"></i></Button>
+                                                {editRequest && (
+                                                    <Button 
+                                                        variant='Dark'
+                                                        onClick={() => deleteCoLeaderHandler(coLeader)}
+                                                    ><i className="fas fa-user-times"></i></Button>
+                                                )}
                                             </ListGroup.Item>
                                         ))}
                                     </ListGroup>
@@ -720,7 +739,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <Form.Group controlId='description' className='mb-0'>
-                                <Form.Label as='h5'>Description</Form.Label>
+                                <Form.Label as='h5'>Description {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
                                         as='textarea'
@@ -787,7 +806,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                                 <Col>
                                     <Form.Group controlId='start-date' className='mb-0'>
-                                        <Form.Label as='h5'>Start Date</Form.Label>
+                                        <Form.Label as='h5'>Start Date {editRequest && '*'}</Form.Label>
                                         {editRequest ? (
                                             <Form.Control
                                                 type='date'
@@ -813,7 +832,7 @@ const StaffingEditScreen = ({ match, history }) => {
                             <Row>
                                 <Col xs={12} md={8}>
                                     <Form.Group controlId='sr-instruction' className='mb-0'>
-                                        <Form.Label as='h5'>Staffing instruction</Form.Label>
+                                        <Form.Label as='h5'>Staffing instruction {editRequest && '*'}</Form.Label>
                                         {editRequest ? (
                                             <Form.Control
                                                 as='textarea'
@@ -836,7 +855,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                                 <Col xs={12} md={4}>
                                     <Form.Group controlId='sr-status' className='mb-0'>
-                                        <Form.Label as='h5'>Status</Form.Label>
+                                        <Form.Label as='h5'>Status {editRequest && '*'}</Form.Label>
                                         <Form.Control
                                             as='select'
                                             value={srStatus}
@@ -862,96 +881,75 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <h5>Staffing decision</h5>
-                            <Row className='my-3'>
-                                <Col xs={3} className='text-center'><strong>Name</strong></Col>
-                                <Col xs={2} className='text-center'><strong>Responsability</strong></Col>
-                                <Col xs={2} className='text-center'><strong>Priority</strong></Col>
-                                <Col xs={4} className='text-center'><strong>Comment</strong></Col>
-                                <Col xs={1} className='text-center'></Col>
-                            </Row>
-                            {sdStaff && sdStaff.map((consultant, val) => (
-                                <ListGroup.Item key={val}>
-                                    <Row className='align-items-center'>
-                                        <Col xs={3}>
-                                            <OverlayTrigger
-                                                placement="right"
-                                                trigger='click'
-                                                overlay={
-                                                    <Popover id='popover-others-staffs' style={{ 'maxWidth': '100%' }}>
-                                                        <Popover.Title id="contained-modal-title-vcenter">
-                                                            Others staffs
-                                                        </Popover.Title>
+                            {sdStaff && [...new Set(sdStaff.map(x => x.priority))].sort().map(priority => (
+                                <ListGroup.Item key={priority}>
+                                    <Row key={priority}>
+                                        <Col sm={1}>
+                                            <Row className='my-1'><Col>{priority}</Col></Row>
+                                        </Col>
+                                        <Col sm={11}>
+                                            {sdStaff.filter(x => x.priority === priority).map(staff => (
+                                                <Row key={staff.idConsultant._id} className='my-1'>
+                                                    <Col sm={10}>
+                                                        <OverlayTrigger
+                                                            placement="top"
+                                                            trigger='click'
+                                                            overlay={
+                                                                <Popover 
+                                                                    id='popover-others-staffs' 
+                                                                    style={{ 'maxWidth': '40%' }}
+                                                                >
+                                                                    <Popover.Title id="contained-modal-title-vcenter">
+                                                                        Others staffs
+                                                                    </Popover.Title>
 
-                                                        <Popover.Content>
-                                                            <ViewStaffs
-                                                                history={history}
-                                                                consultantId={consultant.idConsultant._id}
-                                                                onNavigate={() => ('')}
-                                                                displayedDeal={match.params.id}
-                                                            />
-                                                        </Popover.Content>
-                                                    </Popover>
-                                                }
-                                            >
-                                                <Form.Group controlId='sd-name' className='mb-0'>
-                                                    <Form.Control
-                                                        type='text'
-                                                        plaintext
-                                                        readOnly
-                                                        className='text-center'
-                                                        value={formatName(consultant.idConsultant.name)}
-                                                    ></Form.Control>
-                                                </Form.Group>
-                                            </OverlayTrigger>
-                                        </Col>
+                                                                    <Popover.Content>
+                                                                        <ViewStaffs
+                                                                            history={history}
+                                                                            consultantId={staff.idConsultant._id}
+                                                                            onNavigate={() => ('')}
+                                                                            displayedDeal={match.params.id}
+                                                                        />
+                                                                    </Popover.Content>
+                                                                </Popover>
+                                                            }
+                                                        >
+                                                            <div><strong>{`${staff.responsability}: `}</strong>{`${formatName(staff.idConsultant.name)}`}<i>{` (${staff.information})`}</i></div>
+                                                        </OverlayTrigger>
+                                                    </Col>
+                                                    <Col sm={2} className='px-0'>
+                                                        <Button
+                                                            onClick={() => {
+                                                                //console.log(consultant)
+                                                                setSdConsultant(staff.idConsultant)
+                                                                setLoadingSdConsultantData({
+                                                                    information: staff.information,
+                                                                    priority: staff.priority,
+                                                                    responsability: staff.responsability
+                                                                })
+                                                                setModalWindowShow(true)
+                                                            }}
+                                                            variant='secondary'
+                                                            className='text-center mx-1'
+                                                            size='sm'
+                                                        ><i className="fas fa-edit"></i></Button>
 
-                                        <Col xs={2}>
-                                            <Form.Group controlId='sd-responsability' className='mb-0'>
-                                                <Form.Control
-                                                    type='text'
-                                                    plaintext
-                                                    readOnly
-                                                    className='text-center'
-                                                    value={consultant.responsability}
-                                                ></Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col xs={2}>
-                                            <Form.Group controlId='sd-priority' className='mb-0'>
-                                                <Form.Control
-                                                    type='text'
-                                                    plaintext
-                                                    readOnly
-                                                    className='text-center'
-                                                    value={consultant.priority}
-                                                ></Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col xs={4} >
-                                            <Form.Group controlId='sd-comment' className='mb-0'>
-                                                <Form.Control
-                                                    type='text'
-                                                    plaintext
-                                                    readOnly
-                                                    className='text-center'
-                                                    value={consultant.comment}
-                                                ></Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col xs={1}>
-                                            <Button
-                                                onClick={() => removeStaffHandler(consultant.idConsultant._id)}
-                                                variant='danger'
-                                                className='text-center'
-                                                size='sm'
-                                            ><i className="fas fa-times"></i></Button>
+                                                        <Button
+                                                            onClick={() => removeStaffHandler(staff.idConsultant._id)}
+                                                            variant='danger'
+                                                            className='text-center mx-1'
+                                                            size='sm'
+                                                        ><i className="fas fa-times"></i></Button>
+                                                    </Col>
+                                                </Row>
+                                            ))}
                                         </Col>
                                     </Row>
                                 </ListGroup.Item>
                             ))}
                         </ListGroup.Item>
 
-                        {dealToEdit && (
+                        {dealToEdit && match.params.id && (
                             <ListGroup.Item>
                                 <Row className='my-1'>
                                     <Col>

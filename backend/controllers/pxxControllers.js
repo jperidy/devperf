@@ -485,17 +485,15 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
     const month = await Month.find({firstDay: { $gte: start, $lte: end }}).sort({'name': 1}).select('_id name firstDay');
     const data = [];
 
-    //console.log(Date(Date.now()) + ' >> début requête availablePxx');
+    const searchAvailableDay = req.query.filterMode === 'all' ? {$eq:0} : {$gt: 0}
     
     const availablePxx = await Pxx.find({
         month: {$in: month.map(x => x._id)},
         name: {$in: consultantId.map(x => x._id)},
-        availableDay: {$gt: 0}
+        availableDay: searchAvailableDay
     }).select('_id name email grade valued practice quality availableDay comment')
     .populate('month name')
     .sort({availableDay: -1});
-    //console.log(Date(Date.now()) + ' >> fin requête availablePxx');
-    //console.log('availablePxx', availablePxx[0].name)
     
     const allSkills = await Skill.find();
 

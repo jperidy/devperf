@@ -24,6 +24,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
     const [searchExperienceStart, setSearchExperienceStart] = useState('');
     const [searchExperienceEnd, setSearchExperienceEnd] = useState('');
 
+    const [searchMode, setSearchMode] = useState('filterAvailable');
 
 
     const [modalWindowShow, setModalWindowShow] = useState(false);
@@ -36,21 +37,21 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
 
     useEffect(() => {
         if (!loadingAvailabilities) {
-            dispatch(getAvailabilities(practice, start, end, '', '', ''));
+            dispatch(getAvailabilities(practice, start, end, '', '', '', searchMode));
         }
         // eslint-disable-next-line
-    }, [dispatch, practice, start, end]);
+    }, [dispatch, practice, start, end, searchMode]);
 
     const removeFilterAction = () => {
         setSearchSkills('');
         setSearchExperienceStart('');
         setSearchExperienceEnd('');
-        dispatch(getAvailabilities(practice, start, end, '', '', ''));
+        dispatch(getAvailabilities(practice, start, end, '', '', '', searchMode));
     };
 
     const handlerSkillsSubmit = (e) => {
         e.preventDefault();
-        dispatch(getAvailabilities(practice, start, end, searchSkills, searchExperienceStart, searchExperienceEnd));
+        dispatch(getAvailabilities(practice, start, end, searchSkills, searchExperienceStart, searchExperienceEnd, searchMode));
     };
 
     const moreConsultantDetails = (consultant) => {
@@ -60,19 +61,21 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
 
     return (
         <>
-            <StaffAConsultant
-                show={modalWindowShow}
-                onHide={() => setModalWindowShow(false)}
-                consultant={sdConsultant}
-                mode={mode}
-                addStaffHandler={addStaffHandler}
-                history={history}
-            />
+            {modalWindowShow && (
+                <StaffAConsultant
+                    show={modalWindowShow}
+                    onHide={() => setModalWindowShow(false)}
+                    consultant={sdConsultant}
+                    mode={mode}
+                    addStaffHandler={addStaffHandler}
+                    history={history}
+                />
+            )}
 
             <Row className='mt-5'>
                 <Col md={12}>
                     <Form onSubmit={handlerSkillsSubmit}>
-                        <Form.Row>
+                        <Form.Row className='align-items-center mb-3'>
                             <Col md={1}>
                                 {(searchSkills || searchExperienceStart || searchExperienceEnd) ? (
                                     <Button 
@@ -90,7 +93,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
                             </Col>
 
                             <Col md={4}>
-                                <Form.Group controlId='skill-search'>
+                                <Form.Group controlId='skill-search' className='my-0'>
                                     <Form.Control
                                         type='text'
                                         placeholder='Search: skill1 ; skill2'
@@ -100,12 +103,12 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
                                 </Form.Group>
                             </Col>
 
-                            <Col md={3}>
-                                <Form.Group controlId='experience-search-start'>
+                            <Col md={2}>
+                                <Form.Group controlId='experience-search-start' className='my-0'>
                                     <Form.Control
                                         type='number'
                                         min={0}
-                                        step={0.1}
+                                        step={0.5}
                                         placeholder='From (year)'
                                         value={searchExperienceStart && searchExperienceStart}
                                         onChange={(e) => setSearchExperienceStart(e.target.value)}
@@ -113,16 +116,28 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
                                 </Form.Group>
                             </Col>
 
-                            <Col md={3}>
-                                <Form.Group controlId='experience-search-end'>
+                            <Col md={2}>
+                                <Form.Group controlId='experience-search-end' className='my-0'>
                                     <Form.Control
                                         type='number'
-                                        step={0.1}
+                                        step={0.5}
                                         min={searchExperienceStart || 0}
                                         placeholder='To (year)'
                                         value={searchExperienceEnd && searchExperienceEnd}
                                         onChange={(e) => setSearchExperienceEnd(e.target.value)}
                                     ></Form.Control>
+                                </Form.Group>
+                            </Col>
+
+                            <Col md={2}>
+                                <Form.Group controlId='switch-only-available'  className='my-0'>
+                                    <Form.Check
+                                        type='switch'
+                                        id='switch-only-available'
+                                        label='Not available'
+                                        checked={searchMode === 'filterAvailable' ? false : true}
+                                        onChange={(e) => {e.target.checked === true ? setSearchMode('all') : setSearchMode('filterAvailable')}}
+                                    ></Form.Check>
                                 </Form.Group>
                             </Col>
 
@@ -200,7 +215,7 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
                     </Row>
                 </Tab>
 
-                <Tab eventKey="Seniors" title="Seniors">
+                <Tab eventKey="Senior consultants" title="Senior consultants">
                     <Row className='mt-3'>
                         {loadingAvailabilities ? <Loader /> : errorAvailabilities ? <Message variant='danger'>{errorAvailabilities}</Message> : (
                             availabilities && availabilities.map((x, xVal) => (

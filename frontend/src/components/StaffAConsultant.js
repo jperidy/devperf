@@ -12,13 +12,13 @@ import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import { getConsultantCdm } from '../actions/consultantActions';
 
 
-const StaffAConsultant = ({ history, onHide, show, consultant, mode, addStaffHandler }) => {
+const StaffAConsultant = ({ history, onHide, show, consultant, loadingData={}, mode, addStaffHandler }) => {
 
     const dispatch = useDispatch();
 
-    const [sdResponsability, setSdResponsability] = useState('');
-    const [sdPriority, setSdPriority] = useState('');
-    const [sdInformation, setSdInformation] = useState('');
+    const [sdResponsability, setSdResponsability] = useState(loadingData.responsability ? loadingData.responsability : '');
+    const [sdPriority, setSdPriority] = useState(loadingData.priority ? loadingData.priority : '');
+    const [sdInformation, setSdInformation] = useState(loadingData.information ? loadingData.information : '');
     //console.log('consultant', consultant)
 
 
@@ -26,7 +26,9 @@ const StaffAConsultant = ({ history, onHide, show, consultant, mode, addStaffHan
     const { cdm } = consultantGetCdm;
 
     useEffect(() => {
-        dispatch(getConsultantCdm(consultant._id))
+        if(show) {
+            dispatch(getConsultantCdm(consultant._id))
+        }
     }, [dispatch, consultant])
 
     return (
@@ -40,7 +42,7 @@ const StaffAConsultant = ({ history, onHide, show, consultant, mode, addStaffHan
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    {consultant.name ? consultant.name + (cdm ? ' (' + cdm.name + ')' : '') : ''}
+                    {consultant.name ? consultant.name + ' - ' + consultant.grade + (cdm ? ' (' + cdm.name + ')' : '') : ''}
                 </Modal.Title>
             </Modal.Header>
 
