@@ -289,7 +289,7 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                                         variant='ligth'
                                         className='mx-0 px-0'
                                         onClick={() => addStaff(consultantData)}
-                                    ><i className="fas fa-plus-square"></i></Button>
+                                    ><i className="fas fa-search"></i></Button>
                                 </Col>
                             )}
                             <Col sm={10}>

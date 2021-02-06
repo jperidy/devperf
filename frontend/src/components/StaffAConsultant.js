@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -8,13 +9,25 @@ import Button from 'react-bootstrap/Button';
 import ViewStaffs from './ViewStaffs';
 import SkillsDetails from './SkillsDetails';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
+import { getConsultantCdm } from '../actions/consultantActions';
 
 
 const StaffAConsultant = ({ history, onHide, show, consultant, mode, addStaffHandler }) => {
 
+    const dispatch = useDispatch();
+
     const [sdResponsability, setSdResponsability] = useState('');
     const [sdPriority, setSdPriority] = useState('');
     const [sdInformation, setSdInformation] = useState('');
+    //console.log('consultant', consultant)
+
+
+    const consultantGetCdm = useSelector(state => state.consultantGetCdm);
+    const { cdm } = consultantGetCdm;
+
+    useEffect(() => {
+        dispatch(getConsultantCdm(consultant._id))
+    }, [dispatch, consultant])
 
     return (
 
@@ -27,12 +40,12 @@ const StaffAConsultant = ({ history, onHide, show, consultant, mode, addStaffHan
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    Staff
-                    </Modal.Title>
+                    {consultant.name ? consultant.name + (cdm ? ' (' + cdm.name + ')' : '') : ''}
+                </Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
-                <h4>{consultant.name ? consultant.name : ''}</h4>
+                {/* <h4>{consultant.name ? consultant.name : ''}</h4> */}
                 {mode === 'staffing' && (
                     <>
                         <Row>
@@ -91,6 +104,7 @@ const StaffAConsultant = ({ history, onHide, show, consultant, mode, addStaffHan
                 <SkillsDetails
                     consultantId={consultant._id}
                     editable={false}
+                    close={(mode ==='consultation') ? false : true }
                 />
 
                 <DropDownTitleContainer title='Others staffings' close={false}>
@@ -113,7 +127,7 @@ const StaffAConsultant = ({ history, onHide, show, consultant, mode, addStaffHan
                         }} 
                         variant='primary' 
                         disabled={!(sdResponsability !== '' && sdPriority !== '')}
-                    >Submit</Button>
+                    >Staff</Button>
                 )}
                 
             </Modal.Footer>

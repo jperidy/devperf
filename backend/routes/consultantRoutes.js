@@ -15,7 +15,8 @@ const {
     addConsultantSkill,
     deleteConsultantSkill,
     updateLevelConsultantSkill,
-    getConsultantStaffings
+    getConsultantStaffings,
+    getCDM
 } = require('../controllers/consultantControllers');
 
 const router = express.Router();
@@ -29,6 +30,9 @@ router.route('/cdm/:practice').get(protect, getAllCDMData);
 router.route('/:consultantId/skill')
     .put(protect, authorizeActionOnConsultant, addConsultantSkill)
     .get(protect, authorizeActionOnConsultant, getConsultantSkills);
+
+router.route('/:consultantId/cdm')
+    .get(protect, getCDM);
 
 router.route('/:consultantId/skill/:skillId')
     .delete(protect, authorizeActionOnConsultant, deleteConsultantSkill)

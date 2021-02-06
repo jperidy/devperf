@@ -345,6 +345,26 @@ const updateLevelConsultantSkill = asyncHandler(async(req,res) => {
 
 });
 
+// @desc    Get a CDM for a consultant
+// @route   GET /api/consultants/:consultantId/cdm
+// @access  Private
+const getCDM = asyncHandler(async(req,res) => {
+    
+    const consultantId = req.params.consultantId;
+    const consultant = await Consultant.findById(consultantId).select('cdmId');
+
+    if (consultant) {
+        const cdm = await Consultant.findById(consultant.cdmId).select('name matricule email practice');
+        if (cdm) {
+            res.status(200).json(cdm)
+        } else {
+            res.status(400).json({message: `consultant not found: ${consultant.cdmId}`})    
+        }
+    } else {
+        res.status(400).json({message: `consultant not found: ${consultantId}`})
+    }
+});
+
 // @desc    Get all staffings
 // @route   GET /api/consultants/staffings
 // @access  Private, 
@@ -393,6 +413,7 @@ module.exports = {
     getAllPracticesData,
     updateConsultantComment,
     getAllSkills,
+    getCDM,
     addConsultantSkill,
     deleteConsultantSkill,
     updateLevelConsultantSkill,

@@ -48,7 +48,10 @@ import {
     CONSULTANT_DELETE_SKILL_SUCCESS,
     CONSULTANT_SKILLS_REQUEST,
     CONSULTANT_SKILLS_FAIL,
-    CONSULTANT_SKILLS_SUCCESS
+    CONSULTANT_SKILLS_SUCCESS,
+    CONSULTANT_CDM_REQUEST,
+    CONSULTANT_CDM_SUCCESS,
+    CONSULTANT_CDM_FAIL
 } from '../constants/consultantConstants';
 
 export const getAllMyConsultants = () => async (dispatch, getState) => {
@@ -375,6 +378,34 @@ export const getAllConsultantByAccess = () => async (dispatch, getState) => {
     }
 };
 */
+
+export const getConsultantCdm = (consultantId) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_CDM_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.get(`/api/consultants/${consultantId}/cdm`, config);
+
+        dispatch({ type: CONSULTANT_CDM_SUCCESS, payload: data });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_CDM_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
 
 export const getConsultantSkills = (consultantId) => async (dispatch, getState) => {
 

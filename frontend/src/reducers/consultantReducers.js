@@ -63,7 +63,11 @@ import {
     CONSULTANT_SKILLS_REQUEST,
     CONSULTANT_SKILLS_SUCCESS,
     CONSULTANT_SKILLS_FAIL,
-    CONSULTANT_SKILLS_RESET
+    CONSULTANT_SKILLS_RESET,
+    CONSULTANT_CDM_REQUEST,
+    CONSULTANT_CDM_SUCCESS,
+    CONSULTANT_CDM_FAIL,
+    CONSULTANT_CDM_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {focus: 0}, action) => {
@@ -282,6 +286,21 @@ export const consultantAllAccessReducer = (state = {}, action) => {
     }
 };
 */
+
+export const consultantGetCDMReducer = (state = { }, action) => {
+    switch (action.type) {
+        case CONSULTANT_CDM_REQUEST:
+            return { loading: true };
+        case CONSULTANT_CDM_SUCCESS:
+            return { loading: false, success: true, cdm: action.payload };
+        case CONSULTANT_CDM_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANT_CDM_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
 
 export const consultantSkillsReducer = (state = {}, action) => {
     switch (action.type) {
