@@ -197,7 +197,7 @@ const UserEditScreen = ({ match, history }) => {
                         <Form.Label><b>User profil</b></Form.Label>
                         <Form.Control
                             as='select'
-                            value={profil.profil ? profil.profil : ''}
+                            value={profil && profil.profil ? profil.profil : ''}
                             onChange={(e) => updateProfilHandler(e.target.value)}
                             required
                         >

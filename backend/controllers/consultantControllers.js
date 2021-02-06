@@ -76,8 +76,12 @@ const getAllConsultants = asyncHandler(async (req, res) => {
 // @access  Private
 const getMyConsultants = asyncHandler(async (req, res) => {
 
-    const myConsultants = await Consultant.find({ cdmId: req.user.consultantProfil })
-                                                    .sort({'name': 1});
+    //console.log(req.user)
+    const myConsultants = await Consultant.find({ cdmId: req.user.consultantProfil }).sort({'name': 1});
+    const myProfil = await Consultant.findById(req.user.consultantProfil._id);
+    myConsultants.push(myProfil)
+    //console.log(myConsultants)
+
     res.json(myConsultants);
     
 });

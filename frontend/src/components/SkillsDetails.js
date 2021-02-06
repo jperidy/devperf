@@ -50,16 +50,18 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
     }, [dispatch, skillsAll]);
 
     useEffect(() => {
-        if (!skills && !loading) {
+        if(!skills) {
             dispatch(getConsultantSkills(consultantId));
-        } else {
-            if (skills) {
-                //setQuality(skills)
-                const ordonnedSkills = orderSkills(skills);
-                setQualityOrdonned(ordonnedSkills);
-            }
         }
-    }, [dispatch, skills, consultantId, loading]);
+    }, [dispatch, skills, consultantId]);
+
+    useEffect(() => {
+        if (skills) {
+            //setQuality(skills)
+            const ordonnedSkills = orderSkills(skills);
+            setQualityOrdonned(ordonnedSkills);
+        }
+    }, [dispatch, skills, consultantId]);
 
     useEffect(() => {
         if(update && !loading) {

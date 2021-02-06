@@ -147,7 +147,7 @@ const ManageUsersScreen = ({ history }) => {
                                                         <i className="fas fa-times" style={{ color: 'red' }}></i> : 'unknown'
 
                                         }</td>
-                                    <td className='align-middle text-center'>{user.profil.profil && user.profil.profil}</td>
+                                    <td className='align-middle text-center'>{user.profil && user.profil.profil && user.profil.profil}</td>
                                     <td className='align-middle'>
                                         <Button
                                             className='btn btn-primary p-1'

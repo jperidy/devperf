@@ -126,7 +126,7 @@ function getAccessData() {
                 manageconsultant:[{mode: 'no', data:'department'}],
                 manageuser:[{mode: 'no', data:'department'}],
                 manageskills:[{mode: 'no', data:'department'}],
-                managedeals:[{mode: 'no', data:'department'}],
+                managedeals:[{mode: 'read', data:'department'}],
                 logout:[{mode: 'write', data:'department'}]
             },
             dashboards:{
