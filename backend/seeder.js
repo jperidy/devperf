@@ -15,6 +15,7 @@ const { getDeals } = require('./data/dealsData');
 const { controleAndCreatePxx } = require('./controllers/cronJobsControllers');
 const Access = require('./models/accessModel');
 const { getAccessData } = require('./data/accessData');
+const { getClient } = require('./data/clientData');
 
 dotenv.config();
 connectDB();
@@ -105,9 +106,12 @@ const importData = async () => {
         practices = [... new Set(practices)];
         dealsData = getDeals(nbDeals, allFinalConsultants, practices);
         dealsDataCreated = await Deal.insertMany(dealsData);
+        
+        await getClient();
 
         console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running >>> start');
         await controleAndCreatePxx();
+
 
         console.log('Data imported');
         process.exit();
@@ -184,12 +188,24 @@ const profilUpdate = async () => {
     }
 }
 
+const clientUpdate = async () => {
+    try {
+        await getClient();
+        process.exit()
+    } catch (error) {
+        console.error(error);
+        process.exit(1);
+    }
+}
+
 if (process.argv[2] === '-d') {
     destroyData();
 } else if (process.argv[2] === '-iprofil') {
     profilImport();
 } else if (process.argv[2] === '-uprofil') {
     profilUpdate();
+} else if (process.argv[2] === '-uclient') {
+    clientUpdate();
 } else {
     importData();
 }

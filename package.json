@@ -12,6 +12,7 @@
     "data:destroy": "node backend/seeder -d",
     "data:importprofil": "node backend/seeder -iprofil",
     "data:updateprofil": "node backend/seeder -uprofil",
+    "data:updateclient": "node backend/seeder -uclient",
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
   },

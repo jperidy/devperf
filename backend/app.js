@@ -11,6 +11,7 @@ const consultantRoutes = require('./routes/consultantRoutes');
 const skillsRoutes = require('./routes/skillsRoutes');
 const dealRoutes = require('./routes/dealRoutes');
 const accessRoutes = require('./routes/accessRoutes');
+const clientRoutes = require('./routes/clientRoutes');
 
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
@@ -42,6 +43,7 @@ app.use('/api/consultants', consultantRoutes);
 app.use('/api/skills', skillsRoutes);
 app.use('/api/deals', dealRoutes);
 app.use('/api/access', accessRoutes);
+app.use('/api/clients', clientRoutes);
 
 // static route for developpement access to build repository
 const __dir = path.resolve();

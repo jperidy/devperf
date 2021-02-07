@@ -29,7 +29,7 @@ const StaffAConsultant = ({ history, onHide, show, consultant, loadingData={}, m
         if(show) {
             dispatch(getConsultantCdm(consultant._id))
         }
-    }, [dispatch, consultant])
+    }, [dispatch, consultant, show])
 
     return (
 
