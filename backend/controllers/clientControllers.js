@@ -25,13 +25,14 @@ const getClients = asyncHandler(async (req, res) => {
 // @access  Public
 const addClients = asyncHandler(async (req, res) => {
     
-    const clients = req.params.clients
+    const clients = req.body
+    //console.log('clients', clients);
     const errors = []
 
     for (let incr = 0; incr < clients.length ; incr++) {
         const client = await Client.find({name: clients[incr].name})
-        if (client) {
-            errors.push({message: `Client: ${client.name} already exist`})
+        if (client.length) {
+            errors.push({message: `Client: ${client[0].name} already exist`})
         } else {
             const clientToCreate = new Client(clients[incr]);
             await clientToCreate.save();

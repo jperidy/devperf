@@ -7,8 +7,7 @@ const dealSchema = mongoose.Schema({
         required: true,
     },
     client: {
-        type: String,
-        required: true
+        type: String
     },
     title: {
         type: String,

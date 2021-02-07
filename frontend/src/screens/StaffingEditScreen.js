@@ -13,10 +13,10 @@ import { getAllMyAdminConsultants, getAllPractice } from '../actions/consultantA
 import { DEAL_CREATE_RESET, DEAL_PROBABILITY, DEAL_STATUS, TYPE_BUSINESS } from '../constants/dealConstants';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
-//import StaffAConsultant from '../components/StaffAConsultant';
 import ConsoDispo from '../components/ConsoDispo';
 import ViewStaffs from '../components/ViewStaffs';
 import SearchInput from '../components/SearchInput';
+import SelectCompany from '../components/SelectCompany';
 import { REQUEST_STATUS } from '../constants/dealConstants';
 import StaffAConsultant from '../components/StaffAConsultant';
 
@@ -83,6 +83,8 @@ const StaffingEditScreen = ({ match, history }) => {
 
     const [searchCoLeader, setSearchCoLeader] = useState('');
     const [coLeaders, setCoLeaders] = useState([]);
+
+    const [companyMessage, setCompanyMessage] = useState(null);
 
     //ConsoDispo
     const duration = 3;
@@ -169,6 +171,13 @@ const StaffingEditScreen = ({ match, history }) => {
 
     useEffect(() => {
         if (match.params.id && dealChange) {
+            if (!company) {
+                setCompanyMessage('Please select a company');
+                setEditRequest(true);
+                return
+            } else {
+                setCompanyMessage('')
+            }
             const deal = {
                 company: company,
                 client: client,
@@ -207,7 +216,6 @@ const StaffingEditScreen = ({ match, history }) => {
             }
             dispatch(updateDeal(match.params.id, deal));
             setDealChange(false);
-            //setModalWindowShow(false);
         }
 
     }, [match, dispatch, userInfo, dealChange, company, type, client, title, status, probability, description, proposalDate, presentationDate,
@@ -297,6 +305,11 @@ const StaffingEditScreen = ({ match, history }) => {
         }
     }
 
+    const deleteCompanyHandler = () => {
+        setCompany('');
+        setDealChange(true);
+    }
+
     const deleteLeaderHandler = () => {
         setLeader('');
         setDealChange(true);
@@ -320,7 +333,13 @@ const StaffingEditScreen = ({ match, history }) => {
     }
 
     const submitHandler = (e) => {
-        e.preventDefault()
+        e.preventDefault();
+        if (!company) {
+            setCompanyMessage('Please select a company');
+            return;
+        } else {
+            setCompanyMessage(null)
+        }
         const deal = prepareDeal();
 
         if (match.params.id) {
@@ -461,7 +480,27 @@ const StaffingEditScreen = ({ match, history }) => {
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <Form.Group controlId='company' className='mb-0'>
+                            <SelectCompany 
+                                setCompany={setCompany}
+                                editRequest={editRequest}
+                            />
+                            {companyMessage && <Message variant='danger'>{companyMessage}</Message>}
+                            {company && (
+                                <ListGroup variant='flush'>
+                                    <ListGroup.Item
+                                        variant='ligth'
+                                    >{company}
+                                        {editRequest && (
+                                            <Button
+                                                variant='Dark'
+                                                onClick={() => deleteCompanyHandler()}
+                                            ><i className="fas fa-trash-alt"></i></Button>
+                                        )}
+                                    </ListGroup.Item>
+                                </ListGroup>
+                            )}
+
+                            {/* <Form.Group controlId='company' className='mb-0'>
                                 <Form.Label as='h5'>Company {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
@@ -479,7 +518,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                             value={company}
                                         ></Form.Control>
                                     )}
-                            </Form.Group>
+                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>

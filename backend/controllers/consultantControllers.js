@@ -99,14 +99,24 @@ const getConsultant = asyncHandler(async (req, res) => {
 
 // @desc    Get a consultant all skills
 // @route   GET /api/consultants/:consultantId/skills
-// @access  Private, authorizeActionOnConsultant
+// @access  Private
 const getConsultantSkills = asyncHandler(async (req, res) => {
+
+    const access = req.user.profil.api.filter(x => x.name === 'getConsultantSkills')[0].data;
+    const consultantsId = await myAccessConsultants(access, req);
 
     const myConsultant = await Consultant.findById(req.params.consultantId)
         .populate('quality.skill')
         .select('quality');
 
-    res.json(myConsultant);
+    //console.log(consultantsId.map(x => x._id))
+    //console.log(myConsultant._id)
+
+    if(consultantsId.map(x => x._id.toString()).includes(myConsultant._id.toString())){
+        res.status(200).json(myConsultant);
+    } else {
+        res.status(401).json({message: "you are not authorized to access this data"})
+    }
 });
 
 // @desc    Update a consultant data by Id
@@ -374,7 +384,7 @@ const getCDM = asyncHandler(async(req,res) => {
 // @access  Private, 
 const getConsultantStaffings = asyncHandler(async (req, res) => {
 
-    const access = req.user.profil.api.filter(x => x.name === 'getAllConsultants')[0].data;
+    const access = req.user.profil.api.filter(x => x.name === 'getConsultantStaffings')[0].data;
     const consultantsId = await myAccessConsultants(access, req);
 
     const consultantId = req.query.consultantId;

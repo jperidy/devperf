@@ -13,6 +13,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { consultantAddASkill, consultantDeleteSkill, consultantUpdateASkillLevel, getAllConsultantSkills, getConsultantSkills } from '../actions/consultantActions';
 import Rating from './Rating';
+import { CONSULTANT_UPDATE_SKILL_RESET } from '../constants/consultantConstants';
 
 const SkillsDetails = ({consultantId, close=true, editable=true}) => {
 
@@ -37,11 +38,11 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
     const consultantAddSkill = useSelector(state => state.consultantAddSkill);
     const { loading: loadingConsultantAddSkill, success: successConsultantAddSkill, error: errorConsultantAddSkill } = consultantAddSkill;
 
-    const consultantUpdateSkill = useSelector(state => state.consultantUpdateSkill);
+    /* const consultantUpdateSkill = useSelector(state => state.consultantUpdateSkill);
     const { error: errorConsultantUpdateSkill } = consultantUpdateSkill;
 
     const consultantDeleteSkillReducer = useSelector(state => state.consultantDeleteSkill);
-    const { success: successConsultantDeleteSkill } = consultantDeleteSkillReducer;
+    const { success: successConsultantDeleteSkill } = consultantDeleteSkillReducer; */
 
     useEffect(() => {
         if (!skillsAll) {
@@ -79,12 +80,13 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
     }, [skillsAll]);
 
     useEffect(() => {
-        if ((successConsultantAddSkill || successConsultantDeleteSkill)) {
+        //if ((successConsultantAddSkill || successConsultantDeleteSkill)) {
+        if (successConsultantAddSkill) {
             setUpdate(true);
         }
     }, [
         successConsultantAddSkill,
-        successConsultantDeleteSkill,
+        //successConsultantDeleteSkill,
     ]);
 
     const orderSkills = (skills) => {
@@ -103,13 +105,13 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
         dispatch(consultantAddASkill(consultantId, skillId, skillLevel));
     }
 
-    const handlerDeleteConsultantSkill = (consultantId, skillId) => {
+    /* const handlerDeleteConsultantSkill = (consultantId, skillId) => {
         dispatch(consultantDeleteSkill(consultantId, skillId));
     }
 
     const handleUpdateSkillLevel = (consultantId, skillId, level) => {
         dispatch(consultantUpdateASkillLevel(consultantId, skillId, level));
-    }
+    } */
 
     return (
 
@@ -194,9 +196,8 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
                         </Col>
                     </Form.Row>
 
-                    {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
+                    {/*errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>*/}
                     {errorConsultantAddSkill && <Message variant='danger'>{errorConsultantAddSkill}</Message>}
-                    {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
 
                 </ListGroup.Item>
 
@@ -215,8 +216,9 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
                                         key={val}
                                         skill={x}
                                         val={val}
-                                        handleUpdateSkillLevel={handleUpdateSkillLevel}
-                                        handlerDeleteConsultantSkill={handlerDeleteConsultantSkill}
+                                        //handleUpdateSkillLevel={handleUpdateSkillLevel}
+                                        //handlerDeleteConsultantSkill={handlerDeleteConsultantSkill}
+                                        setUpdate={setUpdate}
                                         editable={editable}
                                     />
                                 ))}
@@ -230,17 +232,64 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
     )
 }
 
-const SkillDisplayLine = ({ consultantId, skill, val, handleUpdateSkillLevel, handlerDeleteConsultantSkill, editable=true}) => {
+const SkillDisplayLine = ({ 
+    consultantId, 
+    skill, 
+    val, 
+    //handleUpdateSkillLevel, 
+    //handlerDeleteConsultantSkill, 
+    setUpdate,
+    editable=true}) => {
 
+    const dispatch = useDispatch();
+
+    const consultantUpdateSkill = useSelector(state => state.consultantUpdateSkill);
+    const { error: errorConsultantUpdateSkill, success: successConsultantUpdateSkill } = consultantUpdateSkill;
+
+    const consultantDeleteSkillReducer = useSelector(state => state.consultantDeleteSkill);
+    const { success: successConsultantDeleteSkill } = consultantDeleteSkillReducer;
+    
     const [level, setLevel] = useState(skill.level);
+    const [waitingValidationLevel, setWaitingValidationLevel] = useState(skill.level);
+
+    useEffect(() => {
+        if (successConsultantDeleteSkill) {
+            setUpdate(true);
+        }
+    }, [
+        successConsultantDeleteSkill,
+        setUpdate
+    ]);
+
+    useEffect(() => {
+        if (successConsultantUpdateSkill) {
+            setLevel(waitingValidationLevel);
+            dispatch({type: CONSULTANT_UPDATE_SKILL_RESET})
+        }
+    },[dispatch, successConsultantUpdateSkill, waitingValidationLevel])
+
 
     const updateLevel = (newLevel) => {
-        setLevel(newLevel);
-        handleUpdateSkillLevel(consultantId, skill.skill._id, newLevel)
+        
+        dispatch(consultantUpdateASkillLevel(consultantId, skill.skill._id, newLevel));
+        setWaitingValidationLevel(newLevel);
+
+        //handleUpdateSkillLevel(consultantId, skill.skill._id, newLevel)
     }
+
+
+    const handlerDeleteConsultantSkill = (consultantId, skillId) => {
+        dispatch(consultantDeleteSkill(consultantId, skillId));
+    }
+
+    const handleUpdateSkillLevel = (consultantId, skillId, level) => {
+        //dispatch(consultantUpdateASkillLevel(consultantId, skillId, level));
+    }
+
 
     return (
         <>
+            {/*errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>*/}
             <Form.Row key={val}>
                 <Col xs={3}>
                     <Form.Group controlId='skillName' className='mb-0'>

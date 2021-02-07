@@ -39,9 +39,11 @@ const authorizeActionOnConsultant = asyncHandler (async (req, res, next) => {
 
     //console.log(access)
     // add body if not include in the request
+    console.log(req.params)
     if (!req.body.cdmId) {
         if(req.params.consultantId) {
             const consultant = await Consultant.findById(req.params.consultantId)
+            //console.log(consultant)
             req.body.practice = consultant.practice;
             req.body.cdmId = consultant.cdmId;
         } else {
@@ -49,6 +51,9 @@ const authorizeActionOnConsultant = asyncHandler (async (req, res, next) => {
             return
         }
     }
+
+    //console.log(req.body)
+    //console.log(req.user.consultantProfil._id)
 
     switch (access) {
         case 'all':

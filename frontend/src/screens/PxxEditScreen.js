@@ -119,20 +119,24 @@ const PxxEditScreen = ({ history }) => {
 
                                             <Row className="my-3">
                                                 <Col>
-                                                    <label htmlFor="comment"><strong>Staffing comment</strong></label>
-                                                    <InputGroup>
-                                                        <FormControl
-                                                            as='textarea'
-                                                            rows={4}
-                                                            id='comment'
-                                                            value={commentText}
-                                                            placeholder='Please enter a comment'
-                                                            onChange={(e) => {
-                                                                setCommentText(e.target.value);
-                                                                updateCommentHandler(consultantsMy[focus]._id, e.target.value)
-                                                            }}
-                                                        ></FormControl>
-                                                    </InputGroup>
+                                                    {!(consultantsMy[focus]._id === userInfo.consultantProfil._id) && (
+                                                        <>
+                                                            <label htmlFor="comment"><strong>Staffing comment</strong></label>
+                                                            <InputGroup>
+                                                                <FormControl
+                                                                    as='textarea'
+                                                                    rows={4}
+                                                                    id='comment'
+                                                                    value={commentText}
+                                                                    placeholder='Please enter a comment'
+                                                                    onChange={(e) => {
+                                                                        setCommentText(e.target.value);
+                                                                        updateCommentHandler(consultantsMy[focus]._id, e.target.value)
+                                                                    }}
+                                                                ></FormControl>
+                                                            </InputGroup>
+                                                        </>
+                                                    )}
 
                                                 </Col>
                                             </Row>

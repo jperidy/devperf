@@ -15,7 +15,6 @@ const SearchInput = ({ title, searchValue, setSearchValue, possibilities, update
         } else {
             setShow(false);
         }
-        //setUpdate(true);
     }
 
     const onClickHandler = (index, id, value) => {
@@ -32,8 +31,6 @@ const SearchInput = ({ title, searchValue, setSearchValue, possibilities, update
                 <>
                     <Form.Control
                         type='text'
-                        //type='search'
-                        //name='q'
                         placeholder='Search box...'
                         value={searchValue && searchValue}
                         onChange={(e) => onSearchValueChange(e.target.value)}

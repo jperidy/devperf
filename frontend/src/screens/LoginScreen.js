@@ -121,14 +121,14 @@ const LoginScreen = ({ location, history }) => {
                                     <td className='align-middle text-center'>CDM of practice PTC1 account</td>
                                 </tr>
                                 <tr>
-                                    <td className='align-middle text-center'>cdmptc21001@mail.com</td>
+                                    <td className='align-middle text-center'>jessicamichelptc179@mail.com</td>
                                     <td className='align-middle text-center'>123456</td>
-                                    <td className='align-middle text-center'>Coordinator of practice PTC2 account (need to be validated by an admin before to login)</td>
+                                    <td className='align-middle text-center'>Manager of practice PTC1 account</td>
                                 </tr>
                                 <tr>
-                                    <td className='align-middle text-center'>cdmptc21002@mail.com</td>
+                                    <td className='align-middle text-center'>arthurthomasptc112@mail.com</td>
                                     <td className='align-middle text-center'>123456</td>
-                                    <td className='align-middle text-center'>CDM of practice PTC2 account (need to be validated by an admin before to login)</td>
+                                    <td className='align-middle text-center'>Consultant of practice PTC1 account</td>
                                 </tr>
                             </tbody>
                         </Table>

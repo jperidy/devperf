@@ -29,7 +29,7 @@ router.route('/cdm/:practice').get(protect, getAllCDMData);
 
 router.route('/:consultantId/skill')
     .put(protect, authorizeActionOnConsultant, addConsultantSkill)
-    .get(protect, authorizeActionOnConsultant, getConsultantSkills);
+    .get(protect, getConsultantSkills);
 
 router.route('/:consultantId/cdm')
     .get(protect, getCDM);
