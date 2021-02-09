@@ -16,7 +16,7 @@ const SelectCompany = ({ setCompany, editRequest }) => {
     const { error, clients: companies } = clientAll;
 
     const clientCreate = useSelector(state => state.clientCreate);
-    const { error:errorCreate, success } = clientCreate;
+    const { success } = clientCreate;
 
     const [searchCompany, setSearchCompany] = useState('');
 

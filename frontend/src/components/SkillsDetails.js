@@ -244,7 +244,7 @@ const SkillDisplayLine = ({
     const dispatch = useDispatch();
 
     const consultantUpdateSkill = useSelector(state => state.consultantUpdateSkill);
-    const { error: errorConsultantUpdateSkill, success: successConsultantUpdateSkill } = consultantUpdateSkill;
+    const { success: successConsultantUpdateSkill } = consultantUpdateSkill;
 
     const consultantDeleteSkillReducer = useSelector(state => state.consultantDeleteSkill);
     const { success: successConsultantDeleteSkill } = consultantDeleteSkillReducer;
@@ -280,10 +280,6 @@ const SkillDisplayLine = ({
 
     const handlerDeleteConsultantSkill = (consultantId, skillId) => {
         dispatch(consultantDeleteSkill(consultantId, skillId));
-    }
-
-    const handleUpdateSkillLevel = (consultantId, skillId, level) => {
-        //dispatch(consultantUpdateASkillLevel(consultantId, skillId, level));
     }
 
 

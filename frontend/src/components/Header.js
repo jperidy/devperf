@@ -6,6 +6,7 @@ import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Container from 'react-bootstrap/Container';
 import { logout } from '../actions/userActions';
+import DisplayChildren from './DisplayChildren';
 
 const Header = () => {
 
@@ -29,38 +30,41 @@ const Header = () => {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ml-auto">
 
-                            <LinkContainer to='/staffing'>
-                                <Nav.Link>Staffing Request</Nav.Link>
-                            </LinkContainer>
+                            <DisplayChildren access='staffingRequest'>
+                                <LinkContainer to='/staffing'>
+                                    <Nav.Link>Staffing Request</Nav.Link>
+                                </LinkContainer>
+                            </DisplayChildren>
 
-                            <LinkContainer to='/pxx'>
-                                <Nav.Link>Edit My Pxx</Nav.Link>
-                            </LinkContainer>
+                            <DisplayChildren access='editMyPxx'>
+                                <LinkContainer to='/pxx'>
+                                    <Nav.Link>Edit My Pxx</Nav.Link>
+                                </LinkContainer>
+                            </DisplayChildren>
 
                             {userInfo ? (
 
                                 <NavDropdown title={`${userInfo.name} (${userInfo.profil.profil && userInfo.profil.profil})` || 'no user'} id="username">
-                                    <LinkContainer to='/profile'>
-                                        <NavDropdown.Item>Edit My Profil</NavDropdown.Item>
-                                    </LinkContainer>
+                                    
+                                    <DisplayChildren access='editMyProfil'>
+                                        <LinkContainer to='/profile'>
+                                            <NavDropdown.Item>Edit My Profil</NavDropdown.Item>
+                                        </LinkContainer>
+                                    </DisplayChildren>
 
-                                    {userInfo.profil.navbar.manageconsultant.filter(x => x.mode !== 'no').length > 0 && (
-                                        <>
-                                            <NavDropdown.Divider />
-                                            <LinkContainer to='/admin/consultants'>
-                                                <NavDropdown.Item>Manage Consultant</NavDropdown.Item>
-                                            </LinkContainer>
-                                        </>
-                                    )}
+                                    <DisplayChildren access={'manageConsultants'}>
+                                        <NavDropdown.Divider />
+                                        <LinkContainer to='/admin/consultants'>
+                                            <NavDropdown.Item>Manage Consultant</NavDropdown.Item>
+                                        </LinkContainer>
+                                    </DisplayChildren>
 
-                                    {userInfo.profil.navbar.managedeals.filter(x => x.mode !== 'no').length > 0 && (
-                                        <>
-                                            <NavDropdown.Divider />
-                                            <LinkContainer to='/admin/deals'>
-                                                <NavDropdown.Item>Manage Deals</NavDropdown.Item>
-                                            </LinkContainer>
-                                        </>
-                                    )}
+                                    <DisplayChildren access={'manageDeals'}>
+                                        <NavDropdown.Divider />
+                                        <LinkContainer to='/admin/deals'>
+                                            <NavDropdown.Item>Manage Deals</NavDropdown.Item>
+                                        </LinkContainer>
+                                    </DisplayChildren>
 
                                     <NavDropdown.Divider />
                                     <LinkContainer to='/login'>
@@ -73,27 +77,29 @@ const Header = () => {
                                         <Nav.Link><i className='fas fa-user'></i>Sign In</Nav.Link>
                                     </LinkContainer>)}
 
-                            {userInfo && ['admin', 'coordinator'].includes(userInfo.profil.profil) && (
-                                <NavDropdown title='admin'>
-                                    {userInfo.profil.navbar.manageuser.filter(x => x.mode !== 'no').length > 0 && (
-                                        <>
-                                            <LinkContainer to='/admin/users'>
-                                                <NavDropdown.Item>Manage Users</NavDropdown.Item>
-                                            </LinkContainer>
-                                        </>
-                                    )}
+                            <NavDropdown title='admin'>
 
-                                    {userInfo.profil.navbar.manageskills.filter(x => x.mode !== 'no').length > 0 && (
-                                        <>
-                                            <NavDropdown.Divider />
-                                            <LinkContainer to='/admin/skills'>
-                                                <NavDropdown.Item>Manage Skills</NavDropdown.Item>
-                                            </LinkContainer>
-                                        </>
-                                    )}
+                                <DisplayChildren access='manageUsers'>
+                                    <LinkContainer to='/admin/users'>
+                                        <NavDropdown.Item>Manage Users</NavDropdown.Item>
+                                    </LinkContainer>
+                                </DisplayChildren>
 
-                                </NavDropdown>
-                            )}
+                                <DisplayChildren access='manageSkills'>
+                                    <NavDropdown.Divider />
+                                    <LinkContainer to='/admin/skills'>
+                                        <NavDropdown.Item>Manage Skills</NavDropdown.Item>
+                                    </LinkContainer>
+                                </DisplayChildren>
+
+                                <DisplayChildren access='manageProfils'>
+                                    <NavDropdown.Divider />
+                                    <LinkContainer to='/admin/profils'>
+                                        <NavDropdown.Item>Manage Profils</NavDropdown.Item>
+                                    </LinkContainer>
+                                </DisplayChildren>
+
+                            </NavDropdown>
 
                         </Nav>
                     </Navbar.Collapse>

@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import Col from 'react-bootstrap/Col';
 import { Link } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
+import DisplayChildren from '../components/DisplayChildren';
 
 const Tace = ({ tace }) => {
 
@@ -20,9 +21,9 @@ const Tace = ({ tace }) => {
                     <Card.Text as="div">{tace.totalETP && tace.totalETP.toFixed(2)} ETP</Card.Text>
                 </Card.Body>
                 <Card.Footer>
-                    {userInfo.profil.dashboards.tace.map(x => x.mode === 'write').length > 0 && (
+                    <DisplayChildren access='tace'>
                         <Link to={`/pxxdetails/${tace.month._id}`}>View details</Link>
-                    )}
+                    </DisplayChildren>
                 </Card.Footer>
             </Card>
         </Col>

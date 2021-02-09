@@ -14,6 +14,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import StaffAConsultant from './StaffAConsultant';
+import DisplayChildren from '../components/DisplayChildren';
 
 const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) => {
 
@@ -310,10 +311,11 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                             <Col sm={10}>
 
                                 <OverlayTrigger
-                                    overlay={<Tooltip id="tooltip-disabled">{
-                                        userInfo.profil.pxx.comment.filter(x => ['write', 'read'].includes(x.mode)).length > 0 && (
-                                            consultantData.comment ? consultantData.comment : 'No staffing comment'
-                                        )}</Tooltip>}
+                                    overlay={<Tooltip id="tooltip-disabled">
+                                        <DisplayChildren access='editComment'>
+                                            {consultantData.comment ? consultantData.comment : 'No staffing comment'}
+                                        </DisplayChildren>
+                                    </Tooltip>}
                                 >
                                     <Form.Control
                                         plaintext

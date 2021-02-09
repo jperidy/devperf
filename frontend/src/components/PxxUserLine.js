@@ -25,21 +25,8 @@ const PxxUserLine = ({ data }) => {
 
     const editable = data.month ? (data.month.firstDay >= firstDayOfCurrentMonth) : false;
 
-
-    /*
-    useEffect(() => {
-        setAvailableDayComponent(workingDay - (prodDayComponent + notProdDayComponent + leavingDayComponent))
-    }, [prodDayComponent,
-        notProdDayComponent,
-        leavingDayComponent,
-        availableDayComponent,
-        workingDay
-    ]);
-    */
-
     useEffect(() => {
         if (hasChange && workingDay >= (prodDayComponent + notProdDayComponent + leavingDayComponent)) {
-            //console.log(prodDayComponent, notProdDayComponent, leavingDayComponent)
             setAvailableDayComponent(workingDay - (prodDayComponent + notProdDayComponent + leavingDayComponent))
             dispatch(updatePxx({
                 _id: data._id,
@@ -57,7 +44,6 @@ const PxxUserLine = ({ data }) => {
 
     return (
         <>
-
             <Row className="py-1">
                 <Col xs={4} className="text-center align-middle"><b>{data.month ? data.month.name : 'Not created Yeat'}</b> <i>{workingDay ? `(${workingDay}d)` : null}</i></Col>
                 <Col xs={2} className="text-center align-middle px-1">
@@ -69,12 +55,10 @@ const PxxUserLine = ({ data }) => {
                             step={0.5}
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
-                            //value={prodDayComponent ? prodDayComponent : 0}
                             value={prodDayComponent && prodDayComponent.toString()}
                             onChange={(e) => {
                                 setProdDayComponent(Number(e.target.value));
                                 setHasChange(true);
-                                //setHasBeenModified(true);
                             }}
                         />
                     </InputGroup>
@@ -94,7 +78,6 @@ const PxxUserLine = ({ data }) => {
                                     setNotProdDayComponent(Number(e.target.value));
                                     setHasChange(true);
                                 }
-                                //setHasBeenModified(true);
                             }}
                         />
                     </InputGroup>
@@ -108,7 +91,6 @@ const PxxUserLine = ({ data }) => {
                             step={0.5}
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
-                            //value={leavingDayComponent ? leavingDayComponent : 0}
                             value={leavingDayComponent && leavingDayComponent.toString()}
                             onChange={(e) => {
                                 setLeavingDayComponent(Number(e.target.value));
@@ -125,22 +107,11 @@ const PxxUserLine = ({ data }) => {
                             max={workingDay ? workingDay : '-'}
                             step={0.5}
                             className="align-middle text-center p-0"
-                            //value={availableDayComponent ? availableDayComponent : 0}
                             value={availableDayComponent && availableDayComponent.toString()}
                             disabled
                         />
                     </InputGroup>
                 </Col>
-                {/* 
-                    <Col xs={2} className="text-center">
-                        <Button
-                            type='submit'
-                            variant='outline-primary'
-                            disabled={(submitButtonState && hasBeenModified) ? false : true}
-                            onClick={() => clickButtonHandler()}
-                        >{loading ? <Loader /> : 'Submit'}</Button>
-                    </Col>
-                */}
 
             </Row>
         </>

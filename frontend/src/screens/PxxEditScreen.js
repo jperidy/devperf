@@ -17,6 +17,7 @@ import { Container, FormControl, InputGroup } from 'react-bootstrap';
 import { setConsultantFocus } from '../actions/consultantActions';
 import ViewStaffs from '../components/ViewStaffs';
 import SkillsDetails from '../components/SkillsDetails';
+import DisplayChildren from '../components/DisplayChildren';
 
 const PxxEditScreen = ({ history }) => {
 
@@ -156,12 +157,14 @@ const PxxEditScreen = ({ history }) => {
 
                                 <Row>
                                     <Col>
-                                        <DropDownTitleContainer title='Staffings on track' close={false}>
-                                            <ViewStaffs
-                                                history={history}
-                                                consultantId={consultantsMy[focus]._id}
-                                            />
-                                        </DropDownTitleContainer>
+                                        <DisplayChildren access='viewStaffings'>
+                                            <DropDownTitleContainer title='Staffings on track' close={false}>
+                                                <ViewStaffs
+                                                    history={history}
+                                                    consultantId={consultantsMy[focus]._id}
+                                                />
+                                            </DropDownTitleContainer>
+                                        </DisplayChildren>
                                     </Col>
                                 </Row>
 

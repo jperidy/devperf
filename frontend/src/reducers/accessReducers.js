@@ -19,3 +19,18 @@ export const accessListReducer = (state = {}, action) => {
             return state;
     }
 };
+
+export const accessFrontUpdateReducer = (state = {}, action) => {
+    switch (action.type) {
+        case ACCESS_LIST_REQUEST:
+            return { loading: true };
+        case ACCESS_LIST_SUCCESS:
+            return { loading: false, success: true };
+        case ACCESS_LIST_FAIL:
+            return { loading: false, error: action.payload };
+        case ACCESS_LIST_RESET:
+            return {}
+        default:
+            return state;
+    }
+};

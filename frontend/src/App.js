@@ -16,6 +16,7 @@ import ManageSkillsScreen from './screens/ManageSkillsScreen';
 import PxxDetailsScreen from './screens/PxxDetailsScreen';
 import ManageDealsScreen from './screens/ManageDealsScreen';
 import DealsHistoryScreen from './screens/DealsHistoryScreen';
+import AccessEditScreen from './screens/AccessEditScreen';
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
           <Route path='/admin/skills' component={ManageSkillsScreen} exact />
           <Route path='/admin/deals' component={ManageDealsScreen} exact />
           <Route path='/admin/deals/history' component={DealsHistoryScreen} exact />
+          <Route path='/admin/profils' component={AccessEditScreen} exact />
           <Route path='/' component={DashboardScreen} exact />
         </Container>
       </main>

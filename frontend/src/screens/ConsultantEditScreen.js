@@ -6,20 +6,13 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-//import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-//import Tooltip from 'react-bootstrap/Tooltip';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-//import SkillDisplayLine from '../components/SkillDisplayLine';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import {
-    //consultantAddASkill,
-    //consultantDeleteSkill,
-    //consultantUpdateASkillLevel,
     createConsultant,
     getAllCDM,
-    //getAllConsultantSkills,
     getAllPractice,
     getMyConsultant,
     updateMyConsultant
@@ -40,14 +33,6 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [matricule, setMatricule] = useState('');
     const [practice, setPractice] = useState('');
     const [grade, setGrade] = useState('Analyst');
-
-    /*
-    const [quality, setQuality] = useState([]);
-    const [skillCategory, setSkillCategory] = useState('default');
-    const [skillId, setSkillId] = useState('default');
-    const [skillLevel, setSkillLevel] = useState(1);
-    const [skillCategoryList, setSkillCategoryList] = useState([]);
-    */
 
     const [cdm, setCdm] = useState('');
     const [arrival, setArrival] = useState('');
@@ -90,22 +75,8 @@ const ConsultantEditScreen = ({ history, match }) => {
     const consultantPracticeList = useSelector(state => state.consultantPracticeList);
     const { error: errorPractice, practiceList } = consultantPracticeList;
 
-    /*
-    const consultantAllSkills = useSelector(state => state.consultantAllSkills);
-    const { skills } = consultantAllSkills;
-
-    const consultantAddSkill = useSelector(state => state.consultantAddSkill);
-    const { loading: loadingConsultantAddSkill, success: successConsultantAddSkill, error: errorConsultantAddSkill } = consultantAddSkill;
-
-    const consultantUpdateSkill = useSelector(state => state.consultantUpdateSkill);
-    const { loading: loadingConsultantUpdateSkill, success: successConsultantUpdateSkill, error: errorConsultantUpdateSkill } = consultantUpdateSkill;
-
-    const consultantDeleteSkillReducer = useSelector(state => state.consultantDeleteSkill);
-    const { success: successConsultantDeleteSkill } = consultantDeleteSkillReducer;
-    */
-
     useEffect(() => {
-        if (userInfo && !(['admin', 'domain', 'coordinator', 'cdm'].includes(userInfo.profil.profil))) {
+        if (!userInfo) {
             history.push('/login');
         }
     }, [history, userInfo]);
@@ -133,21 +104,6 @@ const ConsultantEditScreen = ({ history, match }) => {
         }
     }, [dispatch, update, match]);
 
-
-    /*
-    useEffect(() => {
-        if ((match.params.id) && (successUpdate || successConsultantAddSkill || successConsultantUpdateSkill || successConsultantDeleteSkill)) {
-            setUpdate(true);
-        }
-    }, [
-        match,
-        successUpdate,
-        successConsultantAddSkill,
-        successConsultantUpdateSkill,
-        successConsultantDeleteSkill
-    ]);
-    */
-
     useEffect(() => {
         if ((match.params.id) && (successUpdate)) {
             setUpdate(true);
@@ -170,24 +126,6 @@ const ConsultantEditScreen = ({ history, match }) => {
             dispatch(getAllCDM(practice));
         }
     }, [dispatch, practice]);
-
-    /*
-    useEffect(() => {
-        if (!skills) {
-            dispatch(getAllConsultantSkills());
-        }
-    }, [dispatch, skills]);
-    */
-
-    /*
-    useEffect(() => {
-        if (skills) {
-            let categoryList = skills.map(x => x.category);
-            categoryList = [...new Set(categoryList)];
-            setSkillCategoryList(categoryList);
-        }
-    }, [skills]);
-    */
 
     useEffect(() => {
         if ((match.params.id) && consultant) {
@@ -315,20 +253,6 @@ const ConsultantEditScreen = ({ history, match }) => {
         setSeniority(((new Date(Date.now()) - new Date(e.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4));
     }
 
-    /*
-    const handleAddSkill = (consultantId, skillId, skillLevel) => {
-        dispatch(consultantAddASkill(consultantId, skillId, skillLevel));
-    }
-
-    const handlerDeleteConsultantSkill = (consultantId, skillId) => {
-        dispatch(consultantDeleteSkill(consultantId, skillId));
-    }
-
-    const handleUpdateSkillLevel = (consultantId, skillId, level) => {
-        dispatch(consultantUpdateASkillLevel(consultantId, skillId, level));
-    }
-    */
-
     const goBackHandler = () => {
         history.go(-1);
         setErrorMessage('');
@@ -420,125 +344,6 @@ const ConsultantEditScreen = ({ history, match }) => {
                             {consultant && valueEditType !== 'create' && (
                                 <SkillsDetails consultantId={consultant._id} />
                             )}
-
-                            {/*(valueEditType !== 'create') && (
-                                <DropDownTitleContainer title='Skills' close={false}>
-
-                                    {errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>}
-
-                                    <ListGroup.Item>
-                                        <h4>Add skills</h4>
-
-                                        <Form.Row className='mt-3 align-items-end'>
-                                            <Col xs={12} md={3}>
-                                                <Form.Group controlId='skillCategory'>
-                                                    <Form.Label><strong>Category</strong></Form.Label>
-                                                    <Form.Control
-                                                        as='select'
-                                                        value={skillCategory ? skillCategory : 'default'}
-                                                        onChange={(e) => setSkillCategory(e.target.value)}
-                                                        required
-                                                    >
-                                                        <option value='default'>Please Select</option>
-                                                        {skillCategoryList && (
-                                                            skillCategoryList.map((x, val) => (
-                                                                <option
-                                                                    value={x}
-                                                                    key={val}
-                                                                    onChange={(e) => { setSkillCategory(e.target.value) }}
-                                                                >{x}</option>
-                                                            )))}
-                                                    </Form.Control>
-                                                </Form.Group>
-                                            </Col>
-                                            <Col xs={12} md={3} >
-                                                <Form.Group controlId='skillName'>
-                                                    <Form.Label><strong>Skill</strong></Form.Label>
-                                                    <OverlayTrigger
-                                                        placement="top"
-                                                        overlay={<Tooltip id="button-tooltip-2">{skillId && skills ? skills.map(x => (x._id === skillId) && x.description) : 'no description'}</Tooltip>}
-                                                    >
-                                                        <Form.Control
-                                                            as='select'
-                                                            value={skillId ? skillId : 'default'}
-                                                            onChange={(e) => setSkillId(e.target.value)}
-                                                            required
-                                                        >
-                                                            <option value='default'>Please Select</option>
-                                                            {skills && skillCategory && (
-                                                                skills.map((x, val) => (
-                                                                    x.category === skillCategory && (
-                                                                        <option
-                                                                            value={x._id}
-                                                                            key={val}
-                                                                        >{x.name}</option>
-                                                                    )
-                                                                )))}
-
-                                                        </Form.Control>
-                                                    </OverlayTrigger>
-                                                </Form.Group>
-                                            </Col>
-                                            <Col xs={12} md={3} >
-                                                <Form.Group controlId='skillLevel'>
-                                                    <Form.Label><strong>Level</strong></Form.Label>
-                                                    <Form.Control
-                                                        as='select'
-                                                        value={skillLevel ? skillLevel : 1}
-                                                        onChange={(e) => setSkillLevel(e.target.value)}
-                                                        required
-                                                    >
-                                                        <option value={1}>1</option>
-                                                        <option value={2}>2</option>
-                                                        <option value={3}>3</option>
-
-                                                    </Form.Control>
-                                                </Form.Group>
-                                            </Col>
-                                            <Col xs={12} md={3} className='align-items-bottom'>
-                                                <Form.Group>
-                                                    <InputGroup>
-                                                        <Button
-                                                            block
-                                                            onClick={() => handleAddSkill(match.params.id, skillId, skillLevel)}
-                                                        >{loadingConsultantAddSkill ? <Loader /> : 'Add'}</Button>
-                                                    </InputGroup>
-                                                </Form.Group>
-                                            </Col>
-                                        </Form.Row>
-
-                                        {errorConsultantAddSkill && (
-                                            <Form.Row>
-                                                <Message variant='danger'>{errorConsultantAddSkill}</Message>
-                                            </Form.Row>
-                                        )}
-                                    </ListGroup.Item>
-
-                                    <ListGroup.Item>
-                                        {quality && quality.length && (
-                                            <ListGroup variant='flush'>
-                                                {quality.map((x, val) => (
-                                                    <ListGroup.Item key={val}>
-                                                    <SkillDisplayLine
-                                                        consultantId={match.params.id}
-                                                        key={val}
-                                                        skill={x}
-                                                        val={val}
-                                                        handleUpdateSkillLevel={handleUpdateSkillLevel}
-                                                        handlerDeleteConsultantSkill={handlerDeleteConsultantSkill}
-                                                    />
-                                                    </ListGroup.Item>
-                                                ))}
-                                                <Form.Row>
-                                                    <Col xs={6} md={8}></Col>
-                                                    <Col xs={6} md={4} className='text-center'>{loadingConsultantUpdateSkill && <Loader />}</Col>
-                                                </Form.Row>
-                                            </ListGroup>
-                                        )}
-                                    </ListGroup.Item>
-                                </DropDownTitleContainer>
-
-                                                )*/}
 
                             <DropDownTitleContainer title='Profil' close={false}>
                                 <ListGroup.Item>

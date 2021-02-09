@@ -12,6 +12,7 @@ import Meta from '../components/Meta';
 import ConsoDispo from '../components/ConsoDispo';
 import Tace from '../components/Tace';
 import DropDownTitleContainer from '../components/DropDownTitleContainer'
+import DisplayChildren from '../components/DisplayChildren';
 
 const DashboardScreen = ({ history }) => {
 
@@ -62,7 +63,7 @@ const DashboardScreen = ({ history }) => {
         if (userInfo && !loadingTACE) {
             dispatch(getTace(userInfo.consultantProfil.practice, start, end));
         }
-    // eslint-disable-next-line
+        // eslint-disable-next-line
     }, [dispatch, practice, start, end])
 
     const navigationMonthHandler = (val) => {
@@ -70,9 +71,9 @@ const DashboardScreen = ({ history }) => {
         const endDate = new Date(end);
         startDate.setUTCMonth(startDate.getUTCMonth() + val);
         endDate.setUTCMonth(endDate.getUTCMonth() + val);
-        
-        setStart(startDate.toISOString().substring(0,10));
-        setEnd(endDate.toISOString().substring(0,10));
+
+        setStart(startDate.toISOString().substring(0, 10));
+        setEnd(endDate.toISOString().substring(0, 10));
     }
 
     return (
@@ -125,8 +126,8 @@ const DashboardScreen = ({ history }) => {
                     </Button>
                 </Col>
             </Row>
-
-            {userInfo && userInfo.profil.dashboards.tace.filter( x => x.mode !== 'no').length > 0 && (
+            
+            <DisplayChildren access={'tace'}>
                 <DropDownTitleContainer title='TACE' close={false}>
                     <Row className='mt-3'>
                         <Col>
@@ -142,9 +143,9 @@ const DashboardScreen = ({ history }) => {
                         )}
                     </Row>
                 </DropDownTitleContainer>
-            )}
+            </DisplayChildren>
 
-            {userInfo && userInfo.profil.dashboards.consodispo.filter( x => x.mode !== 'no').length > 0 && (
+            <DisplayChildren access={'consoDispo'}>
                 <DropDownTitleContainer title='Availabilities' close={true}>
                     <Row>
                         <Col>
@@ -158,7 +159,7 @@ const DashboardScreen = ({ history }) => {
                         </Col>
                     </Row>
                 </DropDownTitleContainer>
-            )}
+            </DisplayChildren>
         </>
     )
 }
