@@ -1,6 +1,6 @@
 const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
-const { myAccessDeals,calculatePriority } = require('../utils/dealsFunctions');
+const { myAccessDeals, calculatePriority } = require('../utils/dealsFunctions');
 const Consultant = require('../models/consultantModel');
 
 // @desc    Create a Deal 
@@ -44,6 +44,7 @@ const updateADeal = asyncHandler(async (req, res) => {
         deal.presentationDate = req.body.presentationDate;
         deal.wonDate = req.body.wonDate;
         deal.startDate = req.body.startDate;
+        deal.duration = req.body.duration;
         deal.mainPractice = req.body.mainPractice;
         deal.othersPractices = req.body.othersPractices;
         deal.location = req.body.location;

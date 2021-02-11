@@ -23,6 +23,7 @@ import {
     CONSULTANT_MY_UPDATE_RESET
 } from '../constants/consultantConstants';
 import SkillsDetails from '../components/SkillsDetails';
+import DisplayChildren from '../components/DisplayChildren';
 
 const ConsultantEditScreen = ({ history, match }) => {
 
@@ -84,18 +85,29 @@ const ConsultantEditScreen = ({ history, match }) => {
     useEffect(() => {
         if (match.params.id) {
             if (!consultant) {
-                if (!loading) {
-                    dispatch(getMyConsultant(match.params.id));
-                    setUpdate(false);
-                }
-            } else {
+                dispatch(getMyConsultant(match.params.id));
+                /*if (!loading) {
+                    //setUpdate(false);
+                }*/
+            } /*else {
                 if (consultant._id !== match.params.id) {
                     dispatch(getMyConsultant(match.params.id));
-                    setUpdate(false);
+                    //setUpdate(false);
                 }
-            }
+            }*/
         }
-    }, [dispatch, match, consultant, loading]);
+    }, [dispatch, match, consultant]);
+
+    useEffect(() => {
+        if (match.params.id) {
+
+            if (consultant && consultant._id !== match.params.id) {
+                dispatch(getMyConsultant(match.params.id));
+                //setUpdate(false);
+            }
+
+        }
+    }, [dispatch, match, consultant]);
 
     useEffect(() => {
         if (update) {
@@ -260,7 +272,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     }
 
     return (
-        <>
+        <DisplayChildren access='editConsultantProfil'>
             {error && <Message variant='danger'>{error}</Message>}
             {errorMessage && <Message variant='danger'>{errorMessage.message}</Message>}
 
@@ -630,7 +642,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                     </Col>
                 </Row>
             </Container>
-        </>
+        </DisplayChildren>
     )
 }
 

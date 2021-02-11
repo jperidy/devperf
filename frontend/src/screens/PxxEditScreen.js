@@ -167,18 +167,26 @@ const PxxEditScreen = ({ history }) => {
                                         </DisplayChildren>
                                     </Col>
                                 </Row>
-
-                                <SkillsDetails consultantId={consultantsMy[focus]._id} />
+                                
+                                <Row>
+                                    <Col>
+                                        <DisplayChildren access='viewSkills'>
+                                            <SkillsDetails consultantId={consultantsMy[focus]._id} />
+                                        </DisplayChildren>
+                                    </Col>
+                                </Row>
 
                                 <Row>
                                     <Col>
-                                        <DropDownTitleContainer title='Others consultants' close={true}>
-                                            <ConsultantsTab
-                                                consultantsMy={consultantsMy}
-                                                history={history}
-                                                focusActive={true}
-                                            />
-                                        </DropDownTitleContainer>
+                                        <DisplayChildren access='viewOthersConsultants'>
+                                            <DropDownTitleContainer title='Others consultants' close={true}>
+                                                <ConsultantsTab
+                                                    consultantsMy={consultantsMy}
+                                                    history={history}
+                                                    focusActive={true}
+                                                />
+                                            </DropDownTitleContainer>
+                                        </DisplayChildren>
                                     </Col>
                                 </Row>
                             </>

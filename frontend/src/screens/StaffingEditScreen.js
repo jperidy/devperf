@@ -59,6 +59,7 @@ const StaffingEditScreen = ({ match, history }) => {
     const [srStatus, setSrStatus] = useState('');
     const [srRessources, setSrRessources] = useState([]);
     const [comments, setComments] = useState([]);
+    const [duration, setDuration] = useState('');
 
     const [newComment, setNewComment] = useState('');
 
@@ -87,7 +88,7 @@ const StaffingEditScreen = ({ match, history }) => {
     const [companyMessage, setCompanyMessage] = useState(null);
 
     //ConsoDispo
-    const duration = 3;
+    const analyseTime = 3;
     let startDefault = new Date(Date.now());
     startDefault.setUTCDate(1);
     startDefault.setUTCMonth(startDefault.getUTCMonth());
@@ -95,7 +96,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
     let endDefault = new Date(Date.now());
     endDefault.setUTCDate(1);
-    endDefault.setUTCMonth(endDefault.getUTCMonth() + duration - 1);
+    endDefault.setUTCMonth(endDefault.getUTCMonth() + analyseTime - 1);
     endDefault = endDefault.toISOString().substring(0, 10);
 
     const [practice] = useState('PTC1');
@@ -159,6 +160,7 @@ const StaffingEditScreen = ({ match, history }) => {
             setCoLeaders(dealToEdit.contacts.secondary ?
                 dealToEdit.contacts.secondary.map( coLeader => ({id: coLeader._id, value: coLeader.name})) : []);
             setComments(dealToEdit.comments ? dealToEdit.comments : []);
+            setDuration(dealToEdit.duration ? dealToEdit.duration : '');
         }
     }, [successEdit, dealToEdit, userInfo, match])
 
@@ -194,6 +196,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 presentationDate: presentationDate,
                 wonDate: wonDate,
                 startDate: startDate,
+                duration: duration,
                 mainPractice: mainPractice,
                 othersPractices: othersPractices,
                 location: location,
@@ -219,7 +222,7 @@ const StaffingEditScreen = ({ match, history }) => {
         }
 
     }, [match, dispatch, userInfo, dealChange, company, type, client, title, status, probability, description, proposalDate, presentationDate,
-        wonDate, startDate, mainPractice, othersPractices, location, srInstruction, srStatus, srRessources, sdInstructions,
+        wonDate, startDate, duration, mainPractice, othersPractices, location, srInstruction, srStatus, srRessources, sdInstructions,
         sdStatus, sdStaff, leader, coLeaders, comments
     ]);
 
@@ -283,6 +286,7 @@ const StaffingEditScreen = ({ match, history }) => {
             presentationDate: presentationDate,
             wonDate: wonDate,
             startDate: startDate,
+            duration: duration,
             mainPractice: mainPractice,
             othersPractices: othersPractices,
             location: location,
@@ -500,25 +504,6 @@ const StaffingEditScreen = ({ match, history }) => {
                                 </ListGroup>
                             )}
 
-                            {/* <Form.Group controlId='company' className='mb-0'>
-                                <Form.Label as='h5'>Company {editRequest && '*'}</Form.Label>
-                                {editRequest ? (
-                                    <Form.Control
-                                        type='text'
-                                        placeholder='Company name'
-                                        value={company}
-                                        onChange={(e) => setCompany(e.target.value)}
-                                        required
-                                    ></Form.Control>
-                                ) : (
-                                        <Form.Control
-                                            type='text'
-                                            plaintext
-                                            readOnly
-                                            value={company}
-                                        ></Form.Control>
-                                    )}
-                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
@@ -800,10 +785,11 @@ const StaffingEditScreen = ({ match, history }) => {
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <Row>
+                            <h5>Sheduling</h5>
+                            <Row className='align-items-end'>
                                 <Col>
                                     <Form.Group controlId='proposal-date' className='mb-0'>
-                                        <Form.Label as='h5'>Proposal Date</Form.Label>
+                                        <Form.Label>Proposal</Form.Label>
                                         {editRequest ? (
                                             <Form.Control
                                                 type='date'
@@ -824,7 +810,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                                 <Col>
                                     <Form.Group controlId='presentation-date' className='mb-0'>
-                                        <Form.Label as='h5'>Presentation Date</Form.Label>
+                                        <Form.Label>Presentation</Form.Label>
                                         {editRequest ? (
                                             <Form.Control
                                                 type='date'
@@ -845,7 +831,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                                 <Col>
                                     <Form.Group controlId='start-date' className='mb-0'>
-                                        <Form.Label as='h5'>Start Date {editRequest && '*'}</Form.Label>
+                                        <Form.Label>Start {editRequest && '*'}</Form.Label>
                                         {editRequest ? (
                                             <Form.Control
                                                 type='date'
@@ -858,6 +844,30 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 <Form.Control
                                                     type='date'
                                                     value={startDate}
+                                                    plaintext
+                                                    readOnly
+                                                ></Form.Control>
+                                            )}
+                                    </Form.Group>
+                                </Col>
+
+                                <Col>
+                                    <Form.Group controlId='duration' className='mb-0'>
+                                        <Form.Label>Duration (month) {editRequest && '*'}</Form.Label>
+                                        {editRequest ? (
+                                            <Form.Control
+                                                type='number'
+                                                placeholder='Duration'
+                                                min={0}
+                                                step={0.5}
+                                                value={duration && duration}
+                                                onChange={(e) => setDuration(e.target.value)}
+                                                required
+                                            ></Form.Control>
+                                        ) : (
+                                                <Form.Control
+                                                    type='number'
+                                                    value={duration}
                                                     plaintext
                                                     readOnly
                                                 ></Form.Control>

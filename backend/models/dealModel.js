@@ -62,6 +62,10 @@ const dealSchema = mongoose.Schema({
         type: String,
         required: false
     },
+    duration: {
+        type: Number,
+        required: false
+    },
     staffingRequest: {
         instructions: {
             type: String,

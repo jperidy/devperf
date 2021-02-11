@@ -45,7 +45,7 @@ const Header = () => {
                             {userInfo ? (
 
                                 <NavDropdown title={`${userInfo.name} (${userInfo.profil.profil && userInfo.profil.profil})` || 'no user'} id="username">
-                                    
+
                                     <DisplayChildren access='editMyProfil'>
                                         <LinkContainer to='/profile'>
                                             <NavDropdown.Item>Edit My Profil</NavDropdown.Item>
@@ -77,30 +77,31 @@ const Header = () => {
                                         <Nav.Link><i className='fas fa-user'></i>Sign In</Nav.Link>
                                     </LinkContainer>)}
 
-                            <NavDropdown title='admin'>
+                            <DisplayChildren access='adminMenu'>
+                                <NavDropdown title='admin'>
 
-                                <DisplayChildren access='manageUsers'>
-                                    <LinkContainer to='/admin/users'>
-                                        <NavDropdown.Item>Manage Users</NavDropdown.Item>
-                                    </LinkContainer>
-                                </DisplayChildren>
+                                    <DisplayChildren access='manageUsers'>
+                                        <LinkContainer to='/admin/users'>
+                                            <NavDropdown.Item>Manage Users</NavDropdown.Item>
+                                        </LinkContainer>
+                                    </DisplayChildren>
 
-                                <DisplayChildren access='manageSkills'>
-                                    <NavDropdown.Divider />
-                                    <LinkContainer to='/admin/skills'>
-                                        <NavDropdown.Item>Manage Skills</NavDropdown.Item>
-                                    </LinkContainer>
-                                </DisplayChildren>
+                                    <DisplayChildren access='manageSkills'>
+                                        <NavDropdown.Divider />
+                                        <LinkContainer to='/admin/skills'>
+                                            <NavDropdown.Item>Manage Skills</NavDropdown.Item>
+                                        </LinkContainer>
+                                    </DisplayChildren>
 
-                                <DisplayChildren access='manageProfils'>
-                                    <NavDropdown.Divider />
-                                    <LinkContainer to='/admin/profils'>
-                                        <NavDropdown.Item>Manage Profils</NavDropdown.Item>
-                                    </LinkContainer>
-                                </DisplayChildren>
+                                    <DisplayChildren access='manageProfils'>
+                                        <NavDropdown.Divider />
+                                        <LinkContainer to='/admin/profils'>
+                                            <NavDropdown.Item>Manage Profils</NavDropdown.Item>
+                                        </LinkContainer>
+                                    </DisplayChildren>
 
-                            </NavDropdown>
-
+                                </NavDropdown>
+                            </DisplayChildren>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
