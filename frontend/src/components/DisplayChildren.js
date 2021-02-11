@@ -15,9 +15,9 @@ const DisplayChildren = ({ access, children }) => {
     }
 
     return (
-        <div>
+        <span>
             {grantedAccess && children}
-        </div>
+        </span>
     )
 }
 

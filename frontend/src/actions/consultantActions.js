@@ -337,6 +337,7 @@ export const getAllMyAdminConsultants = (keyword = '', pageNumber = '', pageSize
         };
 
         const { data } = await axios.get(`/api/consultants/admin/consultants?keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);
+        
         dispatch({ type: CONSULTANTS_ALL_ADMIN_DETAILS_SUCCESS, payload: data });
 
     } catch (error) {

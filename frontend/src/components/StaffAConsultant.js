@@ -10,6 +10,7 @@ import ViewStaffs from './ViewStaffs';
 import SkillsDetails from './SkillsDetails';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import { getConsultantCdm } from '../actions/consultantActions';
+import DisplayChildren from './DisplayChildren';
 
 
 const StaffAConsultant = ({ history, onHide, show, consultant, loadingData={}, mode, addStaffHandler }) => {
@@ -47,9 +48,8 @@ const StaffAConsultant = ({ history, onHide, show, consultant, loadingData={}, m
             </Modal.Header>
 
             <Modal.Body>
-                {/* <h4>{consultant.name ? consultant.name : ''}</h4> */}
                 {mode === 'staffing' && (
-                    <>
+                    <DisplayChildren access='editStaff'>
                         <Row>
                             <Col className='mt-3'>
                                 <label htmlFor='sd-responsability'><strong>Responsability *</strong></label>
@@ -100,38 +100,43 @@ const StaffAConsultant = ({ history, onHide, show, consultant, loadingData={}, m
                                 </InputGroup>
                             </Col>
                         </Row>
-                    </>
+                    </DisplayChildren>
                 )}
 
-                <SkillsDetails
-                    consultantId={consultant._id}
-                    editable={false}
-                    close={(mode ==='consultation') ? false : true }
-                />
-
-                <DropDownTitleContainer title='Others staffings' close={false}>
-                    <ViewStaffs
-                        history={history}
+                <DisplayChildren access='viewSkills'>
+                    <SkillsDetails
                         consultantId={consultant._id}
-                        onNavigate={onHide}
+                        editable={false}
+                        close={(mode === 'consultation') ? false : true}
                     />
-                </DropDownTitleContainer>
+                </DisplayChildren>
+
+                <DisplayChildren access='viewStaffings'>
+                    <DropDownTitleContainer title='Others staffings' close={false}>
+                        <ViewStaffs
+                            history={history}
+                            consultantId={consultant._id}
+                            onNavigate={onHide}
+                        />
+                    </DropDownTitleContainer>
+                </DisplayChildren>
                 
             </Modal.Body>
 
             <Modal.Footer>
                 <Button onClick={onHide} variant='secondary'>Cancel</Button>
-                {mode === 'staffing' && (
-                    <Button 
-                        onClick={() => {
-                            addStaffHandler(consultant, sdResponsability, sdPriority, sdInformation);
-                            onHide();
-                        }} 
-                        variant='primary' 
-                        disabled={!(sdResponsability !== '' && sdPriority !== '')}
-                    >Staff</Button>
-                )}
-                
+                <DisplayChildren access='editStaff'>
+                    {mode === 'staffing' && (
+                        <Button
+                            onClick={() => {
+                                addStaffHandler(consultant, sdResponsability, sdPriority, sdInformation);
+                                onHide();
+                            }}
+                            variant='primary'
+                            disabled={!(sdResponsability !== '' && sdPriority !== '')}
+                        >Staff</Button>
+                    )}
+                </DisplayChildren>
             </Modal.Footer>
 
         </Modal>

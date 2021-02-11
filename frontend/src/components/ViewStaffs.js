@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Loader from './Loader';
 import { getAllStaffs } from '../actions/consultantActions';
 
-const ViewStaffs = ({history, consultantId, displayedDeal = '', onNavigate=()=>('')}) => {
+const ViewStaffs = ({ history, consultantId, displayedDeal = '', onNavigate = () => ('') }) => {
 
     const dispatch = useDispatch();
     const consultantAllStaffs = useSelector(state => state.consultantAllStaffs);
@@ -35,9 +35,9 @@ const ViewStaffs = ({history, consultantId, displayedDeal = '', onNavigate=()=>(
                             <th></th>
                         </tr>
                     </thead>
-                    
+
                     <tbody>
-                        {staffings && staffings.map(deal => (deal._id !== displayedDeal) && (
+                        {staffings && staffings.map(deal => (deal._id.toString() !== displayedDeal.toString()) && (
                             <tr key={deal._id}>
                                 <td className='align-middle'>{deal.company}</td>
                                 <td className='align-middle'>{deal.title}</td>
@@ -46,13 +46,13 @@ const ViewStaffs = ({history, consultantId, displayedDeal = '', onNavigate=()=>(
                                 <td className='align-middle'>{deal.startDate.substring(0, 10)}</td>
                                 <td className='align-middle'>{deal.requestStatus}</td>
                                 <td className='align-middle'>
-                                    <Button
-                                        onClick={() => {
-                                            history.push(`/staffing/${deal._id}`);
-                                            onNavigate();
-                                        }}
-                                        variant='light'
-                                    ><i className="fas fa-edit"></i></Button>
+                                        <Button
+                                            onClick={() => {
+                                                history.push(`/staffing/${deal._id}`);
+                                                onNavigate();
+                                            }}
+                                            variant='light'
+                                        ><i className="fas fa-edit"></i></Button>
                                 </td>
                             </tr>
                         ))}

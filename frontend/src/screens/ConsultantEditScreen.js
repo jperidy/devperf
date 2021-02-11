@@ -272,7 +272,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     }
 
     return (
-        <DisplayChildren access='editConsultantProfil'>
+        <>
             {error && <Message variant='danger'>{error}</Message>}
             {errorMessage && <Message variant='danger'>{errorMessage.message}</Message>}
 
@@ -284,365 +284,367 @@ const ConsultantEditScreen = ({ history, match }) => {
             <Button className='mb-3' onClick={() => goBackHandler()}>
                 Go Back
             </Button>
+            <DisplayChildren access='editConsultantProfil'>
 
-            <Container>
-                <Row className='justify-content-md-center'>
-                    <Col xs={12} md={8}>
-                        
-                        <Form onSubmit={submitHandler}>
-                            <h2>{name && name}</h2>
+                <Container>
+                    <Row className='justify-content-md-center'>
+                        <Col xs={12} md={8}>
 
-                            <DropDownTitleContainer title='Personal' close={valueEditType !== 'create'}>
-                                <ListGroup.Item>
-                                    <Form.Row>
-                                        <Col>
-                                            <Form.Group controlId='name'>
-                                                <Form.Label><b>Name</b></Form.Label>
-                                                <Form.Control
-                                                    type='name'
-                                                    placeholder='Enter Name'
-                                                    value={name && name}
-                                                    onChange={(e) => setName(e.target.value)}
-                                                    required
-                                                ></Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                    </Form.Row>
+                            <Form onSubmit={submitHandler}>
+                                <h2>{name && name}</h2>
 
-                                    <Form.Row>
-                                        <Col>
-                                            <Form.Group controlId='matricule'>
-                                                <Form.Label><b>Matricule</b></Form.Label>
-                                                <Form.Control
-                                                    type='text'
-                                                    placeholder='Enter Matricule'
-                                                    value={matricule && matricule}
-                                                    onChange={(e) => setMatricule(e.target.value)}
-                                                    required
-                                                ></Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                        <Col>
-                                            <Form.Group controlId='seniority'>
-                                                <Form.Label><b>Seniority</b> <i>(years)</i></Form.Label>
-                                                <Form.Control
-                                                    type='text'
-                                                    placeholder='-'
-                                                    value={seniority && seniority}
-                                                    readOnly
-                                                ></Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                    </Form.Row>
+                                <DropDownTitleContainer title='Personal' close={valueEditType !== 'create'}>
+                                    <ListGroup.Item>
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Group controlId='name'>
+                                                    <Form.Label><b>Name</b></Form.Label>
+                                                    <Form.Control
+                                                        type='name'
+                                                        placeholder='Enter Name'
+                                                        value={name && name}
+                                                        onChange={(e) => setName(e.target.value)}
+                                                        required
+                                                    ></Form.Control>
+                                                </Form.Group>
+                                            </Col>
+                                        </Form.Row>
 
-                                    <Form.Row>
-                                        <Col>
-                                            <Form.Group controlId='email'>
-                                                <Form.Label><b>Email Address</b></Form.Label>
-                                                <Form.Control
-                                                    type='email'
-                                                    placeholder='Enter email'
-                                                    value={email && email}
-                                                    onChange={(e) => setEmail(e.target.value)}
-                                                    required
-                                                ></Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                    </Form.Row>
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Group controlId='matricule'>
+                                                    <Form.Label><b>Matricule</b></Form.Label>
+                                                    <Form.Control
+                                                        type='text'
+                                                        placeholder='Enter Matricule'
+                                                        value={matricule && matricule}
+                                                        onChange={(e) => setMatricule(e.target.value)}
+                                                        required
+                                                    ></Form.Control>
+                                                </Form.Group>
+                                            </Col>
+                                            <Col>
+                                                <Form.Group controlId='seniority'>
+                                                    <Form.Label><b>Seniority</b> <i>(years)</i></Form.Label>
+                                                    <Form.Control
+                                                        type='text'
+                                                        placeholder='-'
+                                                        value={seniority && seniority}
+                                                        readOnly
+                                                    ></Form.Control>
+                                                </Form.Group>
+                                            </Col>
+                                        </Form.Row>
 
-                                </ListGroup.Item>
-                            </DropDownTitleContainer>
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Group controlId='email'>
+                                                    <Form.Label><b>Email Address</b></Form.Label>
+                                                    <Form.Control
+                                                        type='email'
+                                                        placeholder='Enter email'
+                                                        value={email && email}
+                                                        onChange={(e) => setEmail(e.target.value)}
+                                                        required
+                                                    ></Form.Control>
+                                                </Form.Group>
+                                            </Col>
+                                        </Form.Row>
 
-                            {consultant && valueEditType !== 'create' && (
-                                <SkillsDetails consultantId={consultant._id} />
-                            )}
+                                    </ListGroup.Item>
+                                </DropDownTitleContainer>
 
-                            <DropDownTitleContainer title='Profil' close={false}>
-                                <ListGroup.Item>
-                                    <Form.Row>
-                                        <Col>
-                                            <Form.Group controlId='practice'>
-                                                <Form.Label><b>Practice</b></Form.Label>
-                                                <InputGroup>
+                                {consultant && valueEditType !== 'create' && (
+                                    <SkillsDetails consultantId={consultant._id} />
+                                )}
+
+                                <DropDownTitleContainer title='Profil' close={false}>
+                                    <ListGroup.Item>
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Group controlId='practice'>
+                                                    <Form.Label><b>Practice</b></Form.Label>
+                                                    <InputGroup>
+                                                        <Form.Control
+                                                            as='select'
+                                                            value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ""}
+                                                            //disabled={userInfo && !(userInfo.adminLevel === 0)}
+                                                            onChange={(e) => {
+                                                                setPractice(e.target.value)
+                                                            }}
+                                                            required
+                                                        >
+                                                            {!practiceList ? <option value={practice && practice}>{practice}</option>
+                                                                : errorPractice ? <Message variant='Danger'>No Practice found</Message>
+                                                                    : (
+                                                                        practiceList.map(x => (
+                                                                            <option
+                                                                                key={x}
+                                                                                value={x}
+                                                                                disabled={x === '-' ? true : false}
+                                                                            >{x}</option>
+                                                                        ))
+                                                                    )}
+                                                        </Form.Control>
+                                                    </InputGroup>
+                                                </Form.Group>
+                                            </Col>
+                                        </Form.Row>
+
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Group controlId='grade'>
+                                                    <Form.Label><b>Grade</b></Form.Label>
                                                     <Form.Control
                                                         as='select'
-                                                        value={practice ? practice : userInfo ? userInfo.consultantProfil.practice : ""}
-                                                        //disabled={userInfo && !(userInfo.adminLevel === 0)}
-                                                        onChange={(e) => {
-                                                            setPractice(e.target.value)
-                                                        }}
+                                                        placeholder='Enter grade'
+                                                        value={grade && grade}
+                                                        onChange={(e) => setGrade(e.target.value)}
                                                         required
                                                     >
-                                                        {!practiceList ? <option value={practice && practice}>{practice}</option>
-                                                            : errorPractice ? <Message variant='Danger'>No Practice found</Message>
-                                                                : (
-                                                                    practiceList.map(x => (
+                                                        {CONSULTANT_GRADE.map(x => (
+                                                            <option key={x} value={x}>{x}</option>
+                                                        ))}
+                                                    </Form.Control>
+                                                </Form.Group>
+                                            </Col>
+                                        </Form.Row>
+
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Group controlId='cdm'>
+                                                    <Form.Label><b>CDM</b></Form.Label>
+                                                    <Form.Control
+                                                        as='select'
+                                                        value={cdm ? cdm : 'default'}
+                                                        //disabled={userInfo && !(userInfo.adminLevel <= 2)}
+                                                        onChange={(e) => setCdm(e.target.value)}
+                                                        required
+                                                    >
+                                                        <option value='default'>Please Select</option>
+                                                        {!cdmList ? 'No cdm'
+                                                            : errorCDM ? <Message variant='danger'>No CDM found, please verify Practice</Message>
+                                                                : cdmList.length && (
+                                                                    cdmList.map(x => (
                                                                         <option
-                                                                            key={x}
-                                                                            value={x}
-                                                                            disabled={x === '-' ? true : false}
-                                                                        >{x}</option>
+                                                                            key={x._id}
+                                                                            value={x._id}
+                                                                        >{x.name}</option>
                                                                     ))
                                                                 )}
                                                     </Form.Control>
-                                                </InputGroup>
-                                            </Form.Group>
-                                        </Col>
-                                    </Form.Row>
 
-                                    <Form.Row>
-                                        <Col>
-                                            <Form.Group controlId='grade'>
-                                                <Form.Label><b>Grade</b></Form.Label>
-                                                <Form.Control
-                                                    as='select'
-                                                    placeholder='Enter grade'
-                                                    value={grade && grade}
-                                                    onChange={(e) => setGrade(e.target.value)}
-                                                    required
-                                                >
-                                                    {CONSULTANT_GRADE.map( x => (
-                                                        <option key={x} value={x}>{x}</option>
-                                                    ))}
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Col>
-                                    </Form.Row>
-
-                                    <Form.Row>
-                                        <Col>
-                                            <Form.Group controlId='cdm'>
-                                                <Form.Label><b>CDM</b></Form.Label>
-                                                <Form.Control
-                                                    as='select'
-                                                    value={cdm ? cdm : 'default'}
-                                                    //disabled={userInfo && !(userInfo.adminLevel <= 2)}
-                                                    onChange={(e) => setCdm(e.target.value)}
-                                                    required
-                                                >
-                                                    <option value='default'>Please Select</option>
-                                                    {!cdmList ? 'No cdm'
-                                                        : errorCDM ? <Message variant='danger'>No CDM found, please verify Practice</Message>
-                                                            : cdmList.length && (
-                                                                cdmList.map(x => (
-                                                                    <option
-                                                                        key={x._id}
-                                                                        value={x._id}
-                                                                    >{x.name}</option>
-                                                                ))
-                                                            )}
-                                                </Form.Control>
-
-                                            </Form.Group>
-                                        </Col>
-                                    </Form.Row>
-
-                                    <ListGroup.Item>
-                                        <Form.Row>
-                                            <Col>
-                                                <Form.Group controlId='valued'>
-                                                    <Form.Label><b>Valued date</b></Form.Label>
-                                                    <Form.Control
-                                                        type='date'
-                                                        value={valued && valued}
-                                                        onChange={(e) => changeValueDateHandler(e.target.value)}
-                                                        required
-                                                    ></Form.Control>
-                                                </Form.Group>
-                                            </Col>
-
-                                            <Col>
-                                                <Form.Group controlId='arrival'>
-                                                    <Form.Label><b>Arrival date</b></Form.Label>
-                                                    <Form.Control
-                                                        type='date'
-                                                        value={arrival && arrival}
-                                                        min={valued}
-                                                        onChange={(e) => {
-                                                            setArrival(e.target.value);
-                                                        }}
-                                                        required
-                                                    ></Form.Control>
-                                                </Form.Group>
-                                            </Col>
-
-                                            <Col>
-                                                <Form.Group controlId='leaving'>
-                                                    <Form.Label><b>Leaving date</b></Form.Label>
-                                                    <Form.Control
-                                                        type='date'
-                                                        value={leaving && leaving}
-                                                        min={arrival}
-                                                        onChange={(e) => setLeaving(e.target.value)}
-                                                    ></Form.Control>
                                                 </Form.Group>
                                             </Col>
                                         </Form.Row>
-                                    </ListGroup.Item>
 
-                                    <ListGroup.Item>
-                                        <Form.Row>
-                                            <Col>
-                                                <Form.Group controlId="partialtime">
-                                                    <Form.Check
-                                                        type="checkbox"
-                                                        label="Partial time"
-                                                        checked={partialTime ? true : false}
-                                                        onChange={(e) => {
-                                                            setPartialTime(e.target.checked)
-                                                        }} />
-                                                </Form.Group>
-                                            </Col>
-                                            {partialTime && (
-                                                <>
-                                                    <Col>
-                                                        <Form.Group controlId='startpartialtime'>
-                                                            <Form.Label>Start</Form.Label>
-                                                            <Form.Control
-                                                                type="Date"
-                                                                min={arrival && arrival}
-                                                                value={startPartialTime && startPartialTime}
-                                                                onChange={(e) => {
-                                                                    setStartPartialTime(e.target.value.substring(0, 10));
-                                                                    !endPartialTime && setEndPartialTime(e.target.value.substring(0, 10));
-                                                                    (endPartialTime < e.target.value.substring(0, 10)) && setEndPartialTime(e.target.value.substring(0, 10));
-                                                                }}
-                                                                required
-                                                            ></Form.Control>
-                                                        </Form.Group>
-                                                    </Col>
-
-                                                    <Col>
-                                                        <Form.Group controlId='endpartialtime'>
-                                                            <Form.Label>End</Form.Label>
-                                                            <Form.Control
-                                                                type="Date"
-                                                                value={endPartialTime && endPartialTime}
-                                                                min={startPartialTime || ''}
-                                                                onChange={(e) => {
-                                                                    setEndPartialTime(e.target.value.substring(0, 10))
-                                                                }}
-                                                                required
-                                                            ></Form.Control>
-                                                        </Form.Group>
-                                                    </Col>
-                                                </>
-                                            )}
-                                        </Form.Row>
-
-                                        {partialTime && (
+                                        <ListGroup.Item>
                                             <Form.Row>
                                                 <Col>
-                                                    <Form.Group controlId='monday'>
-                                                        <Form.Label><b>Monday</b></Form.Label>
+                                                    <Form.Group controlId='valued'>
+                                                        <Form.Label><b>Valued date</b></Form.Label>
                                                         <Form.Control
-                                                            type='Number'
-                                                            min={0}
-                                                            max={1}
-                                                            step={0.5}
-                                                            value={Number(valueMonday)}
-                                                            onChange={(e) => setValueMonday(e.target.value)}
+                                                            type='date'
+                                                            value={valued && valued}
+                                                            onChange={(e) => changeValueDateHandler(e.target.value)}
+                                                            required
                                                         ></Form.Control>
                                                     </Form.Group>
                                                 </Col>
+
                                                 <Col>
-                                                    <Form.Group controlId='tuesday'>
-                                                        <Form.Label><b>Tuesday</b></Form.Label>
+                                                    <Form.Group controlId='arrival'>
+                                                        <Form.Label><b>Arrival date</b></Form.Label>
                                                         <Form.Control
-                                                            type='Number'
-                                                            min={0}
-                                                            max={1}
-                                                            step={0.5}
-                                                            value={Number(valueTuesday)}
-                                                            onChange={(e) => setValueTuesday(e.target.value)}
+                                                            type='date'
+                                                            value={arrival && arrival}
+                                                            min={valued}
+                                                            onChange={(e) => {
+                                                                setArrival(e.target.value);
+                                                            }}
+                                                            required
                                                         ></Form.Control>
                                                     </Form.Group>
                                                 </Col>
+
                                                 <Col>
-                                                    <Form.Group controlId='wendnesday'>
-                                                        <Form.Label><b>Wendnesday</b></Form.Label>
+                                                    <Form.Group controlId='leaving'>
+                                                        <Form.Label><b>Leaving date</b></Form.Label>
                                                         <Form.Control
-                                                            type='Number'
-                                                            min={0}
-                                                            max={1}
-                                                            step={0.5}
-                                                            value={Number(valueWednesday)}
-                                                            onChange={(e) => setValueWednesday(e.target.value)}
-                                                        ></Form.Control>
-                                                    </Form.Group>
-                                                </Col>
-                                                <Col>
-                                                    <Form.Group controlId='thursday'>
-                                                        <Form.Label><b>Thursday</b></Form.Label>
-                                                        <Form.Control
-                                                            type='Number'
-                                                            min={0}
-                                                            max={1}
-                                                            step={0.5}
-                                                            value={Number(valueThursday)}
-                                                            onChange={(e) => setValueThursday(e.target.value)}
-                                                        ></Form.Control>
-                                                    </Form.Group>
-                                                </Col>
-                                                <Col>
-                                                    <Form.Group controlId='friday'>
-                                                        <Form.Label><b>Friday</b></Form.Label>
-                                                        <Form.Control
-                                                            type='Number'
-                                                            min={0}
-                                                            max={1}
-                                                            step={0.5}
-                                                            value={Number(valueFriday)}
-                                                            onChange={(e) => setValueFriday(e.target.value)}
+                                                            type='date'
+                                                            value={leaving && leaving}
+                                                            min={arrival}
+                                                            onChange={(e) => setLeaving(e.target.value)}
                                                         ></Form.Control>
                                                     </Form.Group>
                                                 </Col>
                                             </Form.Row>
-                                        )}
+                                        </ListGroup.Item>
+
+                                        <ListGroup.Item>
+                                            <Form.Row>
+                                                <Col>
+                                                    <Form.Group controlId="partialtime">
+                                                        <Form.Check
+                                                            type="checkbox"
+                                                            label="Partial time"
+                                                            checked={partialTime ? true : false}
+                                                            onChange={(e) => {
+                                                                setPartialTime(e.target.checked)
+                                                            }} />
+                                                    </Form.Group>
+                                                </Col>
+                                                {partialTime && (
+                                                    <>
+                                                        <Col>
+                                                            <Form.Group controlId='startpartialtime'>
+                                                                <Form.Label>Start</Form.Label>
+                                                                <Form.Control
+                                                                    type="Date"
+                                                                    min={arrival && arrival}
+                                                                    value={startPartialTime && startPartialTime}
+                                                                    onChange={(e) => {
+                                                                        setStartPartialTime(e.target.value.substring(0, 10));
+                                                                        !endPartialTime && setEndPartialTime(e.target.value.substring(0, 10));
+                                                                        (endPartialTime < e.target.value.substring(0, 10)) && setEndPartialTime(e.target.value.substring(0, 10));
+                                                                    }}
+                                                                    required
+                                                                ></Form.Control>
+                                                            </Form.Group>
+                                                        </Col>
+
+                                                        <Col>
+                                                            <Form.Group controlId='endpartialtime'>
+                                                                <Form.Label>End</Form.Label>
+                                                                <Form.Control
+                                                                    type="Date"
+                                                                    value={endPartialTime && endPartialTime}
+                                                                    min={startPartialTime || ''}
+                                                                    onChange={(e) => {
+                                                                        setEndPartialTime(e.target.value.substring(0, 10))
+                                                                    }}
+                                                                    required
+                                                                ></Form.Control>
+                                                            </Form.Group>
+                                                        </Col>
+                                                    </>
+                                                )}
+                                            </Form.Row>
+
+                                            {partialTime && (
+                                                <Form.Row>
+                                                    <Col>
+                                                        <Form.Group controlId='monday'>
+                                                            <Form.Label><b>Monday</b></Form.Label>
+                                                            <Form.Control
+                                                                type='Number'
+                                                                min={0}
+                                                                max={1}
+                                                                step={0.5}
+                                                                value={Number(valueMonday)}
+                                                                onChange={(e) => setValueMonday(e.target.value)}
+                                                            ></Form.Control>
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col>
+                                                        <Form.Group controlId='tuesday'>
+                                                            <Form.Label><b>Tuesday</b></Form.Label>
+                                                            <Form.Control
+                                                                type='Number'
+                                                                min={0}
+                                                                max={1}
+                                                                step={0.5}
+                                                                value={Number(valueTuesday)}
+                                                                onChange={(e) => setValueTuesday(e.target.value)}
+                                                            ></Form.Control>
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col>
+                                                        <Form.Group controlId='wendnesday'>
+                                                            <Form.Label><b>Wendnesday</b></Form.Label>
+                                                            <Form.Control
+                                                                type='Number'
+                                                                min={0}
+                                                                max={1}
+                                                                step={0.5}
+                                                                value={Number(valueWednesday)}
+                                                                onChange={(e) => setValueWednesday(e.target.value)}
+                                                            ></Form.Control>
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col>
+                                                        <Form.Group controlId='thursday'>
+                                                            <Form.Label><b>Thursday</b></Form.Label>
+                                                            <Form.Control
+                                                                type='Number'
+                                                                min={0}
+                                                                max={1}
+                                                                step={0.5}
+                                                                value={Number(valueThursday)}
+                                                                onChange={(e) => setValueThursday(e.target.value)}
+                                                            ></Form.Control>
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col>
+                                                        <Form.Group controlId='friday'>
+                                                            <Form.Label><b>Friday</b></Form.Label>
+                                                            <Form.Control
+                                                                type='Number'
+                                                                min={0}
+                                                                max={1}
+                                                                step={0.5}
+                                                                value={Number(valueFriday)}
+                                                                onChange={(e) => setValueFriday(e.target.value)}
+                                                            ></Form.Control>
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Form.Row>
+                                            )}
+                                        </ListGroup.Item>
+
+                                        <ListGroup.Item>
+                                            <Form.Row>
+                                                <Col>
+                                                    <Form.Group controlId="iscdm">
+                                                        <Form.Check
+                                                            type="checkbox"
+                                                            label="Is CDM"
+                                                            checked={isCDM ? true : false}
+                                                            onChange={(e) => {
+                                                                setIsCDM(e.target.checked);
+                                                            }} />
+                                                    </Form.Group>
+                                                </Col>
+                                            </Form.Row>
+                                        </ListGroup.Item>
                                     </ListGroup.Item>
+                                </DropDownTitleContainer>
 
-                                    <ListGroup.Item>
-                                        <Form.Row>
-                                            <Col>
-                                                <Form.Group controlId="iscdm">
-                                                    <Form.Check
-                                                        type="checkbox"
-                                                        label="Is CDM"
-                                                        checked={isCDM ? true : false}
-                                                        onChange={(e) => {
-                                                            setIsCDM(e.target.checked);
-                                                        }} />
-                                                </Form.Group>
-                                            </Col>
-                                        </Form.Row>
-                                    </ListGroup.Item>
-                                </ListGroup.Item>
-                            </DropDownTitleContainer>
+                                <Form.Row className='pt-3'>
+                                    <Col>
+                                        <Button
+                                            type='submit'
+                                            variant='primary'
+                                            block
+                                            disabled={!name || !email || !matricule || !practice || !cdm || !valued || !arrival}
+                                        >{(loadingUpdate || loadingCreate) ? <Loader /> : valueEditType === 'create' ? "Create" : "Update"}
+                                        </Button>
+                                    </Col>
+                                </Form.Row>
+                                <Form.Row>
+                                    <Col>
+                                        {successMessage && <Message variant='success'><i className="fas fa-check-circle">  Your information is correctly registered</i></Message>}
+                                    </Col>
+                                </Form.Row>
 
-                            <Form.Row className='pt-3'>
-                                <Col>
-                                    <Button
-                                        type='submit'
-                                        variant='primary'
-                                        block
-                                        disabled={!name || !email || !matricule || !practice || !cdm || !valued || !arrival}
-                                    >{(loadingUpdate || loadingCreate) ? <Loader /> : valueEditType === 'create' ? "Create" : "Update"}
-                                    </Button>
-                                </Col>
-                            </Form.Row>
-                            <Form.Row>
-                                <Col>
-                                    {successMessage && <Message variant='success'><i className="fas fa-check-circle">  Your information is correctly registered</i></Message>}
-                                </Col>
-                            </Form.Row>
-
-                        </Form>
+                            </Form>
 
 
-                    </Col>
-                </Row>
-            </Container>
-        </DisplayChildren>
+                        </Col>
+                    </Row>
+                </Container>
+            </DisplayChildren>
+        </>
     )
 }
 

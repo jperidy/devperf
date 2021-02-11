@@ -54,6 +54,7 @@ const getAllConsultants = asyncHandler(async (req, res) => {
 
     const access = req.user.profil.api.filter(x => x.name === 'getAllConsultants')[0].data;
     const consultantsId = await myAccessConsultants(access, req);
+    //const consultantsId = {}
 
     const count = await Consultant.countDocuments({ ...keyword, _id: {$in: consultantsId} });
 
@@ -221,15 +222,15 @@ const getAllCDMData = asyncHandler(async (req, res) => {
 
     const access = req.user.profil.api.filter(x => x.name === 'getAllCDMData')[0].data;
     const consultantsId = await myAccessConsultants(access, req);
+    //console.log(consultantsId)
 
-    //console.log('getAllCDMData', req.params)
     const practice = req.params.practice;
-    //const CDMList = await Consultant.find({practice: practice, isCDM: true}).select('_id name');
     const CDMList = await Consultant.find({_id: {$in: consultantsId}, isCDM: true}).select('_id name');
     
     if (req.user.consultantProfil.isCDM) {
         //console.log(req.user.consultantProfil)
         const myProfil = {_id: req.user.consultantProfil._id, name: req.user.consultantProfil.name}
+        CDMList.push(myProfil);
     }
 
     if (CDMList) {

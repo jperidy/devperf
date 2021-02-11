@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const mongoose = require('mongoose');
 const Consultant = require('../models/consultantModel');
+const Deal = require('../models/dealModel');
 
 const protect = asyncHandler (async (req, res, next) => {
     //console.log('start protect middleware');
@@ -39,7 +40,7 @@ const authorizeActionOnConsultant = asyncHandler (async (req, res, next) => {
 
     //console.log(access)
     // add body if not include in the request
-    console.log(req.params)
+    //console.log(req.params)
     if (!req.body.cdmId) {
         if(req.params.consultantId) {
             const consultant = await Consultant.findById(req.params.consultantId)
@@ -51,9 +52,6 @@ const authorizeActionOnConsultant = asyncHandler (async (req, res, next) => {
             return
         }
     }
-
-    //console.log(req.body)
-    //console.log(req.user.consultantProfil._id)
 
     switch (access) {
         case 'all':
@@ -68,7 +66,7 @@ const authorizeActionOnConsultant = asyncHandler (async (req, res, next) => {
             }
             break;
         case 'team':
-            if (req.body.cdmId.toString() === req.user.consultantProfil._id.toString()) {
+            if (req.body.cdmId && req.body.cdmId.toString() === req.user.consultantProfil._id.toString()) {
                 authorization = true;
             }
             break;
@@ -117,6 +115,69 @@ const authorizeActionOnSkill = asyncHandler (async (req, res, next) => {
         next()
     } else {
         res.status(401).json({message: 'Not authorized to proceed this action'});
+    }
+})
+
+const authorizeActionOnDeal = asyncHandler (async (req, res, next) => {
+
+    const access = req.user.profil.api.filter(x => x.name === 'crudDeal')[0].data;
+    let authorization = false;
+
+    const dealId = req.params.id;
+
+    switch (access) {
+        case 'all':
+            authorization = true;
+            break;
+        case 'domain':
+            authorization = true;
+            break;
+        case 'department':
+            const departmentDeals = await Deal.find({
+                $or:[
+                    {'mainPractice': req.user.consultantProfil.practice},
+                    {'othersPractices': req.user.consultantProfil.practice}
+                ]}).select('_id')
+            
+            if (departmentDeals.map(x => x._id.toString()).includes(dealId.toString())){
+                authorization = true;
+            }
+            break;
+        case 'team':
+            let myConsultants = await Consultant.find({cdmId: req.user.consultantProfil._id}).select('_id');
+            const teamDeals = await Deal.find({
+                $or: [
+                    { 'contacts.primary': req.user.consultantProfil._id },
+                    { 'contacts.secondary': req.user.consultantProfil._id },
+                    { 'staffingDecision.staff.idConsultant': { $in: myConsultants.map(x => x._id) } }
+                ]
+            }).select('_id')
+            if (teamDeals.map(x => x._id.toString()).includes(dealId.toString())) {
+                authorization = true;
+            }
+            break;
+        case 'my':
+            const myDeals = await Deal.find({
+                $or: [
+                    { 'contacts.primary': req.user.consultantProfil._id },
+                    { 'contacts.secondary': req.user.consultantProfil._id }
+                ]
+            }).select('_id');
+            //console.log(myDeals);
+            //console.log(dealId)
+            if (myDeals.map(x => x._id.toString()).includes(dealId.toString())) {
+                authorization = true;
+            }
+            break;
+        default:
+            authorization = false;
+            break;
+    }
+
+    if (authorization) {
+        next()
+    } else {
+        res.status(401).json({message: "You can't modifiy or delete this deal"});
     }
 })
 
@@ -194,6 +255,7 @@ module.exports = {
     protect, 
     authorizeActionOnConsultant, 
     authorizeActionOnSkill,
+    authorizeActionOnDeal,
     adminLevelOne, 
     adminLevelZero, 
     empowered 

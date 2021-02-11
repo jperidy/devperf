@@ -12,20 +12,15 @@ const myAccessDeals = async (data, req) => {
                     {'contacts.primary': req.user.consultantProfil._id},
                     {'contacts.secondary': req.user.consultantProfil._id}
                 ]}).select('_id')
-            //dealsId = myDeals.map(x => x._id);
             break;
         case 'team':
             let myConsultants = await Consultant.find({cdmId: req.user.consultantProfil._id}).select('_id');
-            //myConsultants = myConsultants.map(x => mongoose.Types.ObjectId(x._id));
-            //console.log('myConsultants', myConsultants);
             myDeals = await Deal.find({
                 $or:[
                     {'contacts.primary': req.user.consultantProfil._id},
                     {'contacts.secondary': req.user.consultantProfil._id},
                     {'staffingDecision.staff.idConsultant': {$in: myConsultants.map(x => x._id)}}
                 ]}).select('_id')
-            //console.log('myDeals', myDeals)
-            //dealsId = myDeals.map(x => x._id);
             break;
         case 'department':
             myDeals = await Deal.find({

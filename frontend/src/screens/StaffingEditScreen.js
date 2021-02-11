@@ -10,7 +10,7 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
 import { getAllMyAdminConsultants, getAllPractice } from '../actions/consultantActions';
-import { DEAL_CREATE_RESET, DEAL_PROBABILITY, DEAL_STATUS, TYPE_BUSINESS } from '../constants/dealConstants';
+import { DEAL_CREATE_RESET, DEAL_PROBABILITY, DEAL_STATUS, DEAL_UPDATE_RESET, TYPE_BUSINESS } from '../constants/dealConstants';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ConsoDispo from '../components/ConsoDispo';
@@ -19,6 +19,7 @@ import SearchInput from '../components/SearchInput';
 import SelectCompany from '../components/SelectCompany';
 import { REQUEST_STATUS } from '../constants/dealConstants';
 import StaffAConsultant from '../components/StaffAConsultant';
+import DisplayChildren from '../components/DisplayChildren';
 
 const StaffingEditScreen = ({ match, history }) => {
 
@@ -413,7 +414,10 @@ const StaffingEditScreen = ({ match, history }) => {
                             <Button
                                 type='button'
                                 variant='primary'
-                                onClick={() => history.go(-1)}
+                                onClick={() => {
+                                    history.go(-1);
+                                    dispatch({type: DEAL_UPDATE_RESET})
+                                }}
                                 block
                             >Go Back</Button>
                         )}
@@ -432,15 +436,10 @@ const StaffingEditScreen = ({ match, history }) => {
                     </Col>
                 </Row>
 
-                {error && (
-                    <Row><Col><Message variant='danger'>{error}</Message></Col></Row>
-                )}
-                {errorUpdate && (
-                    <Row><Col><Message variant='danger'>{errorUpdate}</Message></Col></Row>
-                )}
+                {error && (<Row><Col><Message variant='danger'>{error}</Message></Col></Row>)}
 
                 {match.params.id && (
-                    <Row className='mt-3'>
+                    <Row className='mt-3 align-items-center'>
                         <Col md={1}>
                             <Button
                                 onClick={() => {
@@ -453,6 +452,7 @@ const StaffingEditScreen = ({ match, history }) => {
                         </Col>
                         <Col className='text-left align-middle'>
                             {editRequest && (<p> Please click to update</p>)}
+                            {errorUpdate && (<Message variant='danger'>{errorUpdate}</Message>)}
                         </Col>
                     </Row>
                 )}
@@ -967,28 +967,30 @@ const StaffingEditScreen = ({ match, history }) => {
                                                         </OverlayTrigger>
                                                     </Col>
                                                     <Col sm={2} className='px-0'>
-                                                        <Button
-                                                            onClick={() => {
-                                                                //console.log(consultant)
-                                                                setSdConsultant(staff.idConsultant)
-                                                                setLoadingSdConsultantData({
-                                                                    information: staff.information,
-                                                                    priority: staff.priority,
-                                                                    responsability: staff.responsability
-                                                                })
-                                                                setModalWindowShow(true)
-                                                            }}
-                                                            variant='secondary'
-                                                            className='text-center mx-1'
-                                                            size='sm'
-                                                        ><i className="fas fa-edit"></i></Button>
-
-                                                        <Button
-                                                            onClick={() => removeStaffHandler(staff.idConsultant._id)}
-                                                            variant='danger'
-                                                            className='text-center mx-1'
-                                                            size='sm'
-                                                        ><i className="fas fa-times"></i></Button>
+                                                        <DisplayChildren access='editStaff'>
+                                                            <Button
+                                                                onClick={() => {
+                                                                    setSdConsultant(staff.idConsultant)
+                                                                    setLoadingSdConsultantData({
+                                                                        information: staff.information,
+                                                                        priority: staff.priority,
+                                                                        responsability: staff.responsability
+                                                                    })
+                                                                    setModalWindowShow(true)
+                                                                }}
+                                                                variant='secondary'
+                                                                className='text-center mx-1'
+                                                                size='sm'
+                                                            ><i className="fas fa-edit"></i></Button>
+                                                        </DisplayChildren>
+                                                        <DisplayChildren access='editStaff'>
+                                                            <Button
+                                                                onClick={() => removeStaffHandler(staff.idConsultant._id)}
+                                                                variant='danger'
+                                                                className='text-center mx-1'
+                                                                size='sm'
+                                                            ><i className="fas fa-times"></i></Button>
+                                                        </DisplayChildren>
                                                     </Col>
                                                 </Row>
                                             ))}

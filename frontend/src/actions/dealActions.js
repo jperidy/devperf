@@ -118,7 +118,8 @@ export const deleteDeal = (id) => async (dispatch, getState) => {
             }
         };
 
-        await axios.delete(`/api/deals?id=${id}`, config);
+        //await axios.delete(`/api/deals?id=${id}`, config);
+        await axios.delete(`/api/deals/${id}`, config);
 
        dispatch({ type: DEAL_DELETE_SUCCESS });
 

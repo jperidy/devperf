@@ -20,6 +20,7 @@ function getAccessData() {
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'yes', data: 'all'},//
                 {category: 'Menu bar', id: 'manageProfils', label: 'Manage Profils', mode:'yes', data: 'all'},
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'yes', data: 'all'},//
+                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'all'},//
 
             ],
             api:[
@@ -35,7 +36,8 @@ function getAccessData() {
                 { name: 'getAllDeals', data: 'all' },
                 { name: 'getAllPracticesData', data: 'all' },
                 { name: 'getAllSkills', data: 'all'},
-                { name: 'crudSkill', data: 'all' },      
+                { name: 'crudSkill', data: 'all' },     
+                { name: 'crudDeal', data: 'all' },     
             ]
         },
         {
@@ -57,6 +59,7 @@ function getAccessData() {
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'department'},//
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'yes', data: 'department'},//
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'yes', data: 'department'},//
+                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'department'},//
             ],
             api:[
                 { name: 'getUsers', data: 'department' },
@@ -72,6 +75,7 @@ function getAccessData() {
                 { name: 'getAllPracticesData', data: 'all' },
                 { name: 'getAllSkills', data: 'all'},
                 { name: 'crudSkill', data: 'all' },
+                { name: 'crudDeal', data: 'department' },
             ]
         },
         {
@@ -93,6 +97,7 @@ function getAccessData() {
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'yes', data: 'team'},//
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'team'},//
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'yes', data: 'team'},//
+                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'team'},//
             ],
             api:[
                 { name: 'getUsers', data: 'team' },
@@ -108,6 +113,7 @@ function getAccessData() {
                 { name: 'getAllPracticesData', data: 'all' },
                 { name: 'getAllSkills', data: 'my'},
                 { name: 'crudSkill', data: 'my' },
+                { name: 'crudDeal', data: 'team' },
             ]
         },
         {
@@ -129,6 +135,7 @@ function getAccessData() {
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'no', data: 'my'},//
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'no', data: 'my'},//
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'no', data: 'my'},//
+                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'no', data: 'department'},//
             ],
             api:[
                 { name: 'getUsers', data: 'my' },
@@ -144,6 +151,7 @@ function getAccessData() {
                 { name: 'getAllPracticesData', data: 'all' },
                 { name: 'getAllSkills', data: 'my'},
                 { name: 'crudSkill', data: 'my' },
+                { name: 'crudDeal', data: 'my' },
             ]
         },
         {
@@ -165,6 +173,7 @@ function getAccessData() {
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'no', data: 'my'},//
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'no', data: 'my'},//
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'no', data: 'my'},//
+                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'no', data: 'my'},//
             ],
             api: [
                 { name: 'getUsers', data: 'my' },
@@ -180,6 +189,7 @@ function getAccessData() {
                 { name: 'getAllPracticesData', data: 'my' },
                 { name: 'getAllSkills', data: 'my'},
                 { name: 'crudSkill', data: 'my' },
+                { name: 'crudDeal', data: 'my' },
             ]
         }
     ];

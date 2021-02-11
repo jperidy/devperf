@@ -175,7 +175,8 @@ const getAllDeals = asyncHandler(async (req, res) => {
 // @access  Private/AdminLevelOne
 const deleteDeal = asyncHandler(async (req, res) => { 
 
-    const id = req.query.id;
+    //const id = req.query.id;
+    const id = req.params.id;
     const deal = await Deal.findById(id);
 
     if(deal) {

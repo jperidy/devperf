@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 const Message = ({ variant, children }) => {
     return (
-        <Alert variant={variant}>
+        <Alert variant={variant} className='my-1'>
             {children}
         </Alert>
     )
