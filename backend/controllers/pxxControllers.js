@@ -4,9 +4,9 @@ const Consultant = require('../models/consultantModel');
 const Skill = require('../models/skillModels');
 const axios = require('axios');
 const asyncHandler = require('express-async-handler');
-const calculDayByType = require('../utils/calculDayByType');
-const { createMonth } = require('./monthPxxController');
-const mongoose = require('mongoose');
+//const calculDayByType = require('../utils/calculDayByType');
+//const { createMonth } = require('./monthPxxController');
+//const mongoose = require('mongoose');
 
 
 const calculateAvailableDays = (userProfile, month) => {
@@ -202,7 +202,6 @@ const resetAllPxx = async (consultantInfo) => {
 }
 
 const resetPartialTimePxx = async (consultantInfo) => {
-    //console.log('resetPartialTimePxx');
 
     const consultantId = consultantInfo._id;
     const consultantToModify = await Consultant.findById(consultantId);
@@ -222,8 +221,6 @@ const resetPartialTimePxx = async (consultantInfo) => {
     const monthId = monthData.map(x => x._id);
 
     const pxxData = await Pxx.find({ month: { $in: monthId }, name: consultantId });
-
-    //let availableDay = 0;
 
     for (let incrPxx = 0; incrPxx < pxxData.length; incrPxx++) {
         const pxx = pxxData[incrPxx];
@@ -271,7 +268,6 @@ const createPxx = async (userProfile, month, tace = 0) => {
     });
 
     await newPxx.save(newPxx);
-    //console.log(`${new Date(Date.now()).toISOString()} Pxx created for: ${userProfile.name} and monthId: ${month._id}`);
 
     return newPxx;
 }
@@ -280,12 +276,6 @@ const createPxx = async (userProfile, month, tace = 0) => {
 // @route   GET /api/edit?consultantId=${consultantId}&month=${month}&numberMonth=${numberOfMonth}
 // @access  Private
 const getPxx = asyncHandler(async (req, res) => {
-
-    /*
-    const consultantId = req.params.id;
-    const date = req.params.month;
-    const firstDay = date;
-    */
 
     const consultantId = req.query.consultantId;
     const month = req.query.month;
@@ -299,7 +289,6 @@ const getPxx = asyncHandler(async (req, res) => {
 
     for (let tampMonth = new Date(month) ; tampMonth <= new Date(lastMonth) ; tampMonth.setUTCMonth(tampMonth.getUTCMonth() +1)) {
         tampMonth.setUTCDate(1);
-        //console.log(month, lastMonth, tampMonth);
 
         const firstDay = tampMonth.toISOString().substring(0,10);
         const searchMonth = await Month.findOne({ firstDay: firstDay });
@@ -363,7 +352,6 @@ const updatePxx = asyncHandler(async (req, res) => {
 // @access  Private
 const getProdChart = asyncHandler(async (req, res) => {
 
-    //console.log(req.query);
     const start = req.query.start; // '2021-01-01'
     const end = req.query.end; //'2021-03-01'
     const practice = req.query.practice; //'DET'
@@ -451,11 +439,12 @@ const getProdChart = asyncHandler(async (req, res) => {
 // @access  Private
 const getAvailabilityChart = asyncHandler(async (req, res) => {
 
-    //console.log(Date(Date.now()) + ' >> Début get availabilities');
-
     const start = req.query.start; // '2021-01-01'
     const end = req.query.end; //'2021-03-01'
-    const practice = req.query.practice; //'DET'
+    
+    const searchPractice = req.query.practice ?
+        req.query.practice === 'all' ? {} : {practice: req.query.practice}
+        : {}
     
     let experience = req.query.experience ? 
     {
@@ -478,7 +467,7 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
     let searchSkillsId = (skills !== '') ? await Skill.find(skills).select('_id') : '';
     searchSkillsId = (searchSkillsId !== '') ? {'quality.skill': {$in: searchSkillsId}} : {};
     
-    const searchPractice = practice ? {practice: practice} : {};
+    //const searchPractice = practice ? {practice: practice} : {};
 
     const consultantId = await Consultant.find({...searchPractice, ...searchSkillsId, ...experience}).select('_id');
     

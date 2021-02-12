@@ -136,7 +136,7 @@ function getAccessData() {
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'no', data: 'my'},//
-                {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'no', data: 'my'},//
+                {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'my'},//
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'no', data: 'my'},//
                 {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'no', data: 'department'},//
             ],

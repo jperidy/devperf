@@ -30,7 +30,7 @@ const DashboardScreen = ({ history }) => {
     endDefault.setUTCMonth(endDefault.getUTCMonth() + duration - 1);
     endDefault = endDefault.toISOString().substring(0, 10);
 
-    const [practice, setPractice] = useState('');
+    //const [practice, setPractice] = useState('');
     const [start, setStart] = useState(startDefault);
     const [end, setEnd] = useState(endDefault);
 
@@ -54,17 +54,25 @@ const DashboardScreen = ({ history }) => {
 
         if (!userInfo) {
             history.push('/login');
-        } else {
+        } 
+        /*else {
             setPractice(userInfo.consultantProfil.practice);
-        }
-    }, [dispatch, history, userInfo]);
+        }*/
+    }, [
+        //dispatch, 
+        history, userInfo]);
 
     useEffect(() => {
         if (userInfo && !loadingTACE) {
             dispatch(getTace(userInfo.consultantProfil.practice, start, end));
         }
         // eslint-disable-next-line
-    }, [dispatch, practice, start, end])
+    }, [
+            dispatch, 
+            //practice, 
+            start, 
+            end
+        ])
 
     const navigationMonthHandler = (val) => {
         const startDate = new Date(start);
@@ -150,7 +158,7 @@ const DashboardScreen = ({ history }) => {
                     <Row>
                         <Col>
                             <ConsoDispo
-                                practice={practice}
+                                //practice={practice}
                                 start={start}
                                 end={end}
                                 mode='consultation'

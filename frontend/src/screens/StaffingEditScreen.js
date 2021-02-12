@@ -1063,7 +1063,7 @@ const StaffingEditScreen = ({ match, history }) => {
             {match.params.id && (
                 <DropDownTitleContainer title='Availabilities' close={false}>
                     <ConsoDispo
-                        practice={practice}
+                        //practice={practice}
                         start={start}
                         end={end}
                         mode='staffing'

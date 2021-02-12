@@ -16,7 +16,9 @@ import Tab from 'react-bootstrap/Tab';
 import StaffAConsultant from './StaffAConsultant';
 import DisplayChildren from '../components/DisplayChildren';
 
-const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) => {
+const ConsoDispo = ({ 
+    //practice, 
+    start, end, mode, addStaffHandler, history }) => {
 
     const dispatch = useDispatch();
 
@@ -24,20 +26,27 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
     const [searchSkills, setSearchSkills] = useState('');
     const [searchExperienceStart, setSearchExperienceStart] = useState('');
     const [searchExperienceEnd, setSearchExperienceEnd] = useState('');
+    const [practice, setPractice] = useState('');
 
     const [searchMode, setSearchMode] = useState('filterAvailable');
-
 
     const [modalWindowShow, setModalWindowShow] = useState(false);
     const [sdConsultant, setSdConsultant] = useState('');
 
-
+    const userLogin = useSelector(state => state.userLogin);
+    const { userInfo } = userLogin;
 
     const pxxAvailabilities = useSelector(state => state.pxxAvailabilities);
     const { loading: loadingAvailabilities, error: errorAvailabilities, availabilities } = pxxAvailabilities;
 
     useEffect(() => {
-        if (!loadingAvailabilities) {
+        if(userInfo) {
+            setPractice(userInfo.consultantProfil.practice);
+        }
+    }, [userInfo]);
+
+    useEffect(() => {
+        if (practice && !loadingAvailabilities) {
             dispatch(getAvailabilities(practice, start, end, '', '', '', searchMode));
         }
         // eslint-disable-next-line
@@ -140,6 +149,17 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
                                         onChange={(e) => {e.target.checked === true ? setSearchMode('all') : setSearchMode('filterAvailable')}}
                                     ></Form.Check>
                                 </Form.Group>
+
+                                <Form.Group controlId='switch-practices'  className='my-0'>
+                                    <Form.Check
+                                        type='switch'
+                                        id='switch-all-practices'
+                                        label='All practices'
+                                        checked={practice === 'all' ? true : false}
+                                        onChange={(e) => {e.target.checked === true ? setPractice('all') : setPractice(userInfo.consultantProfil.practice)}}
+                                    ></Form.Check>
+                                </Form.Group>
+
                             </Col>
 
                             <Col md={1}>
@@ -263,8 +283,8 @@ const ConsoDispo = ({ practice, start, end, mode, addStaffHandler, history }) =>
 
 const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) => {
 
-    const userLogin = useSelector(state => state.userLogin);
-    const { userInfo } = userLogin;
+    //const userLogin = useSelector(state => state.userLogin);
+    //const { userInfo } = userLogin;
     
     const formatName = (fullName) => {
         const separateName = fullName.split(' ');
