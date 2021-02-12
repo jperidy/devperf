@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
+//import Input from 'react-bootstrap/Input';
 
 const SearchInput = ({ title, searchValue, setSearchValue, possibilities, updateResult, editMode }) => {
 
@@ -35,7 +36,7 @@ const SearchInput = ({ title, searchValue, setSearchValue, possibilities, update
                         value={searchValue && searchValue}
                         onChange={(e) => onSearchValueChange(e.target.value)}
                     ></Form.Control>
-                    <ListGroup style={{ position: 'relative', zIndex: '10' }}>
+                    <ListGroup>
                         {show && possibilities && possibilities.splice(0, size).map(({ id, value }, index) => (
                             <ListGroup.Item
                                 key={id}

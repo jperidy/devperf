@@ -425,14 +425,6 @@ const StaffingEditScreen = ({ match, history }) => {
                     </Col>
                     <Col xs={0} md={8}></Col>
                     <Col xs={6} md={2}>
-                        {!match.params.id && (
-                            <Button
-                                type='submit'
-                                variant='primary'
-                                block
-                            >{(loading) ? <Loader /> : 'Submit staffing'}
-                            </Button>
-                        )}
                         {match.params.id && loadingUpdate && <Loader />}
                     </Col>
                 </Row>
@@ -717,6 +709,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                         possibilities={leaderslist && leaderslist.map(consultant => ({ id: consultant._id, value: consultant.name }))}
                                         updateResult={setLeader}
                                         editMode={editRequest}
+                                        //style={{zIndex:'1000', position: 'relative'}}
                                     />
                                     {leader && (
                                         <ListGroup variant='flush'>
@@ -929,77 +922,91 @@ const StaffingEditScreen = ({ match, history }) => {
                             </Row>
                         </ListGroup.Item>
 
-                        <ListGroup.Item>
-                            <h5>Staffing decision</h5>
-                            {sdStaff && [...new Set(sdStaff.map(x => x.priority))].sort().map(priority => (
-                                <ListGroup.Item key={priority}>
-                                    <Row key={priority}>
-                                        <Col sm={1}>
-                                            <Row className='my-1'><Col>{priority}</Col></Row>
-                                        </Col>
-                                        <Col sm={11}>
-                                            {sdStaff.filter(x => x.priority === priority).map(staff => (
-                                                <Row key={staff.idConsultant._id} className='my-1'>
-                                                    <Col sm={10}>
-                                                        <OverlayTrigger
-                                                            placement="top"
-                                                            trigger='click'
-                                                            overlay={
-                                                                <Popover 
-                                                                    id='popover-others-staffs' 
-                                                                    style={{ 'maxWidth': '40%' }}
-                                                                >
-                                                                    <Popover.Title id="contained-modal-title-vcenter">
-                                                                        Others staffs
-                                                                    </Popover.Title>
+                        {match.params.id && (
+                            <ListGroup.Item>
+                                <h5>Staffing decision</h5>
+                                {sdStaff && [...new Set(sdStaff.map(x => x.priority))].sort().map(priority => (
+                                    <ListGroup.Item key={priority}>
+                                        <Row key={priority}>
+                                            <Col sm={1}>
+                                                <Row className='my-1'><Col>{priority}</Col></Row>
+                                            </Col>
+                                            <Col sm={11}>
+                                                {sdStaff.filter(x => x.priority === priority).map(staff => (
+                                                    <Row key={staff.idConsultant._id} className='my-1'>
+                                                        <Col sm={10}>
+                                                            <OverlayTrigger
+                                                                placement="top"
+                                                                trigger='click'
+                                                                overlay={
+                                                                    <Popover 
+                                                                        id='popover-others-staffs' 
+                                                                        style={{ 'maxWidth': '40%' }}
+                                                                    >
+                                                                        <Popover.Title id="contained-modal-title-vcenter">
+                                                                            Others staffs
+                                                                        </Popover.Title>
 
-                                                                    <Popover.Content>
-                                                                        <ViewStaffs
-                                                                            history={history}
-                                                                            consultantId={staff.idConsultant._id}
-                                                                            onNavigate={() => ('')}
-                                                                            displayedDeal={match.params.id}
-                                                                        />
-                                                                    </Popover.Content>
-                                                                </Popover>
-                                                            }
-                                                        >
-                                                            <div><strong>{`${staff.responsability}: `}</strong>{`${formatName(staff.idConsultant.name)}`}<i>{` (${staff.information})`}</i></div>
-                                                        </OverlayTrigger>
-                                                    </Col>
-                                                    <Col sm={2} className='px-0'>
-                                                        <DisplayChildren access='editStaff'>
-                                                            <Button
-                                                                onClick={() => {
-                                                                    setSdConsultant(staff.idConsultant)
-                                                                    setLoadingSdConsultantData({
-                                                                        information: staff.information,
-                                                                        priority: staff.priority,
-                                                                        responsability: staff.responsability
-                                                                    })
-                                                                    setModalWindowShow(true)
-                                                                }}
-                                                                variant='secondary'
-                                                                className='text-center mx-1'
-                                                                size='sm'
-                                                            ><i className="fas fa-edit"></i></Button>
-                                                        </DisplayChildren>
-                                                        <DisplayChildren access='editStaff'>
-                                                            <Button
-                                                                onClick={() => removeStaffHandler(staff.idConsultant._id)}
-                                                                variant='danger'
-                                                                className='text-center mx-1'
-                                                                size='sm'
-                                                            ><i className="fas fa-times"></i></Button>
-                                                        </DisplayChildren>
-                                                    </Col>
-                                                </Row>
-                                            ))}
-                                        </Col>
-                                    </Row>
-                                </ListGroup.Item>
-                            ))}
-                        </ListGroup.Item>
+                                                                        <Popover.Content>
+                                                                            <ViewStaffs
+                                                                                history={history}
+                                                                                consultantId={staff.idConsultant._id}
+                                                                                onNavigate={() => ('')}
+                                                                                displayedDeal={match.params.id}
+                                                                            />
+                                                                        </Popover.Content>
+                                                                    </Popover>
+                                                                }
+                                                            >
+                                                                <div><strong>{`${staff.responsability}: `}</strong>{`${formatName(staff.idConsultant.name)}`}<i>{` (${staff.information})`}</i></div>
+                                                            </OverlayTrigger>
+                                                        </Col>
+                                                        <Col sm={2} className='px-0'>
+                                                            <DisplayChildren access='editStaff'>
+                                                                <Button
+                                                                    onClick={() => {
+                                                                        setSdConsultant(staff.idConsultant)
+                                                                        setLoadingSdConsultantData({
+                                                                            information: staff.information,
+                                                                            priority: staff.priority,
+                                                                            responsability: staff.responsability
+                                                                        })
+                                                                        setModalWindowShow(true)
+                                                                    }}
+                                                                    variant='secondary'
+                                                                    className='text-center mx-1'
+                                                                    size='sm'
+                                                                ><i className="fas fa-edit"></i></Button>
+                                                            </DisplayChildren>
+                                                            <DisplayChildren access='editStaff'>
+                                                                <Button
+                                                                    onClick={() => removeStaffHandler(staff.idConsultant._id)}
+                                                                    variant='danger'
+                                                                    className='text-center mx-1'
+                                                                    size='sm'
+                                                                ><i className="fas fa-times"></i></Button>
+                                                            </DisplayChildren>
+                                                        </Col>
+                                                    </Row>
+                                                ))}
+                                            </Col>
+                                        </Row>
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup.Item>   
+                        )}
+                        
+                        {!match.params.id && (
+                            <Row className='mt-3'>
+                                <Col className='text-right'>
+                                    <Button
+                                        type='submit'
+                                        variant='primary'
+                                    >{(loading) ? <Loader /> : 'Submit staffing'}
+                                    </Button>
+                                </Col>
+                            </Row>
+                        )}
 
                         {dealToEdit && match.params.id && (
                             <ListGroup.Item>
@@ -1063,7 +1070,6 @@ const StaffingEditScreen = ({ match, history }) => {
             {match.params.id && (
                 <DropDownTitleContainer title='Availabilities' close={false}>
                     <ConsoDispo
-                        //practice={practice}
                         start={start}
                         end={end}
                         mode='staffing'

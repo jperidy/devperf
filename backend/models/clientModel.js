@@ -6,10 +6,11 @@ const clientSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    commercialTeam: [{ 
-            contactEmail: { type: String, required: true, unique: true },
-            contactName:  { type: String }
-    }]
+    commercialTeam: {type: Array}
+    /*commercialTeam: [{ 
+        contactEmail: { type: String, required: true, unique: false },
+        contactName:  { type: String, unique:false }
+    }]*/
 }, {
     timestamps: true
 });

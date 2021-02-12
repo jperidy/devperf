@@ -6,14 +6,18 @@ const asyncHandler = require('express-async-handler');
 // @access  Public
 const getClients = asyncHandler(async (req, res) => {
     
+    const pageSize = Number(req.query.pageSize);
+    const page = Number(req.query.pageNumber) || 1;
+
     const searchClient = req.query.clientName ? {
         name: { $regex: req.query.clientName, $options: 'i'}
     } : {};
 
-    const clients = await Client.find({...searchClient});
+    const clients = await Client.find({...searchClient}).limit(pageSize).skip(pageSize * (page - 1));
+    const count = clients.length;
 
     if (clients) {
-        res.status(200).json(clients);
+        res.status(200).json({clients, page, pages: Math.ceil(count / pageSize), count});
     } else {
         res.status(404);
         throw new Error('Clients information not found');
@@ -48,13 +52,14 @@ const addClients = asyncHandler(async (req, res) => {
 // @access  Public
 const updateClient = asyncHandler(async (req, res) => {
     
-    const clientId = req.params.client._id
+    console.log(req.body);
+    const clientId = req.body._id;
 
     const client = await Client.findById(clientId);
 
     if (client) {
-        client.name = req.params.client.name;
-        client.commercialTeam = req.params.client.commercialTeam;
+        client.name = req.body.name;
+        client.commercialTeam = req.body.commercialTeam;
         await client.save();
         res.status(200).json({message: `client Id: ${clientId} updated`})
     } else {

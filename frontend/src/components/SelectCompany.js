@@ -34,7 +34,6 @@ const SelectCompany = ({ setCompany, editRequest }) => {
 
     const updateResult = (result) => {
         const newValue = result && result.value ? result.value : '';
-        console.log('company', newValue);
         setCompany(newValue);
     }
 

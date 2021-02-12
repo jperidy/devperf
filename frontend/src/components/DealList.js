@@ -66,8 +66,6 @@ const DealList = ({ history, data = [], filter }) => {
                                 type='text'
                                 placeholder='Search practice'
                                 disabled={true}
-                                //value={filter.searchContact && filter.searchContact}
-                                //onChange={(e) => filter.setSearchContact(e.target.value)}
                             ></Form.Control>
                         </Form.Group>
                     </th>
@@ -114,8 +112,8 @@ const DealList = ({ history, data = [], filter }) => {
                                 type='text'
                                 placeholder='Search probability'
                                 disabled={true}
-                                //value={filter.searchContact && filter.searchContact}
-                                //onChange={(e) => filter.setSearchContact(e.target.value)}
+                            //value={filter.searchContact && filter.searchContact}
+                            //onChange={(e) => filter.setSearchContact(e.target.value)}
                             ></Form.Control>
                         </Form.Group>
                     </th>
@@ -152,14 +150,13 @@ const DealList = ({ history, data = [], filter }) => {
                                 type='text'
                                 placeholder='Search start'
                                 disabled={true}
-                                //value={filter.searchContact && filter.searchContact}
-                                //onChange={(e) => filter.setSearchContact(e.target.value)}
                             ></Form.Control>
                         </Form.Group>
                     </th>
                     <th className='align-middle text-Dark' colSpan={2}>
-                        <Button 
+                        <Button
                             variant='ligth'
+                            style={{color: 'grey'}}
                             onClick={() => {
                                 filter.setSearchTitle('');
                                 filter.setSearchCompany('');
@@ -171,7 +168,7 @@ const DealList = ({ history, data = [], filter }) => {
                         ><i className="fas fa-minus-circle"></i>  Reset</Button>
                     </th>
                 </tr>
-                
+
             </thead>
 
             <tbody>
@@ -185,18 +182,18 @@ const DealList = ({ history, data = [], filter }) => {
                         >
                             <td className='align-middle'>{deal.title}</td>
                         </OverlayTrigger>
-                        <td className='align-middle'>{deal.mainPractice} / ({deal.othersPractices.join(', ')})</td>
-                        <td className='align-middle'>{deal.contacts.primary ? formatName(deal.contacts.primary.name) : '-'} {deal.contacts && deal.contacts.secondary && '/ (' + deal.contacts.secondary.map(x => formatName(x.name.toString())).join(', ') + ')'}</td>
-                        <td className='align-middle'>{deal.company}</td>
-                        <td className='align-middle'>{deal.status}</td>
-                        <td className='align-middle'>{deal.probability}</td>
+                        <td className='align-middle text-center'>{deal.mainPractice} {deal.othersPractices && deal.othersPractices.length ? (`(${deal.othersPractices.join(', ')})`) : ''}</td>
+                        <td className='align-middle text-center'>{deal.contacts.primary ? formatName(deal.contacts.primary.name) : '-'} {deal.contacts && deal.contacts.secondary && deal.contacts.secondary.length ? ('/ (' + deal.contacts.secondary.map(x => formatName(x.name.toString())).join(', ') + ')') : ''}</td>
+                        <td className='align-middle text-center'>{deal.company}</td>
+                        <td className='align-middle text-center'>{deal.status}</td>
+                        <td className='align-middle text-center'>{deal.probability} %</td>
                         <OverlayTrigger
                             placement="bottom"
                             overlay={<Tooltip id="button-tooltip-2">{
                                 deal.staffingRequest.instructions
                             }</Tooltip>}
                         >
-                            <td className='align-middle'>{deal.staffingRequest.requestStatus}</td>
+                            <td className='align-middle text-center'>{deal.staffingRequest.requestStatus}</td>
                         </OverlayTrigger>
 
                         <OverlayTrigger
@@ -210,20 +207,22 @@ const DealList = ({ history, data = [], filter }) => {
                             <td className='align-middle'>{deal.staffingDecision.staff.length > 0 ? 'See' : '-'}</td>
                         </OverlayTrigger>
 
-                        <td className='align-middle'>{deal.startDate.substring(0, 10)}</td>
-                        <td className='align-middle'>
+                        <td className='align-middle text-center'>{deal.startDate.substring(0, 10)}</td>
+                        <td className='align-middle text-center'>
                             <Button
-                                variant='primary'
+                                variant='ligth'
+                                style={{color:'gray'}}
                                 onClick={() => history.push(`/staffing/${deal._id}`)}
-                                size='sm'
+                                size='md'
                             ><i className="fas fa-edit"></i>
                             </Button>
                         </td>
                         <td className='align-middle'>
                             <Button
-                                variant='danger'
+                                variant='ligth'
+                                style={{color: 'red'}}
                                 onClick={() => onClickDeleteHandler(deal)}
-                                size='sm'
+                                size='md'
                             ><i className="fas fa-times"></i>
                             </Button>
                         </td>

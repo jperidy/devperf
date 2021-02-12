@@ -36,7 +36,7 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     useEffect(() => {
 
-        if (userInfo && (['admin', 'domain', 'coordinator', 'cdm'].includes(userInfo.profil.profil))) {
+        if (userInfo) {
             dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize));
         } else {
             history.push('/login');
