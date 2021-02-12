@@ -260,6 +260,27 @@ const getAllPracticesData = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Get the list of leaders I can add
+// @route   GET /api/consultants/leaderslist
+// @access  Private
+const getAllLeaders = asyncHandler(async (req, res) => {
+
+    const access = req.user.profil.api.filter(x => x.name === 'getLeaders')[0].data;
+    const consultantsId = await myAccessConsultants(access, req);
+
+    const searchName = req.query.searchLeader ? 
+        { name: {$regex: req.query.searchLeader, $options: 'i'} }
+        : {};
+
+    const leadersList = await Consultant.find({_id: {$in: consultantsId}, ...searchName}).select('_id name matricule practice').limit(5);
+    
+    if (leadersList) {
+        res.status(200).json(leadersList);
+    } else {
+        res.status(400).json({message: `No consultant found` });
+    }
+});
+
 // @desc    Update user
 // @route   PUT /api/consultants/comment
 // @access  Private, authorizeActionOnConsultant
@@ -429,6 +450,7 @@ module.exports = {
     updateConsultantComment,
     getAllSkills,
     getCDM,
+    getAllLeaders,
     addConsultantSkill,
     deleteConsultantSkill,
     updateLevelConsultantSkill,

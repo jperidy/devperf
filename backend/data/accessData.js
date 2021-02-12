@@ -37,7 +37,8 @@ function getAccessData() {
                 { name: 'getAllPracticesData', data: 'all' },
                 { name: 'getAllSkills', data: 'all'},
                 { name: 'crudSkill', data: 'all' },     
-                { name: 'crudDeal', data: 'all' },     
+                { name: 'crudDeal', data: 'all' },
+                { name: 'getLeaders', data: 'all'},    
             ]
         },
         {
@@ -76,6 +77,7 @@ function getAccessData() {
                 { name: 'getAllSkills', data: 'all'},
                 { name: 'crudSkill', data: 'all' },
                 { name: 'crudDeal', data: 'department' },
+                { name: 'getLeaders', data: 'all'},
             ]
         },
         {
@@ -114,6 +116,7 @@ function getAccessData() {
                 { name: 'getAllSkills', data: 'my'},
                 { name: 'crudSkill', data: 'my' },
                 { name: 'crudDeal', data: 'team' },
+                { name: 'getLeaders', data: 'department'},
             ]
         },
         {
@@ -152,6 +155,7 @@ function getAccessData() {
                 { name: 'getAllSkills', data: 'my'},
                 { name: 'crudSkill', data: 'my' },
                 { name: 'crudDeal', data: 'my' },
+                { name: 'getLeaders', data: 'department'},
             ]
         },
         {
@@ -190,6 +194,7 @@ function getAccessData() {
                 { name: 'getAllSkills', data: 'my'},
                 { name: 'crudSkill', data: 'my' },
                 { name: 'crudDeal', data: 'my' },
+                { name: 'getLeaders', data: 'my'},
             ]
         }
     ];

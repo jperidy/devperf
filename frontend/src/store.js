@@ -19,7 +19,8 @@ import {
     consultantUpdateSkillReducer,
     consultantAllStaffsReducer,
     consultantSkillsReducer,
-    consultantGetCDMReducer
+    consultantGetCDMReducer,
+    consultantsAllLeadersReducer
  } from './reducers/consultantReducers';
 import { pxxMyToEditReducer } from './reducers/pxxReducers';
 import { skillCreateReducer, skillDelteReducer, skillListReducer } from './reducers/skillReducers'
@@ -51,6 +52,7 @@ export const reducer = combineReducers({
     consultantDeleteSkill: consultantDeleteSkillReducer,
     consultantUpdateSkill: consultantUpdateSkillReducer,
     consultantGetCdm: consultantGetCDMReducer,
+    consultantsAllLeaders: consultantsAllLeadersReducer,
     pxxList: pxxListReducer,
     pxxAllList: pxxAllListReducer,
     pxxMyToEdit: pxxMyToEditReducer,

@@ -67,7 +67,11 @@ import {
     CONSULTANT_CDM_REQUEST,
     CONSULTANT_CDM_SUCCESS,
     CONSULTANT_CDM_FAIL,
-    CONSULTANT_CDM_RESET
+    CONSULTANT_CDM_RESET,
+    CONSULTANTS_ALL_LEADERS_REQUEST,
+    CONSULTANTS_ALL_LEADERS_SUCCESS,
+    CONSULTANTS_ALL_LEADERS_FAIL,
+    CONSULTANTS_ALL_LEADERS_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {focus: 0}, action) => {
@@ -264,6 +268,21 @@ export const consultantsMyAdminListReducer = (state = {}, action) => {
         case CONSULTANTS_ALL_ADMIN_DETAILS_FAIL:
             return { loading: false, error: action.payload };
         case CONSULTANTS_ALL_ADMIN_DETAILS_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const consultantsAllLeadersReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANTS_ALL_LEADERS_REQUEST:
+            return { loading: true };
+        case CONSULTANTS_ALL_LEADERS_SUCCESS:
+            return { loading: false, leaderslist: action.payload };
+        case CONSULTANTS_ALL_LEADERS_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANTS_ALL_LEADERS_RESET:
             return {}
         default:
             return state;

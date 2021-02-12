@@ -51,7 +51,10 @@ import {
     CONSULTANT_SKILLS_SUCCESS,
     CONSULTANT_CDM_REQUEST,
     CONSULTANT_CDM_SUCCESS,
-    CONSULTANT_CDM_FAIL
+    CONSULTANT_CDM_FAIL,
+    CONSULTANTS_ALL_LEADERS_REQUEST,
+    CONSULTANTS_ALL_LEADERS_SUCCESS,
+    CONSULTANTS_ALL_LEADERS_FAIL
 } from '../constants/consultantConstants';
 
 export const getAllMyConsultants = () => async (dispatch, getState) => {
@@ -321,6 +324,34 @@ export const updateComment = (consultantId, commentText) => async(dispatch, getS
         });
     }
 };
+
+export const getAllLeaders = (searchValue) => async (dispatch, getState) => {
+    try {
+        dispatch({type: CONSULTANTS_ALL_LEADERS_REQUEST})
+        
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.get(`/api/consultants/leaderslist?searchLeader=${searchValue}`, config);
+
+        dispatch({ type: CONSULTANTS_ALL_LEADERS_SUCCESS, payload: data });
+
+        
+    } catch (error) {
+
+        dispatch({ 
+            type: CONSULTANTS_ALL_LEADERS_FAIL, 
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+}
 
 export const getAllMyAdminConsultants = (keyword = '', pageNumber = '', pageSize = '15') => async (dispatch, getState) => {
 

@@ -9,7 +9,7 @@ import Popover from 'react-bootstrap/Popover';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
-import { getAllMyAdminConsultants, getAllPractice } from '../actions/consultantActions';
+import { getAllLeaders, getAllPractice } from '../actions/consultantActions';
 import { DEAL_CREATE_RESET, DEAL_PROBABILITY, DEAL_STATUS, DEAL_UPDATE_RESET, TYPE_BUSINESS } from '../constants/dealConstants';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -40,8 +40,8 @@ const StaffingEditScreen = ({ match, history }) => {
     const consultantPracticeList = useSelector(state => state.consultantPracticeList);
     const { practiceList } = consultantPracticeList;
 
-    const consultantsMyAdminList = useSelector(state => state.consultantsMyAdminList);
-    const { consultantsMyAdmin: consultantLeader } = consultantsMyAdminList;
+    const consultantsAllLeaders = useSelector(state => state.consultantsAllLeaders);
+    const { leaderslist } = consultantsAllLeaders;
 
     const [title, setTitle] = useState('');
     const [company, setCompany] = useState('');
@@ -124,13 +124,13 @@ const StaffingEditScreen = ({ match, history }) => {
 
     useEffect(() => {
         
-            dispatch(getAllMyAdminConsultants(searchLeader, 1, 20, ''));
+            dispatch(getAllLeaders(searchLeader));
         
     },[dispatch, searchLeader])
 
     useEffect(() => {
 
-        dispatch(getAllMyAdminConsultants(searchCoLeader, 1, 20, ''));
+        dispatch(getAllLeaders(searchCoLeader));
 
     }, [dispatch, searchCoLeader])
 
@@ -220,6 +220,7 @@ const StaffingEditScreen = ({ match, history }) => {
             }
             dispatch(updateDeal(match.params.id, deal));
             setDealChange(false);
+            setNewComment('');
         }
 
     }, [match, dispatch, userInfo, dealChange, company, type, client, title, status, probability, description, proposalDate, presentationDate,
@@ -713,7 +714,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                         title='Leader'
                                         searchValue={searchLeader ? searchLeader : ''}
                                         setSearchValue={setSearchLeader}
-                                        possibilities={consultantLeader && consultantLeader.map(consultant => ({ id: consultant._id, value: consultant.name }))}
+                                        possibilities={leaderslist && leaderslist.map(consultant => ({ id: consultant._id, value: consultant.name }))}
                                         updateResult={setLeader}
                                         editMode={editRequest}
                                     />
@@ -738,7 +739,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                         title='Co-leader(s)'
                                         searchValue={searchCoLeader ? searchCoLeader : ''}
                                         setSearchValue={setSearchCoLeader}
-                                        possibilities={consultantLeader && consultantLeader.map(consultant => ({ id: consultant._id, value: consultant.name }))}
+                                        possibilities={leaderslist && leaderslist.map(consultant => ({ id: consultant._id, value: consultant.name }))}
                                         updateResult={updateCoLeadersHandler}
                                         editMode={editRequest}
                                     />

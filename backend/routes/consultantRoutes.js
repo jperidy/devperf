@@ -16,7 +16,8 @@ const {
     deleteConsultantSkill,
     updateLevelConsultantSkill,
     getConsultantStaffings,
-    getCDM
+    getCDM,
+    getAllLeaders
 } = require('../controllers/consultantControllers');
 
 const router = express.Router();
@@ -41,6 +42,7 @@ router.route('/:consultantId/skill/:skillId')
     //delete('/:consultantId/skill/:skillId', protect, deleteConsultantSkill);
     
 router.get('/practicelist', protect, getAllPracticesData);
+router.get('/leaderslist', protect, getAllLeaders);
 router.get('/skills', protect, getAllSkills);
 router.get('/staffings', protect, getConsultantStaffings);
 
