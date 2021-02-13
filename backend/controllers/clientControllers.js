@@ -1,4 +1,5 @@
 const Client = require('../models/clientModel');
+const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 
 // @desc    Get clients informations
@@ -52,14 +53,28 @@ const addClients = asyncHandler(async (req, res) => {
 // @access  Public
 const updateClient = asyncHandler(async (req, res) => {
     
-    console.log(req.body);
+    //console.log(req.body);
     const clientId = req.body._id;
-
     const client = await Client.findById(clientId);
 
     if (client) {
+        // Modify all deals with old Name
+        try {
+            if (client.name !== req.body.name) {
+                dealsToModify = await Deal.find({company: client.name});
+                for (let incr=0 ; incr<dealsToModify.length ; incr++) {
+                    //dealsToModify[incr].company = req.body.name
+                    await Deal.updateOne({_id: dealsToModify[incr]._id}, {$set: {company: req.body.name}});
+                }
+                console.log('deals updated with new company name');
+            }
+        } catch (error) {
+            res.status(500).json({message: 'error updating company name'})
+        }
+
         client.name = req.body.name;
         client.commercialTeam = req.body.commercialTeam;
+
         await client.save();
         res.status(200).json({message: `client Id: ${clientId} updated`})
     } else {
@@ -68,4 +83,21 @@ const updateClient = asyncHandler(async (req, res) => {
 
 });
 
-module.exports = { getClients, addClients, updateClient }
+// @desc    Delete a clients
+// @route   DELETE /api/clients/:id
+// @access  Public
+const deleteAClient = asyncHandler(async (req, res) => {
+    
+    const clientId = req.params.id;
+    const clientToDelete = await Client.findById(clientId);
+
+    if(clientToDelete) {
+        await clientToDelete.remove();
+        res.status(200).json({message: `userId: ${clientId} deleted`})
+    } else {
+        res.json(404).json({message: `userId: ${clientId} not found`})
+    }
+
+});
+
+module.exports = { getClients, addClients, updateClient, deleteAClient }

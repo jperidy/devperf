@@ -6,6 +6,9 @@ import {
     CLIENT_CREATE_FAIL, 
     CLIENT_CREATE_REQUEST,
     CLIENT_CREATE_SUCCESS,
+    CLIENT_DELETE_FAIL,
+    CLIENT_DELETE_REQUEST,
+    CLIENT_DELETE_SUCCESS,
     CLIENT_UPDATE_FAIL,
     CLIENT_UPDATE_REQUEST,
     CLIENT_UPDATE_SUCCESS
@@ -87,6 +90,33 @@ export const updateAClient = (clients) => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: CLIENT_UPDATE_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const deleteAClient = (clientsId) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CLIENT_DELETE_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.delete(`/api/clients/${clientsId}`, config);
+        dispatch({ type: CLIENT_DELETE_SUCCESS, payload: data });
+
+    } catch (error) {
+        dispatch({
+            type: CLIENT_DELETE_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

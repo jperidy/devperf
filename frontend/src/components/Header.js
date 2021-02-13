@@ -100,6 +100,13 @@ const Header = () => {
                                         </LinkContainer>
                                     </DisplayChildren>
 
+                                    <DisplayChildren access='manageCompanies'>
+                                        <NavDropdown.Divider />
+                                        <LinkContainer to='/admin/companies'>
+                                            <NavDropdown.Item>Manage companies</NavDropdown.Item>
+                                        </LinkContainer>
+                                    </DisplayChildren>
+
                                 </NavDropdown>
                             </DisplayChildren>
                         </Nav>

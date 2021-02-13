@@ -10,7 +10,11 @@ import {
     CLIENT_UPDATE_FAIL,
     CLIENT_UPDATE_REQUEST,
     CLIENT_UPDATE_SUCCESS,
-    CLIENT_UPDATE_RESET
+    CLIENT_UPDATE_RESET,
+    CLIENT_DELETE_REQUEST,
+    CLIENT_DELETE_SUCCESS,
+    CLIENT_DELETE_FAIL,
+    CLIENT_DELETE_RESET
 } from "../constants/clientConstants";
 
 export const clientAllReducer = (state = { }, action) => {
@@ -59,6 +63,21 @@ export const clientUpdateReducer = (state = { }, action) => {
         case CLIENT_UPDATE_FAIL:
             return { loading: false, error: action.payload };
         case CLIENT_UPDATE_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const clientDeleteReducer = (state = { }, action) => {
+    switch (action.type) {
+        case CLIENT_DELETE_REQUEST:
+            return { loading: true };
+        case CLIENT_DELETE_SUCCESS:
+            return { loading: false, success: true };
+        case CLIENT_DELETE_FAIL:
+            return { loading: false, error: action.payload };
+        case CLIENT_DELETE_RESET:
             return {}
         default:
             return state;

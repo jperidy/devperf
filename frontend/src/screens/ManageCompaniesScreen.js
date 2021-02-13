@@ -13,7 +13,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
-import { getAllClients, updateAClient } from '../actions/clientActions';
+import { deleteAClient, getAllClients, updateAClient } from '../actions/clientActions';
 
 const ManageCompaniesScreen = ({ history }) => {
 
@@ -30,6 +30,9 @@ const ManageCompaniesScreen = ({ history }) => {
     const [contactEmail, setContactEmail] = useState('');
     const [message, setMessage] = useState('');
 
+    const [showModifyName, setShowModifyName] = useState({state:false, companyId:'', companyName:''});
+    const [newCompanyName, setNewCompanyName] = useState('');
+
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
@@ -38,6 +41,9 @@ const ManageCompaniesScreen = ({ history }) => {
 
     const clientUpdate = useSelector(state => state.clientUpdate);
     const { error: errorUpdate, success:successUpdate } = clientUpdate;
+
+    const clientDelete = useSelector(state => state.clientDelete);
+    const { error: errorDelete, success:successDelete } = clientDelete;
 
     useEffect(() => {
 
@@ -53,7 +59,15 @@ const ManageCompaniesScreen = ({ history }) => {
         if (successUpdate) {
             dispatch(getAllClients(keyword, pageNumber, pageSize));
         }
-    }, [dispatch, successUpdate, keyword, pageNumber, pageSize]);
+        // eslint-disable-next-line
+    }, [dispatch, successUpdate]);
+
+    useEffect(() => {
+        if (successDelete) {
+            dispatch(getAllClients(keyword, pageNumber, pageSize));
+        }
+        // eslint-disable-next-line
+    }, [dispatch, successDelete]);
 
 
     const addCompanyHandler = () => {
@@ -61,14 +75,18 @@ const ManageCompaniesScreen = ({ history }) => {
 
     }
 
-    const onClickEditHandler = () => {
-        // Add edit function
-
+    const modifyCompanyNameHandler = (e, companyId, newCompanyName) => {
+        e.preventDefault();
+        let clientToUpdate = companies.filter(x => x._id === companyId)[0];
+        clientToUpdate.name = newCompanyName;
+        dispatch(updateAClient(clientToUpdate));
+        setShowModifyName({ state: false, companyId: '', companyName: '' });
     }
 
-    const onClickDeleteHandler = () => {
-        // Add delete company function
-
+    const onClickDeleteHandler = (company) => {
+        if (window.confirm(`Are you sure to delete company: ${company.name} ?`)) {
+            dispatch(deleteAClient(company._id));
+        }
     }
 
     const addContactHandler = (e, contactName, contactEmail, companyId) => {
@@ -118,11 +136,10 @@ const ManageCompaniesScreen = ({ history }) => {
 
     }
 
-
-
     return (
         <>
             {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
+            {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
             <DropDownTitleContainer title='Manage companies' close={false}>
                 <ListGroup.Item>
                     <Row>
@@ -188,7 +205,23 @@ const ManageCompaniesScreen = ({ history }) => {
                                 <tbody>
                                     {companies && companies.map((company) => (
                                         <tr key={company._id}>
-                                            <td className='align-middle'>{company.name}</td>
+                                            <td className='align-middle'>
+                                                <Row><Col>{company.name}</Col></Row>
+                                                <Row><Col>
+                                                    <Button
+                                                        variant='ligth'
+                                                        className="m-0 p-1 text-primary"
+                                                        onClick={() => setShowModifyName({ state: true, companyId: company._id, companyName: company.name })}
+                                                    ><i className="fas fa-minus"></i><i>  modify</i>
+                                                    </Button>
+                                                    <Button
+                                                        variant='ligth'
+                                                        className='m-0 p-1 btn text-danger'
+                                                        onClick={() => onClickDeleteHandler(company)}
+                                                    ><i className="fas fa-times"></i><i>  Delete</i>
+                                                    </Button>
+                                                </Col></Row>
+                                            </td>
                                             <td className='align-middle'>
                                                 <DisplayContact
                                                     company={company}
@@ -198,18 +231,12 @@ const ManageCompaniesScreen = ({ history }) => {
                                             </td>
 
                                             <td className='align-middle text-right'>
-                                                <Button
-                                                    className='btn btn-primary p-1 mx-3'
-                                                    onClick={() => onClickEditHandler(company._id)}
-                                                    size='sm'
-                                                ><i className="fas fa-user-edit"></i>
-                                                </Button>
-                                                <Button
+                                                {/* <Button
                                                     className='btn btn-danger p-1 mx-3'
                                                     onClick={() => onClickDeleteHandler(company)}
                                                     size='sm'
                                                 ><i className="fas fa-user-times"></i>
-                                                </Button>
+                                                </Button> */}
                                             </td>
                                         </tr>
                                     ))}
@@ -278,6 +305,38 @@ const ManageCompaniesScreen = ({ history }) => {
                     <Button variant="secondary" onClick={() => setShowAddContact({state:false, companyId:'', companyName:""})}>Close</Button>
                 </Modal.Footer>
             </Modal>
+
+            <Modal show={showModifyName.state} onHide={() => setShowModifyName({state:false, companyId:'', companyName:""})}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{`Original name: ${showModifyName.companyName}`}</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    <Form>
+                        <Form.Group>
+                            <Form.Label>New company name *</Form.Label>
+                            <Form.Control
+                                type='text'
+                                value={newCompanyName ? newCompanyName : showModifyName.companyName}
+                                onChange={(e) => setNewCompanyName(e.target.value)}
+                            />
+                        </Form.Group>
+                        <Button 
+                            type='submit' 
+                            variant="primary" 
+                            onClick={(e) => modifyCompanyNameHandler(e, showModifyName.companyId, newCompanyName)} 
+                            disabled={!(newCompanyName && (newCompanyName !== showModifyName.companyName))}>Modify</Button>
+                    </Form>
+                    {/*message && <Message variant='danger'>{message}</Message>*/}
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => {
+                        setShowModifyName({ state: false, companyId: '', companyName: "" });
+                        setNewCompanyName('')
+                    }}>Close</Button>
+                </Modal.Footer>
+            </Modal>
         </>
     )
 }
@@ -289,21 +348,24 @@ const DisplayContact = ({ company, setShowAddContact, deleteContactHandler }) =>
     return (
         <div>
             {contacts.map((contact, incr) => (
-                <div key={incr}>
-                    {`${contact.contactName} (${contact.contactEmail})`}
-                    <Button
-                        variant='ligth'
-                        className='ml-3 px-1 text-danger'
-                        onClick={() => deleteContactHandler(contact.contactEmail, company._id)}
-                    ><i className="fas fa-times"></i></Button>
-                    <Button
-                        className='mx-0 px-1 text-primary'
-                        variant='ligth'
-                        onClick={() => setShowAddContact({state:true, companyId:company._id, companyName:company.name})}
-                    ><i className="fas fa-plus"></i></Button>
-                </div>
+                <Row key={incr}>
+                    <Col>
+                        {`${contact.contactName} (${contact.contactEmail})`}
+                        <Button
+                            variant='ligth'
+                            className='ml-3 px-1 text-danger'
+                            onClick={() => deleteContactHandler(contact.contactEmail, company._id)}
+                        ><i className="fas fa-times"></i></Button>
+                    </Col>
+                </Row>
             ))}
-
+            <Row><Col className='text-left'>
+                <Button
+                    className='m-0 p-1 text-primary'
+                    variant='ligth'
+                    onClick={() => setShowAddContact({state:true, companyId:company._id, companyName:company.name})}
+                ><i className="fas fa-plus"></i><i>  add a contact</i></Button>
+            </Col></Row>
 
         </div>
     )
