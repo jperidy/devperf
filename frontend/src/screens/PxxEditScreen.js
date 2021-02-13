@@ -78,82 +78,85 @@ const PxxEditScreen = ({ history }) => {
                     : !consultantsMy || consultantsMy.length === 0 ?
                         <Message variant='info'>You don't have consultant to edit yet</Message> : (
                             <>
-                                <Row>
-                                    <Col className="text-center" xs={2}>
-                                        <Button
-                                            variant='primary'
-                                            size='sm'
-                                            onClick={() => navigationConsultantHandler(-1)}
-                                            disabled={focus === 0}
-                                        ><i className="fas fa-caret-left"></i>
-                                        </Button>
-                                    </Col>
-                                    <Col className="text-center" xs={8}>
-                                        <LinkContainer to={`/editconsultant/${consultantsMy[focus]._id}`}>
-                                            <Nav.Link>
-                                                <h4>{consultantsMy[focus].name} <i>({consultantsMy[focus].matricule})</i></h4>
-                                            </Nav.Link>
-                                        </LinkContainer>
-                                    </Col>
-                                    <Col className="text-center" xs={2}>
-                                        <Button
-                                            variant='primary'
-                                            size='sm'
-                                            onClick={() => navigationConsultantHandler(1)}
-                                            disabled={focus === consultantsMy.length - 1}
-                                        ><i className="fas fa-caret-right"></i>
-                                        </Button>
-                                    </Col>
-                                </Row>
+                                <div className='border-bottom p-3'>
+                                    <Row>
+                                        <Col className="text-center" xs={2}>
+                                            <Button
+                                                variant='primary'
+                                                size='sm'
+                                                onClick={() => navigationConsultantHandler(-1)}
+                                                disabled={focus === 0}
+                                            ><i className="fas fa-caret-left"></i>
+                                            </Button>
+                                        </Col>
+                                        <Col className="text-center" xs={8}>
+                                            <LinkContainer to={`/editconsultant/${consultantsMy[focus]._id}`}>
+                                                <Nav.Link>
+                                                    <h4>{consultantsMy[focus].name} <i>({consultantsMy[focus].matricule})</i></h4>
+                                                </Nav.Link>
+                                            </LinkContainer>
+                                        </Col>
+                                        <Col className="text-center" xs={2}>
+                                            <Button
+                                                variant='primary'
+                                                size='sm'
+                                                onClick={() => navigationConsultantHandler(1)}
+                                                disabled={focus === consultantsMy.length - 1}
+                                            ><i className="fas fa-caret-right"></i>
+                                            </Button>
+                                        </Col>
+                                    </Row>
 
-                                <Row className='mt-3'>
-                                    <Col xs={12} md={4}>
-                                        <ListGroup.Item>
-                                            <Row className="my-3">
-                                                <Col className="text-left"><b>Arrival:</b> {consultantsMy[focus].arrival && consultantsMy[focus].arrival.substring(0, 10)}</Col>
-                                                <Col className="text-left"><b>Valued:</b> {consultantsMy[focus].valued && consultantsMy[focus].valued.substring(0, 10)}</Col>
-                                                <Col className="text-left"><b>Leaving:</b> {consultantsMy[focus].leaving && consultantsMy[focus].leaving.substring(0, 10)}</Col>
-                                            </Row>
-                                            <Row className="my-3">
-                                                <Col><b>Seniority:</b> {((new Date(Date.now()) - new Date(consultantsMy[focus].arrival.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4)} years</Col>
-                                            </Row>
+                                    <Row className='mt-3'>
+                                        <Col xs={12} md={4}>
+                                            <ListGroup>
+                                            <ListGroup.Item>
+                                                <Row className="my-3">
+                                                    <Col className="text-left"><b>Arrival:</b> {consultantsMy[focus].arrival && consultantsMy[focus].arrival.substring(0, 10)}</Col>
+                                                    <Col className="text-left"><b>Valued:</b> {consultantsMy[focus].valued && consultantsMy[focus].valued.substring(0, 10)}</Col>
+                                                    <Col className="text-left"><b>Leaving:</b> {consultantsMy[focus].leaving && consultantsMy[focus].leaving.substring(0, 10)}</Col>
+                                                </Row>
+                                                <Row className="my-3">
+                                                    <Col><b>Seniority:</b> {((new Date(Date.now()) - new Date(consultantsMy[focus].arrival.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4)} years</Col>
+                                                </Row>
 
-                                            <Row className="my-3">
-                                                <Col>
-                                                    {!(consultantsMy[focus]._id === userInfo.consultantProfil._id) && (
-                                                        <>
-                                                            <label htmlFor="comment"><strong>Staffing comment</strong></label>
-                                                            <InputGroup>
-                                                                <FormControl
-                                                                    as='textarea'
-                                                                    rows={4}
-                                                                    id='comment'
-                                                                    value={commentText}
-                                                                    placeholder='Please enter a comment'
-                                                                    onChange={(e) => {
-                                                                        setCommentText(e.target.value);
-                                                                        updateCommentHandler(consultantsMy[focus]._id, e.target.value)
-                                                                    }}
-                                                                ></FormControl>
-                                                            </InputGroup>
-                                                        </>
-                                                    )}
+                                                <Row className="my-3">
+                                                    <Col>
+                                                        {!(consultantsMy[focus]._id === userInfo.consultantProfil._id) && (
+                                                            <>
+                                                                <label htmlFor="comment"><strong>Staffing comment</strong></label>
+                                                                <InputGroup>
+                                                                    <FormControl
+                                                                        as='textarea'
+                                                                        rows={4}
+                                                                        id='comment'
+                                                                        value={commentText}
+                                                                        placeholder='Please enter a comment'
+                                                                        onChange={(e) => {
+                                                                            setCommentText(e.target.value);
+                                                                            updateCommentHandler(consultantsMy[focus]._id, e.target.value)
+                                                                        }}
+                                                                    ></FormControl>
+                                                                </InputGroup>
+                                                            </>
+                                                        )}
 
-                                                </Col>
-                                            </Row>
-                                        </ListGroup.Item>
+                                                    </Col>
+                                                </Row>
+                                            </ListGroup.Item>
+                                            </ListGroup>
+                                        </Col>
 
-                                    </Col>
-
-                                    <Col xs={12} md={8}>
-                                        <PxxEditor
-                                            consultantsMy={consultantsMy}
-                                            consultantFocus={focus}
-                                            searchDate={searchDate}
-                                            navigationMonthHandler={navigationMonthHandler}
-                                        />
-                                    </Col>
-                                </Row>
+                                        <Col xs={12} md={8}>
+                                            <PxxEditor
+                                                consultantsMy={consultantsMy}
+                                                consultantFocus={focus}
+                                                searchDate={searchDate}
+                                                navigationMonthHandler={navigationMonthHandler}
+                                            />
+                                        </Col>
+                                    </Row>
+                                </div>
 
                                 <Row>
                                     <Col>
