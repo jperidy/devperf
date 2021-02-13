@@ -31,7 +31,6 @@ const getClients = asyncHandler(async (req, res) => {
 const addClients = asyncHandler(async (req, res) => {
     
     const clients = req.body
-    //console.log('clients', clients);
     const errors = []
 
     for (let incr = 0; incr < clients.length ; incr++) {

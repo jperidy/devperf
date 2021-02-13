@@ -4,6 +4,7 @@ import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import DisplayChildren from '../components/DisplayChildren';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Pagination from 'react-bootstrap/Pagination';
@@ -13,7 +14,7 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
-import { deleteAClient, getAllClients, updateAClient } from '../actions/clientActions';
+import { createAClient, deleteAClient, getAllClients, updateAClient } from '../actions/clientActions';
 
 const ManageCompaniesScreen = ({ history }) => {
 
@@ -33,6 +34,8 @@ const ManageCompaniesScreen = ({ history }) => {
     const [showModifyName, setShowModifyName] = useState({state:false, companyId:'', companyName:''});
     const [newCompanyName, setNewCompanyName] = useState('');
 
+    const [showCreateCompany, setShowCreateCompany] = useState({state:false});
+
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
@@ -44,6 +47,9 @@ const ManageCompaniesScreen = ({ history }) => {
 
     const clientDelete = useSelector(state => state.clientDelete);
     const { error: errorDelete, success:successDelete } = clientDelete;
+
+    const clientCreate = useSelector(state => state.clientCreate);
+    const { error: errorCreate, success:successCreate } = clientCreate;
 
     useEffect(() => {
 
@@ -69,9 +75,22 @@ const ManageCompaniesScreen = ({ history }) => {
         // eslint-disable-next-line
     }, [dispatch, successDelete]);
 
+    useEffect(() => {
+        if (successCreate) {
+            dispatch(getAllClients(keyword, pageNumber, pageSize));
+        }
+        // eslint-disable-next-line
+    }, [dispatch, successCreate]);
 
-    const addCompanyHandler = () => {
+
+    const addCompanyHandler = (e, newCompanyName, contactName, contactEmail) => {
         // Add company function
+        e.preventDefault();
+        dispatch(createAClient([{name:newCompanyName, commercialTeam:[{contactName: contactName, contactEmail: contactEmail}]}]));
+        setShowCreateCompany({state:false});
+        setContactEmail('');
+        setContactName('');
+        setNewCompanyName('');
 
     }
 
@@ -137,15 +156,16 @@ const ManageCompaniesScreen = ({ history }) => {
     }
 
     return (
-        <>
+        <DisplayChildren access='manageCompanies'>
             {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
+            {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
             <DropDownTitleContainer title='Manage companies' close={false}>
                 <ListGroup.Item>
                     <Row>
 
                         <Col xs={6} md={4}>
-                            <Button className="mb-3" onClick={() => addCompanyHandler()}>
+                            <Button className="mb-3" onClick={() => setShowCreateCompany({state:true})}>
                                 <i className="fas fa-plus mr-2"></i>Add
                             </Button>
                         </Col>
@@ -198,7 +218,6 @@ const ManageCompaniesScreen = ({ history }) => {
                                     <tr className='table-primary'>
                                         <th className='align-middle text-light'>Company name</th>
                                         <th className='align-middle text-light'>Commercial contacts</th>
-                                        <th className='align-middle text-light'></th>
                                     </tr>
                                 </thead>
 
@@ -228,15 +247,6 @@ const ManageCompaniesScreen = ({ history }) => {
                                                     setShowAddContact={setShowAddContact}
                                                     deleteContactHandler={deleteContactHandler}
                                                 />
-                                            </td>
-
-                                            <td className='align-middle text-right'>
-                                                {/* <Button
-                                                    className='btn btn-danger p-1 mx-3'
-                                                    onClick={() => onClickDeleteHandler(company)}
-                                                    size='sm'
-                                                ><i className="fas fa-user-times"></i>
-                                                </Button> */}
                                             </td>
                                         </tr>
                                     ))}
@@ -327,7 +337,6 @@ const ManageCompaniesScreen = ({ history }) => {
                             onClick={(e) => modifyCompanyNameHandler(e, showModifyName.companyId, newCompanyName)} 
                             disabled={!(newCompanyName && (newCompanyName !== showModifyName.companyName))}>Modify</Button>
                     </Form>
-                    {/*message && <Message variant='danger'>{message}</Message>*/}
                 </Modal.Body>
 
                 <Modal.Footer>
@@ -337,7 +346,59 @@ const ManageCompaniesScreen = ({ history }) => {
                     }}>Close</Button>
                 </Modal.Footer>
             </Modal>
-        </>
+
+            <Modal show={showCreateCompany.state} onHide={() => setShowCreateCompany({state:false})}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{`Create a company:`}</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    <Form>
+                        <Form.Group>
+                            <Form.Label>New company name *</Form.Label>
+                            <Form.Control
+                                type='text'
+                                value={newCompanyName ? newCompanyName : showModifyName.companyName}
+                                onChange={(e) => setNewCompanyName(e.target.value)}
+                            />
+                        </Form.Group>
+
+                        <Form.Group>
+                            <Form.Label>First contact name</Form.Label>
+                            <Form.Control
+                                type='text'
+                                value={contactName ? contactName : ''}
+                                placeholder='Contact name'
+                                onChange={(e) => setContactName(e.target.value)}
+                            />
+                        </Form.Group>
+
+                        <Form.Group>
+                            <Form.Label>First contact email</Form.Label>
+                            <Form.Control
+                                type='email'
+                                value={contactEmail ? contactEmail : ''}
+                                placeholder='Contact email'
+                                onChange={(e) => setContactEmail(e.target.value)}
+                            />
+                        </Form.Group>
+                        
+                        <Button 
+                            type='submit' 
+                            variant="primary" 
+                            onClick={(e) => addCompanyHandler(e, newCompanyName, contactName, contactEmail)} 
+                            disabled={!(newCompanyName )}>Create</Button>
+                    </Form>
+                </Modal.Body>
+
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => {
+                        setShowModifyName({ state: false, companyId: '', companyName: "" });
+                        setNewCompanyName('')
+                    }}>Close</Button>
+                </Modal.Footer>
+            </Modal>
+        </DisplayChildren>
     )
 }
 
