@@ -18,7 +18,7 @@ const AccessEditScreen = ({ history }) => {
     const { loading, error, access } = accessList;
 
     const accessFrontUpdate = useSelector(state => state.accessFrontUpdate);
-    const { error: errorFrontUpdate, success: successFrontUpdate } = accessFrontUpdate;
+    const { error: errorFrontUpdate } = accessFrontUpdate;
 
     useEffect(() => {
         if (!userInfo) {
@@ -38,7 +38,6 @@ const AccessEditScreen = ({ history }) => {
             {loading && <Loader />}
             {error && <Message variant='danger'>{error}</Message>}
             {errorFrontUpdate && <Message variant='danger'>{errorFrontUpdate}</Message>}
-            {successFrontUpdate && <Message variant='success'>{'Profil updated'}</Message>}
 
             <h1>Manage user profils screen</h1>
             <Tabs defaultActiveKey={access && access[0].profil} id="uncontrolled-tab-example">
@@ -75,7 +74,7 @@ const ProfilDescription = ({data}) => {
     return (
         <ListGroup>
             {categorizedFrontAccess && categorizedFrontAccess.map((categoryRules, incr) => (
-                <ListGroup.Item key={incr}>
+                <ListGroup.Item key={incr} className='pt-3'>
                     <CategoryAccess
                         accessRules={categoryRules.frontAccessRules}
                         category={categoryRules.category}
@@ -99,15 +98,19 @@ const CategoryAccess = ({ accessRules, category, categories, profilId }) => {
     return (
         <>
             <h4>{category && category}</h4>
-            <Row>
-                <Col>Technical id</Col>
-                <Col>Label</Col>
-                <Col>Mode</Col>
-                <Col>Access</Col>
-                <Col></Col>
-            </Row>
+            <ListGroup variant='flush'>
+                <ListGroup.Item>
+                    <Row className='py-1 border-bottom bg-primary'>
+                        <Col className='text-white' xs={3}><strong>TECHNICAL ID</strong></Col>
+                        <Col className='text-white' xs={4}><strong>LABEL</strong></Col>
+                        <Col className='text-white' xs={2}><strong>MODE</strong></Col>
+                        <Col className='text-white' xs={2}><strong>ACCESS</strong></Col>
+                        <Col xs={1}><strong></strong></Col>
+                    </Row>
+                </ListGroup.Item>
+            </ListGroup>
             {accessRules && accessRules.map((item, incr) => (
-                <ListGroup key={incr}>
+                <ListGroup key={incr} variant='flush' className='border-bottom'>
                     <ListGroup.Item>
                         <AccessLineEdit
                             frontAccessItem={item}
@@ -130,30 +133,26 @@ const AccessLineEdit = ({ frontAccessItem, params, profilId }) => {
     const [mode, setMode] = useState(frontAccessItem.mode);
     const [data, setData] = useState(frontAccessItem.data);
 
-    //const [error, setError] = useState(false)
-    //const [successMessage, setSuccessMessage] = useState(false)
+    const [loadingState, setLoadingState] = useState(false);
 
     const accessFrontUpdate = useSelector(state => state.accessFrontUpdate);
     const { error, success } = accessFrontUpdate;
 
-    /*
-    useEffect(() => {
-        if(error) {
-            setError(error)
-        }
-    },[error])
-
     useEffect(() => {
         if(success) {
-            setSuccessMessage(success)
-        }
-    },[success])
-    */
+            setLoadingState(false)
+        } 
+    },[success]);
 
-    //console.log(frontAccessItem)
+    useEffect(() => {
+        if(error) {
+            setLoadingState(false)
+        } 
+    },[error]);
 
     const submitHandler = (e) => {
         e.preventDefault();
+        setLoadingState(true);
         const rule = {
             id: id,
             label: label,
@@ -168,7 +167,7 @@ const AccessLineEdit = ({ frontAccessItem, params, profilId }) => {
     return (
         <Form onSubmit={submitHandler}>
             <Form.Row>
-                <Col>
+                <Col xs={3}>
                     <Form.Control
                         type='text'
                         value={id && id}
@@ -177,7 +176,7 @@ const AccessLineEdit = ({ frontAccessItem, params, profilId }) => {
                     ></Form.Control>
                 </Col>
 
-                <Col>
+                <Col xs={4}>
                     <Form.Control
                         type='text'
                         value={label && label}
@@ -185,7 +184,7 @@ const AccessLineEdit = ({ frontAccessItem, params, profilId }) => {
                     ></Form.Control>
                 </Col>
 
-                <Col>
+                <Col xs={2}>
                     <Form.Control
                         as='select'
                         value={mode && mode}
@@ -198,7 +197,7 @@ const AccessLineEdit = ({ frontAccessItem, params, profilId }) => {
                     </Form.Control>
                 </Col>
 
-                <Col>
+                <Col xs={2}>
                     <Form.Control
                         as='select'
                         value={data && data}
@@ -211,8 +210,10 @@ const AccessLineEdit = ({ frontAccessItem, params, profilId }) => {
                     </Form.Control>
                 </Col>
 
-                <Col>
-                    <Button variant='primary' type='submit'>update</Button>
+                <Col xs={1}>
+                    <Button variant='ligth' className='text-secondary' type='submit'>
+                        {loadingState ? <Loader /> : <i className="fas fa-download"></i>}
+                    </Button>
                 </Col>
 
             </Form.Row>
