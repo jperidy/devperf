@@ -51,10 +51,10 @@ const SkillsDetails = ({consultantId, close=true, editable=true}) => {
     }, [dispatch, skillsAll]);
 
     useEffect(() => {
-        if(!skills) {
-            dispatch(getConsultantSkills(consultantId));
-        }
-    }, [dispatch, skills, consultantId]);
+        dispatch(getConsultantSkills(consultantId));
+        //if(!skills) {
+        //}
+    }, [dispatch, consultantId]);
 
     useEffect(() => {
         if (skills) {
@@ -280,7 +280,7 @@ const SkillDisplayLine = ({
 
     const handlerDeleteConsultantSkill = (consultantId, skillId) => {
         dispatch(consultantDeleteSkill(consultantId, skillId));
-    }
+    }   
 
 
     return (
