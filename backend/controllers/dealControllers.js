@@ -188,6 +188,22 @@ const deleteDeal = asyncHandler(async (req, res) => {
     
 });
 
+// @desc    Get old deals for consultant 
+// @route   GET /api/deals/old?consultantId=consultantId
+// @access  Private/AdminLevelOne
+const getOldDeals = asyncHandler(async (req, res) => { 
+
+    const consultantId = req.query.consultantId;
+    const oldDeals = await Deal.find({'staffingDecision.staff.idConsultant':consultantId, status:'Won'});
+
+    if(oldDeals) {
+        res.status(200).json(oldDeals);
+    } else {
+        res.status(404).json({message: "No old deals found"});
+    }
+    
+});
+
 // @desc    Get a Deal 
 // @route   GET /api/deals/:id
 // @access  Private/AdminLevelOne
@@ -204,4 +220,4 @@ const getADeal = asyncHandler(async (req, res) => {
     
 });
 
-module.exports = { createDeal, getAllDeals, deleteDeal, getADeal, updateADeal };
+module.exports = { createDeal, getAllDeals, deleteDeal, getADeal, updateADeal, getOldDeals };

@@ -422,6 +422,7 @@ const getConsultantStaffings = asyncHandler(async (req, res) => {
             startDate: staff.startDate,
             mainPractice: staff.mainPractice,
             requestStatus: staff.staffingRequest.requestStatus,
+            status:staff.status,
             instructions: staff.staffingRequest.instructions
         }));
     

@@ -5,17 +5,21 @@ import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Loader from './Loader';
-import { getAllStaffs } from '../actions/consultantActions';
+import { getOldDeals } from '../actions/dealActions';
 
-const ViewStaffs = ({ history, consultantId, displayedDeal = '', onNavigate = () => ('') }) => {
+const ViewOldStaffs = ({ history, consultantId, displayedDeal = '', onNavigate = () => ('') }) => {
 
     const dispatch = useDispatch();
-    const consultantAllStaffs = useSelector(state => state.consultantAllStaffs);
-    const { loading, staffings } = consultantAllStaffs;
+
+    const dealOld = useSelector(state => state.dealOld);
+    const { loading, oldDeals } = dealOld;
+
+    /*const consultantAllStaffs = useSelector(state => state.consultantAllStaffs);
+    const { loading, staffings } = consultantAllStaffs;*/
 
     useEffect(() => {
         if (consultantId) {
-            dispatch(getAllStaffs(consultantId));
+            dispatch(getOldDeals(consultantId));
         }
     }, [dispatch, consultantId]);
 
@@ -38,7 +42,7 @@ const ViewStaffs = ({ history, consultantId, displayedDeal = '', onNavigate = ()
                     </thead>
 
                     <tbody>
-                        {staffings && staffings.map(deal => (deal._id.toString() !== displayedDeal.toString()) && (
+                        {oldDeals && oldDeals.map(deal => (
                             <tr key={deal._id}>
                                 <td className='align-middle'>{deal.company}</td>
                                 <td className='align-middle'>{deal.title}</td>
@@ -46,7 +50,7 @@ const ViewStaffs = ({ history, consultantId, displayedDeal = '', onNavigate = ()
                                 <td className='align-middle'>{deal.probability} %</td>
                                 <td className='align-middle'>{deal.startDate.substring(0, 10)}</td>
                                 <td className='align-middle'>{deal.status}</td>
-                                <td className='align-middle'>{deal.requestStatus}</td>
+                                <td className='align-middle'>{deal.staffingRequest.requestStatus}</td>
                                 <td className='align-middle'>
                                         <Button
                                             onClick={() => {
@@ -66,4 +70,4 @@ const ViewStaffs = ({ history, consultantId, displayedDeal = '', onNavigate = ()
     )
 }
 
-export default ViewStaffs;
+export default ViewOldStaffs;

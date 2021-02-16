@@ -16,6 +16,7 @@ import { getAllMyConsultants, updateComment } from '../actions/consultantActions
 import { Container, FormControl, InputGroup } from 'react-bootstrap';
 import { setConsultantFocus } from '../actions/consultantActions';
 import ViewStaffs from '../components/ViewStaffs';
+import ViewOldStaffs from '../components/ViewOldStaffs';
 import SkillsDetails from '../components/SkillsDetails';
 import DisplayChildren from '../components/DisplayChildren';
 
@@ -168,6 +169,17 @@ const PxxEditScreen = ({ history }) => {
                                                 />
                                             </DropDownTitleContainer>
                                         </DisplayChildren>
+                                    </Col>
+                                </Row>
+
+                                <Row>
+                                    <Col>
+                                            <DropDownTitleContainer title='Old staffings' close={true}>
+                                                <ViewOldStaffs 
+                                                    history={history}
+                                                    consultantId={consultantsMy[focus]._id}
+                                                />
+                                            </DropDownTitleContainer>
                                     </Col>
                                 </Row>
                                 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+//import { useSelector } from 'react-redux';
 import Col from 'react-bootstrap/Col';
 import { Link } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
@@ -7,8 +7,10 @@ import DisplayChildren from '../components/DisplayChildren';
 
 const Tace = ({ tace }) => {
 
+    /*
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
+    */
 
     return (
 

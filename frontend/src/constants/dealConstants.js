@@ -23,6 +23,11 @@ export const DEAL_EDIT_SUCCESS = 'DEAL_EDIT_SUCCESS';
 export const DEAL_EDIT_FAIL = 'DEAL_EDIT_FAIL';
 export const DEAL_EDIT_RESET = 'DEAL_EDIT_RESET';
 
+export const DEAL_OLD_REQUEST = 'DEAL_OLD_REQUEST';
+export const DEAL_OLD_SUCCESS = 'DEAL_OLD_SUCCESS';
+export const DEAL_OLD_FAIL = 'DEAL_OLD_FAIL';
+export const DEAL_OLD_RESET = 'DEAL_OLD_RESET';
+
 export const REQUEST_STATUS = [
     {name: 'Identify Leader', staff: true, priority: 10},
     {name: 'Identify Staff', staff: true, priority: 5},
@@ -44,6 +49,7 @@ export const DEAL_STATUS = [
     {name: 'Proposal sent', priority: 5},
     {name: 'Won', priority: 10},
     {name: 'Abandoned', priority: 0},
+    {name: 'Lost', priority: 0},
 ];
 
 export const DEAL_PROBABILITY = [

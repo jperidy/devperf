@@ -12,6 +12,9 @@ import {
     DEAL_EDIT_FAIL,
     DEAL_EDIT_REQUEST,
     DEAL_EDIT_SUCCESS,
+    DEAL_OLD_FAIL,
+    DEAL_OLD_REQUEST,
+    DEAL_OLD_SUCCESS,
     DEAL_UPDATE_FAIL,
     DEAL_UPDATE_REQUEST,
     DEAL_UPDATE_SUCCESS
@@ -154,6 +157,34 @@ export const getDealToEdit = (id) => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: DEAL_EDIT_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const getOldDeals = (consultantId) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: DEAL_OLD_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.get(`/api/deals/old?consultantId=${consultantId}`, config);
+
+       dispatch({ type: DEAL_OLD_SUCCESS, payload: data });
+
+    } catch (error) {
+        dispatch({
+            type: DEAL_OLD_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

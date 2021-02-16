@@ -15,6 +15,10 @@ import {
     DEAL_EDIT_REQUEST,
     DEAL_EDIT_RESET,
     DEAL_EDIT_SUCCESS,
+    DEAL_OLD_FAIL,
+    DEAL_OLD_REQUEST,
+    DEAL_OLD_RESET,
+    DEAL_OLD_SUCCESS,
     DEAL_UPDATE_FAIL,
     DEAL_UPDATE_REQUEST,
     DEAL_UPDATE_RESET,
@@ -97,6 +101,21 @@ export const dealEditeReducer = (state = {}, action) => {
         case DEAL_EDIT_FAIL:
             return { loading: false, error: action.payload };
         case DEAL_EDIT_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const dealOldReducer = (state = {}, action) => {
+    switch (action.type) {
+        case DEAL_OLD_REQUEST:
+            return { loading: true };
+        case DEAL_OLD_SUCCESS:
+            return { loading: false, success: true, oldDeals: action.payload };
+        case DEAL_OLD_FAIL:
+            return { loading: false, error: action.payload };
+        case DEAL_OLD_RESET:
             return {}
         default:
             return state;
