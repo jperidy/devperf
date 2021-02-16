@@ -5,23 +5,24 @@ function getAccessData() {
             profil: 'admin',
             level: 0,
             frontAccess:[
-                {category: 'Menu bar', id: 'staffingRequest', label: 'Staffing request menu', mode:'yes', data: 'all'},//
-                {category: 'Menu bar', id: 'editMyPxx', label: 'Edit Pxx menu', mode:'yes', data: 'all'},//
-                {category: 'Menu bar', id: 'editMyProfil', label:'Edit my profil menu', mode:'yes', data: 'all'},//
-                {category: 'Menu bar', id: 'manageConsultants', label: 'Manage consultants menu', mode:'yes', data: 'all'},//
-                {category: 'Menu bar', id: 'manageUsers', label: 'Manage users menu', mode:'yes', data: 'all'},//
-                {category: 'Menu bar', id: 'manageSkills', label: 'Manage skills menu', mode:'yes', data: 'all'},//
-                {category: 'Menu bar', id: 'manageDeals', label: 'Manage deals menu', mode:'yes', data: 'all'},//
+                {category: 'Menu bar', id: 'staffingRequest', label: 'Staffing request menu', mode:'yes', data: 'all'},
+                {category: 'Menu bar', id: 'editMyPxx', label: 'Edit Pxx menu', mode:'yes', data: 'all'},
+                {category: 'Menu bar', id: 'editMyProfil', label:'Edit my profil menu', mode:'yes', data: 'all'},
+                {category: 'Menu bar', id: 'manageConsultants', label: 'Manage consultants menu', mode:'yes', data: 'all'},
+                {category: 'Menu bar', id: 'manageUsers', label: 'Manage users menu', mode:'yes', data: 'all'},
+                {category: 'Menu bar', id: 'manageSkills', label: 'Manage skills menu', mode:'yes', data: 'all'},
+                {category: 'Menu bar', id: 'manageDeals', label: 'Manage deals menu', mode:'yes', data: 'all'},
                 {category: 'Menu bar', id: 'adminMenu', label: 'Access to admin menu', mode:'yes', data: 'all'},
                 {category: 'Menu bar', id: 'manageCompanies', label: 'Manage companies menu', mode:'yes', data: 'all'},
-                {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'all'},//
-                {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'all'},//
-                {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'yes', data: 'all'},//
-                {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'all'},//
-                {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'yes', data: 'all'},//
+                {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'all'},
+                {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'all'},
+                {category: 'ConsoDispo component', id: 'viewComment', label: 'View comment', mode:'yes', data: 'all'},
+                {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'yes', data: 'all'},
+                {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'all'},
+                {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'yes', data: 'all'},
                 {category: 'Menu bar', id: 'manageProfils', label: 'Manage Profils', mode:'yes', data: 'all'},
-                {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'yes', data: 'all'},//
-                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'all'},//
+                {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'yes', data: 'all'},
+                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'all'},
 
             ],
             api:[
@@ -59,6 +60,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageProfils', label: 'Manage Profils', mode:'no', data: 'department'},
                 {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'department'},
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'department'},
+                {category: 'ConsoDispo component', id: 'viewComment', label: 'View comment', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'department'},//
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'yes', data: 'department'},//
@@ -100,6 +102,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageCompanies', label: 'Manage companies menu', mode:'no', data: 'team'},
                 {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'team'},
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'team'},
+                {category: 'ConsoDispo component', id: 'viewComment', label: 'View comment', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'yes', data: 'team'},
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'yes', data: 'team'},//
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'team'},//
@@ -141,6 +144,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageCompanies', label: 'Manage companies menu', mode:'no', data: 'my'},
                 {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'department'},
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'department'},
+                {category: 'ConsoDispo component', id: 'viewComment', label: 'View comment', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'no', data: 'my'},//
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'my'},//
@@ -182,6 +186,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageCompanies', label: 'Manage companies menu', mode:'no', data: 'my'},
                 {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'my'},
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'my'},
+                {category: 'ConsoDispo component', id: 'viewComment', label: 'View comment', mode:'no', data: 'my'},
                 {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'no', data: 'my'},
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'no', data: 'my'},//
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'no', data: 'my'},//

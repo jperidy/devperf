@@ -285,6 +285,9 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
 
     //const userLogin = useSelector(state => state.userLogin);
     //const { userInfo } = userLogin;
+
+    const userLogin = useSelector(state => state.userLogin);
+    const { userInfo } = userLogin;
     
     const formatName = (fullName) => {
         const separateName = fullName.split(' ');
@@ -330,13 +333,17 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                             )}
                             <Col sm={10}>
 
+
                                 <OverlayTrigger
-                                    overlay={<Tooltip id="tooltip-disabled">
-                                        <DisplayChildren access='editComment'>
-                                            {consultantData.comment ? consultantData.comment : 'No staffing comment'}
-                                        </DisplayChildren>
-                                    </Tooltip>}
-                                >
+                                    overlay={
+                                        <Tooltip id="tooltip-disabled">
+                                            <DisplayChildren access='viewComment'>
+                                                {userInfo && userInfo.consultantProfil._id !== consultantData._id ? (
+                                                    consultantData.comment ? consultantData.comment : 'No staffing comment'
+                                                ) : 'No access to this data'}
+                                            </DisplayChildren>
+                                        </Tooltip>
+                                    }>
                                     <Form.Control
                                         plaintext
                                         readOnly
@@ -348,6 +355,7 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                                         }}
                                     />
                                 </OverlayTrigger>
+
                             </Col>
                         </Row>
                     )
