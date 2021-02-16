@@ -33,7 +33,7 @@ export const REQUEST_STATUS = [
     {name: 'Identify Staff', staff: true, priority: 5},
     {name: 'Staff validated by leader', staff: false, priority: 0},
     {name: 'Staff validated by client', staff: false, priority: 0},
-    {name: 'You can staff elsewhere', staff: true, priority: 0},
+    {name: 'You can staff elsewhere', staff: false, priority: 0},
     {name: 'Close', staff: false, priority: 0}
 ];
 
@@ -44,12 +44,12 @@ export const TYPE_BUSINESS = [
 ];
 
 export const DEAL_STATUS = [
-    {name: 'Lead', priority: 0},
-    {name: 'Proposal to send', priority: 5},
-    {name: 'Proposal sent', priority: 5},
-    {name: 'Won', priority: 10},
-    {name: 'Abandoned', priority: 0},
-    {name: 'Lost', priority: 0},
+    {name: 'Lead', priority: 0, display: 'onTrack'},
+    {name: 'Proposal to send', priority: 5, display: 'onTrack'},
+    {name: 'Proposal sent', priority: 5, display: 'onTrack'},
+    {name: 'Won', priority: 10, display: 'win'},
+    {name: 'Abandoned', priority: 0, display: 'lost'},
+    {name: 'Lost', priority: 0, display: 'lots'},
 ];
 
 export const DEAL_PROBABILITY = [

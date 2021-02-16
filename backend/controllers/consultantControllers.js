@@ -409,10 +409,20 @@ const getConsultantStaffings = asyncHandler(async (req, res) => {
     const access = req.user.profil.api.filter(x => x.name === 'getConsultantStaffings')[0].data;
     const consultantsId = await myAccessConsultants(access, req);
 
+    // take this constant from frontend/constants/dealConstants.js
+    const DEAL_STATUS = [
+        {name: 'Lead', priority: 0, display: 'onTrack'},
+        {name: 'Proposal to send', priority: 5, display: 'onTrack'},
+        {name: 'Proposal sent', priority: 5, display: 'onTrack'},
+        {name: 'Won', priority: 10, display: 'win'},
+        {name: 'Abandoned', priority: 0, display: 'lost'},
+        {name: 'Lost', priority: 0, display: 'lots'},
+    ];
+
     const consultantId = req.query.consultantId;
     
     if (consultantsId.map(x => x._id.toString()).includes(consultantId)) {
-        const staffings = await Deal.find({'staffingDecision.staff.idConsultant': consultantId});
+        const staffings = await Deal.find({'staffingDecision.staff.idConsultant': consultantId, status: {$in: DEAL_STATUS.filter(x=>x.display === 'onTrack').map(x => x.name)}});
         
         const result = staffings.map( staff => ({
             _id:staff._id,

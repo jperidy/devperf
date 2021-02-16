@@ -100,7 +100,6 @@ const StaffingEditScreen = ({ match, history }) => {
     endDefault.setUTCMonth(endDefault.getUTCMonth() + analyseTime - 1);
     endDefault = endDefault.toISOString().substring(0, 10);
 
-    //const [practice] = useState('PTC1');
     const [start] = useState(startDefault);
     const [end] = useState(endDefault);
 

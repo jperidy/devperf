@@ -6,11 +6,12 @@ import Col from 'react-bootstrap/Col';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Button from 'react-bootstrap/Button';
-import ViewStaffs from './ViewStaffs';
+import ViewStaffs from '../components/ViewStaffs';
+import ViewOldStaffs from '../components/ViewOldStaffs';
 import SkillsDetails from './SkillsDetails';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import { getConsultantCdm } from '../actions/consultantActions';
-import DisplayChildren from './DisplayChildren';
+import DisplayChildren from '../components/DisplayChildren';
 
 
 const StaffAConsultant = ({ history, onHide, show, consultant, loadingData={}, mode, addStaffHandler }) => {
@@ -120,6 +121,14 @@ const StaffAConsultant = ({ history, onHide, show, consultant, loadingData={}, m
                         />
                     </DropDownTitleContainer>
                 </DisplayChildren>
+
+                <DropDownTitleContainer title='Old staffings' close={true}>
+                    <ViewOldStaffs
+                        history={history}
+                        consultantId={consultant._id}
+                        onNavigate={onHide}
+                    />
+                </DropDownTitleContainer>
                 
             </Modal.Body>
 

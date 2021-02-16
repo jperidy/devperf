@@ -104,18 +104,28 @@ const getAllDeals = asyncHandler(async (req, res) => {
             $options: 'i'
         }
     } : {};
-    const searchRequest = req.query.request ? {
-        'staffingRequest.requestStatus': {
-            $regex: req.query.request,
-            $options: 'i'
-        }
-    } : {};
 
-    const requestState = req.query.state === 'active' ? {
-        'staffingRequest.requestStatus': {
-            $ne: 'Close'
+    let searchRequest = {};
+
+    if (req.query.state === 'active') {
+        if (req.query.request) {
+            searchRequest = {
+                $and: [
+                    { 'staffingRequest.requestStatus': { $regex: req.query.request, $options: 'i' } },
+                    { 'staffingRequest.requestStatus': { $ne: 'Close' } }
+                ]
+            }
+        } else {
+            searchRequest = { 'staffingRequest.requestStatus': { $ne: 'Close' }}
         }
-    } : {};
+    } else {
+        if (req.query.request) {
+            searchRequest = {'staffingRequest.requestStatus': { $regex: req.query.request, $options: 'i'} }
+        }
+    }
+
+    //console.log(searchRequest)
+
 
     let searchContact = {};
     if(req.query.contact) {
@@ -137,16 +147,15 @@ const getAllDeals = asyncHandler(async (req, res) => {
     }
 
     //console.log('start count', new Date(Date.now()).toISOString())
-    const count = await Deal.countDocuments({ 
+    /* const count = await Deal.countDocuments({ 
         ...searchContact,
         ...searchCompany,
         ...searchTitle,
         ...searchStatus,
         ...searchRequest,
-        ...requestState,
         ...searchStaff,
         _id: {$in: dealsId}
-    });
+    }); */
     
     const deals = await Deal.find({ 
         ...searchContact,
@@ -154,13 +163,14 @@ const getAllDeals = asyncHandler(async (req, res) => {
         ...searchTitle,
         ...searchStatus,
         ...searchRequest,
-        ...requestState,
         ...searchStaff,
         _id: {$in: dealsId}
     }).populate({path: 'contacts.primary contacts.secondary', select: 'name matricule practice'})
         .populate({path: 'staffingDecision.staff.idConsultant', select: 'name matricule practice'})
         .sort({'priority': -1})
         .limit(pageSize).skip(pageSize * (page - 1));
+    
+    const count = deals.length;
 
     if (deals) {
         res.status(200).json({deals, page, pages: Math.ceil(count/pageSize), count});
@@ -194,7 +204,17 @@ const deleteDeal = asyncHandler(async (req, res) => {
 const getOldDeals = asyncHandler(async (req, res) => { 
 
     const consultantId = req.query.consultantId;
-    const oldDeals = await Deal.find({'staffingDecision.staff.idConsultant':consultantId, status:'Won'});
+    // take this constant from frontend/constants/dealConstants.js
+    const DEAL_STATUS = [
+        {name: 'Lead', priority: 0, display: 'onTrack'},
+        {name: 'Proposal to send', priority: 5, display: 'onTrack'},
+        {name: 'Proposal sent', priority: 5, display: 'onTrack'},
+        {name: 'Won', priority: 10, display: 'win'},
+        {name: 'Abandoned', priority: 0, display: 'lost'},
+        {name: 'Lost', priority: 0, display: 'lots'},
+    ];
+    
+    const oldDeals = await Deal.find({'staffingDecision.staff.idConsultant':consultantId, status:DEAL_STATUS.filter(x=>x.display==='win').map(x=>x.name)});
 
     if(oldDeals) {
         res.status(200).json(oldDeals);

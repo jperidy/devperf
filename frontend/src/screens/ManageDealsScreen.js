@@ -13,7 +13,7 @@ import Tab from 'react-bootstrap/Tab';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { getAllDeals } from '../actions/dealActions';
 import { FormControl, InputGroup } from 'react-bootstrap';
-import { REQUEST_STATUS } from '../constants/dealConstants';
+import { DEAL_STATUS, REQUEST_STATUS } from '../constants/dealConstants';
 
 const ManageDealsScreen = ({ history }) => {
 
@@ -125,9 +125,11 @@ const ManageDealsScreen = ({ history }) => {
 
                 switch (tabsFilter[incr]) {
                     case tabsFilter[0]: // Deals waiting a staff
-                        const needStaff = REQUEST_STATUS.filter(x => x.staff === true)
+                        const needStaff = REQUEST_STATUS.filter(x => x.staff === true);
+                        const toDisplay = DEAL_STATUS.filter(x => x.display === 'onTrack' || x.display === 'win');
+                        //console.log('toDisplay', toDisplay)
                         dealsFiltered = {
-                            deals: deals.filter(deal => needStaff.map(x => x.name).includes(deal.staffingRequest.requestStatus)),
+                            deals: deals.filter(deal => (needStaff.map(x => x.name).includes(deal.staffingRequest.requestStatus) && toDisplay.map(x => x.name).includes(deal.status))),
                             param: null,
                             setParam: null
                         };
@@ -268,6 +270,12 @@ const ManageDealsScreen = ({ history }) => {
                                         ) : (
                                                 <div><i className="fas fa-filter"></i>  Filter my deals</div>
                                             )}
+                                        </Button>
+
+                                        <Button 
+                                            variant='ligth'
+                                            onClick={() => window.confirm('Soon available')}
+                                        ><i className="fas fa-project-diagram"></i>  Business flows
                                         </Button>
                                     </Col>
                                 </Row>
