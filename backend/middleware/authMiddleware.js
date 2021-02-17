@@ -214,6 +214,39 @@ const authorizeActionOnCompany = asyncHandler (async (req, res, next) => {
     }
 });
 
+const authorizeActionOnTace = asyncHandler (async (req, res, next) => {
+
+    const access = req.user.profil.api.filter(x => x.name === 'crudTace')[0].data;
+    let authorization = false;
+
+    switch (access) {
+        case 'all':
+            authorization = true;
+            break;
+        case 'domain':
+            authorization = true;
+            break;
+        case 'department':
+            authorization = true;
+            break;
+        case 'team':
+            authorization = false;
+            break;
+        case 'my':
+            authorization = false;
+            break;
+        default:
+            authorization = false;
+            break;
+    }
+
+    if (authorization) {
+        next()
+    } else {
+        res.status(401).json({message: 'Not authorized to proceed this action'});
+    }
+});
+
 
 
 
@@ -290,6 +323,7 @@ module.exports = {
     authorizeActionOnSkill,
     authorizeActionOnDeal,
     authorizeActionOnCompany,
+    authorizeActionOnTace,
     adminLevelOne, 
     adminLevelZero, 
     empowered 

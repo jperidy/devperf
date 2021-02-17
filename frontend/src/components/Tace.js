@@ -69,7 +69,7 @@ const Tace = ({ tace, practice }) => {
             <Card className='my-3 p-3 rounded'>
                 <Card.Header as="h5">{tace.month.firstDay.toString().substring(0, 7)}</Card.Header>
                 <Card.Body className='p-1 mt-3'>
-                    <Card.Text as='h4'>Tace <Button 
+                    <Card.Text as='h4'>Tace <DisplayChildren access='editTace'><Button 
                                                 size='sm' 
                                                 variant='ligth'
                                                 onClick={() => {
@@ -78,7 +78,7 @@ const Tace = ({ tace, practice }) => {
                                                     }
                                                     setEditRequest(!editRequest)}
                                                 }
-                                                ><i className="fas fa-edit"></i></Button>
+                                                ><i className="fas fa-edit"></i></Button></DisplayChildren>
                     </Card.Text>
 
                     <ListGroup>
@@ -122,6 +122,7 @@ const Tace = ({ tace, practice }) => {
                                             )}
                                     </Form.Group>
                                 </Col>
+
                                 <Col className='text-center' xs={4}>
                                     <Form.Group controlId='title' className='mb-0'>
                                         {editRequest ? (

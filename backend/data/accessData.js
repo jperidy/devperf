@@ -16,6 +16,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageCompanies', label: 'Manage companies menu', mode:'yes', data: 'all'},
                 {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'all'},
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'all'},
+                {category: 'Tace component', id: 'editTace', label: 'Can edit target and bid tace', mode:'yes', data: 'all'},
                 {category: 'ConsoDispo component', id: 'viewComment', label: 'View comment', mode:'yes', data: 'all'},
                 {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'yes', data: 'all'},
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'all'},
@@ -42,6 +43,7 @@ function getAccessData() {
                 { name: 'crudDeal', data: 'all' },
                 { name: 'udCompany', data: 'all' },
                 { name: 'getLeaders', data: 'all'},    
+                { name: 'crudTace', data: 'all'},  
             ]
         },
         {
@@ -60,6 +62,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageProfils', label: 'Manage Profils', mode:'no', data: 'department'},
                 {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'department'},
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'department'},
+                {category: 'Tace component', id: 'editTace', label: 'Can edit target and bid tace', mode:'yes', data: 'department'},
                 {category: 'ConsoDispo component', id: 'viewComment', label: 'View comment', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'department'},//
@@ -83,7 +86,8 @@ function getAccessData() {
                 { name: 'crudSkill', data: 'all' },
                 { name: 'crudDeal', data: 'department' },
                 { name: 'udCompany', data: 'all' },
-                { name: 'getLeaders', data: 'all'},
+                { name: 'getLeaders', data: 'all'},    
+                { name: 'crudTace', data: 'department'},
             ]
         },
         {
@@ -102,6 +106,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageCompanies', label: 'Manage companies menu', mode:'no', data: 'team'},
                 {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'team'},
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'team'},
+                {category: 'Tace component', id: 'editTace', label: 'Can edit target and bid tace', mode:'no', data: 'team'},
                 {category: 'ConsoDispo component', id: 'viewComment', label: 'View comment', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'yes', data: 'team'},
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'yes', data: 'team'},//
@@ -125,7 +130,8 @@ function getAccessData() {
                 { name: 'crudSkill', data: 'my' },
                 { name: 'crudDeal', data: 'team' },
                 { name: 'udCompany', data: 'my' },
-                { name: 'getLeaders', data: 'department'},
+                { name: 'getLeaders', data: 'department'},    
+                { name: 'crudTace', data: 'my'},
             ]
         },
         {
@@ -144,6 +150,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageCompanies', label: 'Manage companies menu', mode:'no', data: 'my'},
                 {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'department'},
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'department'},
+                {category: 'Tace component', id: 'editTace', label: 'Can edit target and bid tace', mode:'no', data: 'my'},
                 {category: 'ConsoDispo component', id: 'viewComment', label: 'View comment', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'yes', data: 'department'},
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'no', data: 'my'},//
@@ -167,7 +174,8 @@ function getAccessData() {
                 { name: 'crudSkill', data: 'my' },
                 { name: 'crudDeal', data: 'my' },
                 { name: 'udCompany', data: 'my' },
-                { name: 'getLeaders', data: 'department'},
+                { name: 'getLeaders', data: 'department'},    
+                { name: 'crudTace', data: 'my'},
             ]
         },
         {
@@ -186,6 +194,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageCompanies', label: 'Manage companies menu', mode:'no', data: 'my'},
                 {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'my'},
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'my'},
+                {category: 'Tace component', id: 'editTace', label: 'Can edit target and bid tace', mode:'no', data: 'my'},
                 {category: 'ConsoDispo component', id: 'viewComment', label: 'View comment', mode:'no', data: 'my'},
                 {category: 'PXX screen', id: 'viewStaffings', label: 'View others staffings', mode:'no', data: 'my'},
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'no', data: 'my'},//
@@ -209,7 +218,8 @@ function getAccessData() {
                 { name: 'crudSkill', data: 'my' },
                 { name: 'crudDeal', data: 'my' },
                 { name: 'udCompany', data: 'my' },
-                { name: 'getLeaders', data: 'my'},
+                { name: 'getLeaders', data: 'my'},    
+                { name: 'crudTace', data: 'my'},
             ]
         }
     ];
