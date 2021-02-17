@@ -27,6 +27,7 @@ import { skillCreateReducer, skillDelteReducer, skillListReducer } from './reduc
 import { dealAllListReducer, dealCreateReducer, dealDeleteReducer, dealEditeReducer, dealOldReducer, dealUpdateReducer } from './reducers/dealReducer';
 import { accessFrontUpdateReducer, accessListReducer } from './reducers/accessReducers';
 import { clientAllReducer, clientCreateReducer, clientUpdateReducer, clientDeleteReducer } from './reducers/clientReducers';
+import { createTaceReducer } from './reducers/taceReducer';
 
 export const reducer = combineReducers({
     userRegister: userRegisterReducer,
@@ -73,7 +74,8 @@ export const reducer = combineReducers({
     clientAll: clientAllReducer,
     clientCreate: clientCreateReducer,
     clientUpdate: clientUpdateReducer,
-    clientDelete: clientDeleteReducer
+    clientDelete: clientDeleteReducer,
+    createTace: createTaceReducer,
 });
 
 // space for store on local

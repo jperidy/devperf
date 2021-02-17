@@ -30,14 +30,8 @@ const DashboardScreen = ({ history }) => {
     endDefault.setUTCMonth(endDefault.getUTCMonth() + duration - 1);
     endDefault = endDefault.toISOString().substring(0, 10);
 
-    //const [practice, setPractice] = useState('');
     const [start, setStart] = useState(startDefault);
     const [end, setEnd] = useState(endDefault);
-
-    //const [focus, setFocus] = useState('');
-    //const [searchSkills, setSearchSkills] = useState('');
-    //const [searchExperienceStart, setSearchExperienceStart] = useState('');
-    //const [searchExperienceEnd, setSearchExperienceEnd] = useState('');
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -45,35 +39,20 @@ const DashboardScreen = ({ history }) => {
     const pxxTACE = useSelector(state => state.pxxTACE);
     const { loading: loadingTACE, error: errorTACE, tace } = pxxTACE;
 
-    /*
-    const pxxAvailabilities = useSelector(state => state.pxxAvailabilities);
-    const { loading: loadingAvailabilities, error: errorAvailabilities, availabilities } = pxxAvailabilities;
-    */
-
     useEffect(() => {
 
         if (!userInfo) {
             history.push('/login');
         } 
-        /*else {
-            setPractice(userInfo.consultantProfil.practice);
-        }*/
-    }, [
-        //dispatch, 
-        history, userInfo]);
+    }, [history, userInfo]);
 
     useEffect(() => {
         if (userInfo && !loadingTACE) {
             dispatch(getTace(userInfo.consultantProfil.practice, start, end));
         }
         // eslint-disable-next-line
-    }, [
-            dispatch, 
-            //practice, 
-            start, 
-            end
-        ])
-
+    }, [ dispatch, start, end ]);
+    
     const navigationMonthHandler = (val) => {
         const startDate = new Date(start);
         const endDate = new Date(end);
@@ -146,7 +125,7 @@ const DashboardScreen = ({ history }) => {
                     <Row className='mt-1'>
                         {loadingTACE ? <Loader /> : errorTACE ? <Message variant='danger'>{errorTACE}</Message> : (
                             tace && tace.map((x, val) => (
-                                <Tace key={val} tace={x} />
+                                <Tace key={val} tace={x} practice={userInfo && userInfo.consultantProfil.practice} />
                             ))
                         )}
                     </Row>

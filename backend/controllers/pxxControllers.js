@@ -4,6 +4,7 @@ const Consultant = require('../models/consultantModel');
 const Skill = require('../models/skillModels');
 const axios = require('axios');
 const asyncHandler = require('express-async-handler');
+const Tace = require('../models/taceModel');
 //const calculDayByType = require('../utils/calculDayByType');
 //const { createMonth } = require('./monthPxxController');
 //const mongoose = require('mongoose');
@@ -121,7 +122,7 @@ const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
     }
 
     for (let incr = 0 ; incr < pxxData.length ; incr++) {
-        pxxData[incr].save();
+        await pxxData[incr].save();
     }
 
 }
@@ -196,7 +197,7 @@ const resetAllPxx = async (consultantInfo) => {
     }
 
     for (let incr = 0; incr < pxxData.length; incr++) {
-        pxxData[incr].save();
+        await pxxData[incr].save();
     }
 
 }
@@ -241,7 +242,7 @@ const resetPartialTimePxx = async (consultantInfo) => {
     }
 
     for (let incr = 0; incr < pxxData.length; incr++) {
-        pxxData[incr].save();
+        await pxxData[incr].save();
     }
 }
 
@@ -421,6 +422,17 @@ const getProdChart = asyncHandler(async (req, res) => {
                     totalLeaving:'0',
                     totalETP:'0'
                 }
+            };
+
+            const dataTace = await Tace.find({month: month[incr]._id, practice: practice});
+            
+            // add target and bid data registered
+            if (dataTace.length === 1) {
+                monthCalcule.target = dataTace[0].target,
+                monthCalcule.bid = dataTace[0].bid
+            } else {
+                monthCalcule.target = 0;
+                monthCalcule.bid = 0;
             }
     
             data.push(monthCalcule);
