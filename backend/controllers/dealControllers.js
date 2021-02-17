@@ -55,6 +55,7 @@ const updateADeal = asyncHandler(async (req, res) => {
         deal.staffingDecision.staffingStatus = req.body.staffingDecision.staffingStatus;
         deal.staffingDecision.staff = req.body.staffingDecision.staff;
         deal.comments = req.body.comments;
+        deal.othersContacts = req.body.othersContacts;
 
         const priority = calculatePriority(deal);
         deal.priority = priority;
@@ -124,8 +125,6 @@ const getAllDeals = asyncHandler(async (req, res) => {
         }
     }
 
-    //console.log(searchRequest)
-
 
     let searchContact = {};
     if(req.query.contact) {
@@ -145,17 +144,6 @@ const getAllDeals = asyncHandler(async (req, res) => {
             'staffingDecision.staff.idConsultant': {$in: staffId}    
         }
     }
-
-    //console.log('start count', new Date(Date.now()).toISOString())
-    /* const count = await Deal.countDocuments({ 
-        ...searchContact,
-        ...searchCompany,
-        ...searchTitle,
-        ...searchStatus,
-        ...searchRequest,
-        ...searchStaff,
-        _id: {$in: dealsId}
-    }); */
     
     const deals = await Deal.find({ 
         ...searchContact,

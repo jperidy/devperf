@@ -131,6 +131,9 @@ const dealSchema = mongoose.Schema({
     }],
     priority: {
         type: Number
+    },
+    othersContacts:{
+        type: String
     }
 }, {
     timestamps: true,

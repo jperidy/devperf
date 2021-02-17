@@ -61,30 +61,32 @@ const StaffingEditScreen = ({ match, history }) => {
     const [srRessources, setSrRessources] = useState([]);
     const [comments, setComments] = useState([]);
     const [duration, setDuration] = useState('');
-
+    const [othersContacts, setOthersContacts] = useState('');
+    
     const [newComment, setNewComment] = useState('');
-
+    
     const [sdInstructions] = useState('');
     const [sdStatus, setSdStatus] = useState('');
     const [sdStaff, setSdStaff] = useState([]);
-
+    
     const [wonDate, setWonDate] = useState('');
-
-
+    
+    
     const [modalWindowShow, setModalWindowShow] = useState(false);
     const [sdConsultant, setSdConsultant] = useState('');
     const [loadingSdConsultantData, setLoadingSdConsultantData] = useState({})
-
-
+    
+    
     const [editRequest, setEditRequest] = useState(match.params.id ? false : true);
-
+    
     const [dealChange, setDealChange] = useState(false);
-
+    
     const [searchLeader, setSearchLeader] = useState('');
     const [leader, setLeader] = useState('');
-
+    
     const [searchCoLeader, setSearchCoLeader] = useState('');
     const [coLeaders, setCoLeaders] = useState([]);
+    
 
     const [companyMessage, setCompanyMessage] = useState(null);
 
@@ -161,6 +163,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 dealToEdit.contacts.secondary.map( coLeader => ({id: coLeader._id, value: coLeader.name})) : []);
             setComments(dealToEdit.comments ? dealToEdit.comments : []);
             setDuration(dealToEdit.duration ? dealToEdit.duration : '');
+            setOthersContacts(dealToEdit.othersContacts ? dealToEdit.othersContacts : '');
         }
     }, [successEdit, dealToEdit, userInfo, match])
 
@@ -215,7 +218,8 @@ const StaffingEditScreen = ({ match, history }) => {
                         information: staff.information
                     }))
                 },
-                comments: comments
+                comments: comments,
+                othersContacts: othersContacts
             }
             dispatch(updateDeal(match.params.id, deal));
             setDealChange(false);
@@ -224,7 +228,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
     }, [match, dispatch, userInfo, dealChange, company, type, client, title, status, probability, description, proposalDate, presentationDate,
         wonDate, startDate, duration, mainPractice, othersPractices, location, srInstruction, srStatus, srRessources, sdInstructions,
-        sdStatus, sdStaff, leader, coLeaders, comments
+        sdStatus, sdStaff, leader, coLeaders, comments, othersContacts
     ]);
 
     const updateOthersPractices = () => {
@@ -306,7 +310,8 @@ const StaffingEditScreen = ({ match, history }) => {
                     information: staff.information
                 }))
             },
-            comments: comments
+            comments: comments,
+            othersContacts: othersContacts
         }
     }
 
@@ -700,7 +705,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
                         <ListGroup.Item>
                             <Row>
-                                <Col xs={12} md={6}>
+                                <Col xs={12} md={4}>
                                     <SearchInput
                                         title='Leader'
                                         searchValue={searchLeader ? searchLeader : ''}
@@ -726,7 +731,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                     )}
                                 </Col>
                             
-                                <Col xs={12} md={6}>
+                                <Col xs={12} md={4}>
                                     <SearchInput
                                         title='Co-leader(s)'
                                         searchValue={searchCoLeader ? searchCoLeader : ''}
@@ -749,6 +754,27 @@ const StaffingEditScreen = ({ match, history }) => {
                                             </ListGroup.Item>
                                         ))}
                                     </ListGroup>
+                                </Col>
+
+                                <Col xs={12} md={4}>
+                                    <Form.Group controlId='others' className='mb-0'>
+                                        <Form.Label as='h5'>Others contacts</Form.Label>
+                                        {editRequest ? (
+                                            <Form.Control
+                                                type='text'
+                                                placeholder='email1@mail.com;email2@mail.com'
+                                                value={othersContacts}
+                                                onChange={(e) => setOthersContacts(e.target.value)}
+                                            ></Form.Control>
+                                        ) : (
+                                                <Form.Control
+                                                    type='text'
+                                                    value={othersContacts}
+                                                    plaintext
+                                                    readOnly
+                                                ></Form.Control>
+                                            )}
+                                    </Form.Group>
                                 </Col>
 
                             </Row>
