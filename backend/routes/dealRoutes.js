@@ -1,11 +1,14 @@
 const express = require('express');
-const { createDeal, getAllDeals, deleteDeal, getADeal, updateADeal, getOldDeals } = require('../controllers/dealControllers');
+const { createDeal, getAllDeals, deleteDeal, getADeal, updateADeal, getOldDeals, sendMails } = require('../controllers/dealControllers');
 const { protect, authorizeActionOnDeal } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 router.route('/old')
     .get(protect, getOldDeals);
+
+router.route('/sendmails')
+    .get(protect, sendMails);
 
 router.route('/:id')
     .get(protect, getADeal)

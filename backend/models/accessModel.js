@@ -15,7 +15,7 @@ const accessSchema = mongoose.Schema({
     }],
     api: [{
         name:{type: String, required: true},
-        data:{type: String, enum: ['my', 'team', 'department', 'domain', 'all']}
+        data:{type: String, enum: ['my', 'team', 'department', 'domain', 'all', 'yes', 'no']}
     }]
 
 }, {timestamps: true});

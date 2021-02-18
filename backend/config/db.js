@@ -21,6 +21,7 @@ require('../models/skillModels');
 require('../models/accessModel');
 require('../models/dealModel');
 require('../models/consultantModel');
+require('../models/taceModel');
 
 /*
 

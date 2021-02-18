@@ -43,7 +43,8 @@ function getAccessData() {
                 { name: 'crudDeal', data: 'all' },
                 { name: 'udCompany', data: 'all' },
                 { name: 'getLeaders', data: 'all'},    
-                { name: 'crudTace', data: 'all'},  
+                { name: 'crudTace', data: 'all'},
+                { name: 'sendStaffingDecisionEmails', data: 'yes'},
             ]
         },
         {
@@ -87,7 +88,8 @@ function getAccessData() {
                 { name: 'crudDeal', data: 'department' },
                 { name: 'udCompany', data: 'all' },
                 { name: 'getLeaders', data: 'all'},    
-                { name: 'crudTace', data: 'department'},
+                { name: 'crudTace', data: 'department'},,
+                { name: 'sendStaffingDecisionEmails', data: 'yes'},
             ]
         },
         {
@@ -131,7 +133,8 @@ function getAccessData() {
                 { name: 'crudDeal', data: 'team' },
                 { name: 'udCompany', data: 'my' },
                 { name: 'getLeaders', data: 'department'},    
-                { name: 'crudTace', data: 'my'},
+                { name: 'crudTace', data: 'my'},,
+                { name: 'sendStaffingDecisionEmails', data: 'no'},
             ]
         },
         {
@@ -175,7 +178,8 @@ function getAccessData() {
                 { name: 'crudDeal', data: 'my' },
                 { name: 'udCompany', data: 'my' },
                 { name: 'getLeaders', data: 'department'},    
-                { name: 'crudTace', data: 'my'},
+                { name: 'crudTace', data: 'my'},,
+                { name: 'sendStaffingDecisionEmails', data: 'no'},
             ]
         },
         {
@@ -219,7 +223,8 @@ function getAccessData() {
                 { name: 'crudDeal', data: 'my' },
                 { name: 'udCompany', data: 'my' },
                 { name: 'getLeaders', data: 'my'},    
-                { name: 'crudTace', data: 'my'},
+                { name: 'crudTace', data: 'my'},,
+                { name: 'sendStaffingDecisionEmails', data: 'no'},
             ]
         }
     ];

@@ -2,6 +2,7 @@ const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { myAccessDeals, calculatePriority } = require('../utils/dealsFunctions');
 const Consultant = require('../models/consultantModel');
+const { sendAMail } = require('../config/email');
 
 // @desc    Create a Deal 
 // @route   POST /api/deals
@@ -214,7 +215,7 @@ const getOldDeals = asyncHandler(async (req, res) => {
 
 // @desc    Get a Deal 
 // @route   GET /api/deals/:id
-// @access  Private/AdminLevelOne
+// @access  Private
 const getADeal = asyncHandler(async (req, res) => { 
 
     const id = req.params.id;
@@ -228,4 +229,28 @@ const getADeal = asyncHandler(async (req, res) => {
     
 });
 
-module.exports = { createDeal, getAllDeals, deleteDeal, getADeal, updateADeal, getOldDeals };
+// @desc    Get a Deal 
+// @route   GET /api/deals/sendmails
+// @access  Private
+const sendMails = asyncHandler(async (req, res) => { 
+
+    const access = req.user.profil.api.filter(x => x.name === 'sendStaffingDecisionEmails')[0].data;
+    if(access === 'yes') {
+        const result = await sendAMail();
+        res.status(200).json(result);
+    }
+    
+    /*
+    const id = req.params.id;
+    const deal = await Deal.findById(id).populate('staffingDecision.staff.idConsultant contacts.primary contacts.secondary');
+
+    if(deal) {
+        res.status(200).json(deal);
+    } else {
+        res.status(404).json({message: "deal not found"});
+    }
+    */
+    
+});
+
+module.exports = { createDeal, getAllDeals, deleteDeal, getADeal, updateADeal, getOldDeals, sendMails };
