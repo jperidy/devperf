@@ -229,6 +229,55 @@ const getADeal = asyncHandler(async (req, res) => {
     
 });
 
+const flatArrayTwo = (initialArray) => {
+    const flatArray = [];
+        for (let incr=0 ; incr<initialArray.length; incr++){
+            if(initialArray[incr].length === 1){
+                flatArray.push(initialArray[incr][0])
+            } else {
+                for (let incr2=0 ; incr2<initialArray[incr].length; incr2++){
+                    flatArray.push(initialArray[incr][incr2])
+                }
+            }
+        }
+    return flatArray;
+}
+
+const convertToHtml = (leadsToDisplay) => {
+    let html = `
+    <table style='border-collapse: collapse;border: 1px solid #464277'>
+        <thead style='background: #464277; color: white'>
+            <tr>
+                <th style='padding:10px; border: solid 1px grey'>Client</th>
+                <th style='padding:10px; border: solid 1px grey'>Request</th>
+                <th style='padding:10px; border: solid 1px grey'>Status</th>
+                <th style='padding:10px; border: solid 1px grey'>Staffing decision</th>
+                <th style='padding:10px; border: solid 1px grey'>Details</th>
+            <tr/>
+        </thead>
+        <tbody>
+    `
+    for (let incr=0 ; incr<leadsToDisplay.length ; incr++) {
+        const dealLine = `
+        <tr>
+            <td style='padding:10px; border: solid grey 1px'>${leadsToDisplay[incr].company}</td>
+            <td style='padding:10px; border: solid grey 1px'>${leadsToDisplay[incr].title}</td>
+            <td style='padding:10px; border: solid grey 1px'>${leadsToDisplay[incr].status}</td>
+            <td style='padding:10px; border: solid grey 1px'>${leadsToDisplay[incr].staffingDecision.staff.map(x => `${x.responsability}: ${x.idConsultant.name} (${x.priority})`).join('</br')}</td>
+            <td style='padding:10px; border: solid grey 1px'><a href='https://ressource-management-app.herokuapp.com/staffing/${leadsToDisplay[incr]._id}'>Link</td>
+        </tr>
+        `
+        html += dealLine;
+    }
+
+    html += `
+    </tbody>
+    </table>
+    `
+
+    return html;
+}
+
 // @desc    Get a Deal 
 // @route   GET /api/deals/sendmails
 // @access  Private
@@ -236,20 +285,84 @@ const sendMails = asyncHandler(async (req, res) => {
 
     const access = req.user.profil.api.filter(x => x.name === 'sendStaffingDecisionEmails')[0].data;
     if(access === 'yes') {
-        const result = await sendAMail();
-        res.status(200).json(result);
-    }
-    
-    /*
-    const id = req.params.id;
-    const deal = await Deal.findById(id).populate('staffingDecision.staff.idConsultant contacts.primary contacts.secondary');
+        
+        const DEAL_STATUS = [
+            {name: 'Lead', priority: 0, display: 'onTrack'},
+            {name: 'Proposal to send', priority: 5, display: 'onTrack'},
+            {name: 'Proposal sent', priority: 5, display: 'onTrack'},
+            {name: 'Won', priority: 10, display: 'win'},
+            {name: 'Abandoned', priority: 0, display: 'lost'},
+            {name: 'Lost', priority: 0, display: 'lots'},
+        ];
 
-    if(deal) {
-        res.status(200).json(deal);
-    } else {
-        res.status(404).json({message: "deal not found"});
+        const practice = req.user.practice;
+
+        const onTrackDeals = await Deal.find({
+            status:{$in: DEAL_STATUS.filter(x=>x.display==='onTrack').map(x=>x.name)},
+            practice:practice,
+        }).populate({path: 'contacts.primary contacts.secondary', select: '_id name email'})
+        .populate({path: 'staffingDecision.staff.idConsultant', select: 'name matricule practice'});
+        //console.log(onTrackDeals.length);
+
+        const leaders = onTrackDeals.map(x => x.contacts.primary);
+        const coLeadersInit = onTrackDeals.map(x => x.contacts.secondary);
+        const coLeaders = flatArrayTwo(coLeadersInit);
+        const othersContactsInit = onTrackDeals.map(x=>{
+            if (x.othersContacts) {
+                return x.othersContacts.split(',').map(y => ({email:y, name:''}))
+            } else {
+                return []
+            }
+        });
+        //console.log(othersContactsInit)
+        const othersContacts = flatArrayTwo(othersContactsInit);
+        //console.log(othersContacts);
+
+        let contacts = othersContacts.concat(coLeaders).concat(leaders);
+
+        contacts = [... new Set(contacts)];
+        //console.log(contacts.length);
+        contacts.map(x => console.log(`${x.name} ${x.email}`))
+        //console.log(contacts);
+
+        for (let incr=0 ; incr<1 ; incr++){
+
+            const myLeaderLeads = onTrackDeals.filter(x => x.contacts.primary && contacts[incr]._id && (x.contacts.primary._id.toString() === contacts[incr]._id.toString()));
+            const myCoLeaderLeads = onTrackDeals.filter(x => x.contacts.secondary && x.contacts.secondary.map(x=>x._id).includes(contacts[incr]._id));
+            const myOthersLeads = onTrackDeals.filter(x => x.othersContacts && x.othersContacts.split(',').includes(contacts[incr].email));
+    
+            // ADD leads with your consultants
+    
+            const htmlTableMyLeads = convertToHtml(myLeaderLeads);
+            const htmlTableCoLeader = convertToHtml(myCoLeaderLeads);
+            const htmlOthersLeads = convertToHtml(myOthersLeads);
+    
+            const to = "jprdevapp@gmail.com, jbperidy@gmail.com"
+            const subject = `Rappel des actions de ${contacts[incr].name}: 18/02/2021`
+    
+            let html = `<p>Bonjour ${contacts[incr].name}</p>`;
+    
+            if(myLeaderLeads.length > 0) {
+                html+=`<H3>Leader on following deals</H3>`
+                html+=htmlTableMyLeads;
+            }
+    
+            if(myCoLeaderLeads.length > 0) {
+                html+=`<H3>Co-leader on following deals</H3>`
+                html+=htmlTableCoLeader;
+            }
+    
+            if(myOthersLeads.length > 0) {
+                html+=`<H3>Contact on following deals</H3>`
+                html+=htmlOthersLeads;
+            }
+    
+            //const result = 'ok'
+            const result = await sendAMail(subject, to, html);
+        }
+
+        res.status(200).json('terminé');
     }
-    */
     
 });
 
