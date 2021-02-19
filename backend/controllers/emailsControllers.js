@@ -19,6 +19,14 @@ const flatArrayTwo = (initialArray) => {
     return flatArray;
 }
 
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+        currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+}
+
 // @desc    Get a Deal 
 // @route   GET /api/deals/sendmails
 // @access  Private
@@ -37,13 +45,12 @@ const sendStaffingDecisionEmails = asyncHandler(async (req, res) => {
         ];
 
         const practice = req.user.practice;
-        const myConsultantsId = await Consultant.find({cdmId: req.user._id}).select('_id').map(x => x._id);
 
         const onTrackDeals = multipleMongooseToObj (await Deal.find({
             status:{$in: DEAL_STATUS.filter(x=>x.display==='onTrack').map(x=>x.name)},
             practice:practice,
         }).populate({path: 'contacts.primary contacts.secondary', select: '_id name email'})
-        .populate({path: 'staffingDecision.staff.idConsultant', select: 'name matricule practice'}));
+        .populate({path: 'staffingDecision.staff.idConsultant', select: '_id name matricule practice'}));
 
         const leaders = onTrackDeals.map(x => x.contacts.primary);
         const coLeadersInit = onTrackDeals.map(x => x.contacts.secondary);
@@ -60,10 +67,17 @@ const sendStaffingDecisionEmails = asyncHandler(async (req, res) => {
         let contacts = othersContacts.concat(coLeaders).concat(leaders);
 
         contacts = [... new Set(contacts)];
+        //console.log('contacts', contacts)
 
         const mailService = new MailService();
+        const mailErrors = [];
+        const envoyer = true;
+
+        console.log(onTrackDeals[15].staffingDecision.staff)
 
         for (let incr=0 ; incr<contacts.length ; incr++){
+
+            const myConsultantsId = (await Consultant.find({cdmId: contacts[incr]._id}).select('_id')).map(x => x._id.toString());
 
             const myLeaderLeads = onTrackDeals.filter(x => (
                 x.contacts.primary && contacts[incr]._id && (x.contacts.primary._id.toString() === contacts[incr]._id.toString())
@@ -71,34 +85,49 @@ const sendStaffingDecisionEmails = asyncHandler(async (req, res) => {
             ));
 
             const myConsultantsLeads = myConsultantsId ? 
-                onTrackDeals.filter(x => myConsultantsId.includes(x.staffingDecision.staff.idConsultant)) 
+                onTrackDeals.filter(x => myConsultantsId.includes(x.staffingDecision.staff.idConsultant ? x.staffingDecision.staff.idConsultant._id.toString() : '')) 
                 : [];
-            const myOthersLeads = onTrackDeals.filter(x => x.othersContacts && x.othersContacts.split(',').includes(contacts[incr].email));
 
-            try {
-                const decisions = {
-                    name: contacts[incr].name,
-                    myRequests: myLeaderLeads,
-                    myConsultants: myConsultantsLeads,
-                    myOthers: myOthersLeads
-                };
-    
-                const mailInfo = {
-                    to: "jprdevapp@gmail.com, jbperidy@gmail.com",
-                    subject: "Staffing decisions for" + contacts[incr].name,
-                    template: "staffingDecisions",
-                    context: decisions
-                };
-    
-                await mailService.sendMail(mailInfo);
-                console.log('email sent to :' + contacts[incr].email);
+            if(myConsultantsId.length > 0) {
+                console.log(myConsultantsId);
+                console.log(contacts[incr].name, myConsultantsLeads.length, myConsultantsId.length);
+            }
+
+            const myOthersLeads = onTrackDeals.filter(x => x.othersContacts && x.othersContacts.split(',').includes(contacts[incr].email));
+            
+            const decisions = {
+                name: contacts[incr].name,
+                myRequests: myLeaderLeads,
+                myConsultants: myConsultantsLeads,
+                myOthers: myOthersLeads
+            };
+
+            const mailInfo = {
+                to: "jprdevapp@gmail.com, jbperidy@gmail.com",
+                subject: "Staffing decisions for" + contacts[incr].name,
+                template: "staffingDecisions",
+                context: decisions
+            };
+
+            if(envoyer) {
                 
-            } catch (e) {
-                console.log(e);
-                //res.status(500).send({message: "Something broke!", error:e});
-            }   
+                try {
+                    sleep(1000);
+                    await mailService.sendMail(mailInfo);
+                    console.log('email sent to :' + contacts[incr].email);
+                } catch (error) {
+                    console.log('error sending message to: ' + contacts[incr].email);
+                    //console.log(error);
+                    mailErrors.push({ mailInfo });    
+                }
+            }
         }
-        res.send("email sent");
+
+        if(mailErrors.length > 0){
+            res.status(500).json({message: mailErrors})
+        } else {
+            res.status(200).send("email sent");
+        }
     }
 });
 
