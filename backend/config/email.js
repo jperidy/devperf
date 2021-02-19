@@ -6,7 +6,7 @@ async function sendAMail(subject, to, html) {
     //let testAccount = await nodemailer.createTestAccount();
 
     // create reusable transporter object using the default SMTP transport
-    let transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
         host: process.env.GMAIL_HOST,
         port: process.env.GMAIL_PORT,
         secure: false, // true for 465, false for other ports
@@ -15,6 +15,43 @@ async function sendAMail(subject, to, html) {
             pass: process.env.GMAIL_PASS, // generated ethereal password
         },
     });
+
+    const options = {
+        viewEngine: {
+            partialsDir: "../views/partials",
+            layoutsDir: "../views/layouts",
+            extname: ".hbs"
+        },
+        extName: ".hbs",
+        viewPath: "views"
+    };
+
+    transporter.use("compile", hbs(options));
+
+    try {
+        const order = {
+            orderId: 948584,
+            name: "Patrik",
+            price: 50
+        };
+
+        const mailInfo = {
+            from: "shop@example.com",
+            to: "test943933@test.com",
+            subject: "Order Confirmation",
+            template: "orderConfirmation",
+            context: order
+        };
+
+        await transporter.sendMail(mailInfo);
+
+        res.send("email sent");
+
+    } catch (e) {
+        console.log(e);
+        res.status(500).send("Something broke!");
+    }
+
 
     /*
     // verify connection configuration

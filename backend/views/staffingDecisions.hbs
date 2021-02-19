@@ -1,0 +1,36 @@
+<h3>Staffing Decision</h3>
+<p>Hello {{name}},</p>
+<p>Please find bellow decisions about your staffing requests</p>
+
+<h5>Your requests: </h5>
+<table style='border-collapse: collapse;border: 1px solid #464277'>
+    <thead style='background: #464277; color: white'>
+        <tr>
+            <th style='padding:10px; border: solid 1px grey'>Client</th>
+            <th style='padding:10px; border: solid 1px grey'>Request</th>
+            <th style='padding:10px; border: solid 1px grey'>Status</th>
+            <th style='padding:10px; border: solid 1px grey'>Staffing decision</th>
+            <th style='padding:10px; border: solid 1px grey'>Details</th>
+            <tr />
+    </thead>
+    <tbody>
+        <tr>
+            {{#each myRequests}}
+            <td style='padding:10px; border: solid grey 1px'>{{company}}</td>
+            <td style='padding:10px; border: solid grey 1px'>{{title}}</td>
+            <td style='padding:10px; border: solid grey 1px'>{{status}}</td>
+            <td style='padding:10px; border: solid grey 1px'>
+                {{#each staffingDecision.staff}}
+                <div>{{responsability}}: {{idConsultant.name}} ({{priority}})</div>
+                {{/each}}
+
+            </td>
+            <td style='padding:10px; border: solid grey 1px'>
+                <a href='https://ressource-management-app.herokuapp.com/staffing/' {{_id}}>Link
+            </td>
+            {{/each}}
+        </tr>
+    </tbody>
+</table>
+
+<h5>Requests with your team</h5>

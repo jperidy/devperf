@@ -13,6 +13,7 @@ const dealRoutes = require('./routes/dealRoutes');
 const accessRoutes = require('./routes/accessRoutes');
 const clientRoutes = require('./routes/clientRoutes');
 const taceRoutes = require('./routes/taceRoutes');
+const emailsRoutes = require('./routes/emailRoutes');
 
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
@@ -46,6 +47,8 @@ app.use('/api/deals', dealRoutes);
 app.use('/api/access', accessRoutes);
 app.use('/api/clients', clientRoutes);
 app.use('/api/tace', taceRoutes);
+
+app.use('/api/emails', emailsRoutes);
 
 // static route for developpement access to build repository
 const __dir = path.resolve();

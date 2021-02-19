@@ -7,9 +7,6 @@ const router = express.Router();
 router.route('/old')
     .get(protect, getOldDeals);
 
-router.route('/sendmails')
-    .get(protect, sendMails);
-
 router.route('/:id')
     .get(protect, getADeal)
     .put(protect, authorizeActionOnDeal, updateADeal)
