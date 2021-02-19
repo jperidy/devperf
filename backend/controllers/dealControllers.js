@@ -2,8 +2,8 @@ const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { myAccessDeals, calculatePriority } = require('../utils/dealsFunctions');
 const Consultant = require('../models/consultantModel');
-const { sendAMail } = require('../config/email');
-const MailService = require("../config/MailService");
+//const { sendAMail } = require('../config/email');
+//const MailService = require("../config/MailService");
 
 // @desc    Create a Deal 
 // @route   POST /api/deals

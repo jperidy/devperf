@@ -1,4 +1,5 @@
 const Deal = require('../models/dealModel');
+const Consultant = require('../models/consultantModel');
 const asyncHandler = require('express-async-handler');
 const MailService = require("../config/MailService");
 const { multipleMongooseToObj } = require("../utils/emailsFunctions");
@@ -36,6 +37,7 @@ const sendStaffingDecisionEmails = asyncHandler(async (req, res) => {
         ];
 
         const practice = req.user.practice;
+        const myConsultantsId = await Consultant.find({cdmId: req.user._id}).select('_id').map(x => x._id);
 
         const onTrackDeals = multipleMongooseToObj (await Deal.find({
             status:{$in: DEAL_STATUS.filter(x=>x.display==='onTrack').map(x=>x.name)},
@@ -61,16 +63,24 @@ const sendStaffingDecisionEmails = asyncHandler(async (req, res) => {
 
         const mailService = new MailService();
 
-        for (let incr=40 ; incr<41 ; incr++){
+        for (let incr=0 ; incr<contacts.length ; incr++){
 
-            const myLeaderLeads = onTrackDeals.filter(x => x.contacts.primary && contacts[incr]._id && (x.contacts.primary._id.toString() === contacts[incr]._id.toString()));
-            const myCoLeaderLeads = onTrackDeals.filter(x => x.contacts.secondary && x.contacts.secondary.map(x=>x._id).includes(contacts[incr]._id));
+            const myLeaderLeads = onTrackDeals.filter(x => (
+                x.contacts.primary && contacts[incr]._id && (x.contacts.primary._id.toString() === contacts[incr]._id.toString())
+                || x.contacts.secondary && x.contacts.secondary.map(x => x._id).includes(contacts[incr]._id)
+            ));
+
+            const myConsultantsLeads = myConsultantsId ? 
+                onTrackDeals.filter(x => myConsultantsId.includes(x.staffingDecision.staff.idConsultant)) 
+                : [];
             const myOthersLeads = onTrackDeals.filter(x => x.othersContacts && x.othersContacts.split(',').includes(contacts[incr].email));
 
             try {
                 const decisions = {
                     name: contacts[incr].name,
-                    myRequests: myCoLeaderLeads,
+                    myRequests: myLeaderLeads,
+                    myConsultants: myConsultantsLeads,
+                    myOthers: myOthersLeads
                 };
     
                 const mailInfo = {
@@ -81,14 +91,14 @@ const sendStaffingDecisionEmails = asyncHandler(async (req, res) => {
                 };
     
                 await mailService.sendMail(mailInfo);
-    
-                res.send("email sent");
-    
+                console.log('email sent to :' + contacts[incr].email);
+                
             } catch (e) {
                 console.log(e);
-                res.status(500).send({message: "Something broke!", error:e});
+                //res.status(500).send({message: "Something broke!", error:e});
             }   
-        }     
+        }
+        res.send("email sent");
     }
 });
 
