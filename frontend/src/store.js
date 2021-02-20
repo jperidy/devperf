@@ -28,6 +28,7 @@ import { dealAllListReducer, dealCreateReducer, dealDeleteReducer, dealEditeRedu
 import { accessFrontUpdateReducer, accessListReducer } from './reducers/accessReducers';
 import { clientAllReducer, clientCreateReducer, clientUpdateReducer, clientDeleteReducer } from './reducers/clientReducers';
 import { createTaceReducer } from './reducers/taceReducer';
+import { contactsListReducer } from './reducers/emailReducers';
 
 export const reducer = combineReducers({
     userRegister: userRegisterReducer,
@@ -76,6 +77,7 @@ export const reducer = combineReducers({
     clientUpdate: clientUpdateReducer,
     clientDelete: clientDeleteReducer,
     createTace: createTaceReducer,
+    contactsList: contactsListReducer
 });
 
 // space for store on local

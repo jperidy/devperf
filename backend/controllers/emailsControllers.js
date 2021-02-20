@@ -19,6 +19,67 @@ const flatArrayTwo = (initialArray) => {
     return flatArray;
 }
 
+// @desc    Get all contacts to send email 
+// @route   GET /api/emails/contacts
+// @access  Private
+const collectContacts = asyncHandler(async (req, res) => {
+
+    const access = req.user.profil.api.filter(x => x.name === 'sendStaffingDecisionEmails')[0].data;
+    let contacts = [];
+    let filteredContacts = [];
+
+    if (access === 'yes') {
+
+        const practice = req.user.practice;
+        const DEAL_STATUS = [
+            { name: 'Lead', priority: 0, display: 'onTrack' },
+            { name: 'Proposal to send', priority: 5, display: 'onTrack' },
+            { name: 'Proposal sent', priority: 5, display: 'onTrack' },
+            { name: 'Won', priority: 10, display: 'win' },
+            { name: 'Abandoned', priority: 0, display: 'lost' },
+            { name: 'Lost', priority: 0, display: 'lots' },
+        ];
+
+        const onTrackDeals = multipleMongooseToObj(await Deal.find({
+            status: { $in: DEAL_STATUS.filter(x => x.display === 'onTrack').map(x => x.name) },
+            practice: practice,
+        }).populate({ path: 'contacts.primary contacts.secondary', select: '_id name email' })
+            .populate({ path: 'staffingDecision.staff.idConsultant', select: '_id name matricule practice' }));
+
+        let cdmContacts = await Consultant.find({isCDM:true, practice: practice}).select('name email _id');
+        cdmContacts = cdmContacts.map(x => ({email:x.email, name: x.name, _id: x._id}));
+
+        const leaders = onTrackDeals.map(x => x.contacts.primary);
+        const coLeadersInit = onTrackDeals.map(x => x.contacts.secondary);
+        const coLeaders = flatArrayTwo(coLeadersInit);
+        const othersContactsInit = onTrackDeals.map(x => {
+            if (x.othersContacts) {
+                return x.othersContacts.split(',').map(y => ({ email: y, name: '' }))
+            } else {
+                return []
+            }
+        });
+        const othersContacts = flatArrayTwo(othersContactsInit);
+        contacts = othersContacts.concat(coLeaders).concat(leaders).concat(cdmContacts);
+
+        for (let incr = 0 ; incr < contacts.length ; incr++){
+            if(!filteredContacts.map(x=>x.email).includes(contacts[incr].email)){
+                filteredContacts.push(contacts[incr]);
+            }
+        }
+        //contacts = [... new Set(contacts)].sort();
+    }
+
+
+    if (filteredContacts.length > 0) {
+        res.status(200).json(filteredContacts);
+    } else {
+        res.status(401).json({message: 'no contacts found'})
+    }
+})
+
+
+
 function sleep(milliseconds) {
     const date = Date.now();
     let currentDate = null;
@@ -28,7 +89,7 @@ function sleep(milliseconds) {
 }
 
 // @desc    Get a Deal 
-// @route   GET /api/deals/sendmails
+// @route   GET /api/emails
 // @access  Private
 const sendStaffingDecisionEmails = asyncHandler(async (req, res) => { 
 
@@ -131,4 +192,4 @@ const sendStaffingDecisionEmails = asyncHandler(async (req, res) => {
     }
 });
 
-module.exports = { sendStaffingDecisionEmails };
+module.exports = { sendStaffingDecisionEmails, collectContacts };
