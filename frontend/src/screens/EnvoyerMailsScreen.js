@@ -190,7 +190,7 @@ const EnvoyerMailsScreen = () => {
                                             className={contact.status === 'error' ? 'text-danger' : 'text-primary'}
                                             size='sm'
                                             onClick={() => handlerSendADecision(contact.email)}
-                                            disabled={contact.status === 'send'}
+                                            disabled={contact.status === 'send' || massSending === true}
                                         ><i className="fas fa-envelope"></i>  
                                             {contact.status === 'to send' && 'send'}
                                             {contact.status === 'loading' && <Loader />}
