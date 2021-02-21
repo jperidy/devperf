@@ -53,8 +53,8 @@ const EnvoyerMailsScreen = () => {
     const handlerSendAllDecisions = () => {
         dispatch({ type: EMAIL_SEND_DECISION_RESET });
         setProgress(0);
-        setMessagesSendError(0);
-        setMessagesSendSuccess(0);
+        //setMessagesSendError(0);
+        //setMessagesSendSuccess(0);
         setMassSending(true);
     }
 
@@ -64,16 +64,22 @@ const EnvoyerMailsScreen = () => {
 
     useEffect(() => {
         if (contacts) {
-            setContactList(contacts.map(x => ({ ...x, status: 'not sent', message: '' })));
+            setContactList(contacts.map(x => ({ ...x, status: 'not sent' })));
             setTotalToSend(contacts.length);
         }
     }, [contacts]);
 
     useEffect(() => {
         if(massSending) {
-            sleep(1000);
-            handlerSendADecision(contactList[progress].email);
-            //setProgress(progress + 1);
+            if(contactList[progress].status !== 'send') {
+                sleep(1000);
+                handlerSendADecision(contactList[progress].email);
+                //setProgress(progress + 1);
+            } else {
+                if(progress < contactList.length - 1){
+                    setProgress(progress+1);
+                }
+            }
         }
     // eslint-disable-next-line
     },[massSending, progress]);
@@ -85,11 +91,11 @@ const EnvoyerMailsScreen = () => {
             for (let incr = 0; incr < newContactsInfo.length; incr++) {
                 if (newContactsInfo[incr].email === successEmail) {
                     newContactsInfo[incr].status = 'send'
-                    newContactsInfo[incr].message = ''
+                    //newContactsInfo[incr].message = ''
                 }
             }
             setContactList(newContactsInfo);
-            setMessagesSendSuccess(messsagesSendSuccess+1);
+            //setMessagesSendSuccess(messsagesSendSuccess+1);
 
             if (massSending){
                 //console.log(progress);
@@ -113,12 +119,12 @@ const EnvoyerMailsScreen = () => {
             const newContactsInfo = contactList.slice();
             for (let incr = 0; incr < newContactsInfo.length; incr++) {
                 if (newContactsInfo[incr].email === errorEmail) {
-                    newContactsInfo[incr].status = 'not sent';
-                    newContactsInfo[incr].message = 'error';
+                    newContactsInfo[incr].status = 'error';
+                    //newContactsInfo[incr].message = 'error';
                 }
             }
             setContactList(newContactsInfo);
-            setMessagesSendError(messsagesSendError+1);
+            //setMessagesSendError(messsagesSendError+1);
 
             if (massSending){
                 //console.log(progress);
@@ -133,7 +139,11 @@ const EnvoyerMailsScreen = () => {
     // eslint-disable-next-line
     }, [error]);
 
-    
+    useEffect(() => {
+        setMessagesSendSuccess(contactList.filter(x => x.status === 'send').length);
+        setMessagesSendError(contactList.filter(x => x.status === 'error').length);
+        setTotalToSend(contactList.length);
+    },[contactList, error, success]);
 
     return (
         <div>
@@ -147,14 +157,14 @@ const EnvoyerMailsScreen = () => {
                         variant='ligth'
                         className='text-primary'
                         onClick={() => handlerSendAllDecisions()}
-                    ><i className="fas fa-envelope"></i> Send all messages</Button>
+                    ><i className="fas fa-envelope"></i> {massSending ? <Loader /> : 'Send all messages'}</Button>
                 </Col>
             </Row>
             <Row className='pt-3'>
                 <Col>
                     <ProgressBar>
-                        <ProgressBar animated={false} now={100* messsagesSendSuccess / totalToSend} variant='primary' />
-                        <ProgressBar animated={false} now={100* messsagesSendError / totalToSend} variant='danger' />
+                        <ProgressBar animated={massSending} now={100* messsagesSendSuccess / totalToSend} variant='primary' />
+                        <ProgressBar animated={massSending} now={100* messsagesSendError / totalToSend} variant='danger' />
                     </ProgressBar>
                 </Col>
             </Row>
@@ -164,9 +174,9 @@ const EnvoyerMailsScreen = () => {
                     <Table responsive hover striped className='mt-3'>
                         <thead>
                             <tr className='table-primary'>
-                                <th className='align-middle text-light text-center'>Name</th>
-                                <th className='align-middle text-light text-center'>Email</th>
-                                <th className='align-middle text-light text-center'>status</th>
+                                <th className='align-middle text-light text-center col-md-5'>Name</th>
+                                <th className='align-middle text-light text-center col-md-5'>Email</th>
+                                <th className='align-middle text-light text-center col-md-2'>status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -177,12 +187,16 @@ const EnvoyerMailsScreen = () => {
                                     <td className='align-middle text-center'>
                                         <Button
                                             variant='ligth'
-                                            className='text-primary'
+                                            className={contact.status === 'error' ? 'text-danger' : 'text-primary'}
                                             size='sm'
                                             onClick={() => handlerSendADecision(contact.email)}
-                                            disabled={contact.status === 'send' && contact.message !== 'error'}
-                                        ><i className="fas fa-envelope"></i>  {contact.status === 'loading' ? <Loader /> :'  Send'}</Button>
-                                        {contact.message && <Message variant='danger'>{contact.message}</Message>}
+                                            disabled={contact.status === 'send'}
+                                        ><i className="fas fa-envelope"></i>  
+                                            {contact.status === 'to send' && 'send'}
+                                            {contact.status === 'loading' && <Loader />}
+                                            {contact.status === 'error' && '  Error send again'}
+                                            {contact.status === 'send' && '  sent'}
+                                        </Button>
                                     </td>
                                 </tr>
                             ))}
