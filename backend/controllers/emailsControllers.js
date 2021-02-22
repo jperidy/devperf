@@ -101,7 +101,8 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
 
     if(access === 'yes') {
 
-        const envoyer = false;
+        const genererErros = false;
+        const envoyer = true;
 
         const email = req.query.email;
         const practice = req.user.consultantProfil.practice;
@@ -180,13 +181,13 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
 
         const mailInfo = {
             to: "jprdevapp@gmail.com", // to add others use ","
-            subject: "Staffing decisions for" + (consultantProfil ? consultantProfil.name : ''),
+            subject: "Staffing decisions for " + practice + ": " + (consultantProfil ? consultantProfil.name : ''),
             template: "staffingDecisions",
             context: decisions
         };
             
             try {
-                if (Date.now() % 2){
+                if (genererErros && Date.now() % 2){
                     throw new Error('test des erreurs');
                 }
                 if (envoyer) {

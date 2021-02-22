@@ -1,111 +1,117 @@
-<div></div>
-<h3>Staffing Decision</h3>
-<p>Hello {{name}},</p>
-<p>Please find bellow decisions about your staffing requests</p>
+<div>
+    <p>Hello {{name}},</p>
+    <p>Please find bellow decisions about your staffing requests</p>
 
-{{#if myRequests}}
-<h5>Your requests: </h5>
-<table style='border-collapse: collapse;'>
-    <thead style='background: #464277; color: white'>
-        <tr>
-            <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Client</th>
-            <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Request</th>
-            <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Status</th>
-            <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Staffing decision</th>
-            <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Owner</th>
-            <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Details</th>
-            <tr />
-    </thead>
-    <tbody>
-        {{#each myRequests}}
-        <tr>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{company}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{title}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{status}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
-                {{#each staffingDecision.staff}}
-                <div>{{responsability}}: {{idConsultant.name}} ({{priority}})</div>
-                {{/each}}
+    {{#if myRequests}}
+    <h3>Your requests: </h3>
+    <table style='border-collapse: collapse;'>
+        <thead style='background: #909090; color: white'>
+            <tr>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Client</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Request</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Status</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Staffing decision</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Request status</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Owner</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Details</th>
+                <tr />
+        </thead>
+        <tbody>
+            {{#each myRequests}}
+            <tr>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{company}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{title}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{status}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
+                    {{#each staffingDecision.staff}}
+                    <div>{{responsability}}: {{idConsultant.name}} ({{priority}})</div>
+                    {{/each}}
 
-            </td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{contacts.primary.name}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
-                <a href='https://ressource-management-app.herokuapp.com/staffing/{{_id}}'>Link</a>
-            </td>
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
-{{/if}}
+                </td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{staffingRequest.requestStatus}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{contacts.primary.name}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
+                    <a href='https://ressource-management-app.herokuapp.com/staffing/{{_id}}'>Link</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{/if}}
 
-{{#if myConsultants}}
-<h5>Your on track staffings: </h5>
-<table style='border-collapse: collapse;'>
-    <thead style='background: #464277; color: white'>
-        <tr>
-            <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Client</th>
-            <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Request</th>
-            <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Status</th>
-            <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Staffing decision</th>
-            <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Owner</th>
-            <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Details</th>
-            <tr />
-    </thead>
-    <tbody>
-        {{#each myConsultants}}
-        <tr>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{company}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{title}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{status}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
-                {{#each staffingDecision.staff}}
-                <div>{{responsability}}: {{idConsultant.name}} ({{priority}})</div>
-                {{/each}}
+    {{#if myConsultants}}
+    <h3>Your team staffings on track: </h3>
+    <table style='border-collapse: collapse;'>
+        <thead style='background: #909090; color: white'>
+            <tr>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Client</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Request</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Status</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Staffing decision</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Request status</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Owner</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Details</th>
+                <tr />
+        </thead>
+        <tbody>
+            {{#each myConsultants}}
+            <tr>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{company}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{title}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{status}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
+                    {{#each staffingDecision.staff}}
+                    <div>{{responsability}}: {{idConsultant.name}} ({{priority}})</div>
+                    {{/each}}
 
-            </td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{contacts.primary.name}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
-                <a href='https://ressource-management-app.herokuapp.com/staffing/{{_id}}'><i
-                        class="fas fa-link"></i>Link</a>
-            </td>
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
-{{/if}}
+                </td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{staffingRequest.requestStatus}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{contacts.primary.name}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
+                    <a href='https://ressource-management-app.herokuapp.com/staffing/{{_id}}'><i
+                            class="fas fa-link"></i>Link</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{/if}}
 
-{{#if myOthers}}
-<h5>You are contact of these requests: </h5>
-<table style='border-collapse: collapse;'>
-    <thead style='background: #464277; color: white'>
-        <tr>
-            <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Client</th>
-            <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Request</th>
-            <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Status</th>
-            <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Staffing decision</th>
-            <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Owner</th>
-            <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Details</th>
-            <tr />
-    </thead>
-    <tbody>
-        {{#each myOthers}}
-        <tr>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{company}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{title}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{status}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
-                {{#each staffingDecision.staff}}
-                <div>{{responsability}}: {{idConsultant.name}} ({{priority}})</div>
-                {{/each}}
+    {{#if myOthers}}
+    <h3>Staffing request you follow: </h3>
+    <table style='border-collapse: collapse;'>
+        <thead style='background: #909090; color: white'>
+            <tr>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Client</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Request</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Status</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Staffing decision</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Request status</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Owner</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Details</th>
+                <tr />
+        </thead>
+        <tbody>
+            {{#each myOthers}}
+            <tr>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{company}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{title}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{status}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
+                    {{#each staffingDecision.staff}}
+                    <div>{{responsability}}: {{idConsultant.name}} ({{priority}})</div>
+                    {{/each}}
 
-            </td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{contacts.primary.name}}</td>
-            <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
-                <a href='https://ressource-management-app.herokuapp.com/staffing/{{_id}}'><i
-                        class="fas fa-link"></i>Link</a>
-            </td>
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
-{{/if}}
+                </td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{staffingRequest.requestStatus}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{contacts.primary.name}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
+                    <a href='https://ressource-management-app.herokuapp.com/staffing/{{_id}}'><i
+                            class="fas fa-link"></i>Link</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{/if}}
+</div>
