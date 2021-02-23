@@ -54,7 +54,10 @@ import {
     CONSULTANT_CDM_FAIL,
     CONSULTANTS_ALL_LEADERS_REQUEST,
     CONSULTANTS_ALL_LEADERS_SUCCESS,
-    CONSULTANTS_ALL_LEADERS_FAIL
+    CONSULTANTS_ALL_LEADERS_FAIL,
+    CONSULTANT_MASS_IMPORT_REQUEST,
+    CONSULTANT_MASS_IMPORT_SUCCESS,
+    CONSULTANT_MASS_IMPORT_FAIL
 } from '../constants/consultantConstants';
 
 export const getAllMyConsultants = () => async (dispatch, getState) => {
@@ -381,36 +384,6 @@ export const getAllMyAdminConsultants = (keyword = '', pageNumber = '', pageSize
     }
 };
 
-/*
-export const getAllConsultantByAccess = () => async (dispatch, getState) => {
-
-    try {
-
-        dispatch({ type: CONSULTANT_ALL_ACCESS_REQUEST });
-
-        const { userLogin: { userInfo } } = getState();
-
-        const config = {
-            headers: {
-                Authorization: `Bearer ${userInfo.token}`
-            }
-        };
-
-        const { data } = await axios.get(`/api/consultants/admin/consultants?keyword=&pageNumber=&pageSize=`, config);
-
-        dispatch({ type: CONSULTANT_ALL_ACCESS_SUCCESS, payload: data.consultants });
-
-    } catch (error) {
-        dispatch({
-            type: CONSULTANT_ALL_ACCESS_FAIL,
-            payload: error.response && error.response.data.message
-                ? error.response.data.message
-                : error.message
-        });
-    }
-};
-*/
-
 export const getConsultantCdm = (consultantId) => async (dispatch, getState) => {
 
     try {
@@ -580,6 +553,35 @@ export const consultantUpdateASkillLevel = (consultantId, skillId, level) => asy
     } catch (error) {
         dispatch({
             type: CONSULTANT_UPDATE_SKILL_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const consultantImportInMass = (data) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_MASS_IMPORT_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        await axios.put(`/api/consultants/admin/mass-import`, data, config);
+
+        dispatch({ type: CONSULTANT_MASS_IMPORT_SUCCESS });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_MASS_IMPORT_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

@@ -46,6 +46,7 @@ function getAccessData() {
                 { name: 'getLeaders', data: 'all'},    
                 { name: 'crudTace', data: 'all'},
                 { name: 'sendStaffingDecisionEmails', data: 'yes'},
+                { name: 'massImportConsultants', data: 'yes'},
             ]
         },
         {
@@ -92,6 +93,7 @@ function getAccessData() {
                 { name: 'getLeaders', data: 'all'},    
                 { name: 'crudTace', data: 'department'},,
                 { name: 'sendStaffingDecisionEmails', data: 'yes'},
+                { name: 'massImportConsultants', data: 'yes'},
             ]
         },
         {
@@ -138,6 +140,7 @@ function getAccessData() {
                 { name: 'getLeaders', data: 'department'},    
                 { name: 'crudTace', data: 'my'},,
                 { name: 'sendStaffingDecisionEmails', data: 'no'},
+                { name: 'massImportConsultants', data: 'no'},
             ]
         },
         {
@@ -184,6 +187,7 @@ function getAccessData() {
                 { name: 'getLeaders', data: 'department'},    
                 { name: 'crudTace', data: 'my'},,
                 { name: 'sendStaffingDecisionEmails', data: 'no'},
+                { name: 'massImportConsultants', data: 'no'},
             ]
         },
         {
@@ -230,6 +234,7 @@ function getAccessData() {
                 { name: 'getLeaders', data: 'my'},    
                 { name: 'crudTace', data: 'my'},,
                 { name: 'sendStaffingDecisionEmails', data: 'no'},
+                { name: 'massImportConsultants', data: 'no'},
             ]
         }
     ];

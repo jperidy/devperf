@@ -4,6 +4,7 @@ const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
 const { myAccessConsultants, myAuthorizedActionsConsultant } = require('../utils/usersFunctions');
+const { update } = require('../models/consultantModel');
 
 // @desc    Create a consultant data by Id
 // @route   POST /api/consultants
@@ -446,6 +447,58 @@ const getConsultantStaffings = asyncHandler(async (req, res) => {
     }    
 });
 
+const updateAConsultant = (id, consultant) => {
+    console.log(`Consultant to Update: `, id, consultant);
+}
+
+const createAConsultant = (consultant) => {
+    console.log(`Consultant to create: `, consultant);
+}
+
+// @desc    Create or update consultant data
+// @route   PUT /api/consultants/admin/mass-import
+// @access  Private, 
+const createOrUpdateConsultants = asyncHandler(async (req, res) => {
+
+    const access = req.user.profil.api.filter(x => x.name === 'massImportConsultants')[0].data;
+    //const consultantsId = await myAccessConsultants(access, req);
+
+    if (access === 'yes') {
+        const consultantsData = req.body;
+        if (consultantsData[0]){
+            const consultants = consultantsData[0];
+            for (let incr = 0 ; incr < consultants.length ; incr++) {
+
+                const searchConsultant = await Consultant.findOne({matricule: consultants[incr]["Office n°"]});
+                
+                const cdmId = await Consultant.findOne({matricule: consultants[incr].CDM_MATRICULE.toString().padStart(9,0)}).select('_id');
+                console.log(consultants[incr].CDM_MATRICULE.toString().padStart(9,0));
+
+                const consultantToUpdateOrCreate = {
+                    //_id: searchConsultant._id,
+                    name: consultants[incr].NAME,
+                    grade: consultants[incr].GRADE,
+                    practice: consultants[incr].PRACTICE,
+                    matricule: consultants[incr].MATRICULE,
+                    arrival: new Date(consultants[incr].START),
+                    valued: new Date(consultants[incr].VALUED),
+                    cdmId: cdmId ? cdmId : ''
+                }
+                
+                if (searchConsultant) {
+                    updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
+                } else {
+                    createAConsultant(consultantToUpdateOrCreate)
+                }
+            }
+            //consultantsData[0].map(x => console.log(x));
+        }
+
+    }
+    res.status(200).json('ok');
+
+});
+
 
 
 module.exports = { 
@@ -465,6 +518,7 @@ module.exports = {
     addConsultantSkill,
     deleteConsultantSkill,
     updateLevelConsultantSkill,
-    getConsultantStaffings
+    getConsultantStaffings,
+    createOrUpdateConsultants
     //getAllConsultantByPractice
 };

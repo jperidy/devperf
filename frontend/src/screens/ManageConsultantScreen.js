@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteConsultant, getAllMyAdminConsultants } from '../actions/consultantActions';
+import { deleteConsultant, getAllMyAdminConsultants, consultantImportInMass } from '../actions/consultantActions';
 import { CONSULTANT_DELETE_RESET } from '../constants/consultantConstants';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import ImportExcelFile from '../components/ImportExcelFile';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Pagination from 'react-bootstrap/Pagination';
@@ -19,11 +20,11 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     const dispatch = useDispatch();
 
-    // pagination configuration
-
     const [pageSize, setPageSize] = useState(10);
     const [pageNumber, setPageNumber] = useState(1);
     const [keyword, setKeyword] = useState('');
+
+    const [importData, setImportData] = useState([]);
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -33,6 +34,9 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     const consultantDelete = useSelector(state => state.consultantDelete);
     const { success: successConsultantDelete } = consultantDelete;
+
+    const consultantsMassImport = useSelector(state => state.consultantsMassImport);
+    const { loading:loadingMassImport, error:errorMassImport, success:successMassImport } = consultantsMassImport;
 
     useEffect(() => {
 
@@ -50,6 +54,13 @@ const ManageConsultantScreen = ({ history, match }) => {
             dispatch({ type: CONSULTANT_DELETE_RESET });
         }
     }, [dispatch, successConsultantDelete, keyword, pageNumber, pageSize, userInfo]);
+
+
+    useEffect(() => {
+        if(importData.length > 0) {
+            dispatch(consultantImportInMass(importData));
+        }
+    },[dispatch, importData]);
 
     const addConsultantHandler = () => {
         history.push('/admin/consultant/add');
@@ -71,10 +82,15 @@ const ManageConsultantScreen = ({ history, match }) => {
                 <ListGroup.Item>
                     <Row>
 
-                        <Col xs={6} md={4}>
-                            <Button className="mb-3" onClick={() => addConsultantHandler()}>
-                                <i className="fas fa-user-edit mr-2"></i>Add
-                    </Button>
+                        <Col xs={6} md={2}>
+                            <Button 
+                                className="mb-3" 
+                                onClick={() => addConsultantHandler()}
+                            ><i className="fas fa-user-edit mr-2"></i>Add
+                            </Button>
+                        </Col>
+                        <Col xs={6} md={3}>
+                            <ImportExcelFile setImportData={setImportData} />
                         </Col>
 
                         <Col xs={6} md={2}>
@@ -89,7 +105,7 @@ const ManageConsultantScreen = ({ history, match }) => {
                             </InputGroup>
                         </Col>
 
-                        <Col xs={6} md={4}>
+                        <Col xs={6} md={3}>
                             <Form.Control
                                 plaintext
                                 readOnly
@@ -149,16 +165,16 @@ const ManageConsultantScreen = ({ history, match }) => {
                                                 consultant.valued ? ((new Date(Date.now()) - new Date(consultant.valued.substring(0, 10))) / (1000 * 3600 * 24 * 365.25)).toString().substring(0, 4) : 0
                                             } years</td>
                                             <td className='align-middle'>
-                                                <Button 
-                                                    className='btn btn-primary p-1' 
+                                                <Button
+                                                    className='btn btn-primary p-1'
                                                     onClick={() => onClickEditHandler(consultant._id)}
                                                     size='sm'
                                                 ><i className="fas fa-user-edit"></i>
                                                 </Button>
                                             </td>
                                             <td className='align-middle'>
-                                                <Button 
-                                                    className='btn btn-danger p-1' 
+                                                <Button
+                                                    className='btn btn-danger p-1'
                                                     onClick={() => onClickDeleteHandler(consultant)}
                                                     size='sm'
                                                 ><i className="fas fa-user-times"></i>
@@ -177,7 +193,7 @@ const ManageConsultantScreen = ({ history, match }) => {
                             disabled={page === 1}
                         />
                         {[...Array(pages).keys()].map(x => (
-                            [0,1,pages-2,pages-1].includes(x) ? (
+                            [0, 1, pages - 2, pages - 1].includes(x) ? (
                                 <Pagination.Item
                                     key={x + 1}
                                     active={x + 1 === page}
@@ -187,7 +203,7 @@ const ManageConsultantScreen = ({ history, match }) => {
                                     }}
                                 >{x + 1}</Pagination.Item>
                             ) : (pages > 4 && x === 2) && (
-                                <Pagination.Ellipsis key={x+1} />
+                                <Pagination.Ellipsis key={x + 1} />
                             )
 
                         ))}

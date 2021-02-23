@@ -71,7 +71,11 @@ import {
     CONSULTANTS_ALL_LEADERS_REQUEST,
     CONSULTANTS_ALL_LEADERS_SUCCESS,
     CONSULTANTS_ALL_LEADERS_FAIL,
-    CONSULTANTS_ALL_LEADERS_RESET
+    CONSULTANTS_ALL_LEADERS_RESET,
+    CONSULTANT_MASS_IMPORT_REQUEST,
+    CONSULTANT_MASS_IMPORT_SUCCESS,
+    CONSULTANT_MASS_IMPORT_FAIL,
+    CONSULTANT_MASS_IMPORT_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {focus: 0}, action) => {
@@ -289,23 +293,6 @@ export const consultantsAllLeadersReducer = (state = {}, action) => {
     }
 };
 
-/*
-export const consultantAllAccessReducer = (state = {}, action) => {
-    switch (action.type) {
-        case CONSULTANT_ALL_ACCESS_REQUEST:
-            return { loading: true };
-        case CONSULTANT_ALL_ACCESS_SUCCESS:
-            return { loading: false, consultants: action.payload };
-        case CONSULTANT_ALL_ACCESS_FAIL:
-            return { loading: false, error: action.payload };
-        case CONSULTANT_ALL_ACCESS_RESET:
-            return {}
-        default:
-            return state;
-    }
-};
-*/
-
 export const consultantGetCDMReducer = (state = { }, action) => {
     switch (action.type) {
         case CONSULTANT_CDM_REQUEST:
@@ -405,6 +392,21 @@ export const consultantUpdateSkillReducer = (state = {}, action) => {
         case CONSULTANT_UPDATE_SKILL_FAIL:
             return { loading: false, success: false, error: action.payload };
         case CONSULTANT_UPDATE_SKILL_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const consultantsMassImportReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_MASS_IMPORT_REQUEST:
+            return { loading: true };
+        case CONSULTANT_MASS_IMPORT_SUCCESS:
+            return { loading: false, success: true };
+        case CONSULTANT_MASS_IMPORT_FAIL:
+            return { loading: false, success: false, error: action.payload };
+        case CONSULTANT_MASS_IMPORT_RESET:
             return {}
         default:
             return state;

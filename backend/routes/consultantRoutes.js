@@ -17,7 +17,8 @@ const {
     updateLevelConsultantSkill,
     getConsultantStaffings,
     getCDM,
-    getAllLeaders
+    getAllLeaders,
+    createOrUpdateConsultants
 } = require('../controllers/consultantControllers');
 
 const router = express.Router();
@@ -48,6 +49,7 @@ router.get('/staffings', protect, getConsultantStaffings);
 
 router.get('/admin/consultants', protect, getAllConsultants);
 
+router.put('/admin/mass-import', protect, createOrUpdateConsultants);
 
 router.route('/:consultantId')
     .get(protect, authorizeActionOnConsultant, getConsultant)
