@@ -101,7 +101,7 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
 
     if(access === 'yes') {
 
-        const genererErros = false;
+        const genererErrors = false;
         const envoyer = true;
 
         const email = req.query.email;
@@ -187,7 +187,7 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
         };
             
             try {
-                if (genererErros && Date.now() % 2){
+                if (genererErrors && Date.now() % 2){
                     throw new Error('test des erreurs');
                 }
                 if (envoyer) {

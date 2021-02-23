@@ -10,7 +10,7 @@ import { getContactsList, sendDecisionEmail } from '../actions/emailActions';
 import Loader from '../components/Loader';
 import { EMAIL_SEND_DECISION_RESET } from '../constants/emailConstants';
 
-const EnvoyerMailsScreen = () => {
+const EnvoyerMailsScreen = ({history}) => {
 
     const dispatch = useDispatch();
 
@@ -72,9 +72,8 @@ const EnvoyerMailsScreen = () => {
     useEffect(() => {
         if(massSending) {
             if(contactList[progress].status !== 'send') {
-                sleep(1000);
+                //sleep(1000);
                 handlerSendADecision(contactList[progress].email);
-                //setProgress(progress + 1);
             } else {
                 if(progress < contactList.length - 1){
                     setProgress(progress+1);
@@ -91,21 +90,15 @@ const EnvoyerMailsScreen = () => {
             for (let incr = 0; incr < newContactsInfo.length; incr++) {
                 if (newContactsInfo[incr].email === successEmail) {
                     newContactsInfo[incr].status = 'send'
-                    //newContactsInfo[incr].message = ''
                 }
             }
             setContactList(newContactsInfo);
-            //setMessagesSendSuccess(messsagesSendSuccess+1);
 
             if (massSending){
-                //console.log(progress);
                 if (progress < contactList.length - 1){
                     setProgress(progress+1);
                 } else {
                     setMassSending(false);
-                    //setProgress(0);
-                    //setMessagesSendError(0);
-                    //setMessagesSendSuccess(0);
                 }
             }
         }
@@ -120,14 +113,11 @@ const EnvoyerMailsScreen = () => {
             for (let incr = 0; incr < newContactsInfo.length; incr++) {
                 if (newContactsInfo[incr].email === errorEmail) {
                     newContactsInfo[incr].status = 'error';
-                    //newContactsInfo[incr].message = 'error';
                 }
             }
             setContactList(newContactsInfo);
-            //setMessagesSendError(messsagesSendError+1);
 
             if (massSending){
-                //console.log(progress);
                 if (progress < contactList.length - 1){
                     setProgress(progress+1);
                 } else {
@@ -148,7 +138,11 @@ const EnvoyerMailsScreen = () => {
     return (
         <div>
             {loading && <Loader />}
-            <Row className='align-items-center'>
+            <Button
+                variant='primary'
+                onClick={() => history.go(-1)}
+            >Go Back</Button>
+            <Row className='align-items-center pt-3'>
                 <Col>
                     {`${messsagesSendSuccess} messages send / ${totalToSend} - ${messsagesSendError} messages with error`}
                 </Col>
@@ -187,12 +181,14 @@ const EnvoyerMailsScreen = () => {
                                     <td className='align-middle text-center'>
                                         <Button
                                             variant='ligth'
-                                            className={contact.status === 'error' ? 'text-danger' : 'text-primary'}
+                                            className={contact.status === 'error' ? 'text-danger' 
+                                                        : contact.status === 'send' ? 'text-success'
+                                                        : 'text-primary'}
                                             size='sm'
                                             onClick={() => handlerSendADecision(contact.email)}
                                             disabled={contact.status === 'send' || massSending === true}
                                         ><i className="fas fa-envelope"></i>  
-                                            {contact.status === 'to send' && 'send'}
+                                            {contact.status === 'not sent' && '  send'}
                                             {contact.status === 'loading' && <Loader />}
                                             {contact.status === 'error' && '  Error send again'}
                                             {contact.status === 'send' && '  sent'}

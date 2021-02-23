@@ -5,6 +5,7 @@ import Loader from '../components/Loader';
 import Message from '../components/Message';
 import Meta from '../components/Meta';
 import DealList from '../components/DealList';
+import DisplayChildren from '../components/DisplayChildren';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -248,7 +249,7 @@ const ManageDealsScreen = ({ history }) => {
                                 }
                             >
                                 <Row className='mt-3'>
-                                    <Col>
+                                    <Col className='text-left'>
                                         <Button
                                             variant='ligth'
                                             onClick={() => setChangePeriod(!changePeriod)}
@@ -277,6 +278,14 @@ const ManageDealsScreen = ({ history }) => {
                                             onClick={() => window.confirm('Soon available')}
                                         ><i className="fas fa-project-diagram"></i>  Business flows
                                         </Button>
+
+                                        <DisplayChildren access='sendStaffingDecision'>
+                                            <Button
+                                                variant='ligth'
+                                                className='text-black align-right'
+                                                onClick={() => history.push('/admin/send')}
+                                            ><i className="fas fa-envelope"></i>  Send staffing decisions</Button>
+                                        </DisplayChildren>
                                     </Col>
                                 </Row>
 

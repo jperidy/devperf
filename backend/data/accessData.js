@@ -24,6 +24,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageProfils', label: 'Manage Profils', mode:'yes', data: 'all'},
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'yes', data: 'all'},
                 {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'all'},
+                {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'yes', data: 'all'},
 
             ],
             api:[
@@ -69,7 +70,8 @@ function getAccessData() {
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'department'},//
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'yes', data: 'department'},//
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'yes', data: 'department'},//
-                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'department'},//
+                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'department'},
+                {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'yes', data: 'department'},
             ],
             api:[
                 { name: 'getUsers', data: 'department' },
@@ -114,7 +116,8 @@ function getAccessData() {
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'yes', data: 'team'},//
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'team'},//
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'yes', data: 'team'},//
-                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'team'},//
+                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'team'},
+                {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'no', data: 'team'},
             ],
             api:[
                 { name: 'getUsers', data: 'team' },
@@ -159,7 +162,8 @@ function getAccessData() {
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'no', data: 'my'},//
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'yes', data: 'my'},//
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'no', data: 'my'},//
-                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'no', data: 'department'},//
+                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'no', data: 'department'},
+                {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'no', data: 'department'},
             ],
             api:[
                 { name: 'getUsers', data: 'my' },
@@ -204,7 +208,8 @@ function getAccessData() {
                 {category: 'PXX screen', id: 'viewSkills', label: 'View skills', mode:'no', data: 'my'},//
                 {category: 'PXX screen', id: 'viewOthersConsultants', label: 'View others consultants', mode:'no', data: 'my'},//
                 {category: 'Consultant Screen', id: 'editConsultantProfil', label: 'Edit a consultant profil', mode:'no', data: 'my'},//
-                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'no', data: 'my'},//
+                {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'no', data: 'my'},
+                {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'no', data: 'my'},
             ],
             api: [
                 { name: 'getUsers', data: 'my' },
