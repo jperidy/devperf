@@ -361,7 +361,7 @@ export const pxxImportInMass = (datas) => async (dispatch, getState) => {
                 Authorization: `Bearer ${userInfo.token}`
             }
         };
-        const { data } = await axios.put(`/api/admin/mass-import`, datas, config);
+        const { data } = await axios.put(`/api/pxx/admin/mass-import`, datas, config);
 
         dispatch({ type: PXX_IMPORT_MASS_SUCCESS, payload: data });
 

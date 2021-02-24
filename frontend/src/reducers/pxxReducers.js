@@ -116,7 +116,12 @@ export const pxxImportMassReducer = (state= { pxx: [] }, action) => {
         case PXX_IMPORT_MASS_REQUEST:
             return { loading: true };
         case PXX_IMPORT_MASS_SUCCESS:
-            return { loading: false, success:true };
+            return { 
+                loading: false, 
+                success:true, 
+                message: action.payload.message,
+                datas: action.payload.datas
+            };
         case PXX_IMPORT_MASS_FAIL:
             return { loading: false, error: action.payload };
         case PXX_IMPORT_MASS_RESET:

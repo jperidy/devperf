@@ -448,13 +448,12 @@ const getConsultantStaffings = asyncHandler(async (req, res) => {
 });
 
 const updateAConsultant = async (id, consultant) => {
-
+    // TODO if modify arrival, leaving, partial time, need to update Pxx
     const consultantUpdated = await Consultant.findOneAndUpdate({_id: id}, consultant, {new:true});
     return consultantUpdated;
 }
 
 const createAConsultant = async (consultant) => {
-    //console.log('Create: ' + consultant.name);
     const newConsultant = await Consultant.create(consultant);
     if (newConsultant) {
         return newConsultant;
@@ -534,9 +533,9 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
                     grade: transformGrade(consultants[incr].GRADE),
                     practice: consultants[incr].PRACTICE,
                     matricule: consultants[incr].MATRICULE,
-                    arrival: new Date(consultants[incr].START),
-                    valued: new Date(consultants[incr].VALUED),
-                    leaving: new Date(consultants[incr].LEAVE),
+                    arrival: consultants[incr].START ? new Date(consultants[incr].START) : null,
+                    valued: consultants[incr].VALUED ? new Date(consultants[incr].VALUED) : null,
+                    leaving: consultants[incr].LEAVE ? new Date(consultants[incr].LEAVE) : null,
                     isCdm: consultants[incr].IS_CDM,
                     cdmId: cdmId ? cdmId._id : null,
                     isPartialTime:{

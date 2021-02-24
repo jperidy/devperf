@@ -9,6 +9,7 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Loader from '../components/Loader';
+import Message from '../components/Message';
 import ImportExcelFile from '../components/ImportExcelFile';
 import { getAllPxx, pxxImportInMass } from '../actions/pxxActions';
 import ReactExport from "react-export-excel";
@@ -36,6 +37,9 @@ const PxxDetailsScreen = ({ history, match }) => {
     const pxxAllList = useSelector(state  => state.pxxAllList);
     const {loading, pxxs, pages, page, count} = pxxAllList;
 
+    const pxxImportMass = useSelector(state  => state.pxxImportMass);
+    const {loading: loadingImportMass, error: errorImportMass, success: successImportData, datas} = pxxImportMass;
+
     useEffect(() => {
 
         if (userInfo) {
@@ -44,7 +48,7 @@ const PxxDetailsScreen = ({ history, match }) => {
             history.push('/login');
         }
 
-    }, [dispatch, history, userInfo, monthId, keyword, pageNumber, pageSize]);
+    }, [dispatch, history, userInfo, monthId, keyword, pageNumber, pageSize, successImportData]);
 
     useEffect(() => {
         if (pxxs) {
@@ -67,6 +71,7 @@ const PxxDetailsScreen = ({ history, match }) => {
 
     useEffect(() => {
         if(importData.length > 0) {
+            console.log(importData);
             dispatch(pxxImportInMass(importData));
         }
     },[dispatch, importData]);
@@ -79,6 +84,19 @@ const PxxDetailsScreen = ({ history, match }) => {
             </Button>
 
             <Row>
+                <Col>
+                {errorImportMass && <Message variant='danger'>{errorImportMass}</Message>}
+                {datas && (
+                    <Message variant='warning'>
+                        {datas.map( (line, incr) => (
+                            <Row key={incr}>Pxx not updated for matricule: {line.matricule} at month {line.monthName}</Row>
+                        ))}
+                    </Message>
+                )}
+                </Col>
+            </Row>
+
+            <Row className='mt-3'>
                 <Col xs={6} md={2}>
                     <InputGroup>
                         <FormControl
@@ -91,18 +109,22 @@ const PxxDetailsScreen = ({ history, match }) => {
                     </InputGroup>
                 </Col>
 
-                <Col xs={6} md={6}>
+                <Col xs={6} md={3}>
                     <Form.Control
                         plaintext
                         readOnly
                         value={count ? `${count} consultants found` : '0 consultant found'} />
                 </Col>
 
-                <Col md={2}>
-                    <ImportExcelFile setImportData={setImportData} />
+                <Col xs={6} md={3}>
+                    {loadingImportMass ? (
+                        <Loader />
+                    ) : (
+                        <ImportExcelFile setImportData={setImportData} />
+                    )}
                 </Col>
 
-                <Col md={2}>
+                <Col ws={6} md={2}>
                     {exportExcel && (
                         <ExcelFile element={<Button variant='primary'><i className="fas fa-download"></i>  Download</Button>}>
                             <ExcelSheet data={exportExcel} name="pxxsheet">
