@@ -10,6 +10,7 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import DisplayChildren from '../components/DisplayChildren';
 import ImportExcelFile from '../components/ImportExcelFile';
 import { getAllPxx, pxxImportInMass } from '../actions/pxxActions';
 import ReactExport from "react-export-excel";
@@ -117,11 +118,13 @@ const PxxDetailsScreen = ({ history, match }) => {
                 </Col>
 
                 <Col xs={6} md={3}>
-                    {loadingImportMass ? (
-                        <Loader />
-                    ) : (
-                        <ImportExcelFile setImportData={setImportData} />
-                    )}
+                    <DisplayChildren access='uploadPxx'>
+                        {loadingImportMass ? (
+                            <Loader />
+                        ) : (
+                                <ImportExcelFile setImportData={setImportData} />
+                            )}
+                    </DisplayChildren>
                 </Col>
 
                 <Col ws={6} md={2}>

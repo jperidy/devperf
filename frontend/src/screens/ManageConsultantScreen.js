@@ -46,7 +46,7 @@ const ManageConsultantScreen = ({ history, match }) => {
             history.push('/login');
         }
 
-    }, [dispatch, history, userInfo, pageNumber, pageSize, keyword]);
+    }, [dispatch, history, userInfo, pageNumber, pageSize, keyword, successMassImport]);
 
     useEffect(() => {
         if (successConsultantDelete) {
@@ -78,6 +78,8 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     return (
         <>
+            {errorMassImport && <Message variant='danger'>{errorMassImport}</Message>}
+            
             <DropDownTitleContainer title='Manage consultants' close={false}>
                 <ListGroup.Item>
                     <Row>
@@ -90,7 +92,9 @@ const ManageConsultantScreen = ({ history, match }) => {
                             </Button>
                         </Col>
                         <Col xs={6} md={3}>
-                            <ImportExcelFile setImportData={setImportData} />
+                            {loadingMassImport ? (<Loader />) : (
+                                <ImportExcelFile setImportData={setImportData} />
+                            )}
                         </Col>
 
                         <Col xs={6} md={2}>

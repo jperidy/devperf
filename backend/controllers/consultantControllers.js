@@ -523,8 +523,6 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
                 const searchConsultant = await Consultant.findOne({matricule: consultants[incr].MATRICULE});
                 const cdmMatricule = consultants[incr].CDM_MATRICULE ? consultants[incr].CDM_MATRICULE.toString().padStart(9,0) : '';
                 const cdmId = await Consultant.findOne({matricule: cdmMatricule}).select('_id');
-                //console.log(consultants[incr].CDM_MATRICULE.toString().padStart(9,0));
-                //console.log('cdmId', cdmId, 'matricule', cdmMatricule);
 
                 const consultantToUpdateOrCreate = {
                     //_id: searchConsultant._id,
@@ -548,17 +546,19 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
                 
                 let result = '';
                 if (searchConsultant) {
-                    result = updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
+                    result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
                 } else {
-                    result = createAConsultant(consultantToUpdateOrCreate)
+                    result = await createAConsultant(consultantToUpdateOrCreate)
                 }
 
-                if (!result){
+                //console.log(result);
+                if (result) {
+                    resetAllPxx(result);
+                } else {
                     console.log('Error creating or updating: ' + consultants[incr].NAME)
                 }
             }
         }
-
     }
     res.status(200).json('ok');
 
