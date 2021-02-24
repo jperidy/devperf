@@ -17,7 +17,10 @@ import {
     PXX_AVAILABILITIES_FAIL,
     PXX_ALL_REQUEST,
     PXX_ALL_FAIL,
-    PXX_ALL_SUCCESS
+    PXX_ALL_SUCCESS,
+    PXX_IMPORT_MASS_SUCCESS,
+    PXX_IMPORT_MASS_FAIL,
+    PXX_IMPORT_MASS_REQUEST
 } from '../constants/pxxConstants';
 
 export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth) => async (dispatch, getState) => {
@@ -337,6 +340,35 @@ export const getAllPxx = (practice = '', month = '', keywork = '', pageSize = '1
     } catch (error) {
         dispatch({
             type: PXX_ALL_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const pxxImportInMass = (datas) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: PXX_IMPORT_MASS_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers:{
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+        const { data } = await axios.put(`/api/admin/mass-import`, datas, config);
+
+        dispatch({ type: PXX_IMPORT_MASS_SUCCESS, payload: data });
+
+
+    } catch (error) {
+        dispatch({
+            type: PXX_IMPORT_MASS_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

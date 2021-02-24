@@ -17,7 +17,6 @@ const ImportExcelFile = ({setImportData}) => {
 
             let data = e.target.result;
             let workBook = XLSX.read(data, { type: 'binary' });
-            //console.log(workBook);
 
             const jsonData = []
             for (let incr = 0; incr < workBook.SheetNames.length; incr++) {
@@ -25,9 +24,7 @@ const ImportExcelFile = ({setImportData}) => {
                 const ws = workBook.Sheets[wsName];
                 jsonData.push(XLSX.utils.sheet_to_json(ws));
             }
-            //console.log(jsonData);
             setImportData(jsonData);
-            //console.log(file)
             setFileName(file.name);
         };
         reader.readAsBinaryString(file);

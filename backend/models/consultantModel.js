@@ -18,7 +18,7 @@ const consultantSchema = mongoose.Schema({
     grade: {
         type: String,
         required: true,
-        enum: ['Intern', 'Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'],
+        enum: ['Intern', 'Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner', 'Unknown', 'Commercial', 'Research'],
         default: 'Analyst'
     },
     quality: [

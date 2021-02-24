@@ -91,4 +91,4 @@ export const CONSULTANT_MASS_IMPORT_SUCCESS = 'CONSULTANT_MASS_IMPORT_SUCCESS';
 export const CONSULTANT_MASS_IMPORT_FAIL = 'CONSULTANT_MASS_IMPORT_FAIL';
 export const CONSULTANT_MASS_IMPORT_RESET = 'CONSULTANT_MASS_IMPORT_RESET';
 
-export const CONSULTANT_GRADE = ['Intern', 'Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
+export const CONSULTANT_GRADE = ['Intern', 'Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner', 'Unknown', 'Commercial', 'Research'];

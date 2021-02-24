@@ -9,7 +9,8 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Loader from '../components/Loader';
-import { getAllPxx } from '../actions/pxxActions';
+import ImportExcelFile from '../components/ImportExcelFile';
+import { getAllPxx, pxxImportInMass } from '../actions/pxxActions';
 import ReactExport from "react-export-excel";
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -27,13 +28,13 @@ const PxxDetailsScreen = ({ history, match }) => {
     const [keyword, setKeyword] = useState('');
     const [exportExcel, setExportExcel] = useState('');
 
+    const [importData, setImportData] = useState([]);
+
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const pxxAllList = useSelector(state  => state.pxxAllList);
     const {loading, pxxs, pages, page, count} = pxxAllList;
-
-    
 
     useEffect(() => {
 
@@ -63,6 +64,12 @@ const PxxDetailsScreen = ({ history, match }) => {
             setExportExcel(exportExcelData);
         }
     }, [pxxs, setExportExcel]);
+
+    useEffect(() => {
+        if(importData.length > 0) {
+            dispatch(pxxImportInMass(importData));
+        }
+    },[dispatch, importData]);
     
     return (
         <>
@@ -89,6 +96,10 @@ const PxxDetailsScreen = ({ history, match }) => {
                         plaintext
                         readOnly
                         value={count ? `${count} consultants found` : '0 consultant found'} />
+                </Col>
+
+                <Col md={2}>
+                    <ImportExcelFile setImportData={setImportData} />
                 </Col>
 
                 <Col md={2}>

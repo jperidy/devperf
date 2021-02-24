@@ -447,12 +447,65 @@ const getConsultantStaffings = asyncHandler(async (req, res) => {
     }    
 });
 
-const updateAConsultant = (id, consultant) => {
-    console.log(`Consultant to Update: `, id, consultant);
+const updateAConsultant = async (id, consultant) => {
+
+    const consultantUpdated = await Consultant.findOneAndUpdate({_id: id}, consultant, {new:true});
+    return consultantUpdated;
 }
 
-const createAConsultant = (consultant) => {
-    console.log(`Consultant to create: `, consultant);
+const createAConsultant = async (consultant) => {
+    //console.log('Create: ' + consultant.name);
+    const newConsultant = await Consultant.create(consultant);
+    if (newConsultant) {
+        return newConsultant;
+    } else {
+        return '';
+    }
+}
+
+const transformGrade = (gradeIn) => {
+    let gradeOut = '';
+
+    if (gradeIn.match(/Analyst|Analyst Consultant/g)){
+        gradeOut = 'Analyst'
+    };
+    if (gradeIn.match(/Consultant/g)){
+        gradeOut = 'Consultant'
+    };
+    if (gradeIn.match(/Manager/g)){
+        gradeOut = 'Manager'
+    };
+    if (gradeIn.match(/Senior Consultant/g)){
+        gradeOut = 'Senior consultant'
+    };
+    if (gradeIn.match(/Stagiaire|Alternant Conseil/g)){
+        gradeOut = 'Intern'
+    };
+    if (gradeIn.match(/Expert/g)){
+        gradeOut = 'Manager'
+    };
+    if (gradeIn.match(/Account Developper|Account Manager|Business Analyst/g)){
+        gradeOut = 'Commercial'
+    };
+    if (gradeIn.match(/Senior Manager/g)){
+        gradeOut = 'Senior manager'
+    };
+    if (gradeIn.match(/Directeur de projet|Directeur Associé/g)){
+        gradeOut = 'Director'
+    };
+    if (gradeIn.match(/Research analyst|Senior Research Analyst/g)){
+        gradeOut = 'Research'
+    };
+    if (gradeIn.match(/Partner/g)){
+        gradeOut = 'Partner'
+    };
+
+    if(gradeOut === '') {
+        console.log('Grade not recognized: ' + gradeIn);
+        gradeOut = 'Unknown'
+    }
+    
+    return gradeOut;
 }
 
 // @desc    Create or update consultant data
@@ -461,7 +514,6 @@ const createAConsultant = (consultant) => {
 const createOrUpdateConsultants = asyncHandler(async (req, res) => {
 
     const access = req.user.profil.api.filter(x => x.name === 'massImportConsultants')[0].data;
-    //const consultantsId = await myAccessConsultants(access, req);
 
     if (access === 'yes') {
         const consultantsData = req.body;
@@ -469,29 +521,43 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
             const consultants = consultantsData[0];
             for (let incr = 0 ; incr < consultants.length ; incr++) {
 
-                const searchConsultant = await Consultant.findOne({matricule: consultants[incr]["Office n°"]});
-                
-                const cdmId = await Consultant.findOne({matricule: consultants[incr].CDM_MATRICULE.toString().padStart(9,0)}).select('_id');
-                console.log(consultants[incr].CDM_MATRICULE.toString().padStart(9,0));
+                const searchConsultant = await Consultant.findOne({matricule: consultants[incr].MATRICULE});
+                const cdmMatricule = consultants[incr].CDM_MATRICULE ? consultants[incr].CDM_MATRICULE.toString().padStart(9,0) : '';
+                const cdmId = await Consultant.findOne({matricule: cdmMatricule}).select('_id');
+                //console.log(consultants[incr].CDM_MATRICULE.toString().padStart(9,0));
+                //console.log('cdmId', cdmId, 'matricule', cdmMatricule);
 
                 const consultantToUpdateOrCreate = {
                     //_id: searchConsultant._id,
                     name: consultants[incr].NAME,
-                    grade: consultants[incr].GRADE,
+                    email: consultants[incr].EMAIL,
+                    grade: transformGrade(consultants[incr].GRADE),
                     practice: consultants[incr].PRACTICE,
                     matricule: consultants[incr].MATRICULE,
                     arrival: new Date(consultants[incr].START),
                     valued: new Date(consultants[incr].VALUED),
-                    cdmId: cdmId ? cdmId : ''
+                    leaving: new Date(consultants[incr].LEAVE),
+                    isCdm: consultants[incr].IS_CDM,
+                    cdmId: cdmId ? cdmId._id : null,
+                    isPartialTime:{
+                        value: consultants[incr].PARTIAL_TIME === 'true' ? true : false,
+                        week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}],
+                        start: '',
+                        end: ''
+                    }
                 }
                 
+                let result = '';
                 if (searchConsultant) {
-                    updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
+                    result = updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
                 } else {
-                    createAConsultant(consultantToUpdateOrCreate)
+                    result = createAConsultant(consultantToUpdateOrCreate)
+                }
+
+                if (!result){
+                    console.log('Error creating or updating: ' + consultants[incr].NAME)
                 }
             }
-            //consultantsData[0].map(x => console.log(x));
         }
 
     }
