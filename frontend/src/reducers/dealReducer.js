@@ -15,6 +15,10 @@ import {
     DEAL_EDIT_REQUEST,
     DEAL_EDIT_RESET,
     DEAL_EDIT_SUCCESS,
+    DEAL_MASS_IMPORT_FAIL,
+    DEAL_MASS_IMPORT_REQUEST,
+    DEAL_MASS_IMPORT_RESET,
+    DEAL_MASS_IMPORT_SUCCESS,
     DEAL_OLD_FAIL,
     DEAL_OLD_REQUEST,
     DEAL_OLD_RESET,
@@ -116,6 +120,21 @@ export const dealOldReducer = (state = {}, action) => {
         case DEAL_OLD_FAIL:
             return { loading: false, error: action.payload };
         case DEAL_OLD_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const dealsImportMassReducer = (state = {}, action) => {
+    switch (action.type) {
+        case DEAL_MASS_IMPORT_REQUEST:
+            return { loading: true };
+        case DEAL_MASS_IMPORT_SUCCESS:
+            return { loading: false, success: true, datas: action.payload.datas };
+        case DEAL_MASS_IMPORT_FAIL:
+            return { loading: false, error: action.payload };
+        case DEAL_MASS_IMPORT_RESET:
             return {}
         default:
             return state;

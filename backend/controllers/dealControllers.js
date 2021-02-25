@@ -2,6 +2,7 @@ const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { myAccessDeals, calculatePriority } = require('../utils/dealsFunctions');
 const Consultant = require('../models/consultantModel');
+const Client = require('../models/clientModel');
 //const { sendAMail } = require('../config/email');
 //const MailService = require("../config/MailService");
 
@@ -230,5 +231,83 @@ const getADeal = asyncHandler(async (req, res) => {
     
 });
 
+const dealToUpdate = async (id, deal) => {
+    const dealUpdated = await Deal.findOneAndUpdate({_id: id}, deal, {new:true});
+    return dealUpdated;
+}
 
-module.exports = { createDeal, getAllDeals, deleteDeal, getADeal, updateADeal, getOldDeals };
+const dealToCreate = async (deal) => {
+    const dealToCreate = {
+        ...deal,
+        type:'unknown',
+        probability: 50
+    }
+
+    const createdDeal = await Deal.create(dealToCreate);
+    if (createdDeal) {
+        return createdDeal;
+    } else {
+        return '';
+    }
+}
+
+// @desc    Upload deals
+// @route   PUT /api/deals/admin/mass-import
+// @access  Private
+const createOrUpdateDeals = asyncHandler(async (req, res) => { 
+
+    const access = req.user.profil.api.filter(x => x.name === 'massImportDeals')[0].data;
+    const errors = []
+
+    if (access === 'yes') {
+        const dealsData = req.body;
+
+        for (let page = 0; page < dealsData.length ; page++) {
+            const dealsPage = dealsData[page];
+            for (let incr=0; incr < dealsPage.length; incr++) {
+                const deal = dealsPage[incr];
+
+                let companyName = deal.COMPANY
+                const existCompany = await Client.findOne({name:deal.COMPANY});
+                if (!existCompany) {
+                    const createdCompany = await Client.create({name: deal.COMPANY, commercialTeam: []});
+                    companyName = createdCompany.name;
+                }
+
+                const dealToUpdateOrCreate = {
+                    title: deal.TITLE,
+                    description: deal.DESCRIPTION,
+                    company: companyName,
+                    status: deal.STATUS,
+                    mainPractice: deal.PRACTICE,
+                    staffingRequest: {
+                        instructions: deal.REQUEST_DETAILS,
+                        requestStatus: deal.REQUEST_STATUS
+                    },
+                    startDate: new Date(deal.START),
+                    duration: deal.DURATION,
+                }
+                const existDeal = await Deal.findOne({title: deal.TITLE});
+                
+                let result = '';
+                if (existDeal) {
+                    //console.log('deal to update');
+                    result = dealToUpdate(existDeal._id, dealToUpdateOrCreate);
+                } else {
+                    //console.log('deal to create');
+                    result = dealToCreate(dealToUpdateOrCreate, req.user.consultantProfil.practice)
+                }
+            }
+        }
+    }
+
+    if (errors.length === 0){
+        res.status(200).json({message: 'All pxx updated'});
+    } else {
+        res.status(200).json({message: 'Errors updating Pxx', datas:errors});
+    }
+    
+});
+
+
+module.exports = { createDeal, getAllDeals, deleteDeal, getADeal, updateADeal, getOldDeals, createOrUpdateDeals };

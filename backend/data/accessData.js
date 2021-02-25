@@ -26,6 +26,7 @@ function getAccessData() {
                 {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'all'},
                 {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'yes', data: 'all'},
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'yes', data: 'all'},
+                {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'yes', data: 'all'},
 
             ],
             api:[
@@ -49,6 +50,7 @@ function getAccessData() {
                 { name: 'sendStaffingDecisionEmails', data: 'yes'},
                 { name: 'massImportConsultants', data: 'yes'},
                 { name: 'massImportPxx', data: 'yes'},
+                { name: 'massImportDeals', data: 'yes'},
             ]
         },
         {
@@ -76,6 +78,7 @@ function getAccessData() {
                 {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'department'},
                 {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'yes', data: 'department'},
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'yes', data: 'department'},
+                {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'yes', data: 'department'},
             ],
             api:[
                 { name: 'getUsers', data: 'department' },
@@ -98,6 +101,7 @@ function getAccessData() {
                 { name: 'sendStaffingDecisionEmails', data: 'yes'},
                 { name: 'massImportConsultants', data: 'yes'},
                 { name: 'massImportPxx', data: 'yes'},
+                { name: 'massImportDeals', data: 'yes'},
             ]
         },
         {
@@ -125,6 +129,7 @@ function getAccessData() {
                 {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'yes', data: 'team'},
                 {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'no', data: 'team'},
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'no', data: 'team'},
+                {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'no', data: 'team'},
             ],
             api:[
                 { name: 'getUsers', data: 'team' },
@@ -147,6 +152,7 @@ function getAccessData() {
                 { name: 'sendStaffingDecisionEmails', data: 'no'},
                 { name: 'massImportConsultants', data: 'no'},
                 { name: 'massImportPxx', data: 'no'},
+                { name: 'massImportDeals', data: 'no'},
             ]
         },
         {
@@ -174,6 +180,7 @@ function getAccessData() {
                 {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'no', data: 'department'},
                 {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'no', data: 'department'},
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'no', data: 'my'},
+                {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'no', data: 'my'},
             ],
             api:[
                 { name: 'getUsers', data: 'my' },
@@ -196,6 +203,7 @@ function getAccessData() {
                 { name: 'sendStaffingDecisionEmails', data: 'no'},
                 { name: 'massImportConsultants', data: 'no'},
                 { name: 'massImportPxx', data: 'no'},
+                { name: 'massImportDeals', data: 'no'},
             ]
         },
         {
@@ -223,6 +231,7 @@ function getAccessData() {
                 {category: 'StaffingRequest Screen', id: 'editStaff', label: 'Add, Modify and Delete a staff', mode:'no', data: 'my'},
                 {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'no', data: 'my'},
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'no', data: 'my'},
+                {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'no', data: 'my'},
             ],
             api: [
                 { name: 'getUsers', data: 'my' },
@@ -245,6 +254,7 @@ function getAccessData() {
                 { name: 'sendStaffingDecisionEmails', data: 'no'},
                 { name: 'massImportConsultants', data: 'no'},
                 { name: 'massImportPxx', data: 'no'},
+                { name: 'massImportDeals', data: 'no'},
             ]
         }
     ];

@@ -12,6 +12,9 @@ import {
     DEAL_EDIT_FAIL,
     DEAL_EDIT_REQUEST,
     DEAL_EDIT_SUCCESS,
+    DEAL_MASS_IMPORT_FAIL,
+    DEAL_MASS_IMPORT_REQUEST,
+    DEAL_MASS_IMPORT_SUCCESS,
     DEAL_OLD_FAIL,
     DEAL_OLD_REQUEST,
     DEAL_OLD_SUCCESS,
@@ -185,6 +188,35 @@ export const getOldDeals = (consultantId) => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: DEAL_OLD_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const dealsImportInMass = (datas) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: DEAL_MASS_IMPORT_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.put(`/api/deals/admin/mass-import`, datas, config);
+
+       dispatch({ type: DEAL_MASS_IMPORT_SUCCESS, payload: data });
+
+    } catch (error) {
+        dispatch({
+            type: DEAL_MASS_IMPORT_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

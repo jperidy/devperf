@@ -25,7 +25,7 @@ import {
  } from './reducers/consultantReducers';
 import { pxxMyToEditReducer } from './reducers/pxxReducers';
 import { skillCreateReducer, skillDelteReducer, skillListReducer } from './reducers/skillReducers'
-import { dealAllListReducer, dealCreateReducer, dealDeleteReducer, dealEditeReducer, dealOldReducer, dealUpdateReducer } from './reducers/dealReducer';
+import { dealAllListReducer, dealCreateReducer, dealDeleteReducer, dealEditeReducer, dealOldReducer, dealsImportMassReducer, dealUpdateReducer } from './reducers/dealReducer';
 import { accessFrontUpdateReducer, accessListReducer } from './reducers/accessReducers';
 import { clientAllReducer, clientCreateReducer, clientUpdateReducer, clientDeleteReducer } from './reducers/clientReducers';
 import { createTaceReducer } from './reducers/taceReducer';
@@ -73,6 +73,7 @@ export const reducer = combineReducers({
     dealEdit: dealEditeReducer,
     dealUpdate: dealUpdateReducer,
     dealOld: dealOldReducer,
+    dealsImportMass: dealsImportMassReducer,
     accessList: accessListReducer,
     accessFrontUpdate: accessFrontUpdateReducer,
     clientAll: clientAllReducer,

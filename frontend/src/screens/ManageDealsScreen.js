@@ -12,9 +12,15 @@ import Col from 'react-bootstrap/Col';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { getAllDeals } from '../actions/dealActions';
+import { dealsImportInMass, getAllDeals } from '../actions/dealActions';
 import { FormControl, InputGroup } from 'react-bootstrap';
 import { DEAL_STATUS, REQUEST_STATUS } from '../constants/dealConstants';
+import ImportExcelFile from '../components/ImportExcelFile';
+import ReactExport from "react-export-excel";
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const ManageDealsScreen = ({ history }) => {
 
@@ -48,6 +54,9 @@ const ManageDealsScreen = ({ history }) => {
 
     const [update, setUpdate] = useState(true);
 
+    const [exportExcel, setExportExcel] = useState('');
+    const [importData, setImportData] = useState([]);
+
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
@@ -56,6 +65,9 @@ const ManageDealsScreen = ({ history }) => {
 
     const dealDelete = useSelector(state => state.dealDelete);
     const { error: errorDelete, success: successDelete } = dealDelete;
+
+    const dealsImportMass = useSelector(state  => state.dealsImportMass);
+    const {loading: loadingImportMass, error: errorImportMass, success: successImportData, datas} = dealsImportMass;
 
     useEffect(() => {
 
@@ -99,7 +111,8 @@ const ManageDealsScreen = ({ history }) => {
         pageNumber, 
         pageSize,
         update,
-        searchMyDeals
+        searchMyDeals,
+        successImportData
     ]);
 
     useEffect(() => {
@@ -180,6 +193,34 @@ const ManageDealsScreen = ({ history }) => {
     }, [deals, tabsFilter, newDealFilter, notUpdateFilter, updateFilter, wonDealFilter]);
 
     useEffect(() => {
+        if (deals) {
+            const exportExcelData = deals.map((deal) => ({
+                'TITLE': deal.title,
+                'COMPANY': deal.company,
+                'PRACTICE': deal.mainPractice,
+                'LEADER': deal.contacts && deal.contacts.primary && deal.contacts.primary.name,
+                'CO-LEADER': deal.contacts && deal.contacts.secondary && deal.contacts.secondary.map(x => x.name).join(''),
+                'OTHERS_PRACTICES': deal.othersPractices && deal.othersPractices.join(','),
+                'STATUS': deal.status,
+                'DESCRIPTION': deal.description,
+                'START': deal.startDate.substring(0,10),
+                'DURATION': deal.duration,
+                'REQUEST_STATUS': deal.staffingRequest.requestStatus,
+                'REQUEST_DETAILS': deal.staffingRequest.instructions,
+                'DECISION': deal.staffingDecision.staff && deal.staffingDecision.staff.map(x => `${x.responsability}: ${x.idConsultant.name} (${x.priority})}`).join('\n'),
+            }));
+            setExportExcel(exportExcelData);
+        }
+    }, [deals, setExportExcel]);
+
+    useEffect(() => {
+        if(importData.length > 0) {
+            //console.log(importData);
+            dispatch(dealsImportInMass(importData));
+        }
+    },[dispatch, importData]);
+
+    useEffect(() => {
 
         if (successDelete) {
             const keyword = {
@@ -209,6 +250,42 @@ const ManageDealsScreen = ({ history }) => {
             <DropDownTitleContainer
                 title='Manage Deals'
                 close={false}>
+                
+                <Row className='mt-3'>
+                    <Col xs={0} md={7}></Col>
+                    <Col xs={6} md={3}>
+                        <DisplayChildren access='uploadDeals'>
+                            {loadingImportMass ? (
+                                <Loader />
+                            ) : (
+                                    <ImportExcelFile setImportData={setImportData} />
+                                )}
+                        </DisplayChildren>
+                    </Col>
+
+                    <Col ws={6} md={2}>
+                        {exportExcel && (
+                            <ExcelFile element={<Button variant='primary'><i className="fas fa-download"></i>  Download</Button>}>
+                                <ExcelSheet data={exportExcel} name="dealsSheet">
+                                    <ExcelColumn label="TITLE" value="TITLE" />
+                                    <ExcelColumn label="COMPANY" value="COMPANY" />
+                                    <ExcelColumn label="PRACTICE" value="PRACTICE" />
+                                    <ExcelColumn label="LEADER" value="LEADER" />
+                                    <ExcelColumn label="CO-LEADER" value="CO-LEADER" />
+                                    <ExcelColumn label="OTHERS_PRACTICES" value="OTHERS_PRACTICES" />
+                                    <ExcelColumn label="STATUS" value="STATUS" />
+                                    <ExcelColumn label="DESCRIPTION" value="DESCRIPTION" />
+                                    <ExcelColumn label="START" value="START" />
+                                    <ExcelColumn label="DURATION" value="DURATION" />
+                                    <ExcelColumn label="REQUEST_STATUS" value="REQUEST_STATUS" />
+                                    <ExcelColumn label="REQUEST_DETAILS" value="REQUEST_DETAILS" />
+                                    <ExcelColumn label="DECISION" value="DECISION" />
+                                </ExcelSheet>
+                            </ExcelFile>
+                        )}
+                    </Col>
+                </Row>
+
                 <ListGroup.Item className='p-0 mt-3'>
                     <Tabs 
                         id="uncontrolled-tab-example" 

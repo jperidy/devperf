@@ -148,7 +148,7 @@ const ManageConsultantScreen = ({ history, match }) => {
                         <Col xs={6} md={2}>
                             {exportExcel && (
                                 <ExcelFile element={<Button variant='primary'><i className="fas fa-download"></i>  Download</Button>}>
-                                    <ExcelSheet data={exportExcel} name="pxxsheet">
+                                    <ExcelSheet data={exportExcel} name="consultantsSheet">
                                         <ExcelColumn label="NAME" value="NAME" />
                                         <ExcelColumn label="EMAIL" value="EMAIL" />
                                         <ExcelColumn label="PRACTICE" value="PRACTICE" />

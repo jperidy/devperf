@@ -450,7 +450,6 @@ const getConsultantStaffings = asyncHandler(async (req, res) => {
 });
 
 const updateAConsultant = async (id, consultant) => {
-    // TODO if modify arrival, leaving, partial time, need to update Pxx
     const consultantUpdated = await Consultant.findOneAndUpdate({_id: id}, consultant, {new:true});
     return consultantUpdated;
 }

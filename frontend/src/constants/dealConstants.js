@@ -28,6 +28,11 @@ export const DEAL_OLD_SUCCESS = 'DEAL_OLD_SUCCESS';
 export const DEAL_OLD_FAIL = 'DEAL_OLD_FAIL';
 export const DEAL_OLD_RESET = 'DEAL_OLD_RESET';
 
+export const DEAL_MASS_IMPORT_REQUEST = 'DEAL_MASS_IMPORT_REQUEST';
+export const DEAL_MASS_IMPORT_SUCCESS = 'DEAL_MASS_IMPORT_SUCCESS';
+export const DEAL_MASS_IMPORT_FAIL = 'DEAL_MASS_IMPORT_FAIL';
+export const DEAL_MASS_IMPORT_RESET = 'DEAL_MASS_IMPORT_RESET';
+
 export const REQUEST_STATUS = [
     {name: 'Identify Leader', staff: true, priority: 10},
     {name: 'Identify Staff', staff: true, priority: 7},
