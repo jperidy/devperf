@@ -36,7 +36,7 @@ const ImportExcelFile = ({setImportData}) => {
                 id="importData"
                 custom
             >
-                <Form.File.Label data-browse="Browse">{fileName ? fileName : '  ...  '}</Form.File.Label>
+                <Form.File.Label data-browse="Upload">{fileName ? fileName : '  ...  '}</Form.File.Label>
                 <Form.File.Input onChange={(e) => readFileHandler(e)} />
             </Form.File>
         </Form>
