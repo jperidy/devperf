@@ -62,10 +62,12 @@ const getAllConsultants = asyncHandler(async (req, res) => {
     //console.log(consultantsId);
     
     let consultants = await Consultant.find({...keyword, _id: {$in: consultantsId}})
+            .populate('cdmId')
             .sort({'name': 1})
             .limit(pageSize).skip(pageSize * (page - 1));
 
     if (consultants) {
+        
         res.status(200).json({consultants, page, pages: Math.ceil(count/pageSize), count});
     } else {
         res.status(400).json({message: `No consultants found for practice: ${req.query.practice}` });
@@ -454,7 +456,16 @@ const updateAConsultant = async (id, consultant) => {
 }
 
 const createAConsultant = async (consultant) => {
-    const newConsultant = await Consultant.create(consultant);
+    const consultantToCreate = {
+        ...consultant,
+        isPartialTime: {
+            value: false,
+            week: [{ num: 1, worked: 1 }, { num: 2, worked: 1 }, { num: 3, worked: 1 }, { num: 4, worked: 1 }, { num: 5, worked: 1 }],
+            start: '',
+            end: ''
+        }
+    }
+    const newConsultant = await Consultant.create(consultantToCreate);
     if (newConsultant) {
         return newConsultant;
     } else {
@@ -531,24 +542,25 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
                     grade: transformGrade(consultants[incr].GRADE),
                     practice: consultants[incr].PRACTICE,
                     matricule: consultants[incr].MATRICULE,
-                    arrival: consultants[incr].START ? new Date(consultants[incr].START) : null,
+                    arrival: consultants[incr].ARRIVAL ? new Date(consultants[incr].ARRIVAL) : null,
                     valued: consultants[incr].VALUED ? new Date(consultants[incr].VALUED) : null,
-                    leaving: consultants[incr].LEAVE ? new Date(consultants[incr].LEAVE) : null,
-                    isCdm: consultants[incr].IS_CDM,
+                    leaving: consultants[incr].LEAVING ? new Date(consultants[incr].LEAVING) : null,
+                    isCDM: consultants[incr].IS_CDM,
                     cdmId: cdmId ? cdmId._id : null,
-                    isPartialTime:{
+                    /* isPartialTime:{
                         value: consultants[incr].PARTIAL_TIME === 'true' ? true : false,
                         week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}],
                         start: '',
                         end: ''
-                    }
+                    } */
                 }
+                //console.log(consultantToUpdateOrCreate.isCDM);
                 
                 let result = '';
                 if (searchConsultant) {
                     result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
                 } else {
-                    result = await createAConsultant(consultantToUpdateOrCreate)
+                    result = await createAConsultant(consultantToUpdateOrCreate);
                 }
 
                 //console.log(result);

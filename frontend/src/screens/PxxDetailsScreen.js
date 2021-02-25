@@ -57,12 +57,14 @@ const PxxDetailsScreen = ({ history, match }) => {
                 'CONSULTANT': pxx.name.name,
                 'MATRICULE': pxx.name.matricule,
                 'PRACTICE': pxx.name.practice,
+                'CDM_MATRICULE': pxx.name.cdmId && pxx.name.cdmId._id,
+                'CDM_NAME': pxx.name.cdmId && pxx.name.cdmId.name,
                 'VALUED': pxx.name.valued.substring(0,10),
                 'ARRIVAL': pxx.name.arrival.substring(0,10),
                 'LEAVING': pxx.name.leaving ? pxx.name.leaving.substring(0,10) : '',
                 'MONTH': pxx.month.name,
                 'PROD': pxx.prodDay,
-                'NOT PROD': pxx.notProdDay,
+                'NOT_PROD': pxx.notProdDay,
                 'HOLIDAYS': pxx.leavingDay,
                 'AVAILABLE': pxx.availableDay
             }));
@@ -72,7 +74,7 @@ const PxxDetailsScreen = ({ history, match }) => {
 
     useEffect(() => {
         if(importData.length > 0) {
-            console.log(importData);
+            //console.log(importData);
             dispatch(pxxImportInMass(importData));
         }
     },[dispatch, importData]);
@@ -138,9 +140,11 @@ const PxxDetailsScreen = ({ history, match }) => {
                                 <ExcelColumn label="LEAVING" value="LEAVING" />
                                 <ExcelColumn label="MONTH" value="MONTH" />
                                 <ExcelColumn label="PROD" value="PROD" />
-                                <ExcelColumn label="NOT PROD" value="NOT PROD" />
+                                <ExcelColumn label="NOT_PROD" value="NOT_PROD" />
                                 <ExcelColumn label="HOLIDAYS" value="HOLIDAYS" />
                                 <ExcelColumn label="AVAILABLE" value="AVAILABLE" />
+                                <ExcelColumn label="CDM_MATRICULE" value="CDM_MATRICULE" />
+                                <ExcelColumn label="CDM_NAME" value="CDM_NAME" />
                             </ExcelSheet>
                         </ExcelFile>
                     )}
@@ -175,6 +179,7 @@ const PxxDetailsScreen = ({ history, match }) => {
                         <th className='align-middle text-light'>User name</th>
                         <th className='align-middle text-light'>Matricule</th>
                         <th className='align-middle text-light text-center'>Practice</th>
+                        <th className='align-middle text-light text-center'>CDM</th>
                         <th className='align-middle text-light text-center'>Month</th>
                         <th className='align-middle text-light text-center'>Arrival</th>
                         <th className='align-middle text-light text-center'>Leaving</th>
@@ -191,6 +196,7 @@ const PxxDetailsScreen = ({ history, match }) => {
                             <td className='align-middle'><b>{pxx.name.name && pxx.name.name}</b></td>
                             <td className='align-middle'><b>{pxx.name.matricule && pxx.name.matricule}</b></td>
                             <td className='align-middle'>{pxx.name.practice && pxx.name.practice}</td>
+                            <td className='align-middle'><b>{pxx.name.cdmId && pxx.name.cdmId.name}</b></td>
                             <td className='align-middle text-center'>{pxx.month.name && pxx.month.name}</td>
                             <td className='align-middle text-center'>{pxx.name.arrival && pxx.name.arrival.toString().substring(0,10)}</td>
                             <td className='align-middle text-center'>{pxx.name.leaving ? pxx.name.leaving.toString().substring(0,10) : '-'}</td>

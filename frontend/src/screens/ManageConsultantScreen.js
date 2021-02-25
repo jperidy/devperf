@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
 import ImportExcelFile from '../components/ImportExcelFile';
+import ReactExport from "react-export-excel";
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Pagination from 'react-bootstrap/Pagination';
@@ -16,13 +17,19 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
 const ManageConsultantScreen = ({ history, match }) => {
 
     const dispatch = useDispatch();
 
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(10000);
     const [pageNumber, setPageNumber] = useState(1);
     const [keyword, setKeyword] = useState('');
+
+    const [exportExcel, setExportExcel] = useState('');
 
     const [importData, setImportData] = useState([]);
 
@@ -49,11 +56,32 @@ const ManageConsultantScreen = ({ history, match }) => {
     }, [dispatch, history, userInfo, pageNumber, pageSize, keyword, successMassImport]);
 
     useEffect(() => {
+        if (consultantsMyAdmin) {
+            const exportExcelData = consultantsMyAdmin.map((consultant) => ({
+                'NAME': consultant.name,
+                'EMAIL': consultant.email,
+                'PRACTICE': consultant.practice,
+                'MATRICULE': consultant.matricule,
+                'VALUED': consultant.valued.substring(0,10),
+                'ARRIVAL': consultant.arrival.substring(0,10),
+                'LEAVING': consultant.leaving ? consultant.leaving.substring(0,10) : '',
+                'PARTIAL_TIME': consultant.isPartialTime.value,
+                'GRADE': consultant.grade,
+                'IS_CDM': consultant.isCDM,
+                'CDM_MATRICULE': consultant.cdmId && consultant.cdmId.matricule,
+                'CDM_NAME': consultant.cdmId && consultant.cdmId.name
+            }));
+            setExportExcel(exportExcelData);
+        }
+    },[consultantsMyAdmin])
+
+    useEffect(() => {
         if (successConsultantDelete) {
             dispatch(getAllMyAdminConsultants(keyword, pageNumber, pageSize));
             dispatch({ type: CONSULTANT_DELETE_RESET });
         }
-    }, [dispatch, successConsultantDelete, keyword, pageNumber, pageSize, userInfo]);
+    // eslint-disable-next-line
+    }, [dispatch, successConsultantDelete]);
 
 
     useEffect(() => {
@@ -91,11 +119,6 @@ const ManageConsultantScreen = ({ history, match }) => {
                             ><i className="fas fa-user-edit mr-2"></i>Add
                             </Button>
                         </Col>
-                        <Col xs={6} md={3}>
-                            {loadingMassImport ? (<Loader />) : (
-                                <ImportExcelFile setImportData={setImportData} />
-                            )}
-                        </Col>
 
                         <Col xs={6} md={2}>
                             <InputGroup>
@@ -109,11 +132,38 @@ const ManageConsultantScreen = ({ history, match }) => {
                             </InputGroup>
                         </Col>
 
-                        <Col xs={6} md={3}>
+                        <Col xs={6} md={2}>
                             <Form.Control
                                 plaintext
                                 readOnly
                                 value={count ? `${count} consultants found` : '0 consultant found'} />
+                        </Col>
+
+                        <Col xs={6} md={2}>
+                            {loadingMassImport ? (<Loader />) : (
+                                <ImportExcelFile setImportData={setImportData} />
+                            )}
+                        </Col>
+
+                        <Col xs={6} md={2}>
+                            {exportExcel && (
+                                <ExcelFile element={<Button variant='primary'><i className="fas fa-download"></i>  Download</Button>}>
+                                    <ExcelSheet data={exportExcel} name="pxxsheet">
+                                        <ExcelColumn label="NAME" value="NAME" />
+                                        <ExcelColumn label="EMAIL" value="EMAIL" />
+                                        <ExcelColumn label="PRACTICE" value="PRACTICE" />
+                                        <ExcelColumn label="MATRICULE" value="MATRICULE" />
+                                        <ExcelColumn label="VALUED" value="VALUED" />
+                                        <ExcelColumn label="ARRIVAL" value="ARRIVAL" />
+                                        <ExcelColumn label="LEAVING" value="LEAVING" />
+                                        <ExcelColumn label="PARTIAL_TIME" value="PARTIAL_TIME" />
+                                        <ExcelColumn label="GRADE" value="GRADE" />
+                                        <ExcelColumn label="IS_CDM" value="IS_CDM" />
+                                        <ExcelColumn label="CDM_MATRICULE" value="CDM_MATRICULE" />
+                                        <ExcelColumn label="CDM_NAME" value="CDM_NAME" />
+                                    </ExcelSheet>
+                                </ExcelFile>
+                            )}
                         </Col>
 
                         <Col xs={6} md={2}>
@@ -125,11 +175,11 @@ const ManageConsultantScreen = ({ history, match }) => {
                                     value={pageSize && pageSize}
                                     onChange={(e) => setPageSize(e.target.value)}
                                 >
-                                    {[5, 10, 15, 20, 50].map(x => (
+                                    {[5, 10, 15, 20, 50, 10000].map(x => (
                                         <option
                                             key={x}
                                             value={x}
-                                        >{x} / page</option>
+                                        >{x === 10000 ? 'All (export)' : `${x} / page`}</option>
                                     ))}
                                 </FormControl>
                             </InputGroup>

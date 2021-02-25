@@ -17,8 +17,6 @@ const ManageUsersScreen = ({ history }) => {
 
     const dispatch = useDispatch();
 
-    //const [message, setMessage] = useState({});
-
     const [pageSize, setPageSize] = useState(10);
     const [pageNumber, setPageNumber] = useState(1);
     const [keyword, setKeyword] = useState('');
@@ -43,18 +41,6 @@ const ManageUsersScreen = ({ history }) => {
 
     }, [dispatch, history, userInfo, success, keyword, pageNumber, pageSize]);
 
-    /*
-    useEffect(() => {
-
-        if (error) {
-            setMessage({ message: error, type: 'danger' });
-        }
-        if (success) {
-            setMessage({ message: 'User deleted', type: 'success' })
-        }
-
-    }, [error, success]);
-    */
 
     const onClickEditHandler = (userId) => {
         history.push(`/admin/edituser/${userId}`);
@@ -73,9 +59,7 @@ const ManageUsersScreen = ({ history }) => {
 
             <DropDownTitleContainer title='Manage users' close={false}>
                 <ListGroup.Item>
-
                     <Row>
-
                         <Col xs={6} md={3}>
                             <InputGroup>
                                 <FormControl

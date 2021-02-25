@@ -561,14 +561,17 @@ const getAllPxx = asyncHandler(async (req, res) => {
     const consultantsId = consultants.map( consultant => consultant._id);
 
     const count = await Pxx.countDocuments({ month: month, name: {$in: consultantsId} });
-    const pxxs = await Pxx.find({ month: month, name: {$in: consultantsId} })
+    let pxxs = await Pxx.find({ month: month, name: {$in: consultantsId} })
         .populate('name month')
         .sort({'name': 1})
         .limit(pageSize).skip(pageSize * (page - 1));
-
-    //console.log('pxxs', pxxs);
-
+        
     if (pxxs) {
+        for (let incr = 0 ; incr < pxxs.length ; incr++) {
+            const cdm = await Consultant.findById(pxxs[incr].name.cdmId).select('_id name matricule');
+            pxxs[incr].name.cdmId = cdm;
+            //console.log(cdm);
+        }
         res.status(200).json({pxxs, page, pages: Math.ceil(count/pageSize), count});
     } else {
         res.status(400).json({message: 'no pxx found'});
@@ -591,8 +594,8 @@ const massImportPxx = asyncHandler(async (req, res) => {
             for (let pxxLine = 0 ; pxxLine < pxxPage.length; pxxLine++){
 
                 let matricule = pxxPage[pxxLine].MATRICULE.toString().padStart(9,0)
-                let monthName = pxxPage[pxxLine].MOIS_ANNEE
-                monthName = '20' + monthName.split('/')[1] + '/' + Number(monthName.split('/')[0])
+                let monthName = pxxPage[pxxLine].MONTH
+                //monthName = '20' + monthName.split('/')[1] + '/' + Number(monthName.split('/')[0])
                 //console.log(monthName);
 
                 const month = await Month.findOne({name: monthName});
@@ -616,20 +619,17 @@ const massImportPxx = asyncHandler(async (req, res) => {
                     let availableDay = calculateAvailableDays(consultant, month);
                     //console.log('initial available days', availableDay);
 
-                    existPxxLine.notProdDay = Math.min(Number(pxxPage[pxxLine].NOMBRE_IMPROD_PXX), availableDay);
+                    existPxxLine.notProdDay = Math.min(Number(pxxPage[pxxLine].NOT_PROD), availableDay);
                     availableDay = availableDay - existPxxLine.notProdDay;
 
-                    existPxxLine.leavingDay = Math.min(Number(pxxPage[pxxLine].NOMBRE_CONGES_PXX), availableDay);
+                    existPxxLine.leavingDay = Math.min(Number(pxxPage[pxxLine].HOLIDAYS), availableDay);
                     availableDay = availableDay - existPxxLine.leavingDay;
                     
-                    existPxxLine.availableDay = Math.min(Number(pxxPage[pxxLine].DISPO), availableDay);
+                    existPxxLine.availableDay = Math.min(Number(pxxPage[pxxLine].AVAILABLE), availableDay);
                     availableDay = availableDay - existPxxLine.availableDay;
 
                     existPxxLine.prodDay = availableDay;
                     await existPxxLine.save();
-
-                    //console.log(existPxxLine.prodDay, existPxxLine.notProdDay, existPxxLine.leavingDay, existPxxLine.availableDay, '/n');
-
 
                 } else {
                     console.log('Pxx not found for month.name: ' + monthName + ' and consultant.matricule: ' + matricule);
