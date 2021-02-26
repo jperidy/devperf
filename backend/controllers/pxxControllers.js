@@ -654,6 +654,84 @@ const massImportPxx = asyncHandler(async (req, res) => {
     
 });
 
+// @desc    Mass import of pxx datas
+// @route   PUT /api/pxx/admin/mass-import
+// @access  Private
+const lineImportPxx = asyncHandler(async (req, res) => {
+
+    const access = req.user.profil.api.filter(x => x.name === 'massImportPxx')[0].data;
+    const errors = [];
+
+    if (access === 'yes') {
+
+        const pxxLine = req.body;
+
+        let matricule = pxxLine.MATRICULE.toString().padStart(9, 0);
+        let monthName = pxxLine.MONTH;
+
+        const month = await Month.findOne({ name: monthName });
+        if (!month) {
+            console.log('Month not found: ' + monthName);
+            errors.push({ monthName, matricule });
+            res.status(404).json({message: 'Month not found: ' + monthName});
+            return;
+            //break;
+        }
+
+        const consultant = await Consultant.findOne({ matricule: matricule });
+        if (!consultant) {
+            console.log('Consultant not found: ' + matricule);
+            errors.push({ monthName, matricule });
+            res.status(404).json({notUpdatedMatricule: matricule, message: 'Consultant not found: ' + matricule});
+            return;
+            //break
+        }
+
+        const existPxxLine = await Pxx.findOne({ name: consultant._id, month: month._id });
+
+        if (existPxxLine) {
+
+            let availableDay = calculateAvailableDays(consultant, month);
+
+            existPxxLine.prodDay = Math.min(Number(pxxLine.PROD), availableDay);
+            availableDay = availableDay - existPxxLine.prodDay;
+
+            existPxxLine.notProdDay = Math.min(Number(pxxLine.NOT_PROD), availableDay);
+            availableDay = availableDay - existPxxLine.notProdDay;
+
+            existPxxLine.leavingDay = Math.min(Number(pxxLine.HOLIDAYS), availableDay);
+            availableDay = availableDay - existPxxLine.leavingDay;
+
+            //existPxxLine.availableDay = Math.min(Number(pxxLine.AVAILABLE), availableDay);
+            existPxxLine.availableDay = availableDay;
+            availableDay = availableDay - existPxxLine.availableDay;
+
+            if (availableDay === 0) {
+                const updatedPxx = await existPxxLine.save();
+                res.status(200).json({updatedMatricule: matricule});
+            } else {
+                console.log(`Error when updating pxx: ${consultant.name}`);
+                res.status(500).json({notUpdatedMatricule: matricule, message: `Total days recalculated not equal to available days in the month ${monthName} for: ${consultant.name}`})
+                //errors.push({ monthName, matricule, message: 'Total days recalculated not equal to available days in the month' })
+            }
+
+        } else {
+            console.log('Pxx not found for month.name: ' + monthName + ' and consultant.matricule: ' + matricule);
+            res.status(404).json({notUpdatedMatricule: matricule, message: `Pxx not found for month ${monthName} and matricule: ${matricule}`});
+            //errors.push({ monthName, matricule, message: 'Pxx not found' });
+        }
+
+    }
+    /*
+    if (errors.length === 0) {
+        res.status(200).json({ message: 'All pxx updated' });
+    } else {
+        res.status(200).json({ message: 'Errors updating Pxx', datas: errors });
+    }
+    */
+
+});
+
 module.exports = { 
     getPxx,
     getAllPxx,
@@ -665,5 +743,6 @@ module.exports = {
     getProdChart,
     getAvailabilityChart,
     createPxx,
-    massImportPxx
+    massImportPxx,
+    lineImportPxx
 };

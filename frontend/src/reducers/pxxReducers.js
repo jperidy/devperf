@@ -26,7 +26,11 @@ import {
     PXX_IMPORT_MASS_REQUEST,
     PXX_IMPORT_MASS_SUCCESS,
     PXX_IMPORT_MASS_FAIL,
-    PXX_IMPORT_MASS_RESET
+    PXX_IMPORT_MASS_RESET,
+    PXX_IMPORT_LINE_REQUEST,
+    PXX_IMPORT_LINE_SUCCESS,
+    PXX_IMPORT_LINE_FAIL,
+    PXX_IMPORT_LINE_RESET
 } from '../constants/pxxConstants';
 
 export const pxxMyToEditReducer = (state= { pxx: [] }, action) => {
@@ -125,6 +129,21 @@ export const pxxImportMassReducer = (state= { pxx: [] }, action) => {
         case PXX_IMPORT_MASS_FAIL:
             return { loading: false, error: action.payload };
         case PXX_IMPORT_MASS_RESET:
+            return { pxx: [] };
+        default:
+            return state ;
+    }
+};
+
+export const pxxImportLineReducer = (state= { pxx: [] }, action) => {
+    switch(action.type) {
+        case PXX_IMPORT_LINE_REQUEST:
+            return { loading: true };
+        case PXX_IMPORT_LINE_SUCCESS:
+            return { loading: false, success:true, updatedLine: action.payload };
+        case PXX_IMPORT_LINE_FAIL:
+            return { loading: false, error: action.payload };
+        case PXX_IMPORT_LINE_RESET:
             return { pxx: [] };
         default:
             return state ;

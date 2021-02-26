@@ -7,12 +7,14 @@ import Button from 'react-bootstrap/Button';
 import Pagination from 'react-bootstrap/Pagination';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 import FormControl from 'react-bootstrap/FormControl';
 import Loader from '../components/Loader';
+import Meta from '../components/Meta';
 import Message from '../components/Message';
 import DisplayChildren from '../components/DisplayChildren';
 import ImportExcelFile from '../components/ImportExcelFile';
-import { getAllPxx, pxxImportInMass } from '../actions/pxxActions';
+import { getAllPxx, pxxImportInMass, pxxUpdateALine } from '../actions/pxxActions';
 import ReactExport from "react-export-excel";
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -32,24 +34,34 @@ const PxxDetailsScreen = ({ history, match }) => {
 
     const [importData, setImportData] = useState([]);
 
+    const [progress, setProgress] = useState(0);
+    const [massImport, setMassImport] = useState(false);
+    const [errorImportMessage, setErrorImportMessage] = useState([]);
+    const [messsagesImportSuccess, setMessagesImportSuccess] = useState(0);
+    const [messsagesImportError, setMessagesImportError] = useState(0);
+    const [totalToImport, setTotalToImport] = useState(0);
+
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const pxxAllList = useSelector(state  => state.pxxAllList);
     const {loading, pxxs, pages, page, count} = pxxAllList;
 
-    const pxxImportMass = useSelector(state  => state.pxxImportMass);
-    const {loading: loadingImportMass, error: errorImportMass, success: successImportData, datas} = pxxImportMass;
+    /* const pxxImportMass = useSelector(state  => state.pxxImportMass);
+    const {loading: loadingImportMass, error: errorImportMass, success: successImportData, datas} = pxxImportMass; */
+
+    const pxxImportLine = useSelector(state  => state.pxxImportLine);
+    const {loading: loadingImportLine, error: errorImportLine, success: successImportLine, updatedLine} = pxxImportLine;
 
     useEffect(() => {
 
-        if (userInfo) {
+        if (userInfo && !massImport) {
             dispatch(getAllPxx(userInfo.consultantProfil.practice, monthId, keyword, pageSize, pageNumber));
         } else {
             history.push('/login');
         }
 
-    }, [dispatch, history, userInfo, monthId, keyword, pageNumber, pageSize, successImportData]);
+    }, [dispatch, history, userInfo, monthId, keyword, pageNumber, pageSize, massImport]);
 
     useEffect(() => {
         if (pxxs) {
@@ -72,64 +84,121 @@ const PxxDetailsScreen = ({ history, match }) => {
         }
     }, [pxxs, setExportExcel]);
 
-    useEffect(() => {
-        if(importData.length > 0) {
-            //console.log(importData);
-            dispatch(pxxImportInMass(importData));
+
+
+    // Effect to manage file import
+
+    const handlerImportAllPxx = () => {
+        //dispatch({ type: EMAIL_SEND_DECISION_RESET });
+        //console.log(importData);
+        setProgress(0);
+        setMassImport(true);
+    }
+    
+    const handlerImportData = (lineToImport) => {
+        const newImportData = importData.slice();
+        for (let incr = 0 ; incr < newImportData.length; incr++){
+            if(newImportData[incr].MATRICULE === lineToImport.MATRICULE){
+                newImportData[incr].status = 'loading'
+            }
         }
-    },[dispatch, importData]);
+        setImportData(newImportData);
+        dispatch(pxxUpdateALine(lineToImport));
+    }
+
+    useEffect(() => {
+        if(massImport) {
+            if(importData.length > 0 && importData[progress].status !== 'imported') {
+                //sleep(1000);
+                handlerImportData(importData[progress]);
+            } else {
+                if(progress < importData.length - 1){
+                    setProgress(progress+1);
+                }
+            }
+        }
+    // eslint-disable-next-line
+    },[massImport, progress]);
+
+    useEffect(() => {
+        if(successImportLine) {
+            console.log(progress);
+            console.log(updatedLine);
+            //const successEmail = email;
+            const newImportData = importData.slice();
+            for (let incr = 0; incr < newImportData.length; incr++) {
+                if (newImportData[incr].MATRICULE === updatedLine.updatedMatricule) {
+                    newImportData[incr].status = 'imported'
+                }
+            }
+            setImportData(newImportData);
+
+            if (massImport){
+                if (progress < importData.length - 1){
+                    setProgress(progress+1);
+                } else {
+                    setMassImport(false);
+                }
+            }
+        }
+    // eslint-disable-next-line
+    }, [successImportLine]);
+
+    useEffect(() => {
+        if(errorImportLine) {
+            //console.log('error', error);
+            //const errorEmail = error;
+            const newImportData = importData.slice();
+            for (let incr = 0; incr < newImportData.length; incr++) {
+                if (newImportData[incr].MATRICULE === errorImportLine.notUpdatedMatricule) {
+                    newImportData[incr].status = 'error';
+                }
+            }
+            setImportData(newImportData);
+            setErrorImportMessage(errorImportMessage.push(errorImportLine.message));
+
+            if (massImport){
+                if (progress < importData.length - 1){
+                    setProgress(progress+1);
+                } else {
+                    setMassImport(false);
+                    setProgress(0);
+                }
+            }
+        }
+    // eslint-disable-next-line
+    }, [errorImportLine]);
+
+    useEffect(() => {
+        //console.log(importData)
+        setMessagesImportSuccess(importData.filter(x => x.status === 'imported').length);
+        setMessagesImportError(importData.filter(x => x.status === 'error').length);
+        setTotalToImport(importData.length);
+    },[importData, errorImportLine, successImportLine]);
     
     return (
         <>
+            <Meta />
 
             <Button className='mb-3' onClick={() => history.go(-1)}>
                 Go Back
             </Button>
 
-            <Row>
-                <Col>
-                {errorImportMass && <Message variant='danger'>{errorImportMass}</Message>}
-                {datas && (
-                    <Message variant='warning'>
-                        {datas.map( (line, incr) => (
-                            <Row key={incr}>{`Pxx not updated for matricule: ${line.matricule} at month ${line.monthName} > ${line.message}`}</Row>
-                        ))}
-                    </Message>
-                )}
+            <Row className='align-items-center pt-3'>
+                <Col md={5}>
+                    {`${messsagesImportSuccess} Pxx line imported / ${totalToImport} - ${messsagesImportError} lines with error`}
                 </Col>
-            </Row>
-
-            <Row className='mt-3'>
-                <Col xs={6} md={2}>
-                    <InputGroup>
-                        <FormControl
-                            type='text'
-                            className="mb-3"
-                            placeholder='Search name'
-                            value={keyword && keyword}
-                            onChange={(e) => setKeyword(e.target.value)}
-                        ></FormControl>
-                    </InputGroup>
-                </Col>
-
-                <Col xs={6} md={3}>
-                    <Form.Control
-                        plaintext
-                        readOnly
-                        value={count ? `${count} consultants found` : '0 consultant found'} />
-                </Col>
-
-                <Col xs={6} md={3}>
+                <Col md={3} className='text-right'>
                     <DisplayChildren access='uploadPxx'>
-                        {loadingImportMass ? (
+                        {loadingImportLine ? (
                             <Loader />
                         ) : (
-                                <ImportExcelFile setImportData={setImportData} />
+                                <ImportExcelFile setImportData={setImportData} sheets='1' />
                             )}
                     </DisplayChildren>
                 </Col>
 
-                <Col ws={6} md={2}>
+                <Col ws={6} md={2} className='text-right'>
                     {exportExcel && (
                         <ExcelFile element={<Button variant='primary'><i className="fas fa-download"></i>  Download</Button>}>
                             <ExcelSheet data={exportExcel} name="pxxsheet">
@@ -149,8 +218,52 @@ const PxxDetailsScreen = ({ history, match }) => {
                         </ExcelFile>
                     )}
                 </Col>
+                <Col md={2} className='text-right'>
+                    <Button
+                        variant='ligth'
+                        className='text-primary'
+                        onClick={() => handlerImportAllPxx()}
+                    ><i className="fas fa-envelope"></i> {massImport ? <Loader /> : 'Import All Pxx'}</Button>
+                </Col>
+            </Row>
+            <Row className='pt-3'>
+                <Col>
+                    <ProgressBar>
+                        <ProgressBar animated={massImport} now={100* messsagesImportSuccess / totalToImport} variant='primary' />
+                        <ProgressBar animated={massImport} now={100* messsagesImportError / totalToImport} variant='danger' />
+                    </ProgressBar>
+                </Col>
+            </Row>
 
-                <Col xs={6} md={2}>
+            <Row>
+                <Col>
+                    {errorImportMessage && errorImportMessage.map((x, incr) => (
+                        <Message key={incr} variant='warning'>{x.message}</Message>
+                    ))}
+                </Col>
+            </Row>
+
+            <Row className='mt-3'>
+                <Col xs={6} md={4}>
+                    <InputGroup>
+                        <FormControl
+                            type='text'
+                            className="mb-3"
+                            placeholder='Search name'
+                            value={keyword && keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                        ></FormControl>
+                    </InputGroup>
+                </Col>
+
+                <Col xs={6} md={4}>
+                    <Form.Control
+                        plaintext
+                        readOnly
+                        value={count ? `${count} consultants found` : '0 consultant found'} />
+                </Col>     
+
+                <Col xs={6} md={4}>
                     <InputGroup>
                         <FormControl
                             as='select'

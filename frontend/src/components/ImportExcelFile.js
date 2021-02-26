@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import * as XLSX from 'xlsx';
 
-const ImportExcelFile = ({setImportData}) => {
+const ImportExcelFile = ({setImportData, sheets = 'all'}) => {
 
     const [fileName, setFileName] = useState('');
 
@@ -22,9 +22,14 @@ const ImportExcelFile = ({setImportData}) => {
             for (let incr = 0; incr < workBook.SheetNames.length; incr++) {
                 const wsName = workBook.SheetNames[incr];
                 const ws = workBook.Sheets[wsName];
-                jsonData.push(XLSX.utils.sheet_to_json(ws));
+                jsonData.push(XLSX.utils.sheet_to_json(ws)); //, status:'not imported'}
             }
-            setImportData(jsonData);
+            if (sheets === '1') {
+                setImportData(jsonData[0].map(x => ({...x, status:'not imported'})));
+            }
+            if (sheets === 'all'){
+                setImportData(jsonData);
+            }
             setFileName(file.name);
         };
         reader.readAsBinaryString(file);
