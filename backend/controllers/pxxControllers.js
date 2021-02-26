@@ -615,9 +615,11 @@ const massImportPxx = asyncHandler(async (req, res) => {
                 const existPxxLine = await Pxx.findOne({name: consultant._id, month: month._id});
 
                 if (existPxxLine) {
-                    //console.log('Pxx found for: ' + monthName + ' and ' + matricule);
+
                     let availableDay = calculateAvailableDays(consultant, month);
-                    //console.log('initial available days', availableDay);
+
+                    existPxxLine.prodDay = Math.min(Number(pxxPage[pxxLine].PROD), availableDay);
+                    availableDay = availableDay - existPxxLine.prodDay;
 
                     existPxxLine.notProdDay = Math.min(Number(pxxPage[pxxLine].NOT_PROD), availableDay);
                     availableDay = availableDay - existPxxLine.notProdDay;
@@ -625,15 +627,20 @@ const massImportPxx = asyncHandler(async (req, res) => {
                     existPxxLine.leavingDay = Math.min(Number(pxxPage[pxxLine].HOLIDAYS), availableDay);
                     availableDay = availableDay - existPxxLine.leavingDay;
                     
-                    existPxxLine.availableDay = Math.min(Number(pxxPage[pxxLine].AVAILABLE), availableDay);
+                    //existPxxLine.availableDay = Math.min(Number(pxxPage[pxxLine].AVAILABLE), availableDay);
+                    existPxxLine.availableDay = availableDay;
                     availableDay = availableDay - existPxxLine.availableDay;
 
-                    existPxxLine.prodDay = availableDay;
-                    await existPxxLine.save();
+                    if (availableDay === 0) {
+                        await existPxxLine.save();
+                    } else {
+                        console.log(`Error when updating pxx: ${consultant.name}`);
+                        errors.push({monthName, matricule, message: 'Total days recalculated not equal to available days in the month'})
+                    }
 
                 } else {
                     console.log('Pxx not found for month.name: ' + monthName + ' and consultant.matricule: ' + matricule);
-                    errors.push({monthName, matricule});
+                    errors.push({monthName, matricule, message: 'Pxx not found'});
                 }
             }
         }

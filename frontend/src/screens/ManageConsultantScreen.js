@@ -70,7 +70,8 @@ const ManageConsultantScreen = ({ history, match }) => {
                 'GRADE': consultant.grade,
                 'IS_CDM': consultant.isCDM,
                 'CDM_MATRICULE': consultant.cdmId && consultant.cdmId.matricule,
-                'CDM_NAME': consultant.cdmId && consultant.cdmId.name
+                'CDM_NAME': consultant.cdmId && consultant.cdmId.name,
+                'COMMENT': consultant.comment
             }));
             setExportExcel(exportExcelData);
         }
@@ -163,6 +164,7 @@ const ManageConsultantScreen = ({ history, match }) => {
                                         <ExcelColumn label="IS_CDM" value="IS_CDM" />
                                         <ExcelColumn label="CDM_MATRICULE" value="CDM_MATRICULE" />
                                         <ExcelColumn label="CDM_NAME" value="CDM_NAME" />
+                                        <ExcelColumn label="COMMENT" value="COMMENT" />
                                     </ExcelSheet>
                                 </ExcelFile>
                             )}

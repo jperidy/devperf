@@ -57,10 +57,10 @@ const PxxDetailsScreen = ({ history, match }) => {
                 'CONSULTANT': pxx.name.name,
                 'MATRICULE': pxx.name.matricule,
                 'PRACTICE': pxx.name.practice,
-                'CDM_MATRICULE': pxx.name.cdmId && pxx.name.cdmId._id,
+                'CDM_MATRICULE': pxx.name.cdmId && pxx.name.cdmId.matricule,
                 'CDM_NAME': pxx.name.cdmId && pxx.name.cdmId.name,
-                'VALUED': pxx.name.valued.substring(0,10),
-                'ARRIVAL': pxx.name.arrival.substring(0,10),
+                'VALUED': pxx.name.valued ? pxx.name.valued.substring(0,10) : '',
+                'ARRIVAL': pxx.name.arrival ? pxx.name.arrival.substring(0,10) : '',
                 'LEAVING': pxx.name.leaving ? pxx.name.leaving.substring(0,10) : '',
                 'MONTH': pxx.month.name,
                 'PROD': pxx.prodDay,
@@ -92,7 +92,7 @@ const PxxDetailsScreen = ({ history, match }) => {
                 {datas && (
                     <Message variant='warning'>
                         {datas.map( (line, incr) => (
-                            <Row key={incr}>Pxx not updated for matricule: {line.matricule} at month {line.monthName}</Row>
+                            <Row key={incr}>{`Pxx not updated for matricule: ${line.matricule} at month ${line.monthName} > ${line.message}`}</Row>
                         ))}
                     </Message>
                 )}
@@ -134,17 +134,17 @@ const PxxDetailsScreen = ({ history, match }) => {
                         <ExcelFile element={<Button variant='primary'><i className="fas fa-download"></i>  Download</Button>}>
                             <ExcelSheet data={exportExcel} name="pxxsheet">
                                 <ExcelColumn label="MATRICULE" value="MATRICULE" />
-                                <ExcelColumn label="PRACTICE" value="PRACTICE" />
-                                <ExcelColumn label="VALUED" value="VALUED" />
+                                <ExcelColumn label="(PRACTICE)" value="PRACTICE" />
+                                {/* <ExcelColumn label="VALUED" value="VALUED" />
                                 <ExcelColumn label="ARRIVAL" value="ARRIVAL" />
-                                <ExcelColumn label="LEAVING" value="LEAVING" />
+                                <ExcelColumn label="LEAVING" value="LEAVING" /> */}
                                 <ExcelColumn label="MONTH" value="MONTH" />
                                 <ExcelColumn label="PROD" value="PROD" />
                                 <ExcelColumn label="NOT_PROD" value="NOT_PROD" />
                                 <ExcelColumn label="HOLIDAYS" value="HOLIDAYS" />
-                                <ExcelColumn label="AVAILABLE" value="AVAILABLE" />
-                                <ExcelColumn label="CDM_MATRICULE" value="CDM_MATRICULE" />
-                                <ExcelColumn label="CDM_NAME" value="CDM_NAME" />
+                                <ExcelColumn label="(AVAILABLE)" value="AVAILABLE" />
+                                <ExcelColumn label="(CDM_MATRICULE)" value="CDM_MATRICULE" />
+                                <ExcelColumn label="(CDM_NAME)" value="CDM_NAME" />
                             </ExcelSheet>
                         </ExcelFile>
                     )}

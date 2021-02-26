@@ -481,28 +481,25 @@ const transformGrade = (gradeIn) => {
     if (gradeIn.match(/Consultant/g)){
         gradeOut = 'Consultant'
     };
-    if (gradeIn.match(/Manager/g)){
+    if (gradeIn.match(/Manager|Expert/g)){
         gradeOut = 'Manager'
     };
-    if (gradeIn.match(/Senior Consultant/g)){
+    if (gradeIn.match(/Senior consultant|Senior Consultant/g)){
         gradeOut = 'Senior consultant'
     };
-    if (gradeIn.match(/Stagiaire|Alternant Conseil/g)){
+    if (gradeIn.match(/Intern|Stagiaire|Alternant Conseil/g)){
         gradeOut = 'Intern'
     };
-    if (gradeIn.match(/Expert/g)){
-        gradeOut = 'Manager'
-    };
-    if (gradeIn.match(/Account Developer|Account Manager|Business Analyst/g)){
+    if (gradeIn.match(/Commercial|Account Developer|Account Manager|Business Analyst/g)){
         gradeOut = 'Commercial'
     };
-    if (gradeIn.match(/Senior Manager/g)){
+    if (gradeIn.match(/Senior manager|Senior Manager/g)){
         gradeOut = 'Senior manager'
     };
-    if (gradeIn.match(/Directeur de Projet|Directeur Associé/g)){
+    if (gradeIn.match(/Director|Directeur de Projet|Directeur Associé/g)){
         gradeOut = 'Director'
     };
-    if (gradeIn.match(/Research analyst|Senior Research Analyst/g)){
+    if (gradeIn.match(/Research|Research analyst|Senior Research Analyst/g)){
         gradeOut = 'Research'
     };
     if (gradeIn.match(/Partner/g)){
@@ -546,6 +543,7 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
                     leaving: consultants[incr].LEAVING ? new Date(consultants[incr].LEAVING) : null,
                     isCDM: consultants[incr].IS_CDM,
                     cdmId: cdmId ? cdmId._id : null,
+                    comment: consultants[incr].COMMENT
                     /* isPartialTime:{
                         value: consultants[incr].PARTIAL_TIME === 'true' ? true : false,
                         week: [{num:1, worked:1},{num:2, worked:1},{num:3, worked:1},{num:4, worked:1},{num:5, worked:1}],
