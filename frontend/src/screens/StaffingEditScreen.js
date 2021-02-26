@@ -8,6 +8,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import Loader from '../components/Loader';
 import Message from '../components/Message';
+import Meta from '../components/Meta';
 import { createDeal, getDealToEdit, updateDeal } from '../actions/dealActions';
 import { getAllLeaders, getAllPractice } from '../actions/consultantActions';
 import { DEAL_CREATE_RESET, DEAL_PROBABILITY, DEAL_STATUS, DEAL_UPDATE_RESET, TYPE_BUSINESS } from '../constants/dealConstants';
@@ -399,6 +400,7 @@ const StaffingEditScreen = ({ match, history }) => {
 
     return (
         <>
+            <Meta />
             {modalWindowShow && (
                 <StaffAConsultant
                     show={modalWindowShow}

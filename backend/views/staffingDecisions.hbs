@@ -114,4 +114,42 @@
         </tbody>
     </table>
     {{/if}}
+
+    {{#if myCommercials}}
+    <h3>Staffing request for {{name}}: </h3>
+    <table style='border-collapse: collapse;'>
+        <thead style='background: #909090; color: white'>
+            <tr>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Client</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Request</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Status</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Staffing decision</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Request status</th>
+                <th style='padding:10px; border-bottom: solid 1px #9f9ea8'>Owner</th>
+                <th style='padding:10px; border-bottom: solid #9f9ea8 1px'>Details</th>
+                <tr />
+        </thead>
+        <tbody>
+            {{#each myCommercials}}
+            <tr>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{company}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{title}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{status}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
+                    {{#each staffingDecision.staff}}
+                    <div>{{responsability}}: {{idConsultant.name}} ({{priority}})</div>
+                    {{/each}}
+
+                </td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{staffingRequest.requestStatus}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>{{contacts.primary.name}}</td>
+                <td style='padding:10px; border-bottom: solid #9f9ea8 1px'>
+                    <a href='https://ressource-management-app.herokuapp.com/staffing/{{_id}}'><i
+                            class="fas fa-link"></i>Link</a>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{/if}}
 </div>

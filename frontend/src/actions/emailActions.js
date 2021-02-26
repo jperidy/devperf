@@ -37,7 +37,7 @@ export const getContactsList = () => async (dispatch, getState) => {
     }
 };
 
-export const sendDecisionEmail = (email) => async (dispatch, getState) => {
+export const sendDecisionEmail = (email, name) => async (dispatch, getState) => {
 
     try {
 
@@ -52,7 +52,7 @@ export const sendDecisionEmail = (email) => async (dispatch, getState) => {
             }
         };
 
-        const { data } = await axios.get(`/api/emails/decision?email=${email}`, config);
+        const { data } = await axios.get(`/api/emails/decision?email=${email}&name=${name}`, config);
 
         dispatch({ type: EMAIL_SEND_DECISION_SUCCESS, payload: data });
 

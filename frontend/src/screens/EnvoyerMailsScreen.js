@@ -5,7 +5,8 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Message from '../components/Message';
+//import Message from '../components/Message';
+import Meta from '../components/Meta';
 import { getContactsList, sendDecisionEmail } from '../actions/emailActions';
 import Loader from '../components/Loader';
 import { EMAIL_SEND_DECISION_RESET } from '../constants/emailConstants';
@@ -39,7 +40,7 @@ const EnvoyerMailsScreen = ({history}) => {
         } while (currentDate - date < milliseconds);
     }
 
-    const handlerSendADecision = (email) => {
+    const handlerSendADecision = (email, name) => {
         const newContactsInfo = contactList.slice();
         for (let incr = 0 ; incr < newContactsInfo.length; incr++){
             if(newContactsInfo[incr].email === email){
@@ -47,14 +48,12 @@ const EnvoyerMailsScreen = ({history}) => {
             }
         }
         setContactList(newContactsInfo);
-        dispatch(sendDecisionEmail(email))
+        dispatch(sendDecisionEmail(email, name))
     }
 
     const handlerSendAllDecisions = () => {
         dispatch({ type: EMAIL_SEND_DECISION_RESET });
         setProgress(0);
-        //setMessagesSendError(0);
-        //setMessagesSendSuccess(0);
         setMassSending(true);
     }
 
@@ -73,7 +72,7 @@ const EnvoyerMailsScreen = ({history}) => {
         if(massSending) {
             if(contactList[progress].status !== 'send') {
                 //sleep(1000);
-                handlerSendADecision(contactList[progress].email);
+                handlerSendADecision(contactList[progress].email, contactList[progress].name);
             } else {
                 if(progress < contactList.length - 1){
                     setProgress(progress+1);
@@ -137,6 +136,7 @@ const EnvoyerMailsScreen = ({history}) => {
 
     return (
         <div>
+            <Meta />
             {loading && <Loader />}
             <Button
                 variant='primary'
@@ -185,7 +185,7 @@ const EnvoyerMailsScreen = ({history}) => {
                                                         : contact.status === 'send' ? 'text-success'
                                                         : 'text-primary'}
                                             size='sm'
-                                            onClick={() => handlerSendADecision(contact.email)}
+                                            onClick={() => handlerSendADecision(contact.email, contact.name)}
                                             disabled={contact.status === 'send' || massSending === true}
                                         ><i className="fas fa-envelope"></i>  
                                             {contact.status === 'not sent' && '  send'}

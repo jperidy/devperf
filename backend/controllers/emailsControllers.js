@@ -1,5 +1,6 @@
 const Deal = require('../models/dealModel');
 const Consultant = require('../models/consultantModel');
+const Client = require('../models/clientModel');
 const asyncHandler = require('express-async-handler');
 const MailService = require("../config/MailService");
 const { multipleMongooseToObj } = require("../utils/emailsFunctions");
@@ -66,7 +67,12 @@ const collectContacts = asyncHandler(async (req, res) => {
         let cdmContacts = await Consultant.find({isCDM:true, practice: practice}).select('name email _id');
         cdmContacts = cdmContacts.map(x => ({email:x.email, name: x.name, _id: x._id}));
 
-        contacts = othersContacts.concat(coLeaders).concat(leaders).concat(cdmContacts);
+        let commercialContacts = await Client.find();
+        commercialContacts = commercialContacts.map( x => x.commercialTeam.map( y => ({email: y.contactEmail, name: x.name, _id:y._id})))
+        commercialContacts = flatArrayTwo(commercialContacts);
+        //commercialContacts = commercialContacts.contactEmail.map(x => ({email: x.contactEmail, name: x.contactName, _id:x._id}));
+
+        contacts = othersContacts.concat(coLeaders).concat(leaders).concat(cdmContacts).concat(commercialContacts);
 
         for (let incr = 0 ; incr < contacts.length ; incr++){
             if(!filteredContacts.map(x=>x.email).includes(contacts[incr].email)){
@@ -107,9 +113,7 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
         const email = req.query.email;
         const practice = req.user.consultantProfil.practice;
         const consultantProfil = await Consultant.findOne({email: email}).select('name email _id');
-        
-        //console.log('consultant profil', consultantProfil);
-        //console.log('consultant practice', practice);
+        const company = req.query.name; // only valid for commmercial case
 
         const REQUEST_STATUS = [
             {name: 'Identify Leader', staff: true, priority: 10},
@@ -130,8 +134,6 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
         }).populate({ path: 'contacts.primary contacts.secondary', select: '_id name email' })
             .populate({ path: 'staffingDecision.staff.idConsultant', select: '_id name matricule practice' }));
 
-        //console.log('number of requests', onTrackDeals.length);
-
         const myConsultantsId = consultantProfil ? (
             await Consultant.find({ cdmId: consultantProfil._id }).select('_id')).map(x => x._id.toString()
         ) : [];
@@ -143,17 +145,12 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
             ))
         ) : [];
 
-        //console.log('number of request lead', myLeaderLeads.length);
-
-        //console.log('consultantId', myConsultantsId);
-        //console.log(onTrackDeals[10].staffingDecision.staff);
         let myConsultantsLeads = [];
 
         for (let incr=0 ; incr < onTrackDeals.length ; incr++){
             const staffedConsultantId = onTrackDeals[incr].staffingDecision.staff ? (
                 onTrackDeals[incr].staffingDecision.staff.map(x => x.idConsultant._id.toString())
             ) : [];
-            //console.log(staffedConsultantId);
 
             let addDeal = false
             for (let incr2 = 0 ; incr2 < staffedConsultantId.length ; incr2++){
@@ -166,22 +163,23 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
             }
         }
 
-        //console.log('Number of consultants staffings', myConsultantsLeads.length);
-
         const myOthersLeads = onTrackDeals.filter(x => x.othersContacts && x.othersContacts.split(',').includes(email));
 
-        //console.log('Number of others', myOthersLeads.length);
+        const myCommercials = onTrackDeals.filter(x => x.company === company);
 
         const decisions = {
-            name: consultantProfil ? consultantProfil.name : '',
+            name: consultantProfil ? consultantProfil.name : company ? company : '',
             myRequests: myLeaderLeads,
             myConsultants: myConsultantsLeads,
-            myOthers: myOthersLeads
+            myOthers: myOthersLeads,
+            myCommercials: myCommercials
         };
+
+        const currentDate = new Date(Date.now()).toISOString().substring(0,10);
 
         const mailInfo = {
             to: "jprdevapp@gmail.com", // to add others use ","
-            subject: "Staffing decisions for " + practice + ": " + (consultantProfil ? consultantProfil.name : ''),
+            subject: `[${practice}] Staffing decisions for ${email} - ${currentDate}`,
             template: "staffingDecisions",
             context: decisions
         };
