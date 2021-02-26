@@ -5,6 +5,7 @@ import { CONSULTANT_DELETE_RESET } from '../constants/consultantConstants';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
 import Loader from '../components/Loader';
+import Meta from '../components/Meta';
 import Message from '../components/Message';
 import ImportExcelFile from '../components/ImportExcelFile';
 import ReactExport from "react-export-excel";
@@ -62,8 +63,8 @@ const ManageConsultantScreen = ({ history, match }) => {
                 'EMAIL': consultant.email,
                 'PRACTICE': consultant.practice,
                 'MATRICULE': consultant.matricule,
-                'VALUED': consultant.valued.substring(0,10),
-                'ARRIVAL': consultant.arrival.substring(0,10),
+                'VALUED': consultant.valued ? consultant.valued.substring(0,10) : '',
+                'ARRIVAL': consultant.arrival ? consultant.arrival.substring(0,10) : '',
                 'LEAVING': consultant.leaving ? consultant.leaving.substring(0,10) : '',
                 'PARTIAL_TIME': consultant.isPartialTime.value,
                 'GRADE': consultant.grade,
@@ -106,6 +107,7 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     return (
         <>
+            <Meta />
             {errorMassImport && <Message variant='danger'>{errorMassImport}</Message>}
             
             <DropDownTitleContainer title='Manage consultants' close={false}>

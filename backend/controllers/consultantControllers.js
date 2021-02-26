@@ -493,13 +493,13 @@ const transformGrade = (gradeIn) => {
     if (gradeIn.match(/Expert/g)){
         gradeOut = 'Manager'
     };
-    if (gradeIn.match(/Account Developper|Account Manager|Business Analyst/g)){
+    if (gradeIn.match(/Account Developer|Account Manager|Business Analyst/g)){
         gradeOut = 'Commercial'
     };
     if (gradeIn.match(/Senior Manager/g)){
         gradeOut = 'Senior manager'
     };
-    if (gradeIn.match(/Directeur de projet|Directeur Associé/g)){
+    if (gradeIn.match(/Directeur de Projet|Directeur Associé/g)){
         gradeOut = 'Director'
     };
     if (gradeIn.match(/Research analyst|Senior Research Analyst/g)){
