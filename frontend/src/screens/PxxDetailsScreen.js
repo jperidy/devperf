@@ -55,8 +55,10 @@ const PxxDetailsScreen = ({ history, match }) => {
 
     useEffect(() => {
 
-        if (userInfo && !massImport) {
-            dispatch(getAllPxx(userInfo.consultantProfil.practice, monthId, keyword, pageSize, pageNumber));
+        if (userInfo) {
+            if (!massImport) {
+                dispatch(getAllPxx(userInfo.consultantProfil.practice, monthId, keyword, pageSize, pageNumber));
+            }
         } else {
             history.push('/login');
         }
