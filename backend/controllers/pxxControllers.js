@@ -660,7 +660,7 @@ const massImportPxx = asyncHandler(async (req, res) => {
 const lineImportPxx = asyncHandler(async (req, res) => {
 
     const access = req.user.profil.api.filter(x => x.name === 'massImportPxx')[0].data;
-    const errors = [];
+    //const errors = [];
 
     if (access === 'yes') {
 
@@ -672,8 +672,8 @@ const lineImportPxx = asyncHandler(async (req, res) => {
         const month = await Month.findOne({ name: monthName });
         if (!month) {
             console.log('Month not found: ' + monthName);
-            errors.push({ monthName, matricule });
-            res.status(404).json({message: 'Month not found: ' + monthName});
+            //errors.push({ monthName, matricule });
+            res.status(404).json({notUpdatedMatricule: matricule, message: 'Month not found: ' + monthName});
             return;
             //break;
         }
@@ -681,7 +681,7 @@ const lineImportPxx = asyncHandler(async (req, res) => {
         const consultant = await Consultant.findOne({ matricule: matricule });
         if (!consultant) {
             console.log('Consultant not found: ' + matricule);
-            errors.push({ monthName, matricule });
+            //errors.push({ monthName, matricule });
             res.status(404).json({notUpdatedMatricule: matricule, message: 'Consultant not found: ' + matricule});
             return;
             //break

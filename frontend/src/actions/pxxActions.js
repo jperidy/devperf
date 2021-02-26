@@ -401,9 +401,13 @@ export const pxxUpdateALine = (line) => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: PXX_IMPORT_LINE_FAIL,
-            payload: error.response && error.response.data.message
-                ? error.response.data.message
-                : error.message
+            payload: {
+                notUpdatedMatricule: error.response && error.response.data.notUpdatedMatricule
+                    ? error.response.data.notUpdatedMatricule : error.notUpdatedMatricule,
+                message: error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message
+            }
         });
     }
 };

@@ -27,7 +27,7 @@ const PxxDetailsScreen = ({ history, match }) => {
 
     const monthId = match.params.id ;
 
-    const [pageSize, setPageSize] = useState(10000);
+    const [pageSize, setPageSize] = useState(10);
     const [pageNumber, setPageNumber] = useState(1);
     const [keyword, setKeyword] = useState('');
     const [exportExcel, setExportExcel] = useState('');
@@ -124,8 +124,8 @@ const PxxDetailsScreen = ({ history, match }) => {
 
     useEffect(() => {
         if(successImportLine) {
-            console.log(progress);
-            console.log(updatedLine);
+            //console.log(progress);
+            //console.log(updatedLine);
             //const successEmail = email;
             const newImportData = importData.slice();
             for (let incr = 0; incr < newImportData.length; incr++) {
@@ -157,7 +157,10 @@ const PxxDetailsScreen = ({ history, match }) => {
                 }
             }
             setImportData(newImportData);
-            setErrorImportMessage(errorImportMessage.push(errorImportLine.message));
+            const newErrorMessage = errorImportMessage.slice();
+            newErrorMessage.push({message: errorImportLine.message});
+            console.log(errorImportLine);
+            setErrorImportMessage(newErrorMessage);
 
             if (massImport){
                 if (progress < importData.length - 1){
@@ -190,15 +193,6 @@ const PxxDetailsScreen = ({ history, match }) => {
                 <Col md={5}>
                     {`${messsagesImportSuccess} Pxx line imported / ${totalToImport} - ${messsagesImportError} lines with error`}
                 </Col>
-                <Col md={3} className='text-right'>
-                    <DisplayChildren access='uploadPxx'>
-                        {loadingImportLine ? (
-                            <Loader />
-                        ) : (
-                                <ImportExcelFile setImportData={setImportData} sheets='1' />
-                            )}
-                    </DisplayChildren>
-                </Col>
 
                 <Col ws={6} md={2} className='text-right'>
                     {exportExcel && (
@@ -220,12 +214,25 @@ const PxxDetailsScreen = ({ history, match }) => {
                         </ExcelFile>
                     )}
                 </Col>
+
+                <Col md={3} className='text-right'>
+                    <DisplayChildren access='uploadPxx'>
+                        {loadingImportLine ? (
+                            <Loader />
+                        ) : (
+                                <ImportExcelFile setImportData={setImportData} sheets='1' />
+                            )}
+                    </DisplayChildren>
+                </Col>
+
+                
                 <Col md={2} className='text-right'>
                     <Button
-                        variant='ligth'
-                        className='text-primary'
+                        variant='primary'
+                        //className='text-primary'
                         onClick={() => handlerImportAllPxx()}
-                    ><i className="fas fa-envelope"></i> {massImport ? <Loader /> : 'Import All Pxx'}</Button>
+                        disabled={!importData.length > 0}
+                    ><i className="fas fa-upload"></i> {massImport ? <Loader /> : 'Import All Pxx'}</Button>
                 </Col>
             </Row>
             <Row className='pt-3'>
