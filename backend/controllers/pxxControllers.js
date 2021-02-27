@@ -578,7 +578,7 @@ const getAllPxx = asyncHandler(async (req, res) => {
     }
 });
 
-// @desc    Mass import of pxx datas
+/* // @desc    Mass import of pxx datas
 // @route   PUT /api/pxx/admin/mass-import
 // @access  Private
 const massImportPxx = asyncHandler(async (req, res) => {
@@ -652,7 +652,7 @@ const massImportPxx = asyncHandler(async (req, res) => {
         res.status(200).json({message: 'Errors updating Pxx', datas:errors});
     }
     
-});
+}); */
 
 // @desc    Mass import of pxx datas
 // @route   PUT /api/pxx/admin/mass-import
@@ -673,7 +673,8 @@ const lineImportPxx = asyncHandler(async (req, res) => {
         if (!month) {
             console.log('Month not found: ' + monthName);
             //errors.push({ monthName, matricule });
-            res.status(404).json({notUpdatedMatricule: matricule, message: 'Month not found: ' + monthName});
+            //res.status(404).json({notUpdatedMatricule: matricule, message: 'Month not found: ' + monthName});
+            res.status(404).json({message: {matricule: matricule, display: 'Month not found: ' + monthName}});
             return;
             //break;
         }
@@ -682,7 +683,7 @@ const lineImportPxx = asyncHandler(async (req, res) => {
         if (!consultant) {
             console.log('Consultant not found: ' + matricule);
             //errors.push({ monthName, matricule });
-            res.status(404).json({notUpdatedMatricule: matricule, message: 'Consultant not found: ' + matricule});
+            res.status(404).json({message: {matricule: matricule, display: 'Consultant not found: ' + matricule}});
             return;
             //break
         }
@@ -711,7 +712,7 @@ const lineImportPxx = asyncHandler(async (req, res) => {
                 res.status(200).json({updatedMatricule: matricule});
             } else {
                 console.log(`Error when updating pxx: ${consultant.name}`);
-                res.status(500).json({notUpdatedMatricule: matricule, message: `Total days recalculated not equal to available days in the month ${monthName} for: ${consultant.name}`})
+                res.status(500).json({message: {matricule: matricule, display: `Total days recalculated not equal to available days in the month ${monthName} for: ${consultant.name}`}})
                 //errors.push({ monthName, matricule, message: 'Total days recalculated not equal to available days in the month' })
             }
 
@@ -743,6 +744,6 @@ module.exports = {
     getProdChart,
     getAvailabilityChart,
     createPxx,
-    massImportPxx,
+    //massImportPxx,
     lineImportPxx
 };

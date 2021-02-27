@@ -14,7 +14,7 @@ import Meta from '../components/Meta';
 import Message from '../components/Message';
 import DisplayChildren from '../components/DisplayChildren';
 import ImportExcelFile from '../components/ImportExcelFile';
-import { getAllPxx, pxxImportInMass, pxxUpdateALine } from '../actions/pxxActions';
+import { getAllPxx, pxxUpdateALine } from '../actions/pxxActions';
 import ReactExport from "react-export-excel";
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -152,14 +152,14 @@ const PxxDetailsScreen = ({ history, match }) => {
             //const errorEmail = error;
             const newImportData = importData.slice();
             for (let incr = 0; incr < newImportData.length; incr++) {
-                if (newImportData[incr].MATRICULE === errorImportLine.notUpdatedMatricule) {
+                if (newImportData[incr].MATRICULE === errorImportLine.message.matricule) {
                     newImportData[incr].status = 'error';
                 }
             }
             setImportData(newImportData);
             const newErrorMessage = errorImportMessage.slice();
-            newErrorMessage.push({message: errorImportLine.message});
-            console.log(errorImportLine);
+            newErrorMessage.push({message: errorImportLine.message.display});
+            //console.log(errorImportLine.message.display);
             setErrorImportMessage(newErrorMessage);
 
             if (massImport){
@@ -215,7 +215,7 @@ const PxxDetailsScreen = ({ history, match }) => {
                     )}
                 </Col>
 
-                <Col md={3} className='text-right'>
+                <Col md={3} >
                     <DisplayChildren access='uploadPxx'>
                         {loadingImportLine ? (
                             <Loader />
@@ -338,15 +338,18 @@ const PxxDetailsScreen = ({ history, match }) => {
                     disabled={page === 1}
                 />
                 {[...Array(pages).keys()].map(x => (
-
-                    <Pagination.Item
-                        key={x + 1}
-                        active={x + 1 === page}
-                        onClick={() => {
-                            dispatch(getAllPxx(userInfo.consultantProfil.practice, monthId, keyword, pageSize, x + 1));
-                            setPageNumber(x + 1);
-                        }}
-                    >{x + 1}</Pagination.Item>
+                    [0, 1, pages - 2, pages - 1].includes(x) ? (
+                        <Pagination.Item
+                            key={x + 1}
+                            active={x + 1 === page}
+                            onClick={() => {
+                                dispatch(getAllPxx(userInfo.consultantProfil.practice, monthId, keyword, pageSize, x + 1));
+                                setPageNumber(x + 1);
+                            }}
+                        >{x + 1}</Pagination.Item>
+                    ) : (pages > 4 && x === 2) && (
+                        <Pagination.Ellipsis key={x + 1} />
+                    )
 
                 ))}
                 <Pagination.Next
@@ -354,6 +357,7 @@ const PxxDetailsScreen = ({ history, match }) => {
                     disabled={page === pages}
                 />
             </Pagination>
+
         </>
     )
 }

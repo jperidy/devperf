@@ -350,7 +350,7 @@ export const getAllPxx = (practice = '', month = '', keywork = '', pageSize = '1
     }
 };
 
-export const pxxImportInMass = (datas) => async (dispatch, getState) => {
+/* export const pxxImportInMass = (datas) => async (dispatch, getState) => {
 
     try {
 
@@ -377,7 +377,7 @@ export const pxxImportInMass = (datas) => async (dispatch, getState) => {
                 : error.message
         });
     }
-};
+}; */
 
 export const pxxUpdateALine = (line) => async (dispatch, getState) => {
 
@@ -402,8 +402,6 @@ export const pxxUpdateALine = (line) => async (dispatch, getState) => {
         dispatch({
             type: PXX_IMPORT_LINE_FAIL,
             payload: {
-                notUpdatedMatricule: error.response && error.response.data.notUpdatedMatricule
-                    ? error.response.data.notUpdatedMatricule : error.notUpdatedMatricule,
                 message: error.response && error.response.data.message
                     ? error.response.data.message
                     : error.message

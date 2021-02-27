@@ -115,7 +115,7 @@ export const pxxAllListReducer = (state= {}, action) => {
     }
 };
 
-export const pxxImportMassReducer = (state= { pxx: [] }, action) => {
+/* export const pxxImportMassReducer = (state= { pxx: [] }, action) => {
     switch(action.type) {
         case PXX_IMPORT_MASS_REQUEST:
             return { loading: true };
@@ -133,7 +133,7 @@ export const pxxImportMassReducer = (state= { pxx: [] }, action) => {
         default:
             return state ;
     }
-};
+}; */
 
 export const pxxImportLineReducer = (state= { pxx: [] }, action) => {
     switch(action.type) {

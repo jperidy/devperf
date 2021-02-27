@@ -1,7 +1,7 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { pxxAvailabilitiesReducer, pxxListReducer, pxxAllListReducer, pxxTACEReducer, pxxUpdateReducer, pxxImportMassReducer, pxxImportLineReducer } from './reducers/pxxReducers';
+import { pxxAvailabilitiesReducer, pxxListReducer, pxxAllListReducer, pxxTACEReducer, pxxUpdateReducer, pxxMyToEditReducer, pxxImportLineReducer } from './reducers/pxxReducers';
 import { userLoginReducer, userListReducer, userDeleteReducer, userDetailsReducer, userUpdateReducer, userRegisterReducer } from './reducers/userReducers';
 import { 
     consultantMyReducer, 
@@ -23,7 +23,7 @@ import {
     consultantsAllLeadersReducer,
     consultantsMassImportReducer
  } from './reducers/consultantReducers';
-import { pxxMyToEditReducer } from './reducers/pxxReducers';
+//import {  } from './reducers/pxxReducers';
 import { skillCreateReducer, skillDelteReducer, skillListReducer } from './reducers/skillReducers'
 import { dealAllListReducer, dealCreateReducer, dealDeleteReducer, dealEditeReducer, dealOldReducer, dealsImportMassReducer, dealUpdateReducer } from './reducers/dealReducer';
 import { accessFrontUpdateReducer, accessListReducer } from './reducers/accessReducers';
@@ -63,7 +63,7 @@ export const reducer = combineReducers({
     pxxUpdate: pxxUpdateReducer,
     pxxTACE: pxxTACEReducer,
     pxxAvailabilities: pxxAvailabilitiesReducer,
-    pxxImportMass: pxxImportMassReducer,
+    //pxxImportMass: pxxImportMassReducer,
     pxxImportLine: pxxImportLineReducer,
     skillList: skillListReducer,
     skillDelete: skillDelteReducer,
