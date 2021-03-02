@@ -275,7 +275,9 @@ const getAllLeaders = asyncHandler(async (req, res) => {
         { name: {$regex: req.query.searchLeader, $options: 'i'} }
         : {};
 
-    const leadersList = await Consultant.find({_id: {$in: consultantsId}, ...searchName}).select('_id name matricule practice').limit(5);
+    const leadersList = await Consultant.find({_id: {$in: consultantsId}, ...searchName})
+        .select('_id name matricule practice')
+        //.limit(5);
     
     if (leadersList) {
         res.status(200).json(leadersList);

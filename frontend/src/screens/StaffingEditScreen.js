@@ -21,6 +21,7 @@ import SelectCompany from '../components/SelectCompany';
 import { REQUEST_STATUS } from '../constants/dealConstants';
 import StaffAConsultant from '../components/StaffAConsultant';
 import DisplayChildren from '../components/DisplayChildren';
+import SelectMutliple from '../components/SelectMutliple';
 
 const StaffingEditScreen = ({ match, history }) => {
 
@@ -124,8 +125,8 @@ const StaffingEditScreen = ({ match, history }) => {
         }
     }, [dispatch, match])
 
-    useEffect(() => {
-        
+
+    useEffect(() => { 
             dispatch(getAllLeaders(searchLeader));
         
     },[dispatch, searchLeader])
@@ -467,7 +468,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                     <Form.Control
                                         type='text'
                                         placeholder='Staffing request object'
-                                        value={title}
+                                        value={title ? title : ''}
                                         onChange={(e) => setTitle(e.target.value)}
                                         required
                                     ></Form.Control>
@@ -475,7 +476,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                         <Form.Control
                                             type='text'
                                             plaintext
-                                            value={title}
+                                            value={title ? title : ''}
                                             readOnly
                                         ></Form.Control>
                                     )}
@@ -512,7 +513,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                     <Form.Control
                                         type='text'
                                         placeholder='Client name'
-                                        value={client}
+                                        value={client ? client : ''}
                                         onChange={(e) => setClient(e.target.value)}
                                     ></Form.Control>
                                 ) : (
@@ -520,7 +521,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                             type='text'
                                             plaintext
                                             readOnly
-                                            value={client}
+                                            value={client ? client : ''}
                                         ></Form.Control>
                                     )}
                             </Form.Group>
@@ -532,7 +533,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 {editRequest ? (
                                     <Form.Control
                                         as='select'
-                                        value={type}
+                                        value={type ? type : ''}
                                         onChange={(e) => { setType(e.target.value) }}
                                         required
                                     >
@@ -548,7 +549,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                         <Form.Control
                                             type='text'
                                             plaintext
-                                            value={type}
+                                            value={type ? type : ''}
                                             readOnly
                                         ></Form.Control>
                                     )}
@@ -561,7 +562,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 {editRequest ? (
                                     <Form.Control
                                         as='select'
-                                        value={status}
+                                        value={status ? status : ''}
                                         onChange={(e) => {
                                             if (e.target.value === 'Won') {
                                                 setWonDate(new Date(Date.now()));
@@ -586,7 +587,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                             type='text'
                                             plaintext
                                             readOnly
-                                            value={status}
+                                            value={status ? status : ''}
                                         ></Form.Control>
                                     )}
                             </Form.Group>
@@ -598,7 +599,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 {editRequest ? (
                                     <Form.Control
                                         as='select'
-                                        value={probability}
+                                        value={probability ? probability : ''}
                                         onChange={(e) => setProbability(e.target.value)}
                                         required
                                     >
@@ -628,7 +629,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                     <Form.Control
                                         type='text'
                                         placeholder='Location'
-                                        value={location}
+                                        value={location ? location : ''}
                                         onChange={(e) => setLocation(e.target.value)}
                                     ></Form.Control>
                                 ) : (
@@ -636,7 +637,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                             type='text'
                                             plaintext
                                             readOnly
-                                            value={location}
+                                            value={location ? location : ''}
                                         ></Form.Control>
                                     )}
                             </Form.Group>
@@ -648,7 +649,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 {editRequest ? (
                                     <Form.Control
                                         as='select'
-                                        value={mainPractice}
+                                        value={mainPractice ? mainPractice : ''}
                                         onChange={(e) => setMainPractice(e.target.value)}
                                         required
                                     >
@@ -665,7 +666,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                             type='text'
                                             plaintext
                                             readOnly
-                                            value={mainPractice}
+                                            value={mainPractice ? mainPractice : ''}
                                         ></Form.Control>
                                     )}
                             </Form.Group>
@@ -678,7 +679,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                     <Form.Control
                                         as='select'
                                         multiple
-                                        value={othersPractices}
+                                        value={othersPractices ? othersPractices : []}
                                         onChange={(e) => updateOthersPractices()}
                                     >
                                         {practiceList && practiceList.map((practice, val) => (
@@ -693,7 +694,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 ) : (
                                         <Form.Control
                                             type='text'
-                                            value={othersPractices.join(', ')}
+                                            value={othersPractices ? othersPractices.join(', ') : ''}
                                             plaintext
                                             readOnly
                                         ></Form.Control>
@@ -706,7 +707,7 @@ const StaffingEditScreen = ({ match, history }) => {
                     <Col xs={12} md={8}>
 
                         <ListGroup.Item>
-                            <Row>
+                            <Row className='align-items-start'>
                                 <Col xs={12} md={4}>
                                     <SearchInput
                                         title='Leader'
@@ -734,15 +735,26 @@ const StaffingEditScreen = ({ match, history }) => {
                                 </Col>
                             
                                 <Col xs={12} md={4}>
-                                    <SearchInput
+                                    
+                                    <Form.Group controlId='others' className='mb-0'>
+                                        <Form.Label as='h5'>Co-Leader(s)</Form.Label>
+                                        <SelectMutliple
+                                            options={leaderslist ? leaderslist.map(consultant => ({ value: consultant._id, label: consultant.name })) : []}
+                                            value={coLeaders ? coLeaders.map(x => ({ value: x.id, label: x.value })) : []}
+                                            setValue={setCoLeaders}
+                                            disabled={!editRequest}
+                                        />
+                                    </Form.Group>
+
+                                    {/* <SearchInput
                                         title='Co-leader(s)'
                                         searchValue={searchCoLeader ? searchCoLeader : ''}
                                         setSearchValue={setSearchCoLeader}
                                         possibilities={leaderslist && leaderslist.map(consultant => ({ id: consultant._id, value: consultant.name }))}
                                         updateResult={updateCoLeadersHandler}
                                         editMode={editRequest}
-                                    />
-                                    <ListGroup variant='flush'>
+                                    /> */}
+                                    {/* <ListGroup variant='flush'>
                                         {coLeaders && coLeaders.map(coLeader => (
                                             <ListGroup.Item
                                                 key={coLeader.id}
@@ -755,7 +767,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 )}
                                             </ListGroup.Item>
                                         ))}
-                                    </ListGroup>
+                                    </ListGroup> */}
                                 </Col>
 
                                 <Col xs={12} md={4}>
@@ -765,13 +777,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                             <Form.Control
                                                 type='text'
                                                 placeholder='email1@mail.com;email2@mail.com'
-                                                value={othersContacts}
+                                                value={othersContacts ? othersContacts : ''}
                                                 onChange={(e) => setOthersContacts(e.target.value)}
                                             ></Form.Control>
                                         ) : (
                                                 <Form.Control
                                                     type='text'
-                                                    value={othersContacts}
+                                                    value={othersContacts ? othersContacts : ''}
                                                     plaintext
                                                     readOnly
                                                 ></Form.Control>
@@ -790,14 +802,14 @@ const StaffingEditScreen = ({ match, history }) => {
                                         as='textarea'
                                         rows={3}
                                         placeholder='Deal description'
-                                        value={description}
+                                        value={description ? description : ''}
                                         onChange={(e) => setDescription(e.target.value)}
                                         required
                                     ></Form.Control>
                                 ) : (
                                         <Form.Control
                                             type='text'
-                                            value={description}
+                                            value={description ? description : ''}
                                             plaintext
                                             readOnly
                                         ></Form.Control>
@@ -815,13 +827,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                             <Form.Control
                                                 type='date'
                                                 placeholder='Deal date'
-                                                value={proposalDate}
+                                                value={proposalDate ? proposalDate : ''}
                                                 onChange={(e) => setProposalDate(e.target.value)}
                                             ></Form.Control>
                                         ) : (
                                                 <Form.Control
                                                     type='date'
-                                                    value={proposalDate}
+                                                    value={proposalDate ? proposalDate : ''}
                                                     plaintext
                                                     readOnly
                                                 ></Form.Control>
@@ -836,13 +848,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                             <Form.Control
                                                 type='date'
                                                 placeholder='Presentation date'
-                                                value={presentationDate}
+                                                value={presentationDate ? presentationDate : ''}
                                                 onChange={(e) => setPresentationDate(e.target.value)}
                                             ></Form.Control>
                                         ) : (
                                                 <Form.Control
                                                     type='date'
-                                                    value={presentationDate}
+                                                    value={presentationDate ? presentationDate : ''}
                                                     plaintext
                                                     readOnly
                                                 ></Form.Control>
@@ -857,14 +869,14 @@ const StaffingEditScreen = ({ match, history }) => {
                                             <Form.Control
                                                 type='date'
                                                 placeholder='Start date'
-                                                value={startDate}
+                                                value={startDate ? startDate : ''}
                                                 onChange={(e) => setStartDate(e.target.value)}
                                                 required
                                             ></Form.Control>
                                         ) : (
                                                 <Form.Control
                                                     type='date'
-                                                    value={startDate}
+                                                    value={startDate ? startDate : ''}
                                                     plaintext
                                                     readOnly
                                                 ></Form.Control>
@@ -881,14 +893,14 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 placeholder='Duration'
                                                 min={0}
                                                 step={0.5}
-                                                value={duration && duration}
+                                                value={duration ? duration : 0}
                                                 onChange={(e) => setDuration(e.target.value)}
                                                 required
                                             ></Form.Control>
                                         ) : (
                                                 <Form.Control
                                                     type='number'
-                                                    value={duration}
+                                                    value={duration ? duration : 0}
                                                     plaintext
                                                     readOnly
                                                 ></Form.Control>
@@ -908,14 +920,14 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 as='textarea'
                                                 rows={3}
                                                 placeholder='Staffing instruction'
-                                                value={srInstruction}
+                                                value={srInstruction ? srInstruction : ''}
                                                 onChange={(e) => setSrInstruction(e.target.value)}
                                                 required
                                             ></Form.Control>
                                         ) : (
                                                 <Form.Control
                                                     type='text'
-                                                    value={srInstruction}
+                                                    value={srInstruction ? srInstruction : ''}
                                                     plaintext
                                                     readOnly
                                                 ></Form.Control>
@@ -928,7 +940,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                         <Form.Label as='h5'>Status {editRequest && '*'}</Form.Label>
                                         <Form.Control
                                             as='select'
-                                            value={srStatus}
+                                            value={srStatus ? srStatus : ''}
                                             onChange={(e) => {
                                                 setSrStatus(e.target.value)
                                                 setDealChange(true);
@@ -1048,7 +1060,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                                                 <Form.Control
                                                                     type='text'
                                                                     placeholder='Add a comment'
-                                                                    value={newComment}
+                                                                    value={newComment ? newComment : ''}
                                                                     onChange={(e) => setNewComment(e.target.value)}
                                                                     onKeyUp={(e) => (e.key === 'Enter') && addCommentHandler()}
                                                                 ></Form.Control>
