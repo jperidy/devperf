@@ -115,7 +115,7 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
         const consultantProfil = await Consultant.findOne({email: email}).select('name email _id');
         const company = req.query.name; // only valid for commmercial case
 
-        const REQUEST_STATUS = [
+        REQUEST_STATUS = [
             {name: 'Identify Leader', staff: true, priority: 10},
             {name: 'Identify Staff', staff: true, priority: 7},
             {name: 'Staff to validate by leader', staff: true, priority: 5},

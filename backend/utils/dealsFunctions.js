@@ -51,6 +51,16 @@ const myAccessDeals = async (data, req) => {
 
 const calculatePriority = (deal) => {
 
+    const REQUEST_STATUS = [
+        {name: 'Identify Leader', staff: true, priority: 10},
+        {name: 'Identify Staff', staff: true, priority: 7},
+        {name: 'Staff to validate by leader', staff: true, priority: 5},
+        {name: 'Staff validated by leader', staff: false, priority: 0},
+        {name: 'Staff validated by client', staff: false, priority: 0},
+        {name: 'You can staff elsewhere', staff: false, priority: 0},
+        {name: 'Close', staff: false, priority: 0}
+    ];
+
     const oneDay = 1000 * 3600 * 24;
     const deltaStart = Date.parse(new Date(deal.startDate)) - Date.now();
 
@@ -66,14 +76,8 @@ const calculatePriority = (deal) => {
         {name: 'New position', priority: 5},
         {name: 'Replacement', priority: 1}
     ];
-    const pRequestStatus = [
-        {name: 'Identify Leader', staff: true, priority: 10},
-        {name: 'Identify Staff', staff: true, priority: 5},
-        {name: 'Staff validated by leader', staff: false, priority: 0},
-        {name: 'Staff validated by client', staff: false, priority: 0},
-        {name: 'You can staff elsewhere', staff: true, priority: 0},
-        {name: 'Close', staff: false, priority: 0}
-    ];
+    const pRequestStatus = REQUEST_STATUS;
+
     const pDealProba = [
         {name: 10, priority: 1},
         {name: 30, priority: 3},

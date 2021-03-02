@@ -9,11 +9,13 @@ function getDeals (nbDeal, consultants, practices) {
     //const status = ['Lead', 'Proposal to send', 'Proposal sent', 'Won', 'Abandoned']
     //const requestStatus = ['To do', 'Keep staffing', 'Retreat staffing', 'Release staffing'];
     const REQUEST_STATUS = [
-        {name: 'Identify Leader', staff: true},
-        {name: 'Identify Staff', staff: true},
-        {name: 'Staff validated by leader', staff: false},
-        {name: 'Staff validated by client', staff: false},
-        {name: 'You can staff elsewhere', staff: true}
+        {name: 'Identify Leader', staff: true, priority: 10},
+        {name: 'Identify Staff', staff: true, priority: 7},
+        {name: 'Staff to validate by leader', staff: true, priority: 5},
+        {name: 'Staff validated by leader', staff: false, priority: 0},
+        {name: 'Staff validated by client', staff: false, priority: 0},
+        {name: 'You can staff elsewhere', staff: false, priority: 0},
+        {name: 'Close', staff: false, priority: 0}
     ];
     const TYPE_BUSINESS = [
         {name: 'New business'},
