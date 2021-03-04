@@ -21,7 +21,7 @@ import SelectCompany from '../components/SelectCompany';
 import { REQUEST_STATUS } from '../constants/dealConstants';
 import StaffAConsultant from '../components/StaffAConsultant';
 import DisplayChildren from '../components/DisplayChildren';
-import SelectMutliple from '../components/SelectMutliple';
+import SelectInput from '../components/SelectInput';
 
 const StaffingEditScreen = ({ match, history }) => {
 
@@ -84,7 +84,7 @@ const StaffingEditScreen = ({ match, history }) => {
     const [dealChange, setDealChange] = useState(false);
     
     const [searchLeader, setSearchLeader] = useState('');
-    const [leader, setLeader] = useState('');
+    const [leader, setLeader] = useState([]);
     
     const [searchCoLeader, setSearchCoLeader] = useState('');
     const [coLeaders, setCoLeaders] = useState([]);
@@ -160,7 +160,7 @@ const StaffingEditScreen = ({ match, history }) => {
             setSdStatus(dealToEdit.staffingDecision.instructions ? dealToEdit.staffingDecision.instructions : '');
             setSdStaff(dealToEdit.staffingDecision.staff ? dealToEdit.staffingDecision.staff : []);
             setLeader(dealToEdit.contacts.primary ? 
-                {id: dealToEdit.contacts.primary._id, value: dealToEdit.contacts.primary.name} : '');
+                [{id: dealToEdit.contacts.primary._id, value: dealToEdit.contacts.primary.name}] : ['']);
             setCoLeaders(dealToEdit.contacts.secondary ?
                 dealToEdit.contacts.secondary.map( coLeader => ({id: coLeader._id, value: coLeader.name})) : []);
             setComments(dealToEdit.comments ? dealToEdit.comments : []);
@@ -192,7 +192,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 type: type,
                 status: status,
                 contacts: {
-                    primary: leader ? leader.id : null,
+                    primary: leader.length ? leader[0].id : null,
                     secondary: coLeaders.length ? coLeaders.map( x => x.id) : [],
                 },
                 probability: probability,
@@ -282,7 +282,7 @@ const StaffingEditScreen = ({ match, history }) => {
             client: client,
             title: title,
             contacts: {
-                primary: leader ? leader.id : null,
+                primary: leader.length ? leader[0].id : null,
                 secondary: coLeaders.length ? coLeaders.map( x => x.id) : [],
             },
             type: type,
@@ -323,7 +323,8 @@ const StaffingEditScreen = ({ match, history }) => {
     }
 
     const deleteLeaderHandler = () => {
-        setLeader('');
+        //setLeader('');
+        setLeader([]);
         setDealChange(true);
     }
 
@@ -709,7 +710,20 @@ const StaffingEditScreen = ({ match, history }) => {
                         <ListGroup.Item>
                             <Row className='align-items-start'>
                                 <Col xs={12} md={4}>
-                                    <SearchInput
+
+                                    <Form.Group controlId='select-leader' className='mb-0'>
+                                        <Form.Label as='h5'>Leader</Form.Label>
+                                        <SelectInput
+                                            options={leaderslist ? leaderslist.map(consultant => ({ value: consultant._id, label: consultant.name })) : []}
+                                            value={leader.length ? { value: leader[0].id, label: leader[0].value } : {}}
+                                            setValue={setLeader}
+                                            multi={false}
+                                            disabled={!editRequest}
+                                        />
+                                    </Form.Group>
+                                    
+
+                                    {/* <SearchInput
                                         title='Leader'
                                         searchValue={searchLeader ? searchLeader : ''}
                                         setSearchValue={setSearchLeader}
@@ -731,17 +745,18 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 )}
                                             </ListGroup.Item>
                                         </ListGroup>
-                                    )}
+                                    )} */}
                                 </Col>
                             
                                 <Col xs={12} md={4}>
                                     
                                     <Form.Group controlId='others' className='mb-0'>
                                         <Form.Label as='h5'>Co-Leader(s)</Form.Label>
-                                        <SelectMutliple
+                                        <SelectInput
                                             options={leaderslist ? leaderslist.map(consultant => ({ value: consultant._id, label: consultant.name })) : []}
                                             value={coLeaders ? coLeaders.map(x => ({ value: x.id, label: x.value })) : []}
                                             setValue={setCoLeaders}
+                                            multi={true}
                                             disabled={!editRequest}
                                         />
                                     </Form.Group>

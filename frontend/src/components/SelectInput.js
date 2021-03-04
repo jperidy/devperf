@@ -1,16 +1,21 @@
 import React from 'react';
 import Select from 'react-select';
 
-const SelectMutliple = ({ options, value, setValue, disabled }) => {
+const SelectInput = ({ options, value, setValue, disabled, multi }) => {
 
     //console.log('value SelectMutiple', value);
 
     const handleChange = (e) => {
-
-        //console.log('e', e);
-        const valuesSelected = e.map(x => ({id: x.value, value: x.label}));
+        let valuesSelected = [];
+        if(multi) {
+            valuesSelected = e.map(x => ({id: x.value, value: x.label}));
+        } else {
+            valuesSelected = [{id: e.value, value: e.label}]
+        }
         setValue(valuesSelected);
     }
+
+    //console.log(value);
 
 
     return (
@@ -19,7 +24,7 @@ const SelectMutliple = ({ options, value, setValue, disabled }) => {
                 closeMenuOnSelect={true}
                 placeholder='Select coleader(s)'
                 value={value ? value : []}
-                isMulti
+                isMulti={multi}
                 options={options ? options : []}
                 onChange={handleChange}
                 isDisabled={disabled}
@@ -28,4 +33,4 @@ const SelectMutliple = ({ options, value, setValue, disabled }) => {
     )
 }
 
-export default SelectMutliple;
+export default SelectInput;
