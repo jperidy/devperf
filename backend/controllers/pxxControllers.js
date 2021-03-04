@@ -477,8 +477,10 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
     
     //console.log('experience: ', experience);
     let searchSkillsId = (skills !== '') ? await Skill.find(skills).select('_id') : '';
-    searchSkillsId = (searchSkillsId !== '') ? {'quality.skill': {$in: searchSkillsId}} : {};
-    
+    //searchSkillsId = (searchSkillsId !== '') ? {'quality.skill': {$in: searchSkillsId}} : {};
+    searchSkillsId = (searchSkillsId !== '') ? {$and: searchSkillsId.map( skill => ({'quality.skill': skill}))} : {};
+    //console.log(searchSkillsId)
+
     //const searchPractice = practice ? {practice: practice} : {};
 
     const consultantId = await Consultant.find({...searchPractice, ...searchSkillsId, ...experience}).select('_id');
