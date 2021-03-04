@@ -3,6 +3,8 @@ import Form from 'react-bootstrap/Form';
 import ListGroup from 'react-bootstrap/ListGroup';
 //import Input from 'react-bootstrap/Input';
 
+// TO DELETE //////////////////////////////////////////////////////////////////////////////////////
+
 const SearchInput = ({ title, searchValue, setSearchValue, possibilities, updateResult, editMode }) => {
 
     const size = 5;

@@ -17,13 +17,12 @@ const SelectInput = ({ options, value, setValue, disabled, multi }) => {
 
     //console.log(value);
 
-
     return (
         <div>
             <Select
                 closeMenuOnSelect={true}
-                placeholder='Select coleader(s)'
-                value={value ? value : []}
+                placeholder='Select...'
+                value={value ? value : null}
                 isMulti={multi}
                 options={options ? options : []}
                 onChange={handleChange}

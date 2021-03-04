@@ -16,7 +16,7 @@ import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ConsoDispo from '../components/ConsoDispo';
 import ViewStaffs from '../components/ViewStaffs';
-import SearchInput from '../components/SearchInput';
+//import SearchInput from '../components/SearchInput';
 import SelectCompany from '../components/SelectCompany';
 import { REQUEST_STATUS } from '../constants/dealConstants';
 import StaffAConsultant from '../components/StaffAConsultant';
@@ -73,20 +73,18 @@ const StaffingEditScreen = ({ match, history }) => {
     
     const [wonDate, setWonDate] = useState('');
     
-    
     const [modalWindowShow, setModalWindowShow] = useState(false);
     const [sdConsultant, setSdConsultant] = useState('');
     const [loadingSdConsultantData, setLoadingSdConsultantData] = useState({})
-    
     
     const [editRequest, setEditRequest] = useState(match.params.id ? false : true);
     
     const [dealChange, setDealChange] = useState(false);
     
-    const [searchLeader, setSearchLeader] = useState('');
+    //const [searchLeader, setSearchLeader] = useState('');
     const [leader, setLeader] = useState([]);
     
-    const [searchCoLeader, setSearchCoLeader] = useState('');
+    //const [searchCoLeader, setSearchCoLeader] = useState('');
     const [coLeaders, setCoLeaders] = useState([]);
     
 
@@ -127,15 +125,16 @@ const StaffingEditScreen = ({ match, history }) => {
 
 
     useEffect(() => { 
-            dispatch(getAllLeaders(searchLeader));
+        //dispatch(getAllLeaders(searchLeader));
+        dispatch(getAllLeaders());
         
-    },[dispatch, searchLeader])
+    },[dispatch])
 
-    useEffect(() => {
+    /* useEffect(() => {
 
         dispatch(getAllLeaders(searchCoLeader));
 
-    }, [dispatch, searchCoLeader])
+    }, [dispatch, searchCoLeader]) */
 
 
     useEffect(() => {
@@ -322,20 +321,20 @@ const StaffingEditScreen = ({ match, history }) => {
         setDealChange(true);
     }
 
-    const deleteLeaderHandler = () => {
+    /* const deleteLeaderHandler = () => {
         //setLeader('');
         setLeader([]);
         setDealChange(true);
-    }
+    } */
 
-    const deleteCoLeaderHandler = (coLeader) => {
+    /* const deleteCoLeaderHandler = (coLeader) => {
         let newList = coLeaders.slice();
         newList = newList.filter( x => x.id !== coLeader.id)
         setCoLeaders(newList);
         setDealChange(true);
-    }
+    } */
 
-    const updateCoLeadersHandler = (value) => {
+    /* const updateCoLeadersHandler = (value) => {
         if(value) {
             const newList = coLeaders.slice();
             if (!newList.map( x => x.id).includes(value.id)) {
@@ -343,7 +342,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 setCoLeaders(newList)
             }
         }
-    }
+    } */
 
     const submitHandler = (e) => {
         e.preventDefault();
@@ -485,12 +484,18 @@ const StaffingEditScreen = ({ match, history }) => {
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <SelectCompany 
-                                setCompany={setCompany}
-                                editRequest={editRequest}
-                            />
+
+                            <Form.Group controlId='select-company' className='mb-0'>
+                                <Form.Label as='h5'>Company</Form.Label>
+                                <SelectCompany
+                                    company={{ value: company, label: company }}
+                                    setCompany={setCompany}
+                                    editRequest={editRequest}
+                                />
+                            </Form.Group>
+
                             {companyMessage && <Message variant='danger'>{companyMessage}</Message>}
-                            {company && (
+                            {/*company && (
                                 <ListGroup variant='flush'>
                                     <ListGroup.Item
                                         variant='ligth'
@@ -503,7 +508,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                         )}
                                     </ListGroup.Item>
                                 </ListGroup>
-                            )}
+                                        )*/}
 
                         </ListGroup.Item>
 
@@ -722,30 +727,6 @@ const StaffingEditScreen = ({ match, history }) => {
                                         />
                                     </Form.Group>
                                     
-
-                                    {/* <SearchInput
-                                        title='Leader'
-                                        searchValue={searchLeader ? searchLeader : ''}
-                                        setSearchValue={setSearchLeader}
-                                        possibilities={leaderslist && leaderslist.map(consultant => ({ id: consultant._id, value: consultant.name }))}
-                                        updateResult={setLeader}
-                                        editMode={editRequest}
-                                        //style={{zIndex:'1000', position: 'relative'}}
-                                    />
-                                    {leader && (
-                                        <ListGroup variant='flush'>
-                                            <ListGroup.Item
-                                                variant='ligth'
-                                            >{leader.value}
-                                                {editRequest && (
-                                                    <Button 
-                                                        variant='Dark'
-                                                        onClick={() => deleteLeaderHandler()}
-                                                    ><i className="fas fa-user-times"></i></Button>
-                                                )}
-                                            </ListGroup.Item>
-                                        </ListGroup>
-                                    )} */}
                                 </Col>
                             
                                 <Col xs={12} md={4}>
@@ -760,29 +741,6 @@ const StaffingEditScreen = ({ match, history }) => {
                                             disabled={!editRequest}
                                         />
                                     </Form.Group>
-
-                                    {/* <SearchInput
-                                        title='Co-leader(s)'
-                                        searchValue={searchCoLeader ? searchCoLeader : ''}
-                                        setSearchValue={setSearchCoLeader}
-                                        possibilities={leaderslist && leaderslist.map(consultant => ({ id: consultant._id, value: consultant.name }))}
-                                        updateResult={updateCoLeadersHandler}
-                                        editMode={editRequest}
-                                    /> */}
-                                    {/* <ListGroup variant='flush'>
-                                        {coLeaders && coLeaders.map(coLeader => (
-                                            <ListGroup.Item
-                                                key={coLeader.id}
-                                            >{coLeader.value}
-                                                {editRequest && (
-                                                    <Button 
-                                                        variant='Dark'
-                                                        onClick={() => deleteCoLeaderHandler(coLeader)}
-                                                    ><i className="fas fa-user-times"></i></Button>
-                                                )}
-                                            </ListGroup.Item>
-                                        ))}
-                                    </ListGroup> */}
                                 </Col>
 
                                 <Col xs={12} md={4}>

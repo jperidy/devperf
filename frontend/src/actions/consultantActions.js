@@ -328,7 +328,7 @@ export const updateComment = (consultantId, commentText) => async(dispatch, getS
     }
 };
 
-export const getAllLeaders = (searchValue) => async (dispatch, getState) => {
+export const getAllLeaders = (searchValue='') => async (dispatch, getState) => {
     try {
         dispatch({type: CONSULTANTS_ALL_LEADERS_REQUEST})
         
