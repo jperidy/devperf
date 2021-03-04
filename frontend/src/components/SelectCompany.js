@@ -50,8 +50,8 @@ const SelectCompany = ({ company, setCompany, editRequest }) => {
                     isClearable
                     onChange={handleChange}
                     value={(company && company.label !=='') ? company : null}
-                    //onInputChange={handleInputChange}
                     options={companies && companies.map(company => ({ value: company._id, label: company.name }))}
+                    isDisabled={!editRequest}
                 />
             </Col>
         </Row>
