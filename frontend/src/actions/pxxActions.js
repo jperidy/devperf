@@ -288,7 +288,7 @@ export const getTace = (practice, start, end) => async (dispatch, getState) => {
     }
 };
 
-export const getAvailabilities = (practice, start, end, skills, experienceStart, experienceEnd, searchMode) => async (dispatch, getState) => {
+export const getAvailabilities = (practice='', start, end, skills='', experienceStart='', experienceEnd='', searchMode) => async (dispatch, getState) => {
 
     try {
 

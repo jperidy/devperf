@@ -16,6 +16,9 @@ import Tab from 'react-bootstrap/Tab';
 import StaffAConsultant from './StaffAConsultant';
 import DisplayChildren from '../components/DisplayChildren';
 
+import SelectInput from '../components/SelectInput';
+import { getAllSkills } from '../actions/skillActions';
+
 const ConsoDispo = ({ 
     //practice, 
     start, end, mode, addStaffHandler, history }) => {
@@ -23,10 +26,12 @@ const ConsoDispo = ({
     const dispatch = useDispatch();
 
     const [focus, setFocus] = useState('');
-    const [searchSkills, setSearchSkills] = useState('');
+    //const [searchSkills, setSearchSkills] = useState('');
     const [searchExperienceStart, setSearchExperienceStart] = useState('');
     const [searchExperienceEnd, setSearchExperienceEnd] = useState('');
     const [practice, setPractice] = useState('');
+
+    const [searchSkillsList, setSearchSkillsList] = useState([]);
 
     const [searchMode, setSearchMode] = useState('filterAvailable');
 
@@ -39,6 +44,9 @@ const ConsoDispo = ({
     const pxxAvailabilities = useSelector(state => state.pxxAvailabilities);
     const { loading: loadingAvailabilities, error: errorAvailabilities, availabilities } = pxxAvailabilities;
 
+    const skillList = useSelector(state => state.skillList);
+    const { skills } = skillList;
+
     useEffect(() => {
         if(userInfo) {
             setPractice(userInfo.consultantProfil.practice);
@@ -46,22 +54,25 @@ const ConsoDispo = ({
     }, [userInfo]);
 
     useEffect(() => {
-        if (practice && !loadingAvailabilities) {
-            dispatch(getAvailabilities(practice, start, end, '', '', '', searchMode));
+        if (practice) {
+            dispatch(getAvailabilities(practice, start, end, searchSkillsList.map(skill => skill.value).join(';'), searchExperienceStart, searchExperienceEnd, searchMode));
         }
-        // eslint-disable-next-line
-    }, [dispatch, practice, start, end, searchMode]);
+    }, [dispatch, practice, start, end, searchMode, searchSkillsList, searchExperienceStart, searchExperienceEnd]);
+
+    useEffect(() => {
+        dispatch(getAllSkills('','',1,10000));
+    },[dispatch]);
 
     const removeFilterAction = () => {
-        setSearchSkills('');
+        setSearchSkillsList([]);
         setSearchExperienceStart('');
         setSearchExperienceEnd('');
-        dispatch(getAvailabilities(practice, start, end, '', '', '', searchMode));
+        //dispatch(getAvailabilities(practice, start, end, '', '', '', searchMode));
     };
 
     const handlerSkillsSubmit = (e) => {
         e.preventDefault();
-        dispatch(getAvailabilities(practice, start, end, searchSkills, searchExperienceStart, searchExperienceEnd, searchMode));
+        dispatch(getAvailabilities(practice, start, end, searchSkillsList.map(skill => skill.value).join(';'), searchExperienceStart, searchExperienceEnd, searchMode));
     };
 
     const moreConsultantDetails = (consultant) => {
@@ -85,9 +96,10 @@ const ConsoDispo = ({
             <Row className='mt-5'>
                 <Col md={12}>
                     <Form onSubmit={handlerSkillsSubmit}>
+
                         <Form.Row className='align-items-center mb-3'>
                             <Col md={1}>
-                                {(searchSkills || searchExperienceStart || searchExperienceEnd) ? (
+                                {( searchExperienceStart || searchExperienceEnd) ? (
                                     <Button 
                                         variant='secondary'
                                         onClick={removeFilterAction}
@@ -104,12 +116,13 @@ const ConsoDispo = ({
 
                             <Col md={4}>
                                 <Form.Group controlId='skill-search' className='my-0'>
-                                    <Form.Control
-                                        type='text'
-                                        placeholder='Search: skill1 ; skill2'
-                                        value={searchSkills && searchSkills}
-                                        onChange={(e) => setSearchSkills(e.target.value)}
-                                    ></Form.Control>
+                                    <SelectInput
+                                        options={skills ? skills.map(skill => ({ value: skill._id, label: skill.name })) : []}
+                                        value={searchSkillsList.length ? searchSkillsList.map(skill => ({ value: skill._id, label: skill.value })) : []}
+                                        setValue={setSearchSkillsList}
+                                        multi={true}
+                                        disabled={false}
+                                    />
                                 </Form.Group>
                             </Col>
 

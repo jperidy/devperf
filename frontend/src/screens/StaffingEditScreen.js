@@ -316,33 +316,12 @@ const StaffingEditScreen = ({ match, history }) => {
         }
     }
 
+    /*
     const deleteCompanyHandler = () => {
         setCompany('');
         setDealChange(true);
     }
-
-    /* const deleteLeaderHandler = () => {
-        //setLeader('');
-        setLeader([]);
-        setDealChange(true);
-    } */
-
-    /* const deleteCoLeaderHandler = (coLeader) => {
-        let newList = coLeaders.slice();
-        newList = newList.filter( x => x.id !== coLeader.id)
-        setCoLeaders(newList);
-        setDealChange(true);
-    } */
-
-    /* const updateCoLeadersHandler = (value) => {
-        if(value) {
-            const newList = coLeaders.slice();
-            if (!newList.map( x => x.id).includes(value.id)) {
-                newList.push(value);
-                setCoLeaders(newList)
-            }
-        }
-    } */
+    */
 
     const submitHandler = (e) => {
         e.preventDefault();
@@ -495,20 +474,6 @@ const StaffingEditScreen = ({ match, history }) => {
                             </Form.Group>
 
                             {companyMessage && <Message variant='danger'>{companyMessage}</Message>}
-                            {/*company && (
-                                <ListGroup variant='flush'>
-                                    <ListGroup.Item
-                                        variant='ligth'
-                                    >{company}
-                                        {editRequest && (
-                                            <Button
-                                                variant='Dark'
-                                                onClick={() => deleteCompanyHandler()}
-                                            ><i className="fas fa-trash-alt"></i></Button>
-                                        )}
-                                    </ListGroup.Item>
-                                </ListGroup>
-                                        )*/}
 
                         </ListGroup.Item>
 

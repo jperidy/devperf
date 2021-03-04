@@ -3,8 +3,6 @@ import Select from 'react-select';
 
 const SelectInput = ({ options, value, setValue, disabled, multi }) => {
 
-    //console.log('value SelectMutiple', value);
-
     const handleChange = (e) => {
         let valuesSelected = [];
         if(multi) {
@@ -14,8 +12,6 @@ const SelectInput = ({ options, value, setValue, disabled, multi }) => {
         }
         setValue(valuesSelected);
     }
-
-    //console.log(value);
 
     return (
         <div>
