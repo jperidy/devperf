@@ -4,7 +4,12 @@ const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
 const { myAccessConsultants, myAuthorizedActionsConsultant } = require('../utils/usersFunctions');
-const { update } = require('../models/consultantModel');
+//const { update } = require('../models/consultantModel');
+
+const readXlsxFile = require('read-excel-file/node');
+const fs = require('fs'); 
+const path = require('path');
+
 
 // @desc    Create a consultant data by Id
 // @route   POST /api/consultants
@@ -576,6 +581,92 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
 });
 
 
+// @desc    Update user from Wavekeeper
+// @route   PUT /api/consultants/admin/wk
+// @access  Private
+const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
+
+    const anonymise = true;
+    
+    const schema = {
+        'Collaborateur/Nom': { prop: 'name', type: String},
+        'Collaborateur/Matricule cabinet': { prop: 'matricule', type: String},
+        'Collaborateur/Grade/Grade': { prop: 'grade', type: String},
+        'Collaborateur/Date de début de vie active valorisée': { prop: 'valued', type: Date},
+        "Collaborateur/Date d'embauche": { prop: 'start', type: Date},
+        'Collaborateur/Last Date End': { prop: 'leave', type: Date},
+        'Taux de présence': { prop: 'partialTime', type: Number},
+        'Présence': { prop: 'presence', type: Number},
+        'Type de Contrat/Type de Contrat': { prop: 'contract', type: String},
+        'Collaborateur/Est un CD Manager': { prop: 'isCdm', type: (value) => {
+            if (value === 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }},
+        'Collaborateur/CD Manager/Matricule cabinet': { prop: 'cdmMatricule', type: String},
+        'Collaborateur/CD Manager/Nom': { prop: 'cdmName', type: String},
+        'Practice/Nom affiché': {prop: 'practice', type: String}
+    }
+
+    const __dir = path.resolve();
+    const fileName = __dir + '/backend/data/hr.presence.xlsx';
+    //console.log(fileName); 
+
+
+    const {rows, error} = await readXlsxFile(fileName, {schema});
+
+    const message = []
+
+    for (let line = 0 ; line < rows.length ; line++) {
+        const consultant = rows[line];
+
+        const searchConsultant = await Consultant.findOne({ matricule: consultant.matricule });
+        const cdmMatricule = consultant.cdmMatricule ? consultant.cdmMatricule.toString().padStart(9, 0) : '';
+        const cdmId = await Consultant.findOne({matricule: cdmMatricule}).select('_id');
+
+        if (consultant.presence > 0) {
+            
+            const consultantToUpdateOrCreate = {
+                name: anonymise ? `Prénom NOM ${line+1}` : consultant.name,
+                email: `prenom-nom-${line+1}@jprmail.com`,
+                grade: transformGrade(consultant.grade),
+                practice: consultant.practice,
+                matricule: consultant.matricule,
+                arrival: consultant.start ? new Date(consultant.start) : null,
+                valued: consultant.valued ? new Date(consultant.valued) : null,
+                leaving: consultant.leave ? new Date(consultant.leave) : null,
+                isCDM: consultant.isCdm,
+                cdmId: cdmId ? cdmId._id : null,
+            }
+    
+            let result = '';
+            if (searchConsultant) {
+                result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
+            } else {
+                result = await createAConsultant(consultantToUpdateOrCreate);
+            }
+    
+            if (result) {
+                resetAllPxx(result);
+                console.log(consultant.name + ' -----> updated')
+            } else {
+                console.log('Error creating or updating: ' + consultant.name);
+                message.push({message: {
+                    title: 'error creating or updating',
+                    consultant: consultant.name
+                }})
+            }
+            
+        }
+    }
+
+    res.status(200).json(message);
+    
+});
+
+
 
 module.exports = { 
     getMyConsultants, 
@@ -595,6 +686,7 @@ module.exports = {
     deleteConsultantSkill,
     updateLevelConsultantSkill,
     getConsultantStaffings,
-    createOrUpdateConsultants
+    createOrUpdateConsultants,
+    updateConsultantFromWavekeeper
     //getAllConsultantByPractice
 };

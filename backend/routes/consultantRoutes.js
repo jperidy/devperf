@@ -18,14 +18,11 @@ const {
     getConsultantStaffings,
     getCDM,
     getAllLeaders,
-    createOrUpdateConsultants
+    createOrUpdateConsultants,
+    updateConsultantFromWavekeeper
 } = require('../controllers/consultantControllers');
 
 const router = express.Router();
-
-router.route('/')
-    .get(protect, getMyConsultants)
-    .post(protect, authorizeActionOnConsultant, createConsultant);
 
 router.route('/cdm/:practice').get(protect, getAllCDMData);
 
@@ -50,6 +47,7 @@ router.get('/staffings', protect, getConsultantStaffings);
 router.get('/admin/consultants', protect, getAllConsultants);
 
 router.put('/admin/mass-import', protect, createOrUpdateConsultants);
+router.put('/admin/wk', protect, updateConsultantFromWavekeeper);
 
 router.route('/:consultantId')
     .get(protect, authorizeActionOnConsultant, getConsultant)
@@ -57,5 +55,9 @@ router.route('/:consultantId')
     .delete(protect, authorizeActionOnConsultant, deleteConsultant);
 
 router.put('/comment/:consultantId', protect, authorizeActionOnConsultant, updateConsultantComment);
+
+router.route('/')
+    .get(protect, getMyConsultants)
+    .post(protect, authorizeActionOnConsultant, createConsultant);
    
 module.exports = router;
