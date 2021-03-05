@@ -586,7 +586,14 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
 // @access  Private
 const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
 
+    //res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    //res.setHeader('Transfer-Encoding', 'chunked');
+    //res.write("Start...");
+
     const anonymise = true;
+
+    console.log(req.body);
+    const filePath = req.body.path;
     
     const schema = {
         'Collaborateur/Nom': { prop: 'name', type: String},
@@ -611,9 +618,8 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
     }
 
     const __dir = path.resolve();
-    const fileName = __dir + '/backend/data/hr.presence.xlsx';
-    //console.log(fileName); 
-
+    const fileName = __dir + filePath // '/backend/data/hr.presence.xlsx';
+    //console.log(fileName);
 
     const {rows, error} = await readXlsxFile(fileName, {schema});
 
@@ -632,40 +638,131 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
                 name: anonymise ? `Prénom NOM ${line+1}` : consultant.name,
                 email: `prenom-nom-${line+1}@jprmail.com`,
                 grade: transformGrade(consultant.grade),
-                practice: consultant.practice,
+                practice: consultant.practice.split('-')[1],
                 matricule: consultant.matricule,
-                arrival: consultant.start ? new Date(consultant.start) : null,
-                valued: consultant.valued ? new Date(consultant.valued) : null,
-                leaving: consultant.leave ? new Date(consultant.leave) : null,
+                arrival: consultant.start ? consultant.start : null,
+                valued: consultant.valued ? consultant.valued : consultant.start ? consultant.start : null,
+                leaving: consultant.leave && (consultant.leave > consultant.arrival) ? consultant.leave : null,
                 isCDM: consultant.isCdm,
                 cdmId: cdmId ? cdmId._id : null,
             }
     
             let result = '';
+            let info = ''
             if (searchConsultant) {
                 result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
+                if (result) {
+                    info = `Success - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
+                    message.push({
+                        _id: result._id,
+                        practice: consultant.practice.split('-')[1],
+                        matricule: consultant.matricule,
+                        name: consultant.name,
+                        result: 'updated',
+                        message: info
+                    });
+                    resetAllPxx(result);
+                } else {
+                    info = `Error - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`
+                    message.push({
+                        _id: 'unknown',
+                        practice: consultant.practice.split('-')[1],
+                        matricule: consultant.matricule,
+                        name: consultant.name,
+                        result: 'error',
+                        message: info,
+                        data: consultantToUpdateOrCreate
+                    })
+                }
             } else {
                 result = await createAConsultant(consultantToUpdateOrCreate);
+                if (result) {
+                    info = `Success - create - ${consultant.name} (${consultant.matricule}) - ${result._id}`
+                    message.push({
+                        _id: result._id,
+                        practice: consultant.practice.split('-')[1],
+                        matricule: consultant.matricule,
+                        name: consultant.name,
+                        result: 'created',
+                        message: info
+                    });
+                    resetAllPxx(result);
+                } else {
+                    info = `Error - create - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
+                    message.push({
+                        _id: 'unknown',
+                        practice: consultant.practice.split('-')[1],
+                        matricule: consultant.matricule,
+                        name: consultant.name,
+                        result: 'error',
+                        message: info,
+                        data: consultantToUpdateOrCreate
+                    });
+                }
             }
-    
-            if (result) {
-                resetAllPxx(result);
-                console.log(consultant.name + ' -----> updated')
-            } else {
-                console.log('Error creating or updating: ' + consultant.name);
-                message.push({message: {
-                    title: 'error creating or updating',
-                    consultant: consultant.name
-                }})
-            }
-            
+            console.log(info);
+            //res.write(info + '\n');
         }
     }
 
-    res.status(200).json(message);
+    const practices = [... new Set(message.map(x => x.practice))];
+    const updatedMatricules = [... new Set(message.map(x => x.matricule))];
+    
+    
+    const startMonth = new Date(Date.now());
+    startMonth.setUTCDate(1);
+    
+    const endMonth = new Date(Date.now());
+    endMonth.setUTCMonth(endMonth.getUTCMonth() + 1);
+    endMonth.setUTCDate(0);
+    
+    const allConsultantsActivesInDatabase = await Consultant.find({
+        $or: [
+            { practice: { $in: practices }, arrival: { $lte: startMonth }, leaving: { $gte: endMonth } },
+            { practice: { $in: practices }, arrival: { $lte: startMonth }, leaving: null }
+        ]
+    });
+
+    //console.log(practices);
+    //console.log(allConsultantsActivesInDatabase)
+    //console.log(updatedMatricules);
+    //console.log(startMonth, endMonth);
+
+    const consultantNotUpdated = allConsultantsActivesInDatabase.filter(x => !updatedMatricules.includes(x.matricule))
+
+    for (let incr = 0; incr<consultantNotUpdated.length; incr++) {
+        info = `Warning - not found in import file - ${consultantNotUpdated[incr].name} (${consultantNotUpdated[incr].matricule}) - ${consultantNotUpdated[incr]._id}`
+        message.push({
+            _id: consultantNotUpdated[incr]._id,
+            practice: consultantNotUpdated[incr].practice,
+            matricule: consultantNotUpdated[incr].matricule,
+            name: consultantNotUpdated[incr].name,
+            result: 'warning',
+            message: info,
+            data: consultantNotUpdated[incr]
+        });
+    }
+
+    const messageToSend = {
+        created: message.filter(x => x.result === 'created').length,
+        updated: message.filter(x => x.result === 'updated').length,
+        error: message.filter(x => x.result === 'error'),
+        warning: message.filter(x => x.result === 'warning'),
+        data: message.filter(x => x.result === 'error' || x.result === 'warning')
+    }
+
+    res.status(200).json(messageToSend);
+    //res.end();
     
 });
 
+// @desc    Upload file from wk
+// @route   PUT /api/consultants/admin/upload
+// @access  Private
+const uploadConsultantFileWk = asyncHandler(async(req,res) =>{
+
+    res.status(200).json({message: 'file uploaded'});
+});
 
 
 module.exports = { 
@@ -687,6 +784,7 @@ module.exports = {
     updateLevelConsultantSkill,
     getConsultantStaffings,
     createOrUpdateConsultants,
+    uploadConsultantFileWk,
     updateConsultantFromWavekeeper
     //getAllConsultantByPractice
 };

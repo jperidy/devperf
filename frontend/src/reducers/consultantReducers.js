@@ -75,7 +75,15 @@ import {
     CONSULTANT_MASS_IMPORT_REQUEST,
     CONSULTANT_MASS_IMPORT_SUCCESS,
     CONSULTANT_MASS_IMPORT_FAIL,
-    CONSULTANT_MASS_IMPORT_RESET
+    CONSULTANT_MASS_IMPORT_RESET,
+    CONSULTANT_UPLOAD_WK_REQUEST,
+    CONSULTANT_UPLOAD_WK_SUCCESS,
+    CONSULTANT_UPLOAD_WK_FAIL,
+    CONSULTANT_UPLOAD_WK_RESET,
+    CONSULTANT_UPDATE_WK_REQUEST,
+    CONSULTANT_UPDATE_WK_SUCCESS,
+    CONSULTANT_UPDATE_WK_FAIL,
+    CONSULTANT_UPDATE_WK_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {focus: 0}, action) => {
@@ -407,6 +415,36 @@ export const consultantsMassImportReducer = (state = {}, action) => {
         case CONSULTANT_MASS_IMPORT_FAIL:
             return { loading: false, success: false, error: action.payload };
         case CONSULTANT_MASS_IMPORT_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const consultantUploadWkReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_UPLOAD_WK_REQUEST:
+            return { loading: true };
+        case CONSULTANT_UPLOAD_WK_SUCCESS:
+            return { loading: false, success: true, path: action.payload };
+        case CONSULTANT_UPLOAD_WK_FAIL:
+            return { loading: false, success: false, error: action.payload };
+        case CONSULTANT_UPLOAD_WK_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const consultantUpdateWkReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_UPDATE_WK_REQUEST:
+            return { loading: true };
+        case CONSULTANT_UPDATE_WK_SUCCESS:
+            return { loading: false, success: true, message: action.payload };
+        case CONSULTANT_UPDATE_WK_FAIL:
+            return { loading: false, success: false, error: action.payload };
+        case CONSULTANT_UPDATE_WK_RESET:
             return {}
         default:
             return state;

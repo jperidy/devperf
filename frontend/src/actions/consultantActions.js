@@ -57,7 +57,13 @@ import {
     CONSULTANTS_ALL_LEADERS_FAIL,
     CONSULTANT_MASS_IMPORT_REQUEST,
     CONSULTANT_MASS_IMPORT_SUCCESS,
-    CONSULTANT_MASS_IMPORT_FAIL
+    CONSULTANT_MASS_IMPORT_FAIL,
+    CONSULTANT_UPLOAD_WK_REQUEST,
+    CONSULTANT_UPLOAD_WK_SUCCESS,
+    CONSULTANT_UPLOAD_WK_FAIL,
+    CONSULTANT_UPDATE_WK_REQUEST,
+    CONSULTANT_UPDATE_WK_SUCCESS,
+    CONSULTANT_UPDATE_WK_FAIL
 } from '../constants/consultantConstants';
 
 export const getAllMyConsultants = () => async (dispatch, getState) => {
@@ -588,3 +594,67 @@ export const consultantImportInMass = (data) => async (dispatch, getState) => {
         });
     }
 };
+
+export const uploadConsultantWk = (file) => async (dispatch, getState) => {
+    try {
+        dispatch({type: CONSULTANT_UPLOAD_WK_REQUEST})
+        
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.post(`/api/upload/consultant`, file, config);
+
+        dispatch({ type: CONSULTANT_UPLOAD_WK_SUCCESS, payload: data });
+
+        
+    } catch (error) {
+
+        dispatch({ 
+            type: CONSULTANT_UPLOAD_WK_FAIL, 
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+}
+
+export const updateConsultantWk = (path) => async (dispatch, getState) => {
+    try {
+        dispatch({type: CONSULTANT_UPDATE_WK_REQUEST})
+        
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                'responseType': 'stream',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.put(`/api/consultants/admin/wk`, path, config);
+        /* axios.put(`/api/consultants/admin/wk`, path, config).then((res) => {
+            res.data.on('data', data => {
+                console.log(data)
+            })
+        }) 
+        dispatch({ type: CONSULTANT_UPDATE_WK_SUCCESS, payload: 'ok' });*/
+
+        dispatch({ type: CONSULTANT_UPDATE_WK_SUCCESS, payload: data });
+
+        
+    } catch (error) {
+
+        dispatch({ 
+            type: CONSULTANT_UPDATE_WK_FAIL, 
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+}

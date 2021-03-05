@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteConsultant, getAllMyAdminConsultants, consultantImportInMass } from '../actions/consultantActions';
+import { deleteConsultant, getAllMyAdminConsultants, consultantImportInMass, uploadConsultantWk, updateConsultantWk } from '../actions/consultantActions';
 import { CONSULTANT_DELETE_RESET } from '../constants/consultantConstants';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
@@ -34,6 +34,9 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     const [importData, setImportData] = useState([]);
 
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [loaded, setLoaded] = useState(0);
+
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
@@ -45,6 +48,13 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     const consultantsMassImport = useSelector(state => state.consultantsMassImport);
     const { loading:loadingMassImport, error:errorMassImport, success:successMassImport } = consultantsMassImport;
+
+    const consultantUploadWk = useSelector(state => state.consultantUploadWk);
+    const { loading:loadingUpload, error:errorUpload, path } = consultantUploadWk;
+
+    const consultantUpdateWk = useSelector(state => state.consultantUpdateWk);
+    const { loading:loadingUpdate, error:errorUpdate, message } = consultantUpdateWk;
+
 
     useEffect(() => {
 
@@ -106,6 +116,21 @@ const ManageConsultantScreen = ({ history, match }) => {
         }
     }
 
+    const onChangeHandler = (e) => {
+        setSelectedFile(e.target.files[0]);
+        setLoaded(0);
+    }
+    const onClickHandler = () => {
+        const data = new FormData();
+        data.append('file', selectedFile);
+        dispatch(uploadConsultantWk(data));
+    }
+    const startImportData = () => {
+        if(path) {
+            dispatch(updateConsultantWk(path));
+        }
+    }
+
     return (
         <>
             <Meta />
@@ -113,6 +138,35 @@ const ManageConsultantScreen = ({ history, match }) => {
             
             <DropDownTitleContainer title='Manage consultants' close={false}>
                 <ListGroup.Item>
+                    <Row className='align-items-center'>
+                        <Col>
+                            <input type='file' name='hr.presence' onChange={onChangeHandler} />
+                            <Button variant='primary' onClick={onClickHandler} disabled={!selectedFile}>
+                                {loadingUpload ? <Loader /> : "Upload"}
+                            </Button>
+
+                            {path && (
+                                <Button variant='primary' className='mx-3' onClick={startImportData}>
+                                    {loadingUpdate ? <Loader /> : 'Update'}
+                                </Button>
+                            )}
+                        </Col>
+                    </Row>
+                    {message && message.data.length > 0 && message.data.map((line, incr) => (
+                        <Row key={incr} >
+                            <Col>
+                                <Message variant='warning'>{line.message}</Message>
+                            </Col>
+                        </Row>
+                    ))}
+                    {message && message.data.length === 0 && (
+                        <Row>
+                            <Col>
+                                <Message variant='success'>Success data imported!</Message>
+                            </Col>
+                        </Row>
+                    )}
+                    
                     <Row>
 
                         <Col xs={6} md={2}>

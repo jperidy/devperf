@@ -19,10 +19,35 @@ const {
     getCDM,
     getAllLeaders,
     createOrUpdateConsultants,
-    updateConsultantFromWavekeeper
+    updateConsultantFromWavekeeper,
+    uploadConsultantFileWk
 } = require('../controllers/consultantControllers');
 
 const router = express.Router();
+
+/* router.get('/stream', function (req, res, next) {
+    //when using text/plain it did not stream
+    //without charset=utf-8, it only worked in Chrome, not Firefox
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+  
+    res.write("Thinking...");
+    sendAndSleep(res, 1);
+  });
+  
+  
+  var sendAndSleep = function (response, counter) {
+    if (counter > 10) {
+      response.end();
+    } else {
+      response.write(" ;i=" + counter);
+      counter++;
+      setTimeout(function () {
+        sendAndSleep(response, counter);
+      }, 1000)
+    };
+  };
+   */
 
 router.route('/cdm/:practice').get(protect, getAllCDMData);
 
@@ -48,6 +73,7 @@ router.get('/admin/consultants', protect, getAllConsultants);
 
 router.put('/admin/mass-import', protect, createOrUpdateConsultants);
 router.put('/admin/wk', protect, updateConsultantFromWavekeeper);
+router.post('/upload', protect, uploadConsultantFileWk);
 
 router.route('/:consultantId')
     .get(protect, authorizeActionOnConsultant, getConsultant)
