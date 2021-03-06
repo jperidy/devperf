@@ -586,9 +586,9 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
 // @access  Private
 const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
 
-    //res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    //res.setHeader('Transfer-Encoding', 'chunked');
-    //res.write("Start...<br>");
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+    res.write("Start...\n");
 
     const anonymise = true;
 
@@ -701,7 +701,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
                 }
             }
             console.log(info);
-            //res.write(info + '<br>');
+            res.write(info + '\n');
         }
     }
 
@@ -742,7 +742,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
             data: consultantNotUpdated[incr]
         });
         console.log(info);
-        //res.write(info + '<br>');
+        res.write(info + '\n');
     }
 
     const messageToSend = {
@@ -753,8 +753,8 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
         data: message.filter(x => x.result === 'error' || x.result === 'warning')
     }
 
-    res.status(200).json(messageToSend);
-    //res.end();
+    //res.status(200).json(messageToSend);
+    res.end();
     
 });
 

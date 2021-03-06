@@ -7,6 +7,7 @@ import Col from 'react-bootstrap/Col';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { uploadConsultantWk, updateConsultantWk } from '../actions/consultantActions';
+import Form from 'react-bootstrap/Form';
 
 const FlowImportWKConsultants = (props) => {
 
@@ -103,8 +104,14 @@ const FlowImportWKConsultants = (props) => {
                             <Row><Col>Something wrong retry step 2</Col></Row>
                         )
                     )}
-                    {step === 3 && (
-                        message && message.data.length > 0 ? message.data.map((line, incr) => (
+                    {step === 3 && ( 
+                        <Form.Control
+                            as='textarea' 
+                            rows={5}
+                            value={message && message}
+                            readOnly
+                        />
+                        /* message && message.data.length > 0 ? message.data.map((line, incr) => (
                             <Row key={incr} >
                                 <Col>
                                     <Message variant='warning'>{line.message}</Message>
@@ -116,7 +123,7 @@ const FlowImportWKConsultants = (props) => {
                                     <Message variant='success'>Success data imported!</Message>
                                 </Col>
                             </Row>
-                        )
+                        ) */
                     )}
                     </Col>
                     <Col xs={2}>
