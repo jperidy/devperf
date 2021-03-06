@@ -27,6 +27,7 @@ function getAccessData() {
                 {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'yes', data: 'all'},
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'yes', data: 'all'},
                 {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'yes', data: 'all'},
+                {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'yes', data: 'all'},
 
             ],
             api:[
@@ -79,6 +80,7 @@ function getAccessData() {
                 {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'yes', data: 'department'},
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'yes', data: 'department'},
                 {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'yes', data: 'department'},
+                {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'yes', data: 'department'},
             ],
             api:[
                 { name: 'getUsers', data: 'department' },
@@ -130,6 +132,7 @@ function getAccessData() {
                 {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'no', data: 'team'},
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'no', data: 'team'},
                 {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'no', data: 'team'},
+                {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'no', data: 'team'},
             ],
             api:[
                 { name: 'getUsers', data: 'team' },
@@ -181,6 +184,7 @@ function getAccessData() {
                 {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'no', data: 'department'},
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'no', data: 'my'},
                 {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'no', data: 'my'},
+                {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'no', data: 'my'},
             ],
             api:[
                 { name: 'getUsers', data: 'my' },
@@ -232,6 +236,7 @@ function getAccessData() {
                 {category: 'StaffingRequest Screen', id: 'sendStaffingDecision', label: 'Send staffing decision emails', mode:'no', data: 'my'},
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'no', data: 'my'},
                 {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'no', data: 'my'},
+                {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'no', data: 'my'},
             ],
             api: [
                 { name: 'getUsers', data: 'my' },

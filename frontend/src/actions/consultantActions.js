@@ -1,4 +1,5 @@
 import axios from 'axios';
+import fs from 'fs';
 import {
     CONSULTANTS_ALL_ADMIN_DETAILS_FAIL,
     CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST,
@@ -638,14 +639,14 @@ export const updateConsultantWk = (path) => async (dispatch, getState) => {
         };
 
         const { data } = await axios.put(`/api/consultants/admin/wk`, path, config);
-        /* axios.put(`/api/consultants/admin/wk`, path, config).then((res) => {
-            res.data.on('data', data => {
-                console.log(data)
+        /* axios.put(`/api/consultants/admin/wk`, path, config)
+            .then((response) => {
+                response.data.pipe(fs.createWriteStream("tempsfile.txt"))
             })
-        }) 
-        dispatch({ type: CONSULTANT_UPDATE_WK_SUCCESS, payload: 'ok' });*/
-
+            .catch(error => console.log(error)); */
+        
         dispatch({ type: CONSULTANT_UPDATE_WK_SUCCESS, payload: data });
+        //dispatch({ type: CONSULTANT_UPDATE_WK_SUCCESS, payload: 'OK' });
 
         
     } catch (error) {

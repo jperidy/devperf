@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteConsultant, getAllMyAdminConsultants, consultantImportInMass, uploadConsultantWk, updateConsultantWk } from '../actions/consultantActions';
+import { deleteConsultant, getAllMyAdminConsultants, consultantImportInMass } from '../actions/consultantActions';
 import { CONSULTANT_DELETE_RESET } from '../constants/consultantConstants';
 import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
@@ -17,6 +17,8 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
+import FlowImportWKConsultants from '../components/FlowImportWKConsultants';
+import DisplayChlidren from '../components/DisplayChildren';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -34,8 +36,10 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     const [importData, setImportData] = useState([]);
 
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [loaded, setLoaded] = useState(0);
+    //const [selectedFile, setSelectedFile] = useState(null);
+    //const [message, setMessage] = useState('');
+
+    const [showImportConsultant, setShowImportConsultant] = useState(false);
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -49,11 +53,11 @@ const ManageConsultantScreen = ({ history, match }) => {
     const consultantsMassImport = useSelector(state => state.consultantsMassImport);
     const { loading:loadingMassImport, error:errorMassImport, success:successMassImport } = consultantsMassImport;
 
-    const consultantUploadWk = useSelector(state => state.consultantUploadWk);
+    /* const consultantUploadWk = useSelector(state => state.consultantUploadWk);
     const { loading:loadingUpload, error:errorUpload, path } = consultantUploadWk;
 
     const consultantUpdateWk = useSelector(state => state.consultantUpdateWk);
-    const { loading:loadingUpdate, error:errorUpdate, message } = consultantUpdateWk;
+    const { loading:loadingUpdate, error:errorUpdate, message } = consultantUpdateWk; */
 
 
     useEffect(() => {
@@ -116,9 +120,8 @@ const ManageConsultantScreen = ({ history, match }) => {
         }
     }
 
-    const onChangeHandler = (e) => {
+    /*const onChangeHandler = (e) => {
         setSelectedFile(e.target.files[0]);
-        setLoaded(0);
     }
     const onClickHandler = () => {
         const data = new FormData();
@@ -128,44 +131,28 @@ const ManageConsultantScreen = ({ history, match }) => {
     const startImportData = () => {
         if(path) {
             dispatch(updateConsultantWk(path));
+            //const data = updateConsultantWk(path, userInfo);
+            //setMessage(data);
         }
-    }
+    }*/
 
     return (
         <>
             <Meta />
             {errorMassImport && <Message variant='danger'>{errorMassImport}</Message>}
-            
+
+            <FlowImportWKConsultants 
+                show={showImportConsultant}
+                onHide={() => setShowImportConsultant(false)}
+            />
+
+            <DisplayChlidren access='updateConsultantsFromWK'>
+                <Button variant='primary' onClick={() => setShowImportConsultant(true)}>Import WK</Button>
+            </DisplayChlidren>
+
             <DropDownTitleContainer title='Manage consultants' close={false}>
                 <ListGroup.Item>
-                    <Row className='align-items-center'>
-                        <Col>
-                            <input type='file' name='hr.presence' onChange={onChangeHandler} />
-                            <Button variant='primary' onClick={onClickHandler} disabled={!selectedFile}>
-                                {loadingUpload ? <Loader /> : "Upload"}
-                            </Button>
-
-                            {path && (
-                                <Button variant='primary' className='mx-3' onClick={startImportData}>
-                                    {loadingUpdate ? <Loader /> : 'Update'}
-                                </Button>
-                            )}
-                        </Col>
-                    </Row>
-                    {message && message.data.length > 0 && message.data.map((line, incr) => (
-                        <Row key={incr} >
-                            <Col>
-                                <Message variant='warning'>{line.message}</Message>
-                            </Col>
-                        </Row>
-                    ))}
-                    {message && message.data.length === 0 && (
-                        <Row>
-                            <Col>
-                                <Message variant='success'>Success data imported!</Message>
-                            </Col>
-                        </Row>
-                    )}
+                    
                     
                     <Row>
 

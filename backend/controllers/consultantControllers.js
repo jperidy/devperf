@@ -588,7 +588,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
 
     //res.setHeader('Content-Type', 'text/html; charset=utf-8');
     //res.setHeader('Transfer-Encoding', 'chunked');
-    //res.write("Start...");
+    //res.write("Start...<br>");
 
     const anonymise = true;
 
@@ -701,7 +701,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
                 }
             }
             console.log(info);
-            //res.write(info + '\n');
+            //res.write(info + '<br>');
         }
     }
 
@@ -741,6 +741,8 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
             message: info,
             data: consultantNotUpdated[incr]
         });
+        console.log(info);
+        //res.write(info + '<br>');
     }
 
     const messageToSend = {
