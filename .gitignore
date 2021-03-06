@@ -14,7 +14,7 @@ node_modules/
 /frontend/build
 
 /backend/data
-/uploads
+uploads
 
 # misc
 .DS_Store
