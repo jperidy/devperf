@@ -14,7 +14,8 @@ node_modules/
 /frontend/build
 
 /backend/data
-.xls*
+.xls
+.xlsx
 
 # misc
 .DS_Store
