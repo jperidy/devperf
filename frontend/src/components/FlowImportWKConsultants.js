@@ -4,6 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Image from 'react-bootstrap/Image';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { uploadConsultantWk, updateConsultantWk } from '../actions/consultantActions';
@@ -50,13 +51,17 @@ const FlowImportWKConsultants = (props) => {
             //style={{'minHeight': '80vh'}}
         >
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">
-                    Import consultants data from Wavekeeper
-                </Modal.Title>
+                <Row className='align-items-center'>
+                    <Col className='text-center'>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            Import consultants data from Wavekeeper
+                        </Modal.Title>
+                    </Col>
+                </Row>
             </Modal.Header>
             
             <Modal.Body>
-                <Row className='mb-5'>
+                <Row className='mb-3'>
                     <Col><Button className={step >= 0 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(0)} variant='ligth' disabled={step <0}><strong>1-Export from WK</strong></Button></Col>
                     <Col><Button className={step >= 1 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(1)} variant='ligth' disabled={step <1}><strong>2-Upload in App</strong></Button></Col>
                     <Col><Button className={step >= 2 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(2)} variant='ligth' disabled={step <2}><strong>3-Start update</strong></Button></Col>
@@ -64,40 +69,42 @@ const FlowImportWKConsultants = (props) => {
                 </Row>
                 
                 <Row className='align-items-center'>
-                    <Col xs={2}>
-                        <Button 
-                            variant='secondary'
-                            onClick={() => (step-1 >= 0) && setStep(step-1) }
-                            disabled={step === 0}
-                        >Back</Button>
-                    </Col>
                     
-                    <Col xs={8}>
+                    <Col>
                     {step === 0 && (
                         <Row>
                             <Col>
-                                <h4>Import Wavekeeper Data</h4>
-                                <p>Process to describe</p>
-                                <p>Image to integer</p>
+                                <h4>Process to export from Wavekeeper <a href="https://wavekeeper.wavestone-app.com/web#action=534&model=hr.presence&view_type=list&cids=1&menu_id=92" target="_blank" rel="noopener noreferrer">(link)</a></h4>
+                                    <p>Please connect to Wavekeeper
+                                    <ul>
+                                            <li>Step 1: Go to collaborators</li>
+                                            <li>Step 2: Apply filter to keep only current consultants</li>
+                                            <li>Step 3: Select all lines and go to actions / export</li>
+                                            <li>Step 4: Select filter 'JPR_export_2'</li>
+                                            <li>Step 5: Save the Excel file on you desktop</li>
+                                        </ul>
+                                    </p>
+                                <Image src="/images/WK_export_consultants_application_filtres.jpg" rounded fluid />
                             </Col>
                         </Row>
                     )}
                     {step === 1 && (
                         <Row className='align-items-center'>
-                            <Col>
-                                <span><strong>Upload file: </strong></span>
-                                <input type='file' name='hr.presence' onChange={onChangeHandler} />
+                            <Col className='text-center'>
+                                <h4>Upload you file here</h4>
+                                <input className='my-3' type='file' name='hr.presence' onChange={onChangeHandler} />
                             </Col>
                         </Row>
                     )}
                     {step === 2 && (
                         path ? (
                             <Row>
-                                <Col>
-                                    <span><strong>Start update</strong></span>
-                                    <Button variant='primary' className='mx-3' onClick={startImportData}>
+                                <Col className='text-center'>
+                                    <h4>Do you want to update your consultats ?</h4>
+                                    <Button variant='primary' className='m-3' onClick={startImportData}>
                                         {loadingUpdate ? <Loader /> : 'Update'}
                                     </Button>
+                                    <p>Process could take a few time</p>
                                 </Col>
                             </Row>
                         ) : (
@@ -107,37 +114,28 @@ const FlowImportWKConsultants = (props) => {
                     {step === 3 && ( 
                         <Form.Control
                             as='textarea' 
-                            rows={5}
+                            rows={10}
                             value={message && message}
                             readOnly
+                            //plaintext
                         />
-                        /* message && message.data.length > 0 ? message.data.map((line, incr) => (
-                            <Row key={incr} >
-                                <Col>
-                                    <Message variant='warning'>{line.message}</Message>
-                                </Col>
-                            </Row>
-                        )) : (
-                            <Row>
-                                <Col>
-                                    <Message variant='success'>Success data imported!</Message>
-                                </Col>
-                            </Row>
-                        ) */
                     )}
                     </Col>
-                    <Col xs={2}>
-                        <Button 
-                            variant='secondary'
-                            onClick={() => (step+1 <= 3) && setStep(step+1) }
-                            disabled={step === 3 || (step === 1 && !path) || (step === 2 && !message)}
-                        >Next</Button></Col>
                 </Row>
                 
                     
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={props.onHide}>Close</Button>
+                {step === 3 && (
+                    <Button onClick={props.onHide}>Close</Button>
+                )}
+                {step < 3 && (
+                    <Button
+                        variant='success'
+                        onClick={() => (step + 1 <= 3) && setStep(step + 1)}
+                        disabled={step === 3 || (step === 1 && !path) || (step === 2 && !message)}
+                    >Next</Button>
+                )}
             </Modal.Footer>
         </Modal>
     )
