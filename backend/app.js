@@ -18,7 +18,7 @@ const uploadRoutes = require('./routes/uploadRoutes');
 
 const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
-const { controlAndCreateMonth, controleAndCreatePxx } = require('./controllers/cronJobsControllers');
+const { controlAndCreateMonth, controleAndCreatePxx, deleteOldFiles } = require('./controllers/cronJobsControllers');
 
 const app = express();
 
@@ -82,6 +82,15 @@ cron.schedule('*/30 * * * *', () => {
         controleAndCreatePxx();
     } catch (error) {
         console.error(`${new Date(Date.now()).toISOString()} error with controlAndCreatePxx cron job: ${error}`);
+    }
+});
+
+cron.schedule('*/60 * * * *', () => {
+    console.log(new Date(Date.now()).toISOString() + ': deleteOldFiles running every 60 minutes >>> start');
+    try {
+        deleteOldFiles();
+    } catch (error) {
+        console.error(`${new Date(Date.now()).toISOString()} error with deleteOldFiles cron job: ${error}`);
     }
 });
 

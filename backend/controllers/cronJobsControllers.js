@@ -1,7 +1,8 @@
 const Pxx = require('../models/pxxModel');
 const Month = require('../models/monthModel');
 const Consultant = require('../models/consultantModel');
-//const axios = require('axios');
+const path = require('path');
+const fs = require('fs');
 const { createMonth } = require('./monthPxxController');
 const { createPxx } = require('./pxxControllers');
 
@@ -87,4 +88,40 @@ const controleAndCreatePxx = async () => {
     console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running every 10 minutes >>> end');
 }
 
-module.exports = { controlAndCreateMonth, controleAndCreatePxx };
+const deleteOldFiles = async () => {
+
+    // Add here any directories you want to clean with scheduled job
+    const directories = [
+        path.resolve() + '/uploads/consultants'
+    ]
+    //const directoryConsultantsPath = path.resolve() + '/uploads/consultants';
+
+    for (let incr = 0 ; incr < directories.length ; incr++) {
+        const directory = directories[incr];
+        fs.readdir(directory, (err, files) => {
+            if (err) {
+                return console.log('Unable to scan directory: ' + err);
+            }
+            files.map( file => {
+                const lasModified = fs.statSync(directory + '/' + file).mtime;
+                const currentDate = new Date(Date.now());
+                currentDate.setUTCHours(currentDate.getUTCHours()-1);
+                
+                if (new Date(lasModified) < currentDate){
+                    fs.unlink(directory + '/' + file, (err) => {
+                        if (err) {
+                            console.error('Error removing file ' + file + 'from ' + directory);
+                        } else {
+                            console.log(file + ' has been removed from: ' + directory);
+                        }
+                    });
+                }
+                //console.log(file, new Date(lasModified) < currentDate);
+                //console.log(file, fs.statSync(directoryConsultantsPath + '/' + file).mtime, typeof fs.statSync(directoryConsultantsPath + '/' + file).mtime);
+            })
+        })
+
+    }
+}
+
+module.exports = { controlAndCreateMonth, controleAndCreatePxx, deleteOldFiles };
