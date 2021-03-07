@@ -5,6 +5,9 @@ const Skill = require('../models/skillModels');
 const axios = require('axios');
 const asyncHandler = require('express-async-handler');
 const Tace = require('../models/taceModel');
+const path = require('path');
+const XLSX = require('xlsx');
+//const readXlsxFile = require('read-excel-file/node');
 //const calculDayByType = require('../utils/calculDayByType');
 //const { createMonth } = require('./monthPxxController');
 //const mongoose = require('mongoose');
@@ -735,6 +738,149 @@ const lineImportPxx = asyncHandler(async (req, res) => {
 
 });
 
+const transformMonth = (pxxFormat) => {
+    const convertToArray = pxxFormat.split('/');
+    return '20' + convertToArray[1] + '/' + Number(convertToArray[0]);
+}
+
+const updatePxxLine = async(pxxLine) => {
+    const monthId = await Month.findOne({name: pxxLine.month}).select('_id');
+    if (!monthId) {
+        return `Month not find for: ${pxxLine.month}`;
+    }
+    const consultantId = await Consultant.findOne({matricule: pxxLine.matricule}).select('_id');
+    if (!consultantId) {
+        return `Consultant not find for: ${pxxLine.name} (${pxxLine.matricule})`;
+    }
+    const pxxToUpdate = await Pxx.findOne({name:consultantId._id, month: monthId._id});
+    if (pxxToUpdate) {
+        pxxToUpdate.prodDay = pxxLine.prod;
+        pxxToUpdate.notProdDay = pxxLine.notProd;
+        pxxToUpdate.leavingDay = pxxLine.holidays;
+        pxxToUpdate.availableDay = pxxLine.available;
+        pxxToUpdate.save();
+        //console.log(`PxxLine updated for: ${pxxLine.name} and ${pxxLine.month}`);
+        return `PxxLine updated for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id})`;
+    } else {
+        //console.log(`PxxLine not found for: ${pxxLine.name} and ${pxxLine.month}`);
+        return `PxxLine not found for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id})`
+    }
+}
+
+// @desc    Mass import of pxx datas from Pxx directory
+// @route   PUT /api/pxx/admin/mass-import-pxx
+// @access  Private
+const updatePxxFromPxx = asyncHandler(async (req, res) => {
+
+    const fileName = '/backend/data/pDET-30.xlsb';
+    const __dir = path.resolve();
+    console.log(__dir + fileName);
+    wb = XLSX.readFile(__dir + fileName);
+    const firstSheetName = wb.SheetNames[0];
+    const firstWorkSheet = wb.Sheets[firstSheetName];
+    const firstWorkSheetCSV = XLSX.utils.sheet_to_csv(firstWorkSheet);
+    const firstSheetAllLines = firstWorkSheetCSV.split(/\r\n|\n/);
+
+    const readablePxx = []
+    for (let incr = 0 ; incr < Math.min(150, firstSheetAllLines.length) ; incr++){
+        const line = firstSheetAllLines[incr].split((','));
+        readablePxx.push(line);
+    }
+
+    //console.log(readablePxx[5]);
+
+    
+
+    console.log('firstMonth', transformMonth(readablePxx[5][9]));
+    console.log('SecondMonth', transformMonth(readablePxx[5][13]));
+    console.log('ThirdMonth', transformMonth(readablePxx[5][17]));
+    console.log('FourthMonth', transformMonth(readablePxx[5][21]));
+    console.log('FifthMonth', transformMonth(readablePxx[5][25]));
+
+    const monthToUpdate = [
+        transformMonth(readablePxx[5][9]),
+        transformMonth(readablePxx[5][13]),
+        transformMonth(readablePxx[5][17]),
+        transformMonth(readablePxx[5][25]),
+        transformMonth(readablePxx[5][29]),
+    ];
+
+    for (let line = 8; line < Math.min(150, readablePxx.length) ; line++) {
+
+        const pxxLine = readablePxx[line];
+        if(Number(pxxLine[0])>0 && Number(pxxLine[0])<=1) {
+
+            const firstMonth = {
+                month: monthToUpdate[0],
+                name: pxxLine[3],
+                matricule: pxxLine[4].toString().padStart(9, 0),
+                prod: Number(pxxLine[9]),
+                notProd: Number(pxxLine[10]),
+                holidays: Number(pxxLine[11]),
+                available: Number(pxxLine[12]),
+            }
+            let result = await updatePxxLine(firstMonth);
+            console.log(result);
+
+            const secondMonth = {
+                month: monthToUpdate[1],
+                name: pxxLine[3],
+                matricule: pxxLine[4].toString().padStart(9, 0),
+                prod: Number(pxxLine[13]),
+                notProd: Number(pxxLine[14]),
+                holidays: Number(pxxLine[15]),
+                available: Number(pxxLine[16]),
+            }
+            result = await updatePxxLine(secondMonth);
+            console.log(result);
+
+            const thirdMonth = {
+                month: monthToUpdate[2],
+                name: pxxLine[3],
+                matricule: pxxLine[4].toString().padStart(9, 0),
+                prod: Number(pxxLine[17]),
+                notProd: Number(pxxLine[18]),
+                holidays: Number(pxxLine[19]),
+                available: Number(pxxLine[20]),
+            }
+            result = await updatePxxLine(thirdMonth);
+            console.log(result);
+
+            const fourthMonth = {
+                month: monthToUpdate[3],
+                name: pxxLine[3],
+                matricule: pxxLine[4].toString().padStart(9, 0),
+                prod: Number(pxxLine[21]),
+                notProd: Number(pxxLine[22]),
+                holidays: Number(pxxLine[23]),
+                available: Number(pxxLine[24]),
+            }
+            result = await updatePxxLine(fourthMonth);
+            console.log(result);
+
+            const fifthMonth = {
+                month: monthToUpdate[4],
+                name: pxxLine[3],
+                matricule: pxxLine[4].toString().padStart(9, 0),
+                prod: Number(pxxLine[25]),
+                notProd: Number(pxxLine[26]),
+                holidays: Number(pxxLine[27]),
+                available: Number(pxxLine[28]),
+            }
+            result = await updatePxxLine(fifthMonth);
+            console.log(result);
+
+            //console.log(firstMonth);
+            //console.log(secondMonth);
+            //console.log(thirdMonth);
+            //console.log(fourthMonth);
+            //console.log(fifthMonth);
+        }
+    }
+
+    res.status(200).json('ok')
+});
+
 module.exports = { 
     getPxx,
     getAllPxx,
@@ -747,5 +893,6 @@ module.exports = {
     getAvailabilityChart,
     createPxx,
     //massImportPxx,
-    lineImportPxx
+    lineImportPxx,
+    updatePxxFromPxx
 };
