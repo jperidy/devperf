@@ -606,7 +606,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
         'Présence': { prop: 'presence', type: Number},
         'Type de Contrat/Type de Contrat': { prop: 'contract', type: String},
         'Collaborateur/Est un CD Manager': { prop: 'isCdm', type: (value) => {
-            if (value === 1) {
+            if (value === 1 || value === true) {
                 return true;
             } else {
                 return false;
@@ -702,6 +702,12 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
             }
             console.log(info);
             res.write(info + '\n');
+
+            if (consultant.partialTime < 1) {
+                info = `Warning - partial time to check - ${consultant.name} (${consultant.matricule}) - ${result._id}`
+                console.log(info);
+                res.write(info);
+            }
         }
     }
 
