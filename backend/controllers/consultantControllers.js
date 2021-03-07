@@ -653,6 +653,9 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
                 result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
                 if (result) {
                     info = `Success - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
+                    if (consultant.partialTime < 1 && result.isPartialTime.value === false) {
+                        info += `\nWarning - you have to modify partial time - ${consultant.name} (${consultant.matricule}) - ${result._id}`
+                    }
                     message.push({
                         _id: result._id,
                         practice: consultant.practice.split('-')[1],
@@ -677,7 +680,12 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
             } else {
                 result = await createAConsultant(consultantToUpdateOrCreate);
                 if (result) {
-                    info = `Success - create - ${consultant.name} (${consultant.matricule}) - ${result._id}`
+                    info = `Success - create - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
+                    if (consultant.partialTime < 1) {
+                        info += `\nWarning - add partial time - ${consultant.name} (${consultant.matricule}) - ${result._id}`
+                        //console.log(info);
+                        //res.write(info);
+                    }
                     message.push({
                         _id: result._id,
                         practice: consultant.practice.split('-')[1],
@@ -702,12 +710,6 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
             }
             console.log(info);
             res.write(info + '\n');
-
-            if (consultant.partialTime < 1) {
-                info = `Warning - partial time to check - ${consultant.name} (${consultant.matricule}) - ${result._id}`
-                console.log(info);
-                res.write(info);
-            }
         }
     }
 
