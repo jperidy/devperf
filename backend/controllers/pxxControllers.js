@@ -7,6 +7,7 @@ const asyncHandler = require('express-async-handler');
 const Tace = require('../models/taceModel');
 const path = require('path');
 const XLSX = require('xlsx');
+const fs = require('fs');
 //const readXlsxFile = require('read-excel-file/node');
 //const calculDayByType = require('../utils/calculDayByType');
 //const { createMonth } = require('./monthPxxController');
@@ -53,9 +54,9 @@ const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
     const consultantId = consultantInfo._id;
 
     let firstDayPartial = new Date(isPartialTime.start);
-    firstDayPartial = firstDayPartial.toISOString().substring(0,10);
+    firstDayPartial = firstDayPartial.toISOString().substring(0, 10);
     let endDayPartial = new Date(isPartialTime.end);
-    endDayPartial = endDayPartial.toISOString().substring(0,10);
+    endDayPartial = endDayPartial.toISOString().substring(0, 10);
 
     const firstMonthDay = new Date(isPartialTime.start);
     firstMonthDay.setDate(0);
@@ -63,20 +64,20 @@ const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
 
     const monthData = await Month.find({
         firstDay: {
-            $gte: firstMonthDay.toISOString().substring(0,10),
-            $lte: endDay.toISOString().substring(0,10)
+            $gte: firstMonthDay.toISOString().substring(0, 10),
+            $lte: endDay.toISOString().substring(0, 10)
         }
     });
-    
-    const monthId = monthData.map( x => x._id);
+
+    const monthId = monthData.map(x => x._id);
     //console.log('monthId', monthId);
 
-    const pxxData = await Pxx.find({ month: {$in: monthId}, name: consultantId})
+    const pxxData = await Pxx.find({ month: { $in: monthId }, name: consultantId })
     //console.log('pxxData', pxxData);
 
     for (let incrPxx = 0; incrPxx < pxxData.length; incrPxx++) {
         const idMonth = pxxData[incrPxx].month;
-        const monthInfo = monthData.filter( x => x._id.toString() === idMonth.toString())[0];
+        const monthInfo = monthData.filter(x => x._id.toString() === idMonth.toString())[0];
         //const daysInfo = monthInfo.days;
         let prodDay = 0;
         let notProdDay = 0;
@@ -98,7 +99,7 @@ const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
 
         // reacalculate prod days
         const initialProdDay = pxxData[incrPxx].prodDay;
-        if(initialProdDay >= availableDay) {
+        if (initialProdDay >= availableDay) {
             prodDay = availableDay;
             availableDay = 0;
         } else {
@@ -108,7 +109,7 @@ const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
 
         // reacalculate not prod days
         const initialNotProdDay = pxxData[incrPxx].notProdDay;
-        if(initialNotProdDay >= availableDay) {
+        if (initialNotProdDay >= availableDay) {
             notProdDay = availableDay;
             availableDay = 0;
         } else {
@@ -124,7 +125,7 @@ const updatePartialTimePxx = async (consultantInfo, isPartialTime) => {
 
     }
 
-    for (let incr = 0 ; incr < pxxData.length ; incr++) {
+    for (let incr = 0; incr < pxxData.length; incr++) {
         await pxxData[incr].save();
     }
 
@@ -173,7 +174,7 @@ const resetAllPxx = async (consultantInfo) => {
     //console.log('resetAllPxx');
 
     const consultantId = consultantInfo._id;
-    const pxxData = await Pxx.find({name: consultantId });
+    const pxxData = await Pxx.find({ name: consultantId });
 
     //let availableDay = 0;
 
@@ -182,13 +183,13 @@ const resetAllPxx = async (consultantInfo) => {
         const idMonth = pxx.month;
         const monthInfo = await Month.findById(idMonth);
         //const monthInfo = monthData.filter(x => x._id.toString() === idMonth.toString())[0];
-        
+
         const initialAvailableDay = calculateAvailableDays(consultantInfo, monthInfo);
         const initialProdDay = Number(pxx.prodDay);
         const initialNotProdDay = Number(pxx.notProdDay);
         const initialLeavingDay = Number(pxx.leavingDay);
 
-        const { prodDay, notProdDay, leavingDay, availableDay } = recalculatePxx({initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay});
+        const { prodDay, notProdDay, leavingDay, availableDay } = recalculatePxx({ initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay });
 
         //console.log('init: ', initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay);
         //console.log('calculate: ', prodDay, notProdDay, leavingDay, availableDay);
@@ -213,7 +214,7 @@ const resetPartialTimePxx = async (consultantInfo) => {
     const firstMonthDay = new Date(initialPartialTime.start);
     firstMonthDay.setDate(0);
     const endMonthDay = new Date(initialPartialTime.end);
-    
+
 
     const monthData = await Month.find({
         firstDay: {
@@ -230,13 +231,13 @@ const resetPartialTimePxx = async (consultantInfo) => {
         const pxx = pxxData[incrPxx];
         const idMonth = pxx.month;
         const monthInfo = monthData.filter(x => x._id.toString() === idMonth.toString())[0];
-        
+
         const initialAvailableDay = calculateAvailableDays(consultantInfo, monthInfo);
         const initialProdDay = Number(pxx.prodDay);
         const initialNotProdDay = Number(pxx.notProdDay);
         const initialLeavingDay = Number(pxx.leavingDay);
 
-        const { prodDay, notProdDay, leavingDay, availableDay } = recalculatePxx({initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay});
+        const { prodDay, notProdDay, leavingDay, availableDay } = recalculatePxx({ initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay });
 
         pxxData[incrPxx].prodDay = prodDay;
         pxxData[incrPxx].notProdDay = notProdDay;
@@ -251,16 +252,16 @@ const resetPartialTimePxx = async (consultantInfo) => {
 
 const createPxx = async (userProfile, month, tace = 0) => {
 
-    let availableDay = calculateAvailableDays(userProfile, month );
-    
+    let availableDay = calculateAvailableDays(userProfile, month);
+
     let prodDay = tace ? Math.abs(Math.round(((tace - 0.1) + Math.random() * 1) * availableDay)) : 0;
     prodDay = Math.min(prodDay, availableDay);
 
-    const leavingDay = tace ? Math.round(Math.random() * (30/220) * (availableDay - prodDay)) : 0;
+    const leavingDay = tace ? Math.round(Math.random() * (30 / 220) * (availableDay - prodDay)) : 0;
 
     const notProdDay = tace ? Math.round(Math.random() * (availableDay - prodDay - leavingDay)) : 0;
-    
-    availableDay = availableDay - (prodDay + notProdDay + leavingDay);   
+
+    availableDay = availableDay - (prodDay + notProdDay + leavingDay);
 
     const newPxx = new Pxx({
         name: userProfile._id,
@@ -291,17 +292,17 @@ const getPxx = asyncHandler(async (req, res) => {
 
     const pxxsData = [];
 
-    for (let tampMonth = new Date(month) ; tampMonth <= new Date(lastMonth) ; tampMonth.setUTCMonth(tampMonth.getUTCMonth() +1)) {
+    for (let tampMonth = new Date(month); tampMonth <= new Date(lastMonth); tampMonth.setUTCMonth(tampMonth.getUTCMonth() + 1)) {
         tampMonth.setUTCDate(1);
 
-        const firstDay = tampMonth.toISOString().substring(0,10);
+        const firstDay = tampMonth.toISOString().substring(0, 10);
         const searchMonth = await Month.findOne({ firstDay: firstDay });
         if (searchMonth) {
             const pxxData = await Pxx.findOne({ name: consultantId, month: searchMonth._id }).populate('month', 'name firstDay');
             if (pxxData) {
                 pxxsData.push(pxxData);
             } else {
-                pxxsData.push({ 
+                pxxsData.push({
                     _id: null,
                     month: searchMonth,
                     prodDay: '-',
@@ -311,7 +312,7 @@ const getPxx = asyncHandler(async (req, res) => {
                 })
             }
         } else {
-            pxxsData.push({ 
+            pxxsData.push({
                 _id: null,
                 month: null,
                 prodDay: '-',
@@ -325,9 +326,9 @@ const getPxx = asyncHandler(async (req, res) => {
     if (pxxsData.length) {
         res.status(200).json(pxxsData)
     } else {
-        res.status(400).json({ message: `no pxx data found for consultant with id: ${consultantId} please check arrival date`})
+        res.status(400).json({ message: `no pxx data found for consultant with id: ${consultantId} please check arrival date` })
     }
-    
+
 });
 
 // @desc    Update pxx data
@@ -360,15 +361,16 @@ const getProdChart = asyncHandler(async (req, res) => {
     const end = req.query.end; //'2021-03-01'
     const practice = req.query.practice; //'DET'
 
-    const searchPractice = practice ? {practice: practice} : '';
+    const searchPractice = practice ? { practice: practice } : '';
 
-    const month = await Month.find({ 
+    const month = await Month.find({
         firstDay: {
             $gte: start,
             $lte: end
-    }});
+        }
+    });
 
-    const consultantId = await Consultant.find({...searchPractice, grade: { $not: { $regex: 'Intern', $options: 'i' }}}).select('_id');   
+    const consultantId = await Consultant.find({ ...searchPractice, grade: { $not: { $regex: 'Intern', $options: 'i' } } }).select('_id');
 
     const data = [];
 
@@ -379,34 +381,34 @@ const getProdChart = asyncHandler(async (req, res) => {
                 [{
                     $match: {
                         'month': month[incr]._id,
-                        'name': {$in: consultantId.map(x => x._id)}
+                        'name': { $in: consultantId.map(x => x._id) }
                     }
-                },{
+                }, {
                     $group: {
                         _id: null,
-                        sumProdDay: {$sum: "$prodDay"},
-                        sumNotProdDay: {$sum: "$notProdDay"},
-                        sumLeaving: {$sum: "$leavingDay"},
-                        sumAvailableDay: {$sum: "$availableDay"},
+                        sumProdDay: { $sum: "$prodDay" },
+                        sumNotProdDay: { $sum: "$notProdDay" },
+                        sumLeaving: { $sum: "$leavingDay" },
+                        sumAvailableDay: { $sum: "$availableDay" },
                     }
                 }]
             );
-            
+
             let monthCalcule = {};
-            
+
             if (sums) {
                 const totalProdDay = sums[0].sumProdDay;
                 const totalNotProdDay = sums[0].sumNotProdDay;
                 const totalLeavingDay = sums[0].sumLeaving;
                 const totalAvailableDay = sums[0].sumAvailableDay;
-                
+
                 const totalTACE = totalProdDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
                 const totalLeaving = totalLeavingDay / (totalProdDay + totalNotProdDay + totalAvailableDay);
                 const workingDay = (month[incr].days.filter(x => x.type === 'working-day')).length;
                 const totalETP = (totalAvailableDay + totalLeavingDay + totalNotProdDay + totalProdDay) / workingDay;
-        
+
                 monthCalcule = {
-                    month: {firstDay: month[incr].firstDay, workingDay, _id: month[incr]._id},
+                    month: { firstDay: month[incr].firstDay, workingDay, _id: month[incr]._id },
                     totalProdDay,
                     totalNotProdDay,
                     totalLeavingDay,
@@ -417,27 +419,27 @@ const getProdChart = asyncHandler(async (req, res) => {
                 }
             } else {
                 monthCalcule = {
-                    totalProdDay:'0',
-                    totalNotProdDay:'0',
-                    totalLeavingDay:'0',
-                    totalAvailableDay:'0',
-                    totalTACE:'0',
-                    totalLeaving:'0',
-                    totalETP:'0'
+                    totalProdDay: '0',
+                    totalNotProdDay: '0',
+                    totalLeavingDay: '0',
+                    totalAvailableDay: '0',
+                    totalTACE: '0',
+                    totalLeaving: '0',
+                    totalETP: '0'
                 }
             };
 
-            const dataTace = await Tace.find({month: month[incr]._id, practice: practice});
-            
+            const dataTace = await Tace.find({ month: month[incr]._id, practice: practice });
+
             // add target and bid data registered
             if (dataTace.length === 1) {
                 monthCalcule.target = dataTace[0].target,
-                monthCalcule.bid = dataTace[0].bid
+                    monthCalcule.bid = dataTace[0].bid
             } else {
                 monthCalcule.target = 0;
                 monthCalcule.bid = 0;
             }
-    
+
             data.push(monthCalcule);
         }
     }
@@ -445,7 +447,7 @@ const getProdChart = asyncHandler(async (req, res) => {
     if (data) {
         res.status(200).json(data);
     } else {
-        res.status(400).json({message: 'not data found'});
+        res.status(400).json({ message: 'not data found' });
     }
 })
 
@@ -456,19 +458,19 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
 
     const start = req.query.start; // '2021-01-01'
     const end = req.query.end; //'2021-03-01'
-    
+
     const searchPractice = req.query.practice ?
-        req.query.practice === 'all' ? {} : {practice: req.query.practice}
+        req.query.practice === 'all' ? {} : { practice: req.query.practice }
         : {}
-    
-    let experience = req.query.experience ? 
-    {
-        valued: {
-            $gte: req.query.experience.split('-').length > 1 ? new Date(Date.now() - (1000 * 3600 * 24 * 365.25 * Number(req.query.experience.split('-')[1]))) : 0,
-            $lte: new Date(Date.now() - (1000 * 3600 * 24 * 365.25 * Number(req.query.experience.split('-')[0])))
-        }
-    } : {};
-    
+
+    let experience = req.query.experience ?
+        {
+            valued: {
+                $gte: req.query.experience.split('-').length > 1 ? new Date(Date.now() - (1000 * 3600 * 24 * 365.25 * Number(req.query.experience.split('-')[1]))) : 0,
+                $lte: new Date(Date.now() - (1000 * 3600 * 24 * 365.25 * Number(req.query.experience.split('-')[0])))
+            }
+        } : {};
+
     let skills = req.query.skills ?
         {
             name: {
@@ -476,31 +478,31 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
                 $options: 'i'
             }
         } : '';
-    
-    
+
+
     //console.log('experience: ', experience);
     let searchSkillsId = (skills !== '') ? await Skill.find(skills).select('_id') : '';
     //searchSkillsId = (searchSkillsId !== '') ? {'quality.skill': {$in: searchSkillsId}} : {};
-    searchSkillsId = (searchSkillsId !== '') ? {$and: searchSkillsId.map( skill => ({'quality.skill': skill}))} : {};
+    searchSkillsId = (searchSkillsId !== '') ? { $and: searchSkillsId.map(skill => ({ 'quality.skill': skill })) } : {};
     //console.log(searchSkillsId)
 
     //const searchPractice = practice ? {practice: practice} : {};
 
-    const consultantId = await Consultant.find({...searchPractice, ...searchSkillsId, ...experience}).select('_id');
-    
-    const month = await Month.find({firstDay: { $gte: start, $lte: end }}).sort({'name': 1}).select('_id name firstDay');
+    const consultantId = await Consultant.find({ ...searchPractice, ...searchSkillsId, ...experience }).select('_id');
+
+    const month = await Month.find({ firstDay: { $gte: start, $lte: end } }).sort({ 'name': 1 }).select('_id name firstDay');
     const data = [];
 
-    const searchAvailableDay = req.query.filterMode === 'all' ? {$eq:0} : {$gt: 0}
-    
+    const searchAvailableDay = req.query.filterMode === 'all' ? { $eq: 0 } : { $gt: 0 }
+
     const availablePxx = await Pxx.find({
-        month: {$in: month.map(x => x._id)},
-        name: {$in: consultantId.map(x => x._id)},
+        month: { $in: month.map(x => x._id) },
+        name: { $in: consultantId.map(x => x._id) },
         availableDay: searchAvailableDay
     }).select('_id name email grade valued practice quality availableDay comment')
-    .populate('month name')
-    .sort({availableDay: -1});
-    
+        .populate('month name')
+        .sort({ availableDay: -1 });
+
     const allSkills = await Skill.find();
 
     if (availablePxx) {
@@ -518,21 +520,22 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
                 })
 
                 return {
-                _id: x.name._id,
-                name: x.name.name,
-                email: x.name.email,
-                grade: x.name.grade,
-                valued: x.name.valued,
-                practice: x.name.practice,
-                quality: qualities,
-                availableDay: x.availableDay,
-                comment: x.name.comment
-            }});
+                    _id: x.name._id,
+                    name: x.name.name,
+                    email: x.name.email,
+                    grade: x.name.grade,
+                    valued: x.name.valued,
+                    practice: x.name.practice,
+                    quality: qualities,
+                    availableDay: x.availableDay,
+                    comment: x.name.comment
+                }
+            });
             const result = {
-                month: {firstDay: month[incr].firstDay, _id: month[incr]._id},
+                month: { firstDay: month[incr].firstDay, _id: month[incr]._id },
                 availabilities: pxxLines
             }
-    
+
             data.push(result);
         }
     }
@@ -542,7 +545,7 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
     if (data) {
         res.status(200).json(data);
     } else {
-        res.status(400).json({message: 'no data found'});
+        res.status(400).json({ message: 'no data found' });
     }
 });
 
@@ -553,8 +556,8 @@ const getAllPxx = asyncHandler(async (req, res) => {
 
     const pageSize = Number(req.query.pageSize);
     const page = Number(req.query.pageNumber) || 1; // by default on page 1
-    const practice = req.query.practice ;
-    const month = req.query.month ;
+    const practice = req.query.practice;
+    const month = req.query.month;
     const keyword = req.query.keyword ? {
         name: {
             $regex: req.query.keyword,
@@ -562,24 +565,24 @@ const getAllPxx = asyncHandler(async (req, res) => {
         }
     } : {};
 
-    const consultants = await Consultant.find({...keyword, practice: practice}).select('_id');
-    const consultantsId = consultants.map( consultant => consultant._id);
+    const consultants = await Consultant.find({ ...keyword, practice: practice }).select('_id');
+    const consultantsId = consultants.map(consultant => consultant._id);
 
-    const count = await Pxx.countDocuments({ month: month, name: {$in: consultantsId} });
-    let pxxs = await Pxx.find({ month: month, name: {$in: consultantsId} })
+    const count = await Pxx.countDocuments({ month: month, name: { $in: consultantsId } });
+    let pxxs = await Pxx.find({ month: month, name: { $in: consultantsId } })
         .populate('name month')
-        .sort({'name': 1})
+        .sort({ 'name': 1 })
         .limit(pageSize).skip(pageSize * (page - 1));
-        
+
     if (pxxs) {
-        for (let incr = 0 ; incr < pxxs.length ; incr++) {
+        for (let incr = 0; incr < pxxs.length; incr++) {
             const cdm = await Consultant.findById(pxxs[incr].name.cdmId).select('_id name matricule');
             pxxs[incr].name.cdmId = cdm;
             //console.log(cdm);
         }
-        res.status(200).json({pxxs, page, pages: Math.ceil(count/pageSize), count});
+        res.status(200).json({ pxxs, page, pages: Math.ceil(count / pageSize), count });
     } else {
-        res.status(400).json({message: 'no pxx found'});
+        res.status(400).json({ message: 'no pxx found' });
     }
 });
 
@@ -679,7 +682,7 @@ const lineImportPxx = asyncHandler(async (req, res) => {
             console.log('Month not found: ' + monthName);
             //errors.push({ monthName, matricule });
             //res.status(404).json({notUpdatedMatricule: matricule, message: 'Month not found: ' + monthName});
-            res.status(404).json({message: {matricule: matricule, display: 'Month not found: ' + monthName}});
+            res.status(404).json({ message: { matricule: matricule, display: 'Month not found: ' + monthName } });
             return;
             //break;
         }
@@ -688,7 +691,7 @@ const lineImportPxx = asyncHandler(async (req, res) => {
         if (!consultant) {
             console.log('Consultant not found: ' + matricule);
             //errors.push({ monthName, matricule });
-            res.status(404).json({message: {matricule: matricule, display: 'Consultant not found: ' + matricule}});
+            res.status(404).json({ message: { matricule: matricule, display: 'Consultant not found: ' + matricule } });
             return;
             //break
         }
@@ -714,16 +717,16 @@ const lineImportPxx = asyncHandler(async (req, res) => {
 
             if (availableDay === 0) {
                 const updatedPxx = await existPxxLine.save();
-                res.status(200).json({updatedMatricule: matricule});
+                res.status(200).json({ updatedMatricule: matricule });
             } else {
                 console.log(`Error when updating pxx: ${consultant.name}`);
-                res.status(500).json({message: {matricule: matricule, display: `Total days recalculated not equal to available days in the month ${monthName} for: ${consultant.name}`}})
+                res.status(500).json({ message: { matricule: matricule, display: `Total days recalculated not equal to available days in the month ${monthName} for: ${consultant.name}` } })
                 //errors.push({ monthName, matricule, message: 'Total days recalculated not equal to available days in the month' })
             }
 
         } else {
             console.log('Pxx not found for month.name: ' + monthName + ' and consultant.matricule: ' + matricule);
-            res.status(404).json({notUpdatedMatricule: matricule, message: `Pxx not found for month ${monthName} and matricule: ${matricule}`});
+            res.status(404).json({ notUpdatedMatricule: matricule, message: `Pxx not found for month ${monthName} and matricule: ${matricule}` });
             //errors.push({ monthName, matricule, message: 'Pxx not found' });
         }
 
@@ -743,16 +746,16 @@ const transformMonth = (pxxFormat) => {
     return '20' + convertToArray[1] + '/' + Number(convertToArray[0]);
 }
 
-const updatePxxLine = async(pxxLine) => {
-    const monthId = await Month.findOne({name: pxxLine.month}).select('_id');
+const updatePxxLine = async (pxxLine) => {
+    const monthId = await Month.findOne({ name: pxxLine.month }).select('_id');
     if (!monthId) {
         return `Month not find for: ${pxxLine.month}`;
     }
-    const consultantId = await Consultant.findOne({matricule: pxxLine.matricule}).select('_id');
+    const consultantId = await Consultant.findOne({ matricule: pxxLine.matricule }).select('_id');
     if (!consultantId) {
         return `Consultant not find for: ${pxxLine.name} (${pxxLine.matricule})`;
     }
-    const pxxToUpdate = await Pxx.findOne({name:consultantId._id, month: monthId._id});
+    const pxxToUpdate = await Pxx.findOne({ name: consultantId._id, month: monthId._id });
     if (pxxToUpdate) {
         pxxToUpdate.prodDay = pxxLine.prod;
         pxxToUpdate.notProdDay = pxxLine.notProd;
@@ -772,122 +775,129 @@ const updatePxxLine = async(pxxLine) => {
 // @access  Private
 const updatePxxFromPxx = asyncHandler(async (req, res) => {
 
-    const fileName = '/backend/data/pDET-30.xlsb';
-    const __dir = path.resolve();
-    console.log(__dir + fileName);
-    wb = XLSX.readFile(__dir + fileName);
-    const firstSheetName = wb.SheetNames[0];
-    const firstWorkSheet = wb.Sheets[firstSheetName];
-    const firstWorkSheetCSV = XLSX.utils.sheet_to_csv(firstWorkSheet);
-    const firstSheetAllLines = firstWorkSheetCSV.split(/\r\n|\n/);
+    const directory = path.resolve() + '/backend/data/pxx';
+    //const fileName = '/backend/data/pDET-30.xlsb';
+    //const __dir = path.resolve();
+    //console.log(__dir + fileName);
 
-    const readablePxx = []
-    for (let incr = 0 ; incr < Math.min(150, firstSheetAllLines.length) ; incr++){
-        const line = firstSheetAllLines[incr].split((','));
-        readablePxx.push(line);
-    }
+    try {
 
-    //console.log(readablePxx[5]);
+        const files = fs.readdirSync(directory);
+        console.log(files);
+        for (let incr = 0; incr < files.length; incr++) {
+            const file = files[incr];
+            if (file.match(/^p[A-Za-z]+-[0-9]{2}.xlsb/)) {
 
-    
+                wb = XLSX.readFile(directory + '/' + file);
+                const firstSheetName = wb.SheetNames[0];
+                const firstWorkSheet = wb.Sheets[firstSheetName];
+                const firstWorkSheetCSV = XLSX.utils.sheet_to_csv(firstWorkSheet);
+                const firstSheetAllLines = firstWorkSheetCSV.split(/\r\n|\n/);
 
-    console.log('firstMonth', transformMonth(readablePxx[5][9]));
-    console.log('SecondMonth', transformMonth(readablePxx[5][13]));
-    console.log('ThirdMonth', transformMonth(readablePxx[5][17]));
-    console.log('FourthMonth', transformMonth(readablePxx[5][21]));
-    console.log('FifthMonth', transformMonth(readablePxx[5][25]));
+                const readablePxx = []
+                for (let incr = 0; incr < Math.min(150, firstSheetAllLines.length); incr++) {
+                    const line = firstSheetAllLines[incr].split((','));
+                    readablePxx.push(line);
+                }
 
-    const monthToUpdate = [
-        transformMonth(readablePxx[5][9]),
-        transformMonth(readablePxx[5][13]),
-        transformMonth(readablePxx[5][17]),
-        transformMonth(readablePxx[5][25]),
-        transformMonth(readablePxx[5][29]),
-    ];
+                console.log('firstMonth', transformMonth(readablePxx[5][9]));
+                console.log('SecondMonth', transformMonth(readablePxx[5][13]));
+                console.log('ThirdMonth', transformMonth(readablePxx[5][17]));
+                console.log('FourthMonth', transformMonth(readablePxx[5][21]));
+                console.log('FifthMonth', transformMonth(readablePxx[5][25]));
 
-    for (let line = 8; line < Math.min(150, readablePxx.length) ; line++) {
+                const monthToUpdate = [
+                    transformMonth(readablePxx[5][9]),
+                    transformMonth(readablePxx[5][13]),
+                    transformMonth(readablePxx[5][17]),
+                    transformMonth(readablePxx[5][21]),
+                    transformMonth(readablePxx[5][25]),
+                ];
 
-        const pxxLine = readablePxx[line];
-        if(Number(pxxLine[0])>0 && Number(pxxLine[0])<=1) {
+                for (let line = 8; line < Math.min(150, readablePxx.length); line++) {
 
-            const firstMonth = {
-                month: monthToUpdate[0],
-                name: pxxLine[3],
-                matricule: pxxLine[4].toString().padStart(9, 0),
-                prod: Number(pxxLine[9]),
-                notProd: Number(pxxLine[10]),
-                holidays: Number(pxxLine[11]),
-                available: Number(pxxLine[12]),
+                    const pxxLine = readablePxx[line];
+                    if (Number(pxxLine[0]) > 0 && Number(pxxLine[0]) <= 1) {
+
+                        const firstMonth = {
+                            month: monthToUpdate[0],
+                            name: pxxLine[3],
+                            matricule: pxxLine[4].toString().padStart(9, 0),
+                            prod: Number(pxxLine[9]),
+                            notProd: Number(pxxLine[10]),
+                            holidays: Number(pxxLine[11]),
+                            available: Number(pxxLine[12]),
+                        }
+                        let result = await updatePxxLine(firstMonth);
+                        console.log(result);
+
+                        const secondMonth = {
+                            month: monthToUpdate[1],
+                            name: pxxLine[3],
+                            matricule: pxxLine[4].toString().padStart(9, 0),
+                            prod: Number(pxxLine[13]),
+                            notProd: Number(pxxLine[14]),
+                            holidays: Number(pxxLine[15]),
+                            available: Number(pxxLine[16]),
+                        }
+                        result = await updatePxxLine(secondMonth);
+                        console.log(result);
+
+                        const thirdMonth = {
+                            month: monthToUpdate[2],
+                            name: pxxLine[3],
+                            matricule: pxxLine[4].toString().padStart(9, 0),
+                            prod: Number(pxxLine[17]),
+                            notProd: Number(pxxLine[18]),
+                            holidays: Number(pxxLine[19]),
+                            available: Number(pxxLine[20]),
+                        }
+                        result = await updatePxxLine(thirdMonth);
+                        console.log(result);
+
+                        const fourthMonth = {
+                            month: monthToUpdate[3],
+                            name: pxxLine[3],
+                            matricule: pxxLine[4].toString().padStart(9, 0),
+                            prod: Number(pxxLine[21]),
+                            notProd: Number(pxxLine[22]),
+                            holidays: Number(pxxLine[23]),
+                            available: Number(pxxLine[24]),
+                        }
+                        result = await updatePxxLine(fourthMonth);
+                        console.log(result);
+
+                        const fifthMonth = {
+                            month: monthToUpdate[4],
+                            name: pxxLine[3],
+                            matricule: pxxLine[4].toString().padStart(9, 0),
+                            prod: Number(pxxLine[25]),
+                            notProd: Number(pxxLine[26]),
+                            holidays: Number(pxxLine[27]),
+                            available: Number(pxxLine[28]),
+                        }
+                        result = await updatePxxLine(fifthMonth);
+                        console.log(result);
+                    }
+                }
             }
-            let result = await updatePxxLine(firstMonth);
-            console.log(result);
-
-            const secondMonth = {
-                month: monthToUpdate[1],
-                name: pxxLine[3],
-                matricule: pxxLine[4].toString().padStart(9, 0),
-                prod: Number(pxxLine[13]),
-                notProd: Number(pxxLine[14]),
-                holidays: Number(pxxLine[15]),
-                available: Number(pxxLine[16]),
-            }
-            result = await updatePxxLine(secondMonth);
-            console.log(result);
-
-            const thirdMonth = {
-                month: monthToUpdate[2],
-                name: pxxLine[3],
-                matricule: pxxLine[4].toString().padStart(9, 0),
-                prod: Number(pxxLine[17]),
-                notProd: Number(pxxLine[18]),
-                holidays: Number(pxxLine[19]),
-                available: Number(pxxLine[20]),
-            }
-            result = await updatePxxLine(thirdMonth);
-            console.log(result);
-
-            const fourthMonth = {
-                month: monthToUpdate[3],
-                name: pxxLine[3],
-                matricule: pxxLine[4].toString().padStart(9, 0),
-                prod: Number(pxxLine[21]),
-                notProd: Number(pxxLine[22]),
-                holidays: Number(pxxLine[23]),
-                available: Number(pxxLine[24]),
-            }
-            result = await updatePxxLine(fourthMonth);
-            console.log(result);
-
-            const fifthMonth = {
-                month: monthToUpdate[4],
-                name: pxxLine[3],
-                matricule: pxxLine[4].toString().padStart(9, 0),
-                prod: Number(pxxLine[25]),
-                notProd: Number(pxxLine[26]),
-                holidays: Number(pxxLine[27]),
-                available: Number(pxxLine[28]),
-            }
-            result = await updatePxxLine(fifthMonth);
-            console.log(result);
-
-            //console.log(firstMonth);
-            //console.log(secondMonth);
-            //console.log(thirdMonth);
-            //console.log(fourthMonth);
-            //console.log(fifthMonth);
         }
+
+    } catch (error) {
+        console.log('Unable to scan directory: ' + error);
     }
 
-    res.status(200).json('ok')
+    res.status(200).json('ok');
+
 });
 
-module.exports = { 
+module.exports = {
     getPxx,
     getAllPxx,
-    updatePxx, 
+    updatePxx,
     calculateAvailableDays,
     resetAllPxx,
-    resetPartialTimePxx, 
+    resetPartialTimePxx,
     updatePartialTimePxx,
     getProdChart,
     getAvailabilityChart,
