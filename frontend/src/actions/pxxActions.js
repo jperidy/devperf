@@ -23,7 +23,10 @@ import {
     PXX_IMPORT_MASS_REQUEST,
     PXX_IMPORT_LINE_REQUEST,
     PXX_IMPORT_LINE_SUCCESS,
-    PXX_IMPORT_LINE_FAIL
+    PXX_IMPORT_LINE_FAIL,
+    PXX_UPLOAD_FILE_REQUEST,
+    PXX_UPLOAD_FILE_SUCCESS,
+    PXX_UPLOAD_FILE_FAIL
 } from '../constants/pxxConstants';
 
 export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth) => async (dispatch, getState) => {
@@ -401,6 +404,44 @@ export const pxxUpdateALine = (line) => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: PXX_IMPORT_LINE_FAIL,
+            payload: {
+                message: error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message
+            }
+        });
+    }
+};
+
+export const pxxUploadFiles = (files) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: PXX_UPLOAD_FILE_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers:{
+                "Content-Type": "application/vnd.ms-excel",
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        let result = '';
+        for (let incr=0 ; incr < files.length ; incr++) {
+            const file = files[incr];
+            const { data } = await axios.post(`/api/upload/pxx`, file, config);
+            result = data;
+        }
+
+
+        dispatch({ type: PXX_UPLOAD_FILE_SUCCESS, payload: result });
+
+
+    } catch (error) {
+        dispatch({
+            type: PXX_UPLOAD_FILE_FAIL,
             payload: {
                 message: error.response && error.response.data.message
                     ? error.response.data.message

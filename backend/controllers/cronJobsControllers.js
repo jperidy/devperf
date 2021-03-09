@@ -92,7 +92,8 @@ const deleteOldFiles = async () => {
 
     // Add here any directories you want to clean with scheduled job
     const directories = [
-        path.resolve() + '/uploads/consultants'
+        path.resolve() + '/uploads/consultants',
+        path.resolve() + '/uploads/pxx',
     ]
     //const directoryConsultantsPath = path.resolve() + '/uploads/consultants';
 

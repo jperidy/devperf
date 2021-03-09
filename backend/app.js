@@ -37,6 +37,8 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json({limit: '50mb', extended: true})); // to upload consequent files
 
+//const  multipart = require('connect-multiparty');
+//app.use(multipart());
 //app.use(helmet());
 
 app.use('/api/users', userRoutes);

@@ -120,22 +120,6 @@ const ManageConsultantScreen = ({ history, match }) => {
         }
     }
 
-    /*const onChangeHandler = (e) => {
-        setSelectedFile(e.target.files[0]);
-    }
-    const onClickHandler = () => {
-        const data = new FormData();
-        data.append('file', selectedFile);
-        dispatch(uploadConsultantWk(data));
-    }
-    const startImportData = () => {
-        if(path) {
-            dispatch(updateConsultantWk(path));
-            //const data = updateConsultantWk(path, userInfo);
-            //setMessage(data);
-        }
-    }*/
-
     return (
         <>
             <Meta />

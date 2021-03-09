@@ -30,7 +30,11 @@ import {
     PXX_IMPORT_LINE_REQUEST,
     PXX_IMPORT_LINE_SUCCESS,
     PXX_IMPORT_LINE_FAIL,
-    PXX_IMPORT_LINE_RESET
+    PXX_IMPORT_LINE_RESET,
+    PXX_UPLOAD_FILE_REQUEST,
+    PXX_UPLOAD_FILE_SUCCESS,
+    PXX_UPLOAD_FILE_FAIL,
+    PXX_UPLOAD_FILE_RESET
 } from '../constants/pxxConstants';
 
 export const pxxMyToEditReducer = (state= { pxx: [] }, action) => {
@@ -145,6 +149,21 @@ export const pxxImportLineReducer = (state= { pxx: [] }, action) => {
             return { loading: false, error: action.payload };
         case PXX_IMPORT_LINE_RESET:
             return { pxx: [] };
+        default:
+            return state ;
+    }
+};
+
+export const pxxUploadFileReducer = (state= { }, action) => {
+    switch(action.type) {
+        case PXX_UPLOAD_FILE_REQUEST:
+            return { loading: true };
+        case PXX_UPLOAD_FILE_SUCCESS:
+            return { loading: false, success:true, path: action.payload };
+        case PXX_UPLOAD_FILE_FAIL:
+            return { loading: false, error: action.payload };
+        case PXX_UPLOAD_FILE_RESET:
+            return { };
         default:
             return state ;
     }

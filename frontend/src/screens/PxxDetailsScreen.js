@@ -16,6 +16,7 @@ import DisplayChildren from '../components/DisplayChildren';
 import ImportExcelFile from '../components/ImportExcelFile';
 import { getAllPxx, pxxUpdateALine } from '../actions/pxxActions';
 import ReactExport from "react-export-excel";
+import FlowImportPxx from '../components/FlowImportPxx';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -40,6 +41,8 @@ const PxxDetailsScreen = ({ history, match }) => {
     const [messsagesImportSuccess, setMessagesImportSuccess] = useState(0);
     const [messsagesImportError, setMessagesImportError] = useState(0);
     const [totalToImport, setTotalToImport] = useState(0);
+
+    const [showImportPxx, setShowImportPxx] = useState(false);
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
@@ -184,6 +187,16 @@ const PxxDetailsScreen = ({ history, match }) => {
     return (
         <>
             <Meta />
+
+            <FlowImportPxx 
+                show={showImportPxx}
+                onHide={() => setShowImportPxx(false)}
+            />
+
+            <Button variant='primary' onClick={() => setShowImportPxx(true)}>Import Pxx</Button>
+            {/* <DisplayChlidren access='updateConsultantsFromWK'>
+            </DisplayChlidren> */}
+
 
             <Button className='mb-3' onClick={() => history.go(-1)}>
                 Go Back

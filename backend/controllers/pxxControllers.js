@@ -786,7 +786,7 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
         console.log(files);
         for (let incr = 0; incr < files.length; incr++) {
             const file = files[incr];
-            if (file.match(/^p[A-Za-z]+-[0-9]{2}.xlsb/)) {
+            if (file.match(/^p[A-Za-z]+-[0-9]{2}.xlsb|^p[A-Za-z]+-arrivees.xlsb/)) {
 
                 wb = XLSX.readFile(directory + '/' + file);
                 const firstSheetName = wb.SheetNames[0];

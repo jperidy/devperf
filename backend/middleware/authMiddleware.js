@@ -7,6 +7,7 @@ const Deal = require('../models/dealModel');
 
 const protect = asyncHandler (async (req, res, next) => {
     //console.log('start protect middleware');
+    //console.log(req.files);
     let token;
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
         
