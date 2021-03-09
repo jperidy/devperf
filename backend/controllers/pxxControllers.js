@@ -763,7 +763,8 @@ const updatePxxLine = async (pxxLine) => {
         pxxToUpdate.availableDay = pxxLine.available;
         pxxToUpdate.save();
         //console.log(`PxxLine updated for: ${pxxLine.name} and ${pxxLine.month}`);
-        return `PxxLine updated for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id})`;
+        return true;
+        //return `PxxLine updated for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id})`;
     } else {
         //console.log(`PxxLine not found for: ${pxxLine.name} and ${pxxLine.month}`);
         return `PxxLine not found for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id})`
@@ -775,18 +776,26 @@ const updatePxxLine = async (pxxLine) => {
 // @access  Private
 const updatePxxFromPxx = asyncHandler(async (req, res) => {
 
-    const directory = path.resolve() + '/backend/data/pxx';
-    //const fileName = '/backend/data/pDET-30.xlsb';
-    //const __dir = path.resolve();
-    //console.log(__dir + fileName);
+    console.log('start');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+    res.write("Start...\n");
+
+
+    const startName = req.body.path;
+    console.log(startName);
+    //const directory = path.resolve() + '/backend/data/pxx';
+    const directory = path.resolve() + '/uploads/pxx';
 
     try {
 
         const files = fs.readdirSync(directory);
         console.log(files);
+
         for (let incr = 0; incr < files.length; incr++) {
             const file = files[incr];
-            if (file.match(/^p[A-Za-z]+-[0-9]{2}.xlsb|^p[A-Za-z]+-arrivees.xlsb/)) {
+            const regex = `^${startName}-p[A-Za-z]+-[0-9]{2}.xlsb|^${startName}-p[A-Za-z]+-arrivees.xlsb`
+            if (file.match(regex)) {
 
                 wb = XLSX.readFile(directory + '/' + file);
                 const firstSheetName = wb.SheetNames[0];
@@ -800,11 +809,11 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                     readablePxx.push(line);
                 }
 
-                console.log('firstMonth', transformMonth(readablePxx[5][9]));
-                console.log('SecondMonth', transformMonth(readablePxx[5][13]));
-                console.log('ThirdMonth', transformMonth(readablePxx[5][17]));
-                console.log('FourthMonth', transformMonth(readablePxx[5][21]));
-                console.log('FifthMonth', transformMonth(readablePxx[5][25]));
+                //console.log('firstMonth', transformMonth(readablePxx[5][9]));
+                //console.log('SecondMonth', transformMonth(readablePxx[5][13]));
+                //console.log('ThirdMonth', transformMonth(readablePxx[5][17]));
+                //console.log('FourthMonth', transformMonth(readablePxx[5][21]));
+                //console.log('FifthMonth', transformMonth(readablePxx[5][25]));
 
                 const monthToUpdate = [
                     transformMonth(readablePxx[5][9]),
@@ -830,6 +839,9 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                         }
                         let result = await updatePxxLine(firstMonth);
                         console.log(result);
+                        if (result !== true) {
+                            res.write(result + '\n');
+                        }
 
                         const secondMonth = {
                             month: monthToUpdate[1],
@@ -842,6 +854,9 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                         }
                         result = await updatePxxLine(secondMonth);
                         console.log(result);
+                        if (result !== true) {
+                            res.write(result + '\n');
+                        }
 
                         const thirdMonth = {
                             month: monthToUpdate[2],
@@ -854,6 +869,9 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                         }
                         result = await updatePxxLine(thirdMonth);
                         console.log(result);
+                        if (result !== true) {
+                            res.write(result + '\n');
+                        }
 
                         const fourthMonth = {
                             month: monthToUpdate[3],
@@ -866,6 +884,9 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                         }
                         result = await updatePxxLine(fourthMonth);
                         console.log(result);
+                        if (result !== true) {
+                            res.write(result + '\n');
+                        }
 
                         const fifthMonth = {
                             month: monthToUpdate[4],
@@ -878,16 +899,36 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                         }
                         result = await updatePxxLine(fifthMonth);
                         console.log(result);
+                        if (result !== true) {
+                            res.write(result + '\n');
+                        }
                     }
                 }
             }
         }
 
+        // suppression des données
+        fs.readdir(directory, (err, files) => {
+            if (err) {
+                return console.log('Unable to scan directory: ' + err);
+            }
+            files.map( file => {
+                
+                    fs.unlink(directory + '/' + file, (err) => {
+                        if (err) {
+                            console.error('Error removing file ' + file + 'from ' + directory);
+                        } else {
+                            console.log(file + ' has been removed from: ' + directory);
+                        }
+                    });
+            })
+        })
+
     } catch (error) {
         console.log('Unable to scan directory: ' + error);
     }
-
-    res.status(200).json('ok');
+    res.end();
+    //res.status(200).json('ok');
 
 });
 
@@ -902,7 +943,6 @@ module.exports = {
     getProdChart,
     getAvailabilityChart,
     createPxx,
-    //massImportPxx,
     lineImportPxx,
     updatePxxFromPxx
 };

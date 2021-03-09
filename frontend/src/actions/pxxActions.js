@@ -26,7 +26,10 @@ import {
     PXX_IMPORT_LINE_FAIL,
     PXX_UPLOAD_FILE_REQUEST,
     PXX_UPLOAD_FILE_SUCCESS,
-    PXX_UPLOAD_FILE_FAIL
+    PXX_UPLOAD_FILE_FAIL,
+    PXX_UPDATE_PXX_REQUEST,
+    PXX_UPDATE_PXX_SUCCESS,
+    PXX_UPDATE_PXX_FAIL
 } from '../constants/pxxConstants';
 
 export const getMyConsultantPxxToEdit = (consultantId, searchDate, numberOfMonth) => async (dispatch, getState) => {
@@ -442,6 +445,39 @@ export const pxxUploadFiles = (files) => async (dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: PXX_UPLOAD_FILE_FAIL,
+            payload: {
+                message: error.response && error.response.data.message
+                    ? error.response.data.message
+                    : error.message
+            }
+        });
+    }
+};
+
+export const updatePxxFiles = (path) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: PXX_UPDATE_PXX_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers:{
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.put(`/api/pxx/admin/line-import-wk`, path, config);
+
+
+        dispatch({ type: PXX_UPDATE_PXX_SUCCESS, payload: data });
+
+
+    } catch (error) {
+        dispatch({
+            type: PXX_UPDATE_PXX_FAIL,
             payload: {
                 message: error.response && error.response.data.message
                     ? error.response.data.message

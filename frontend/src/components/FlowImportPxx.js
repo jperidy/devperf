@@ -9,7 +9,7 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 //import { uploadConsultantWk, updateConsultantWk } from '../actions/consultantActions';
 import Form from 'react-bootstrap/Form';
-import { pxxUploadFiles } from '../actions/pxxActions';
+import { pxxUploadFiles, updatePxxFiles } from '../actions/pxxActions';
 
 const FlowImportPxx = (props) => {
 
@@ -20,8 +20,8 @@ const FlowImportPxx = (props) => {
     const pxxUploadFile = useSelector(state => state.pxxUploadFile);
     const { loading:loadingUpload, error:errorUpload, path } = pxxUploadFile;
 
-    const consultantUpdateWk = useSelector(state => state.consultantUpdateWk);
-    const { loading: loadingUpdate, error: errorUpdate, message } = consultantUpdateWk;
+    const updatePxx = useSelector(state => state.updatePxx);
+    const { loading: loadingUpdate, error: errorUpdate, message } = updatePxx;
 
     const onChangeHandler = (e) => {
         //const data = new FormData();
@@ -46,7 +46,7 @@ const FlowImportPxx = (props) => {
 
     const startImportData = () => {
         if(path) {
-            //dispatch(updateConsultantWk(path));
+            dispatch(updatePxxFiles(path));
         }
     }
 
@@ -99,15 +99,17 @@ const FlowImportPxx = (props) => {
                         <Row className='align-items-center'>
                             <Col className='text-center'>
                                 <h4>Upload you file here</h4>
-                                <input 
-                                    className='my-3' 
-                                    type='file' 
-                                    name='file' 
-                                    onChange={onChangeHandler} 
-                                    webkitdirectory='true'
-                                    directory='true'
-                                    multiple
-                                />
+                                {loadingUpload ? <Loader /> : (
+                                    <input 
+                                        className='my-3' 
+                                        type='file' 
+                                        name='file' 
+                                        onChange={onChangeHandler} 
+                                        webkitdirectory='true'
+                                        directory='true'
+                                        multiple
+                                    />
+                                )}
                             </Col>
                         </Row>
                     )}

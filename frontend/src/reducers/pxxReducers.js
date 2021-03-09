@@ -34,7 +34,11 @@ import {
     PXX_UPLOAD_FILE_REQUEST,
     PXX_UPLOAD_FILE_SUCCESS,
     PXX_UPLOAD_FILE_FAIL,
-    PXX_UPLOAD_FILE_RESET
+    PXX_UPLOAD_FILE_RESET,
+    PXX_UPDATE_PXX_REQUEST,
+    PXX_UPDATE_PXX_SUCCESS,
+    PXX_UPDATE_PXX_FAIL,
+    PXX_UPDATE_PXX_RESET
 } from '../constants/pxxConstants';
 
 export const pxxMyToEditReducer = (state= { pxx: [] }, action) => {
@@ -169,6 +173,20 @@ export const pxxUploadFileReducer = (state= { }, action) => {
     }
 };
 
+export const updatePxxReducer = (state= { }, action) => {
+    switch(action.type) {
+        case PXX_UPDATE_PXX_REQUEST:
+            return { loading: true };
+        case PXX_UPDATE_PXX_SUCCESS:
+            return { loading: false, success:true, message: action.payload };
+        case PXX_UPDATE_PXX_FAIL:
+            return { loading: false, error: action.payload };
+        case PXX_UPDATE_PXX_RESET:
+            return { };
+        default:
+            return state ;
+    }
+};
 
 
 // TO DELETE //

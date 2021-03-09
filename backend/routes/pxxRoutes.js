@@ -17,6 +17,7 @@ router.get('/edit', protect, getPxx);
 //router.put('/admin/mass-import', protect, massImportPxx);
 router.put('/admin/line-import', protect, lineImportPxx);
 router.put('/admin/line-import-wk', protect, updatePxxFromPxx);
+//router.put('/admin/file', protect, updatePxxFromPxx);
 
 router.get('/chart/tace', getProdChart);
 router.get('/chart/availability', getAvailabilityChart);

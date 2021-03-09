@@ -1,7 +1,7 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { pxxAvailabilitiesReducer, pxxListReducer, pxxAllListReducer, pxxTACEReducer, pxxUpdateReducer, pxxMyToEditReducer, pxxImportLineReducer, pxxUploadFileReducer } from './reducers/pxxReducers';
+import { pxxAvailabilitiesReducer, pxxListReducer, pxxAllListReducer, pxxTACEReducer, pxxUpdateReducer, pxxMyToEditReducer, pxxImportLineReducer, pxxUploadFileReducer, updatePxxReducer } from './reducers/pxxReducers';
 import { userLoginReducer, userListReducer, userDeleteReducer, userDetailsReducer, userUpdateReducer, userRegisterReducer } from './reducers/userReducers';
 import { 
     consultantMyReducer, 
@@ -67,6 +67,7 @@ export const reducer = combineReducers({
     pxxUpdate: pxxUpdateReducer,
     pxxTACE: pxxTACEReducer,
     pxxAvailabilities: pxxAvailabilitiesReducer,
+    updatePxx: updatePxxReducer,
     //pxxImportMass: pxxImportMassReducer,
     pxxImportLine: pxxImportLineReducer,
     pxxUploadFile: pxxUploadFileReducer,
