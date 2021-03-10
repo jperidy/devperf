@@ -749,11 +749,17 @@ const transformMonth = (pxxFormat) => {
 const updatePxxLine = async (pxxLine) => {
     const monthId = await Month.findOne({ name: pxxLine.month }).select('_id');
     if (!monthId) {
-        return `Month not find for: ${pxxLine.month}`;
+        return { 
+            result: false, 
+            message:`Error - Month not find for: ${pxxLine.month} if format is different from YYYY/MM please contact your admin\n`
+        };
     }
     const consultantId = await Consultant.findOne({ matricule: pxxLine.matricule }).select('_id');
     if (!consultantId) {
-        return `Consultant not find for: ${pxxLine.name} (${pxxLine.matricule})`;
+        return {
+            result: false,
+            message: `Error - Consultant not find for: ${pxxLine.name} (${pxxLine.matricule}) please verify start and leave dates\n`
+        };
     }
     const pxxToUpdate = await Pxx.findOne({ name: consultantId._id, month: monthId._id });
     if (pxxToUpdate) {
@@ -763,13 +769,39 @@ const updatePxxLine = async (pxxLine) => {
         pxxToUpdate.availableDay = pxxLine.available;
         pxxToUpdate.save();
         //console.log(`PxxLine updated for: ${pxxLine.name} and ${pxxLine.month}`);
-        return true;
+        return {
+            result: true,
+            message: `Info - PxxLine updated for: ${pxxLine.name} and ${pxxLine.month}\n`
+        };
         //return `PxxLine updated for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id})`;
     } else {
         //console.log(`PxxLine not found for: ${pxxLine.name} and ${pxxLine.month}`);
-        return `PxxLine not found for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id})`
+        return {
+            result: false,
+            message: `Error - PxxLine not found for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id}) please verify start and leave dates\n`
+        }
     }
 }
+const updatePxxComment = async (matricule, pxxComments) => {
+
+    const consultant = await Consultant.findOne({ matricule: matricule });
+
+    if (consultant) {
+        const commentaireToUpdate = `${pxxComments.commentaires}\n\nDominante:\n${pxxComments.dominante}\n\nExpertise:\n${pxxComments.expertise}`;
+        consultant.comment = commentaireToUpdate;
+        await consultant.save();
+        return {
+            result: true,
+            message: `Consultant profil ${matricule} updated with new comment\n`
+        }
+    } else {
+        return {
+            result: false,
+            message: `Error - comment not updated for consultant with matricule: ${matricule}` 
+        }
+    }
+}
+
 
 // @desc    Mass import of pxx datas from Pxx directory
 // @route   PUT /api/pxx/admin/mass-import-pxx
@@ -781,6 +813,12 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
     res.setHeader('Transfer-Encoding', 'chunked');
     res.write("Start...\n");
 
+    let numberOfPxx = 0;
+    let numberOfConsultants = 0;
+    let numberUpdated = 0;
+    let numberErrors = 0;
+    const matriculeScanned = []
+
 
     const startName = req.body.path;
     console.log(startName);
@@ -790,12 +828,17 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
     try {
 
         const files = fs.readdirSync(directory);
-        console.log(files);
+        //console.log(files);
+        numberOfPxx = files.length;
+
 
         for (let incr = 0; incr < files.length; incr++) {
             const file = files[incr];
             const regex = `^${startName}-p[A-Za-z]+-[0-9]{2}.xlsb|^${startName}-p[A-Za-z]+-arrivees.xlsb`
+           
             if (file.match(regex)) {
+
+                res.write(`Start updating ${file}\n`);
 
                 wb = XLSX.readFile(directory + '/' + file);
                 const firstSheetName = wb.SheetNames[0];
@@ -809,12 +852,6 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                     readablePxx.push(line);
                 }
 
-                //console.log('firstMonth', transformMonth(readablePxx[5][9]));
-                //console.log('SecondMonth', transformMonth(readablePxx[5][13]));
-                //console.log('ThirdMonth', transformMonth(readablePxx[5][17]));
-                //console.log('FourthMonth', transformMonth(readablePxx[5][21]));
-                //console.log('FifthMonth', transformMonth(readablePxx[5][25]));
-
                 const monthToUpdate = [
                     transformMonth(readablePxx[5][9]),
                     transformMonth(readablePxx[5][13]),
@@ -824,9 +861,15 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                 ];
 
                 for (let line = 8; line < Math.min(150, readablePxx.length); line++) {
-
+                    
+                    
                     const pxxLine = readablePxx[line];
                     if (Number(pxxLine[0]) > 0 && Number(pxxLine[0]) <= 1) {
+                        
+                        res.write(`Start ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)})\n`);
+                        
+                        numberOfConsultants += 1;
+                        const resultConsultant = [];
 
                         const firstMonth = {
                             month: monthToUpdate[0],
@@ -838,10 +881,11 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                             available: Number(pxxLine[12]),
                         }
                         let result = await updatePxxLine(firstMonth);
-                        console.log(result);
-                        if (result !== true) {
+                        console.log(result.message);
+                        resultConsultant.push(result);
+                        /* if (result !== true) {
                             res.write(result + '\n');
-                        }
+                        } */
 
                         const secondMonth = {
                             month: monthToUpdate[1],
@@ -853,10 +897,11 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                             available: Number(pxxLine[16]),
                         }
                         result = await updatePxxLine(secondMonth);
-                        console.log(result);
-                        if (result !== true) {
+                        console.log(result.message);
+                        resultConsultant.push(result);
+                        /* if (result !== true) {
                             res.write(result + '\n');
-                        }
+                        } */
 
                         const thirdMonth = {
                             month: monthToUpdate[2],
@@ -868,10 +913,11 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                             available: Number(pxxLine[20]),
                         }
                         result = await updatePxxLine(thirdMonth);
-                        console.log(result);
-                        if (result !== true) {
+                        console.log(result.message);
+                        resultConsultant.push(result);
+                        /* if (result !== true) {
                             res.write(result + '\n');
-                        }
+                        } */
 
                         const fourthMonth = {
                             month: monthToUpdate[3],
@@ -883,10 +929,11 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                             available: Number(pxxLine[24]),
                         }
                         result = await updatePxxLine(fourthMonth);
-                        console.log(result);
-                        if (result !== true) {
+                        console.log(result.message);
+                        resultConsultant.push(result);
+                        /* if (result !== true) {
                             res.write(result + '\n');
-                        }
+                        } */
 
                         const fifthMonth = {
                             month: monthToUpdate[4],
@@ -898,14 +945,51 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                             available: Number(pxxLine[28]),
                         }
                         result = await updatePxxLine(fifthMonth);
-                        console.log(result);
-                        if (result !== true) {
+                        console.log(result.message);
+                        resultConsultant.push(result);
+                        /* if (result !== true) {
                             res.write(result + '\n');
+                        } */
+
+                        // Update comments
+                        const comments = {
+                            commentaires: pxxLine[33],
+                            dominante: pxxLine[30],
+                            expertise: pxxLine[31],
                         }
+                        result = await updatePxxComment(pxxLine[4].toString().padStart(9, 0), comments);
+                        console.log(result.message);
+                        resultConsultant.push(result);
+
+                        if (resultConsultant.map(x => x.result).includes(false)) {
+                            numberErrors += 1;
+                            const lineWithErrors = resultConsultant.filter(x => x.result === false);
+                            for (let errorLine = 0; errorLine < lineWithErrors.length ; errorLine++) {
+                                res.write(lineWithErrors[errorLine].message);
+                            }
+                        } else {
+                            numberUpdated += 1;
+                            res.write(`info - ${pxxLine[3]} (${pxxLine[4]}) - updated\n`);
+                        }
+
+                        
+                        matriculeScanned.push(pxxLine[4].toString().padStart(9, 0));
+                        
+                        res.write(`End ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)})\n\n`);
                     }
                 }
+                res.write(`End updating ${file}\n\n`);
+            } else {
+                res.write(`Error - pxx format not matching with patern: ${file}\n\n`);
+                console.log(`Error - pxx format not matching with patern: ${file}\n\n`);
             }
         }
+        
+        // add fucntion to verify if missing Pxx //TO DO//
+        
+        // Collect all active consultants for analysed practice
+        // Verify if all matricules have been scanned
+
 
         // suppression des données
         fs.readdir(directory, (err, files) => {
@@ -927,6 +1011,8 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
     } catch (error) {
         console.log('Unable to scan directory: ' + error);
     }
+
+    res.write(`------ END UPDATE: ${numberOfConsultants} consultants updated from ${numberOfPxx} Pxx with ${numberErrors} errors and ${numberUpdated} success`);
     res.end();
     //res.status(200).json('ok');
 

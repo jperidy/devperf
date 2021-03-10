@@ -62,7 +62,7 @@ const FlowImportWKConsultants = (props) => {
             
             <Modal.Body>
                 <Row className='mb-3'>
-                    <Col><Button className={step >= 0 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(0)} variant='ligth' disabled={step <0}><strong>1-Export from WK</strong></Button></Col>
+                    <Col><Button className={step >= 0 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(0)} variant='ligth' disabled={step <0}><strong>1-Guidelines</strong></Button></Col>
                     <Col><Button className={step >= 1 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(1)} variant='ligth' disabled={step <1}><strong>2-Upload in App</strong></Button></Col>
                     <Col><Button className={step >= 2 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(2)} variant='ligth' disabled={step <2}><strong>3-Start update</strong></Button></Col>
                     <Col><Button className={step >= 3 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(3)} variant='ligth' disabled={step <3}><strong>4-Result</strong></Button></Col>
@@ -99,11 +99,11 @@ const FlowImportWKConsultants = (props) => {
                         path ? (
                             <Row>
                                 <Col className='text-center'>
-                                    <h4>Do you want to update your consultats ?</h4>
+                                    <h4>Do you want to update your consultants ?</h4>
                                     <Button variant='primary' className='m-3' onClick={startImportData}>
                                         {loadingUpdate ? <Loader /> : 'Update'}
                                     </Button>
-                                    <p>Process could take a few time</p>
+                                    <p>Process could take a few minute</p>
                                 </Col>
                             </Row>
                         ) : (

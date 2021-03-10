@@ -7,7 +7,7 @@ const { myAccessConsultants, myAuthorizedActionsConsultant } = require('../utils
 //const { update } = require('../models/consultantModel');
 
 const readXlsxFile = require('read-excel-file/node');
-const fs = require('fs'); 
+const fs = require('fs');
 const path = require('path');
 
 
@@ -48,7 +48,7 @@ const deleteConsultant = asyncHandler(async (req, res) => {
 // @route   GET /api/consultants/practice/:practice
 // @access  Private
 const getAllConsultants = asyncHandler(async (req, res) => {
-    
+
     const pageSize = Number(req.query.pageSize);
     const page = Number(req.query.pageNumber) || 1; // by default on page 1
     const keyword = req.query.keyword ? {
@@ -62,20 +62,20 @@ const getAllConsultants = asyncHandler(async (req, res) => {
     const consultantsId = await myAccessConsultants(access, req);
     //const consultantsId = {}
 
-    const count = await Consultant.countDocuments({ ...keyword, _id: {$in: consultantsId} });
+    const count = await Consultant.countDocuments({ ...keyword, _id: { $in: consultantsId } });
 
     //console.log(consultantsId);
-    
-    let consultants = await Consultant.find({...keyword, _id: {$in: consultantsId}})
-            .populate('cdmId')
-            .sort({'name': 1})
-            .limit(pageSize).skip(pageSize * (page - 1));
+
+    let consultants = await Consultant.find({ ...keyword, _id: { $in: consultantsId } })
+        .populate('cdmId')
+        .sort({ 'name': 1 })
+        .limit(pageSize).skip(pageSize * (page - 1));
 
     if (consultants) {
-        
-        res.status(200).json({consultants, page, pages: Math.ceil(count/pageSize), count});
+
+        res.status(200).json({ consultants, page, pages: Math.ceil(count / pageSize), count });
     } else {
-        res.status(400).json({message: `No consultants found for practice: ${req.query.practice}` });
+        res.status(400).json({ message: `No consultants found for practice: ${req.query.practice}` });
     }
 
 });
@@ -86,13 +86,13 @@ const getAllConsultants = asyncHandler(async (req, res) => {
 const getMyConsultants = asyncHandler(async (req, res) => {
 
     //console.log(req.user)
-    const myConsultants = await Consultant.find({ cdmId: req.user.consultantProfil }).sort({'name': 1});
+    const myConsultants = await Consultant.find({ cdmId: req.user.consultantProfil }).sort({ 'name': 1 });
     const myProfil = await Consultant.findById(req.user.consultantProfil._id);
     myConsultants.push(myProfil)
     //console.log(myConsultants)
 
     res.json(myConsultants);
-    
+
 });
 
 // @desc    Get a consultant data by Id
@@ -121,10 +121,10 @@ const getConsultantSkills = asyncHandler(async (req, res) => {
     //console.log(consultantsId.map(x => x._id))
     //console.log(myConsultant._id)
 
-    if(consultantsId.map(x => x._id.toString()).includes(myConsultant._id.toString())){
+    if (consultantsId.map(x => x._id.toString()).includes(myConsultant._id.toString())) {
         res.status(200).json(myConsultant);
     } else {
-        res.status(401).json({message: "you are not authorized to access this data"})
+        res.status(401).json({ message: "you are not authorized to access this data" })
     }
 });
 
@@ -233,18 +233,18 @@ const getAllCDMData = asyncHandler(async (req, res) => {
     //console.log(consultantsId)
 
     const practice = req.params.practice;
-    const CDMList = await Consultant.find({_id: {$in: consultantsId}, isCDM: true}).select('_id name');
-    
+    const CDMList = await Consultant.find({ _id: { $in: consultantsId }, isCDM: true }).select('_id name');
+
     if (req.user.consultantProfil.isCDM) {
         //console.log(req.user.consultantProfil)
-        const myProfil = {_id: req.user.consultantProfil._id, name: req.user.consultantProfil.name}
+        const myProfil = { _id: req.user.consultantProfil._id, name: req.user.consultantProfil.name }
         CDMList.push(myProfil);
     }
 
     if (CDMList) {
         res.status(200).json(CDMList);
     } else {
-        res.status(400).json({message: `You have no access to this data` });
+        res.status(400).json({ message: `You have no access to this data` });
     }
 });
 
@@ -257,14 +257,14 @@ const getAllPracticesData = asyncHandler(async (req, res) => {
     const access = req.user.profil.api.filter(x => x.name === 'getAllPracticesData')[0].data;
     const consultantsId = await myAccessConsultants(access, req);
 
-    let practiceListAll = await Consultant.find({_id: {$in: consultantsId}}).select('practice');
-    practiceListAll = practiceListAll.map( x => x.practice);
+    let practiceListAll = await Consultant.find({ _id: { $in: consultantsId } }).select('practice');
+    practiceListAll = practiceListAll.map(x => x.practice);
     const practiceUniqueList = [...new Set(practiceListAll)];
-    
+
     if (practiceUniqueList) {
         res.status(200).json(practiceUniqueList);
     } else {
-        res.status(400).json({message: `Practice List not found` });
+        res.status(400).json({ message: `Practice List not found` });
     }
 });
 
@@ -276,28 +276,28 @@ const getAllLeaders = asyncHandler(async (req, res) => {
     const access = req.user.profil.api.filter(x => x.name === 'getLeaders')[0].data;
     const consultantsId = await myAccessConsultants(access, req);
 
-    const searchName = req.query.searchLeader ? 
-        { name: {$regex: req.query.searchLeader, $options: 'i'} }
+    const searchName = req.query.searchLeader ?
+        { name: { $regex: req.query.searchLeader, $options: 'i' } }
         : {};
 
-    const leadersList = await Consultant.find({_id: {$in: consultantsId}, ...searchName})
+    const leadersList = await Consultant.find({ _id: { $in: consultantsId }, ...searchName })
         .select('_id name matricule practice')
-        //.limit(5);
-    
+    //.limit(5);
+
     if (leadersList) {
         res.status(200).json(leadersList);
     } else {
-        res.status(400).json({message: `No consultant found` });
+        res.status(400).json({ message: `No consultant found` });
     }
 });
 
 // @desc    Update user
 // @route   PUT /api/consultants/comment
 // @access  Private, authorizeActionOnConsultant
-const updateConsultantComment = asyncHandler(async(req,res) =>{
-    
-    const consultant = await Consultant.findById(req.params.consultantId); 
-    
+const updateConsultantComment = asyncHandler(async (req, res) => {
+
+    const consultant = await Consultant.findById(req.params.consultantId);
+
     if (consultant) {
 
         consultant.comment = req.body.commentText;
@@ -316,13 +316,13 @@ const updateConsultantComment = asyncHandler(async(req,res) =>{
 // @desc    Get all registered skills
 // @route   GET /api/consultants/skills
 // @access  Private
-const getAllSkills = asyncHandler(async(req,res) =>{
-    
-    const skills = await Skill.find().sort({category: 1});
+const getAllSkills = asyncHandler(async (req, res) => {
+
+    const skills = await Skill.find().sort({ category: 1 });
 
     if (skills) {
 
-        res.status(200).json({skills});
+        res.status(200).json({ skills });
     } else {
         res.status(404).json({ message: 'Skills not found' });
         throw new Error('Skills not found');
@@ -332,20 +332,20 @@ const getAllSkills = asyncHandler(async(req,res) =>{
 // @desc    Add a skill for a consultant
 // @route   PUT /api/consultants/:consultantId/skill
 // @access  Private
-const addConsultantSkill = asyncHandler(async(req,res) => {
-    
+const addConsultantSkill = asyncHandler(async (req, res) => {
+
     const consultantId = req.params.consultantId;
     const skill = req.body;
 
     const consultant = await Consultant.findById(consultantId);
-    const existingSkillId = consultant.quality.map( x => x.skill);
+    const existingSkillId = consultant.quality.map(x => x.skill);
 
     if (!existingSkillId.includes(skill.skill)) {
         consultant.quality.push(skill);
         const updatedConsultant = await consultant.save();
         res.status(200).json(updatedConsultant);
     } else {
-        res.status(400).json({message: `Can not add skill already registered for the user`});
+        res.status(400).json({ message: `Can not add skill already registered for the user` });
     }
 
 });
@@ -353,13 +353,13 @@ const addConsultantSkill = asyncHandler(async(req,res) => {
 // @desc    Delete a skill for a consultant
 // @route   PUT /api/consultants/:consultantId/skill
 // @access  Private
-const deleteConsultantSkill = asyncHandler(async(req,res) => {
-    
+const deleteConsultantSkill = asyncHandler(async (req, res) => {
+
     const consultantId = req.params.consultantId;
     const skillId = req.params.skillId;
 
     const consultant = await Consultant.findById(consultantId);
-    const updatedSkills = consultant.quality.filter( x => x.skill.toString() !== skillId.toString());
+    const updatedSkills = consultant.quality.filter(x => x.skill.toString() !== skillId.toString());
     consultant.quality = updatedSkills;
 
     const updatedConsultant = await consultant.save();
@@ -370,16 +370,16 @@ const deleteConsultantSkill = asyncHandler(async(req,res) => {
 // @desc    Update a level skill for a consultant
 // @route   PUT /api/consultants/:consultantId/skill
 // @access  Private
-const updateLevelConsultantSkill = asyncHandler(async(req,res) => {
-    
+const updateLevelConsultantSkill = asyncHandler(async (req, res) => {
+
     const consultantId = req.params.consultantId;
     const skillId = req.params.skillId;
     const level = req.body.level;
 
     const consultant = await Consultant.findById(consultantId);
-    const updatedQuality = consultant.quality.map( x => {
+    const updatedQuality = consultant.quality.map(x => {
         if (x.skill.toString() === skillId.toString()) {
-            return {skill: skillId, level: level}
+            return { skill: skillId, level: level }
         } else {
             return x
         }
@@ -394,8 +394,8 @@ const updateLevelConsultantSkill = asyncHandler(async(req,res) => {
 // @desc    Get a CDM for a consultant
 // @route   GET /api/consultants/:consultantId/cdm
 // @access  Private
-const getCDM = asyncHandler(async(req,res) => {
-    
+const getCDM = asyncHandler(async (req, res) => {
+
     const consultantId = req.params.consultantId;
     const consultant = await Consultant.findById(consultantId).select('cdmId');
 
@@ -404,10 +404,10 @@ const getCDM = asyncHandler(async(req,res) => {
         if (cdm) {
             res.status(200).json(cdm)
         } else {
-            res.status(400).json({message: `consultant not found: ${consultant.cdmId}`})    
+            res.status(400).json({ message: `consultant not found: ${consultant.cdmId}` })
         }
     } else {
-        res.status(400).json({message: `consultant not found: ${consultantId}`})
+        res.status(400).json({ message: `consultant not found: ${consultantId}` })
     }
 });
 
@@ -421,43 +421,43 @@ const getConsultantStaffings = asyncHandler(async (req, res) => {
 
     // take this constant from frontend/constants/dealConstants.js
     const DEAL_STATUS = [
-        {name: 'Lead', priority: 0, display: 'onTrack'},
-        {name: 'Proposal to send', priority: 5, display: 'onTrack'},
-        {name: 'Proposal sent', priority: 5, display: 'onTrack'},
-        {name: 'Won', priority: 10, display: 'win'},
-        {name: 'Abandoned', priority: 0, display: 'lost'},
-        {name: 'Lost', priority: 0, display: 'lots'},
+        { name: 'Lead', priority: 0, display: 'onTrack' },
+        { name: 'Proposal to send', priority: 5, display: 'onTrack' },
+        { name: 'Proposal sent', priority: 5, display: 'onTrack' },
+        { name: 'Won', priority: 10, display: 'win' },
+        { name: 'Abandoned', priority: 0, display: 'lost' },
+        { name: 'Lost', priority: 0, display: 'lots' },
     ];
 
     const consultantId = req.query.consultantId;
-    
+
     if (consultantsId.map(x => x._id.toString()).includes(consultantId)) {
-        const staffings = await Deal.find({'staffingDecision.staff.idConsultant': consultantId, status: {$in: DEAL_STATUS.filter(x=>x.display === 'onTrack').map(x => x.name)}});
-        
-        const result = staffings.map( staff => ({
-            _id:staff._id,
+        const staffings = await Deal.find({ 'staffingDecision.staff.idConsultant': consultantId, status: { $in: DEAL_STATUS.filter(x => x.display === 'onTrack').map(x => x.name) } });
+
+        const result = staffings.map(staff => ({
+            _id: staff._id,
             company: staff.company,
             title: staff.title,
             probability: staff.probability,
             startDate: staff.startDate,
             mainPractice: staff.mainPractice,
             requestStatus: staff.staffingRequest.requestStatus,
-            status:staff.status,
+            status: staff.status,
             instructions: staff.staffingRequest.instructions
         }));
-    
+
         if (staffings) {
             res.status(200).json(result);
         } else {
             res.status(400).json('No others staffings founded');
         }
     } else {
-        res.status(401).json({message: 'you are not allowed to access these data'});
-    }    
+        res.status(401).json({ message: 'you are not allowed to access these data' });
+    }
 });
 
 const updateAConsultant = async (id, consultant) => {
-    const consultantUpdated = await Consultant.findOneAndUpdate({_id: id}, consultant, {new:true});
+    const consultantUpdated = await Consultant.findOneAndUpdate({ _id: id }, consultant, { new: true });
     return consultantUpdated;
 }
 
@@ -482,42 +482,42 @@ const createAConsultant = async (consultant) => {
 const transformGrade = (gradeIn) => {
     let gradeOut = '';
 
-    if (gradeIn.match(/Analyst|Analyst Consultant/g)){
+    if (gradeIn.match(/Analyst|Analyst Consultant/g)) {
         gradeOut = 'Analyst'
     };
-    if (gradeIn.match(/Consultant/g)){
+    if (gradeIn.match(/Consultant/g)) {
         gradeOut = 'Consultant'
     };
-    if (gradeIn.match(/Manager|Expert/g)){
+    if (gradeIn.match(/Manager|Expert/g)) {
         gradeOut = 'Manager'
     };
-    if (gradeIn.match(/Senior consultant|Senior Consultant/g)){
+    if (gradeIn.match(/Senior consultant|Senior Consultant/g)) {
         gradeOut = 'Senior consultant'
     };
-    if (gradeIn.match(/Intern|Stagiaire|Alternant Conseil/g)){
+    if (gradeIn.match(/Intern|Stagiaire|Alternant Conseil/g)) {
         gradeOut = 'Intern'
     };
-    if (gradeIn.match(/Commercial|Account Developer|Account Manager|Business Analyst/g)){
+    if (gradeIn.match(/Commercial|Account Developer|Account Manager|Business Analyst/g)) {
         gradeOut = 'Commercial'
     };
-    if (gradeIn.match(/Senior manager|Senior Manager/g)){
+    if (gradeIn.match(/Senior manager|Senior Manager/g)) {
         gradeOut = 'Senior manager'
     };
-    if (gradeIn.match(/Director|Directeur de Projet|Directeur Associé/g)){
+    if (gradeIn.match(/Director|Directeur de Projet|Directeur Associé/g)) {
         gradeOut = 'Director'
     };
-    if (gradeIn.match(/Research|Research analyst|Senior Research Analyst/g)){
+    if (gradeIn.match(/Research|Research analyst|Senior Research Analyst/g)) {
         gradeOut = 'Research'
     };
-    if (gradeIn.match(/Partner/g)){
+    if (gradeIn.match(/Partner/g)) {
         gradeOut = 'Partner'
     };
 
-    if(gradeOut === '') {
+    if (gradeOut === '') {
         console.log('Grade not recognized: ' + gradeIn);
         gradeOut = 'Unknown'
     }
-    
+
     return gradeOut;
 }
 
@@ -530,13 +530,13 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
 
     if (access === 'yes') {
         const consultantsData = req.body;
-        if (consultantsData[0]){
+        if (consultantsData[0]) {
             const consultants = consultantsData[0];
-            for (let incr = 0 ; incr < consultants.length ; incr++) {
+            for (let incr = 0; incr < consultants.length; incr++) {
 
-                const searchConsultant = await Consultant.findOne({matricule: consultants[incr].MATRICULE});
-                const cdmMatricule = consultants[incr].CDM_MATRICULE ? consultants[incr].CDM_MATRICULE.toString().padStart(9,0) : '';
-                const cdmId = await Consultant.findOne({matricule: cdmMatricule}).select('_id');
+                const searchConsultant = await Consultant.findOne({ matricule: consultants[incr].MATRICULE });
+                const cdmMatricule = consultants[incr].CDM_MATRICULE ? consultants[incr].CDM_MATRICULE.toString().padStart(9, 0) : '';
+                const cdmId = await Consultant.findOne({ matricule: cdmMatricule }).select('_id');
 
                 const consultantToUpdateOrCreate = {
                     //_id: searchConsultant._id,
@@ -559,7 +559,7 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
                     } */
                 }
                 //console.log(consultantToUpdateOrCreate.isCDM);
-                
+
                 let result = '';
                 if (searchConsultant) {
                     result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
@@ -584,7 +584,7 @@ const createOrUpdateConsultants = asyncHandler(async (req, res) => {
 // @desc    Update user from Wavekeeper
 // @route   PUT /api/consultants/admin/wk
 // @access  Private
-const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
+const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Transfer-Encoding', 'chunked');
@@ -592,138 +592,168 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
 
     const anonymise = true;
 
-    console.log(req.body);
+    let numberOfConsultant = 0;
+    let numberOfUpdate = 0;
+    let numberOfCreate = 0;
+    let numberOfErrors = 0;
+
+
+    //console.log(req.body);
     const filePath = req.body.path;
-    
+
     const schema = {
-        'Collaborateur/Nom': { prop: 'name', type: String},
-        'Collaborateur/Matricule cabinet': { prop: 'matricule', type: String},
-        'Collaborateur/Grade/Grade': { prop: 'grade', type: String},
-        'Collaborateur/Date de début de vie active valorisée': { prop: 'valued', type: Date},
-        "Collaborateur/Date d'embauche": { prop: 'start', type: Date},
-        'Collaborateur/Last Date End': { prop: 'leave', type: Date},
-        'Taux de présence': { prop: 'partialTime', type: Number},
-        'Présence': { prop: 'presence', type: Number},
-        'Type de Contrat/Type de Contrat': { prop: 'contract', type: String},
-        'Collaborateur/Est un CD Manager': { prop: 'isCdm', type: (value) => {
-            if (value === 1 || value === true) {
-                return true;
-            } else {
-                return false;
+        'Collaborateur/Nom': { prop: 'name', type: String },
+        'Collaborateur/Matricule cabinet': { prop: 'matricule', type: String },
+        'Collaborateur/Grade/Grade': { prop: 'grade', type: String },
+        'Collaborateur/Date de début de vie active valorisée': { prop: 'valued', type: Date },
+        "Collaborateur/Date d'embauche": { prop: 'start', type: Date },
+        'Collaborateur/Last Date End': { prop: 'leave', type: Date },
+        'Taux de présence': { prop: 'partialTime', type: Number },
+        'Présence': { prop: 'presence', type: Number },
+        'Type de Contrat/Type de Contrat': { prop: 'contract', type: String },
+        'Collaborateur/Est un CD Manager': {
+            prop: 'isCdm', type: (value) => {
+                if (value === 1 || value === true) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
-        }},
-        'Collaborateur/CD Manager/Matricule cabinet': { prop: 'cdmMatricule', type: String},
-        'Collaborateur/CD Manager/Nom': { prop: 'cdmName', type: String},
-        'Practice/Nom affiché': {prop: 'practice', type: String}
+        },
+        'Collaborateur/CD Manager/Matricule cabinet': { prop: 'cdmMatricule', type: String },
+        'Collaborateur/CD Manager/Nom': { prop: 'cdmName', type: String },
+        'Practice/Nom affiché': { prop: 'practice', type: String }
     }
 
     const __dir = path.resolve();
     const fileName = __dir + filePath // '/backend/data/hr.presence.xlsx';
     //console.log(fileName);
 
-    const {rows, error} = await readXlsxFile(fileName, {schema});
+    const { rows, error } = await readXlsxFile(fileName, { schema });
 
     const message = []
 
-    for (let line = 0 ; line < rows.length ; line++) {
+    for (let line = 0; line < rows.length; line++) {
+        numberOfConsultant += 1;
+
         const consultant = rows[line];
+
+        res.write(`Start with: ${consultant.name}\n`);
 
         const searchConsultant = await Consultant.findOne({ matricule: consultant.matricule });
         const cdmMatricule = consultant.cdmMatricule ? consultant.cdmMatricule.toString().padStart(9, 0) : '';
-        const cdmId = await Consultant.findOne({matricule: cdmMatricule}).select('_id');
+        const cdmId = await Consultant.findOne({ matricule: cdmMatricule }).select('_id');
 
-        if (consultant.presence > 0) {
-            
-            const consultantToUpdateOrCreate = {
-                name: anonymise ? `Prénom NOM ${line+1}` : consultant.name,
-                email: `prenom-nom-${line+1}@jprmail.com`,
-                grade: transformGrade(consultant.grade),
-                practice: consultant.practice.split('-')[1],
-                matricule: consultant.matricule,
-                arrival: consultant.start ? consultant.start : null,
-                valued: consultant.valued ? consultant.valued : consultant.start ? consultant.start : null,
-                leaving: consultant.leave && (consultant.leave > consultant.arrival) ? consultant.leave : null,
-                isCDM: consultant.isCdm,
-                cdmId: cdmId ? cdmId._id : null,
-            }
-    
-            let result = '';
-            let info = ''
-            if (searchConsultant) {
-                result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
-                if (result) {
-                    info = `Success - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
-                    if (consultant.partialTime < 1 && result.isPartialTime.value === false) {
-                        info += `\nWarning - you have to modify partial time - ${consultant.name} (${consultant.matricule}) - ${result._id}`
-                    }
-                    message.push({
-                        _id: result._id,
-                        practice: consultant.practice.split('-')[1],
-                        matricule: consultant.matricule,
-                        name: consultant.name,
-                        result: 'updated',
-                        message: info
-                    });
-                    resetAllPxx(result);
-                } else {
-                    info = `Error - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`
-                    message.push({
-                        _id: 'unknown',
-                        practice: consultant.practice.split('-')[1],
-                        matricule: consultant.matricule,
-                        name: consultant.name,
-                        result: 'error',
-                        message: info,
-                        data: consultantToUpdateOrCreate
-                    })
-                }
-            } else {
-                result = await createAConsultant(consultantToUpdateOrCreate);
-                if (result) {
-                    info = `Success - create - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
-                    if (consultant.partialTime < 1) {
-                        info += `\nWarning - add partial time - ${consultant.name} (${consultant.matricule}) - ${result._id}`
-                        //console.log(info);
-                        //res.write(info);
-                    }
-                    message.push({
-                        _id: result._id,
-                        practice: consultant.practice.split('-')[1],
-                        matricule: consultant.matricule,
-                        name: consultant.name,
-                        result: 'created',
-                        message: info
-                    });
-                    resetAllPxx(result);
-                } else {
-                    info = `Error - create - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
-                    message.push({
-                        _id: 'unknown',
-                        practice: consultant.practice.split('-')[1],
-                        matricule: consultant.matricule,
-                        name: consultant.name,
-                        result: 'error',
-                        message: info,
-                        data: consultantToUpdateOrCreate
-                    });
-                }
-            }
-            console.log(info);
-            res.write(info + '\n');
+
+        //if (consultant.presence > 0) {
+        if (consultant.presence === 0 && !consultant.leave) {
+            const msg = `Warning - it seems consultant ${consultant.name} is in count in the workforce but is not in the charges this month. Please verify the situation (sick-leave ?).\n`
+            console.log(msg);
+            res.write(msg);
+
         }
+
+        const consultantToUpdateOrCreate = {
+            name: anonymise ? `Prénom NOM ${line + 1}` : consultant.name,
+            email: `prenom-nom-${line + 1}@jprmail.com`,
+            grade: transformGrade(consultant.grade),
+            practice: consultant.practice.split('-')[1],
+            matricule: consultant.matricule,
+            arrival: consultant.start ? consultant.start : null,
+            valued: consultant.valued ? consultant.valued : consultant.start ? consultant.start : null,
+            leaving: consultant.leave && (consultant.leave > consultant.arrival) ? consultant.leave : null,
+            isCDM: consultant.isCdm,
+            cdmId: cdmId ? cdmId._id : null,
+        }
+
+        let result = '';
+        let info = ''
+        if (searchConsultant) {
+
+            result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
+            if (result) {
+                info = `Info - update - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`;
+                if (consultant.partialTime < 1 && result.isPartialTime.value === false) {
+                    info += `\t>>Warning - you have to modify partial time - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`
+                }
+                message.push({
+                    _id: result._id,
+                    practice: consultant.practice.split('-')[1],
+                    matricule: consultant.matricule,
+                    name: consultant.name,
+                    result: 'updated',
+                    message: info
+                });
+                resetAllPxx(result);
+                numberOfUpdate += 1;
+                res.write(info);
+            } else {
+                info = `Error - update - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`
+                message.push({
+                    _id: 'unknown',
+                    practice: consultant.practice.split('-')[1],
+                    matricule: consultant.matricule,
+                    name: consultant.name,
+                    result: 'error',
+                    message: info,
+                    data: consultantToUpdateOrCreate
+                });
+
+                numberOfErrors += 1;
+                res.write(info);
+            }
+        } else {
+            result = await createAConsultant(consultantToUpdateOrCreate);
+            if (result) {
+                info = `Info - create - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`;
+                if (consultant.partialTime < 1) {
+                    info += `\t>>Warning - add partial time - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`
+                    //console.log(info);
+                    //res.write(info);
+                }
+                message.push({
+                    _id: result._id,
+                    practice: consultant.practice.split('-')[1],
+                    matricule: consultant.matricule,
+                    name: consultant.name,
+                    result: 'created',
+                    message: info
+                });
+                resetAllPxx(result);
+
+                numberOfCreate += 1;
+                res.write(info)
+            } else {
+                info = `Error - create - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`;
+                message.push({
+                    _id: 'unknown',
+                    practice: consultant.practice.split('-')[1],
+                    matricule: consultant.matricule,
+                    name: consultant.name,
+                    result: 'error',
+                    message: info,
+                    data: consultantToUpdateOrCreate
+                });
+
+                numberOfErrors += 1;
+                res.write(info);
+            }
+        }
+        res.write(`End with: ${consultant.name}\n\n`);
+        //}
     }
 
     const practices = [... new Set(message.map(x => x.practice))];
     const updatedMatricules = [... new Set(message.map(x => x.matricule))];
-    
-    
+
+
     const startMonth = new Date(Date.now());
     startMonth.setUTCDate(1);
-    
+
     const endMonth = new Date(Date.now());
     endMonth.setUTCMonth(endMonth.getUTCMonth() + 1);
     endMonth.setUTCDate(0);
-    
+
     const allConsultantsActivesInDatabase = await Consultant.find({
         $or: [
             { practice: { $in: practices }, arrival: { $lte: startMonth }, leaving: { $gte: endMonth } },
@@ -731,15 +761,11 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
         ]
     });
 
-    //console.log(practices);
-    //console.log(allConsultantsActivesInDatabase)
-    //console.log(updatedMatricules);
-    //console.log(startMonth, endMonth);
+    const consultantNotUpdated = allConsultantsActivesInDatabase.filter(x => !updatedMatricules.includes(x.matricule));
+    const numberOfNotFound = consultantNotUpdated.length;
 
-    const consultantNotUpdated = allConsultantsActivesInDatabase.filter(x => !updatedMatricules.includes(x.matricule))
-
-    for (let incr = 0; incr<consultantNotUpdated.length; incr++) {
-        info = `Warning - not found in import file - ${consultantNotUpdated[incr].name} (${consultantNotUpdated[incr].matricule}) - ${consultantNotUpdated[incr]._id}`
+    for (let incr = 0; incr < consultantNotUpdated.length; incr++) {
+        info = `Warning - not found in import file - ${consultantNotUpdated[incr].name} (${consultantNotUpdated[incr].matricule}) - ${consultantNotUpdated[incr]._id}\n`
         message.push({
             _id: consultantNotUpdated[incr]._id,
             practice: consultantNotUpdated[incr].practice,
@@ -750,7 +776,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
             data: consultantNotUpdated[incr]
         });
         console.log(info);
-        res.write(info + '\n');
+        res.write(info);
     }
 
     const messageToSend = {
@@ -762,21 +788,23 @@ const updateConsultantFromWavekeeper = asyncHandler(async(req,res) =>{
     }
 
     //res.status(200).json(messageToSend);
+    res.write(`------ END UPDATE: ${numberOfConsultant} consultants processed with: ${numberOfCreate} created, ${numberOfUpdate} updated and ${numberOfErrors} in error\n`);
+    res.write(`------ CONTROL: ${numberOfNotFound} consultants found in Pxx but not in Wavekeeper export. Please verify.`);
     res.end();
-    
+
 });
 
 // @desc    Upload file from wk
 // @route   PUT /api/consultants/admin/upload
 // @access  Private
-const uploadConsultantFileWk = asyncHandler(async(req,res) =>{
+const uploadConsultantFileWk = asyncHandler(async (req, res) => {
 
-    res.status(200).json({message: 'file uploaded'});
+    res.status(200).json({ message: 'file uploaded' });
 });
 
 
-module.exports = { 
-    getMyConsultants, 
+module.exports = {
+    getMyConsultants,
     getConsultant,
     getConsultantSkills,
     updateConsultant,

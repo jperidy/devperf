@@ -193,14 +193,20 @@ const PxxDetailsScreen = ({ history, match }) => {
                 onHide={() => setShowImportPxx(false)}
             />
 
-            <Button variant='primary' onClick={() => setShowImportPxx(true)}>Import Pxx</Button>
-            {/* <DisplayChlidren access='updateConsultantsFromWK'>
-            </DisplayChlidren> */}
+            <Row>
+                <Col className='text-left'>
+                    <Button className='mb-3' onClick={() => history.go(-1)}>Go Back</Button>
+                </Col>
+                <Col className='text-right'>
+                    <DisplayChildren access='updatePxxFromPxx'>
+                        <Button variant='primary' onClick={() => setShowImportPxx(true)}>Update from Pxx folder</Button>
+                    </DisplayChildren>
+                </Col>
+
+            </Row>
 
 
-            <Button className='mb-3' onClick={() => history.go(-1)}>
-                Go Back
-            </Button>
+
 
             <Row className='align-items-center pt-3'>
                 <Col md={5}>

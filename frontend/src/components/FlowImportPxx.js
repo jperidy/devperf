@@ -36,7 +36,7 @@ const FlowImportPxx = (props) => {
             }
         }
         //data.append('file', e.target.files[0]);
-        console.log(files)
+        //console.log(files)
         //data.append('file[]', files);
 
         //console.log(data);
@@ -62,7 +62,7 @@ const FlowImportPxx = (props) => {
                 <Row className='align-items-center'>
                     <Col className='text-center'>
                         <Modal.Title id="contained-modal-title-vcenter">
-                            Import consultants data from Wavekeeper
+                            Import Pxx from Pxx directory
                         </Modal.Title>
                     </Col>
                 </Row>
@@ -70,7 +70,7 @@ const FlowImportPxx = (props) => {
             
             <Modal.Body>
                 <Row className='mb-3'>
-                    <Col><Button className={step >= 0 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(0)} variant='ligth' disabled={step <0}><strong>1-Guideline</strong></Button></Col>
+                    <Col><Button className={step >= 0 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(0)} variant='ligth' disabled={step <0}><strong>1-Guidelines</strong></Button></Col>
                     <Col><Button className={step >= 1 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(1)} variant='ligth' disabled={step <1}><strong>2-Upload in App</strong></Button></Col>
                     <Col><Button className={step >= 2 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(2)} variant='ligth' disabled={step <2}><strong>3-Start update</strong></Button></Col>
                     <Col><Button className={step >= 3 ? 'text-primary' : 'text-secondary'} onClick={() => setStep(3)} variant='ligth' disabled={step <3}><strong>4-Result</strong></Button></Col>
@@ -82,16 +82,14 @@ const FlowImportPxx = (props) => {
                     {step === 0 && (
                         <Row>
                             <Col>
-                                <h4>Process to export from Wavekeeper <a href="https://wavekeeper.wavestone-app.com/web#action=534&model=hr.presence&view_type=list&cids=1&menu_id=92" target="_blank" rel="noopener noreferrer">(link)</a></h4>
-                                    <p>Please connect to Wavekeeper</p>
+                                <h4>Process to upload pxx and update availabilities</h4>
+                                    <p>In the next steps you will be invit to</p>
                                     <ul>
-                                            <li>Step 1: Go to collaborators</li>
-                                            <li>Step 2: Apply filter to keep only current consultants</li>
-                                            <li>Step 3: Select all lines and go to actions / export</li>
-                                            <li>Step 4: Select filter 'JPR_export_2'</li>
-                                            <li>Step 5: Save the Excel file on you desktop</li>
+                                            <li>Select your Pxx storage directory</li>
+                                            <li>Wait untill all Pxx files are uploaded</li>
+                                            <li>Start the backend calculation to update availabilities</li>
+                                            <li>Check the results and if asked proceed to corrections</li>
                                         </ul>  
-                                <Image src="/images/WK_export_consultants_application_filtres.jpg" rounded fluid />
                             </Col>
                         </Row>
                     )}
@@ -117,11 +115,11 @@ const FlowImportPxx = (props) => {
                         path ? (
                             <Row>
                                 <Col className='text-center'>
-                                    <h4>Do you want to update your consultats ?</h4>
+                                    <h4>Do you want to update availabilities ?</h4>
                                     <Button variant='primary' className='m-3' onClick={startImportData}>
                                         {loadingUpdate ? <Loader /> : 'Update'}
                                     </Button>
-                                    <p>Process could take a few time</p>
+                                    <p>Process could take a few minute</p>
                                 </Col>
                             </Row>
                         ) : (

@@ -28,6 +28,7 @@ function getAccessData() {
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'yes', data: 'all'},
                 {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'yes', data: 'all'},
                 {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'yes', data: 'all'},
+                {category: 'PXX Details screen', id: 'updatePxxFromPxx', label: 'Update Pxx from Pxx', mode:'yes', data: 'all'},
 
             ],
             api:[
@@ -81,6 +82,7 @@ function getAccessData() {
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'yes', data: 'department'},
                 {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'yes', data: 'department'},
                 {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'yes', data: 'department'},
+                {category: 'PXX Details screen', id: 'updatePxxFromPxx', label: 'Update Pxx from Pxx', mode:'yes', data: 'department'},
             ],
             api:[
                 { name: 'getUsers', data: 'department' },
@@ -133,6 +135,7 @@ function getAccessData() {
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'no', data: 'team'},
                 {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'no', data: 'team'},
                 {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'no', data: 'team'},
+                {category: 'PXX Details screen', id: 'updatePxxFromPxx', label: 'Update Pxx from Pxx', mode:'no', data: 'team'},
             ],
             api:[
                 { name: 'getUsers', data: 'team' },
@@ -185,6 +188,7 @@ function getAccessData() {
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'no', data: 'my'},
                 {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'no', data: 'my'},
                 {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'no', data: 'my'},
+                {category: 'PXX Details screen', id: 'updatePxxFromPxx', label: 'Update Pxx from Pxx', mode:'no', data: 'my'},
             ],
             api:[
                 { name: 'getUsers', data: 'my' },
@@ -237,6 +241,7 @@ function getAccessData() {
                 {category: 'Pxx Details Screen', id: 'uploadPxx', label: 'Upload Pxx from Excel file', mode:'no', data: 'my'},
                 {category: 'Manage Deals Screen', id: 'uploadDeals', label: 'Upload Deals from Excel file', mode:'no', data: 'my'},
                 {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'no', data: 'my'},
+                {category: 'PXX Details screen', id: 'updatePxxFromPxx', label: 'Update Pxx from Pxx', mode:'no', data: 'my'},
             ],
             api: [
                 { name: 'getUsers', data: 'my' },

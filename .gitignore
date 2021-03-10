@@ -15,10 +15,8 @@ node_modules/
 
 /backend/data
 /backend/data/pxx
-uploads/consultants/*.xl*
-.xls
-.xlsx
-.xlsb
+uploads/consultants/*
+uploads/pxx/*
 
 # misc
 .DS_Store
