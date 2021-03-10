@@ -797,7 +797,7 @@ const updatePxxComment = async (matricule, pxxComments) => {
     } else {
         return {
             result: false,
-            message: `Error - comment not updated for consultant with matricule: ${matricule}` 
+            message: `Error - comment not updated for consultant with matricule: ${matricule}\n` 
         }
     }
 }
@@ -818,17 +818,16 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
     let numberUpdated = 0;
     let numberErrors = 0;
     const matriculeScanned = []
+    const messagesSynthese = [];
 
 
     const startName = req.body.path;
     console.log(startName);
-    //const directory = path.resolve() + '/backend/data/pxx';
     const directory = path.resolve() + '/uploads/pxx';
 
     try {
 
         const files = fs.readdirSync(directory);
-        //console.log(files);
         numberOfPxx = files.length;
 
 
@@ -883,9 +882,6 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                         let result = await updatePxxLine(firstMonth);
                         console.log(result.message);
                         resultConsultant.push(result);
-                        /* if (result !== true) {
-                            res.write(result + '\n');
-                        } */
 
                         const secondMonth = {
                             month: monthToUpdate[1],
@@ -899,9 +895,6 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                         result = await updatePxxLine(secondMonth);
                         console.log(result.message);
                         resultConsultant.push(result);
-                        /* if (result !== true) {
-                            res.write(result + '\n');
-                        } */
 
                         const thirdMonth = {
                             month: monthToUpdate[2],
@@ -915,9 +908,6 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                         result = await updatePxxLine(thirdMonth);
                         console.log(result.message);
                         resultConsultant.push(result);
-                        /* if (result !== true) {
-                            res.write(result + '\n');
-                        } */
 
                         const fourthMonth = {
                             month: monthToUpdate[3],
@@ -931,9 +921,6 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                         result = await updatePxxLine(fourthMonth);
                         console.log(result.message);
                         resultConsultant.push(result);
-                        /* if (result !== true) {
-                            res.write(result + '\n');
-                        } */
 
                         const fifthMonth = {
                             month: monthToUpdate[4],
@@ -947,9 +934,6 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                         result = await updatePxxLine(fifthMonth);
                         console.log(result.message);
                         resultConsultant.push(result);
-                        /* if (result !== true) {
-                            res.write(result + '\n');
-                        } */
 
                         // Update comments
                         const comments = {
@@ -965,7 +949,9 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                             numberErrors += 1;
                             const lineWithErrors = resultConsultant.filter(x => x.result === false);
                             for (let errorLine = 0; errorLine < lineWithErrors.length ; errorLine++) {
-                                res.write(lineWithErrors[errorLine].message);
+                                const msgErrors = lineWithErrors[errorLine].message;
+                                res.write(msgErrors);
+                                messagesSynthese.push(msgErrors)
                             }
                         } else {
                             numberUpdated += 1;
@@ -986,10 +972,35 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
         }
         
         // add fucntion to verify if missing Pxx //TO DO//
-        
-        // Collect all active consultants for analysed practice
-        // Verify if all matricules have been scanned
 
+        const userPractice = req.user.consultantProfil.practice;
+        const startMonth = new Date(Date.now());
+        startMonth.setUTCDate(1);
+
+        const endMonth = new Date(Date.now());
+        endMonth.setUTCMonth(endMonth.getUTCMonth() + 1);
+        endMonth.setUTCDate(0);
+
+        const allConsultantsActivesInDatabase = await Consultant.find({
+            $or: [
+                { practice: userPractice, arrival: { $lte: startMonth }, leaving: { $gte: endMonth } },
+                { practice: userPractice, arrival: { $lte: startMonth }, leaving: null }
+            ]
+        }).select('matricule name');
+
+        for (let incrMatricule = 0; incrMatricule < allConsultantsActivesInDatabase.length ; incrMatricule++) {
+            let currentMatricule = allConsultantsActivesInDatabase[incrMatricule].matricule;
+            let currentName = allConsultantsActivesInDatabase[incrMatricule].name;
+
+            if (!matriculeScanned.includes(currentMatricule)) {
+                const warningMsg = `Warning - it seems ${currentName} (${currentMatricule}) is not present in Pxx files
+                \tsolution 1 : maybe this consultant left > please enter leave date in consultant profile
+                \tsolution 2 : maybe it is not still filled in CDM Pxx > please add the line\n`
+
+                res.write(warningMsg);
+                messagesSynthese.push(warningMsg);
+            }
+        }
 
         // suppression des données
         fs.readdir(directory, (err, files) => {
@@ -1012,9 +1023,10 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
         console.log('Unable to scan directory: ' + error);
     }
 
-    res.write(`------ END UPDATE: ${numberOfConsultants} consultants updated from ${numberOfPxx} Pxx with ${numberErrors} errors and ${numberUpdated} success`);
+    res.write(`------ SYNTHESE\n\n`);
+    res.write(messagesSynthese.join(''));
+    res.write(`\n------ END UPDATE: ${numberOfConsultants} consultants updated from ${numberOfPxx} Pxx with ${numberErrors} errors and ${numberUpdated} success`);
     res.end();
-    //res.status(200).json('ok');
 
 });
 

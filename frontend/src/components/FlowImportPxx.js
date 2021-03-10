@@ -29,18 +29,11 @@ const FlowImportPxx = (props) => {
         for (let incr = 0; incr < e.target.files.length; incr++) {
             const file = e.target.files[incr];
             if(file.name.match(/^p[A-Za-z]+-[0-9]{2}.xlsb|^p[A-Za-z]+-arrivees.xlsb/)) {
-                //console.log(file.name);
                 const data = new FormData();
                 data.append('file', file);
                 files.push(data);
             }
         }
-        //data.append('file', e.target.files[0]);
-        //console.log(files)
-        //data.append('file[]', files);
-
-        //console.log(data);
-        //dispatch(pxxUploadFiles(data));
         dispatch(pxxUploadFiles(files));
     }
 

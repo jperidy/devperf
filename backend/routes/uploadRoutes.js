@@ -2,6 +2,7 @@ const path = require('path');
 const express = require('express');
 const multer = require('multer');
 const { protect } = require('../middleware/authMiddleware');
+const { checkAndCreatePxxFolder, checkAndCreateConsultantsFolder } = require('../controllers/uploadControllers');
 
 
 const router = express.Router();
@@ -35,7 +36,7 @@ const uploadExcelConsultant = multer({
     }
 });
 
-router.post('/consultant', protect, uploadExcelConsultant.single('file'), (req, res) => {
+router.post('/consultant', protect, checkAndCreateConsultantsFolder, uploadExcelConsultant.single('file'), (req, res) => {
     res.status(200).json({path:`/${req.file.path}`});
 });
 
@@ -57,7 +58,7 @@ const uploadExcelPxx = multer({
     }
 });
 
-router.post('/pxx', protect, uploadExcelPxx.single('file'), (req, res) => {
+router.post('/pxx', protect, checkAndCreatePxxFolder, uploadExcelPxx.single('file'), (req, res) => {
     //console.log('file to upload', req.files, req.file);
     const currentDate = new Date(Date.now());
     const userId = req.user.consultantProfil._id;

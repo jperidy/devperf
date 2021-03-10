@@ -3,8 +3,7 @@ const Skill = require('../models/skillModels');
 const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
-const { myAccessConsultants, myAuthorizedActionsConsultant } = require('../utils/usersFunctions');
-//const { update } = require('../models/consultantModel');
+const { myAccessConsultants } = require('../utils/usersFunctions');
 
 const readXlsxFile = require('read-excel-file/node');
 const fs = require('fs');
@@ -627,7 +626,6 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
 
     const __dir = path.resolve();
     const fileName = __dir + filePath // '/backend/data/hr.presence.xlsx';
-    //console.log(fileName);
 
     const { rows, error } = await readXlsxFile(fileName, { schema });
 
@@ -779,15 +777,27 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
         res.write(info);
     }
 
-    const messageToSend = {
+    /* const messageToSend = {
         created: message.filter(x => x.result === 'created').length,
         updated: message.filter(x => x.result === 'updated').length,
         error: message.filter(x => x.result === 'error'),
         warning: message.filter(x => x.result === 'warning'),
         data: message.filter(x => x.result === 'error' || x.result === 'warning')
-    }
+    } */
 
     //res.status(200).json(messageToSend);
+    
+
+    // suppression des données
+
+    fs.unlink(fileName, (err) => {
+        if (err) {
+            console.error('Error removing file ' + fileName);
+        } else {
+            console.log(fileName + ' has been removed');
+        }
+    });
+
     res.write(`------ END UPDATE: ${numberOfConsultant} consultants processed with: ${numberOfCreate} created, ${numberOfUpdate} updated and ${numberOfErrors} in error\n`);
     res.write(`------ CONTROL: ${numberOfNotFound} consultants found in Pxx but not in Wavekeeper export. Please verify.`);
     res.end();
