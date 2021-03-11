@@ -1030,7 +1030,7 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                 \tsolution 2 : maybe it is not still filled in CDM Pxx > please add the line\n`
 
                 res.write(warningMsg);
-                messagesSynthese.push(warningMsg);
+                //messagesSynthese.push(warningMsg);
             }
         }
 
