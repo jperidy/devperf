@@ -595,6 +595,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
     let numberOfUpdate = 0;
     let numberOfCreate = 0;
     let numberOfErrors = 0;
+    let numberOfWarning = 0;
 
 
     //console.log(req.body);
@@ -629,18 +630,34 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
 
     const { rows, error } = await readXlsxFile(fileName, { schema });
 
-    const message = []
+    const message = [];
+
+
+    // stamps to avoid to proceed too much request
+    const practice = req.user.consultantProfil.practice;
+    const consultantsAllPractice = await Consultant.find({practice: practice});
 
     for (let line = 0; line < rows.length; line++) {
         numberOfConsultant += 1;
 
         const consultant = rows[line];
 
-        res.write(`Start with: ${consultant.name}\n`);
+        //res.write(`Start with: ${consultant.name}\n`);
 
-        const searchConsultant = await Consultant.findOne({ matricule: consultant.matricule });
+        //const searchConsultant = await Consultant.findOne({ matricule: consultant.matricule });
+        const searchConsultant = consultantsAllPractice.filter(x => x.matricule === consultant.matricule)[0];
         const cdmMatricule = consultant.cdmMatricule ? consultant.cdmMatricule.toString().padStart(9, 0) : '';
-        const cdmId = await Consultant.findOne({ matricule: cdmMatricule }).select('_id');
+        //const cdmId = await Consultant.findOne({ matricule: cdmMatricule }).select('_id');
+        const cdmProfil = consultantsAllPractice.filter(x => x.matricule === cdmMatricule)[0];
+        let cdmId = null
+        if (cdmProfil) {
+            cdmId = cdmProfil._id;            
+        } else {
+            numberOfWarning += 1;
+            const msgCdm = `Warning - CDM Profil not found for consultant ${consultant.name} and CDM Matricule ${consultant.cdmMatricule}. >> Please verify profil\n`;
+            console.log(msgCdm);
+            res.write(msgCdm);
+        }
 
 
         //if (consultant.presence > 0) {
@@ -684,7 +701,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
                 });
                 resetAllPxx(result);
                 numberOfUpdate += 1;
-                res.write(info);
+                //res.write(info);
             } else {
                 info = `Error - update - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`
                 message.push({
@@ -720,7 +737,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
                 resetAllPxx(result);
 
                 numberOfCreate += 1;
-                res.write(info)
+                //res.write(info)
             } else {
                 info = `Error - create - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`;
                 message.push({
@@ -737,7 +754,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
                 res.write(info);
             }
         }
-        res.write(`End with: ${consultant.name}\n\n`);
+        //res.write(`End with: ${consultant.name}\n\n`);
         //}
     }
 
@@ -798,8 +815,8 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
         }
     });
 
-    res.write(`------ END UPDATE: ${numberOfConsultant} consultants processed with: ${numberOfCreate} created, ${numberOfUpdate} updated and ${numberOfErrors} in error\n`);
-    res.write(`------ CONTROL: ${numberOfNotFound} consultants found in Pxx but not in Wavekeeper export. Please verify.`);
+    res.write(`------ END UPDATE: ${numberOfConsultant} consultants processed with: ${numberOfCreate} created, ${numberOfUpdate} updated, ${numberOfErrors} in error, ${numberOfWarning} in warning\n`);
+    res.write(`------ CONTROL: ${numberOfNotFound} consultants found in Pxx but not in Wavekeeper export. If > 0 please verify.`);
     res.end();
 
 });

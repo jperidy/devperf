@@ -746,21 +746,21 @@ const transformMonth = (pxxFormat) => {
     return '20' + convertToArray[1] + '/' + Number(convertToArray[0]);
 }
 
-const updatePxxLine = async (pxxLine) => {
+const updatePxxLine = async (pxxLine, consultantId) => {
     const monthId = await Month.findOne({ name: pxxLine.month }).select('_id');
     if (!monthId) {
-        return { 
-            result: false, 
-            message:`Error - Month not find for: ${pxxLine.month} if format is different from YYYY/MM please contact your admin\n`
+        return {
+            result: false,
+            message: `Error - Month not find for: ${pxxLine.month} if format is different from YYYY/MM please contact your admin\n`
         };
     }
-    const consultantId = await Consultant.findOne({ matricule: pxxLine.matricule }).select('_id');
+    /* const consultantId = await Consultant.findOne({ matricule: pxxLine.matricule }).select('_id');
     if (!consultantId) {
         return {
             result: false,
             message: `Error - Consultant not find for: ${pxxLine.name} (${pxxLine.matricule}) please verify start and leave dates\n`
         };
-    }
+    } */
     const pxxToUpdate = await Pxx.findOne({ name: consultantId._id, month: monthId._id });
     if (pxxToUpdate) {
         pxxToUpdate.prodDay = pxxLine.prod;
@@ -782,7 +782,7 @@ const updatePxxLine = async (pxxLine) => {
         }
     }
 }
-const updatePxxComment = async (matricule, pxxComments) => {
+/* const updatePxxComment = async (matricule, pxxComments) => {
 
     const consultant = await Consultant.findOne({ matricule: matricule });
 
@@ -797,10 +797,10 @@ const updatePxxComment = async (matricule, pxxComments) => {
     } else {
         return {
             result: false,
-            message: `Error - comment not updated for consultant with matricule: ${matricule}\n` 
+            message: `Error - comment not updated for consultant with matricule: ${matricule}\n`
         }
     }
-}
+} */
 
 
 // @desc    Mass import of pxx datas from Pxx directory
@@ -818,7 +818,7 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
     let numberUpdated = 0;
     let numberErrors = 0;
     const matriculeScanned = []
-    const messagesSynthese = [];
+    //const messagesSynthese = [];
 
 
     const startName = req.body.path;
@@ -827,17 +827,20 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
 
     try {
 
+        // stamps to avoid to proceed too much request
+        const practice = req.user.consultantProfil.practice;
+        const consultantsAllPractice = await Consultant.find({ practice: practice });
+
         const files = fs.readdirSync(directory);
         numberOfPxx = files.length;
-
 
         for (let incr = 0; incr < files.length; incr++) {
             const file = files[incr];
             const regex = `^${startName}-p[A-Za-z]+-[0-9]{2}.xlsb|^${startName}-p[A-Za-z]+-arrivees.xlsb`
-           
+
             if (file.match(regex)) {
 
-                res.write(`Start updating ${file}\n`);
+                res.write(`----- Start updating ${file} -----\n`);
 
                 wb = XLSX.readFile(directory + '/' + file);
                 const firstSheetName = wb.SheetNames[0];
@@ -859,119 +862,148 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                     transformMonth(readablePxx[5][25]),
                 ];
 
+                
+
                 for (let line = 8; line < Math.min(150, readablePxx.length); line++) {
-                    
-                    
+
+
                     const pxxLine = readablePxx[line];
                     if (Number(pxxLine[0]) > 0 && Number(pxxLine[0]) <= 1) {
+
+                        //res.write(`Start ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)})\n`);
+                        //const consultantId = await Consultant.findOne({ matricule: pxxLine[4].toString().padStart(9, 0) }).select('_id');
+                        const consultantProfil = consultantsAllPractice.filter( x => x.matricule === pxxLine[4].toString().padStart(9, 0))[0];
                         
-                        res.write(`Start ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)})\n`);
-                        
-                        numberOfConsultants += 1;
-                        const resultConsultant = [];
+                        if (!consultantProfil) {
 
-                        const firstMonth = {
-                            month: monthToUpdate[0],
-                            name: pxxLine[3],
-                            matricule: pxxLine[4].toString().padStart(9, 0),
-                            prod: Number(pxxLine[9]),
-                            notProd: Number(pxxLine[10]),
-                            holidays: Number(pxxLine[11]),
-                            available: Number(pxxLine[12]),
-                        }
-                        let result = await updatePxxLine(firstMonth);
-                        console.log(result.message);
-                        resultConsultant.push(result);
+                            const messageProfil = `Error - Consultant not found for: ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)}) please verify start and leave dates\n`;
+                            console.error(messageProfil);
+                            res.write(messageProfil);
 
-                        const secondMonth = {
-                            month: monthToUpdate[1],
-                            name: pxxLine[3],
-                            matricule: pxxLine[4].toString().padStart(9, 0),
-                            prod: Number(pxxLine[13]),
-                            notProd: Number(pxxLine[14]),
-                            holidays: Number(pxxLine[15]),
-                            available: Number(pxxLine[16]),
-                        }
-                        result = await updatePxxLine(secondMonth);
-                        console.log(result.message);
-                        resultConsultant.push(result);
-
-                        const thirdMonth = {
-                            month: monthToUpdate[2],
-                            name: pxxLine[3],
-                            matricule: pxxLine[4].toString().padStart(9, 0),
-                            prod: Number(pxxLine[17]),
-                            notProd: Number(pxxLine[18]),
-                            holidays: Number(pxxLine[19]),
-                            available: Number(pxxLine[20]),
-                        }
-                        result = await updatePxxLine(thirdMonth);
-                        console.log(result.message);
-                        resultConsultant.push(result);
-
-                        const fourthMonth = {
-                            month: monthToUpdate[3],
-                            name: pxxLine[3],
-                            matricule: pxxLine[4].toString().padStart(9, 0),
-                            prod: Number(pxxLine[21]),
-                            notProd: Number(pxxLine[22]),
-                            holidays: Number(pxxLine[23]),
-                            available: Number(pxxLine[24]),
-                        }
-                        result = await updatePxxLine(fourthMonth);
-                        console.log(result.message);
-                        resultConsultant.push(result);
-
-                        const fifthMonth = {
-                            month: monthToUpdate[4],
-                            name: pxxLine[3],
-                            matricule: pxxLine[4].toString().padStart(9, 0),
-                            prod: Number(pxxLine[25]),
-                            notProd: Number(pxxLine[26]),
-                            holidays: Number(pxxLine[27]),
-                            available: Number(pxxLine[28]),
-                        }
-                        result = await updatePxxLine(fifthMonth);
-                        console.log(result.message);
-                        resultConsultant.push(result);
-
-                        // Update comments
-                        const comments = {
-                            commentaires: pxxLine[33],
-                            dominante: pxxLine[30],
-                            expertise: pxxLine[31],
-                        }
-                        result = await updatePxxComment(pxxLine[4].toString().padStart(9, 0), comments);
-                        console.log(result.message);
-                        resultConsultant.push(result);
-
-                        if (resultConsultant.map(x => x.result).includes(false)) {
-                            numberErrors += 1;
-                            const lineWithErrors = resultConsultant.filter(x => x.result === false);
-                            for (let errorLine = 0; errorLine < lineWithErrors.length ; errorLine++) {
-                                const msgErrors = lineWithErrors[errorLine].message;
-                                res.write(msgErrors);
-                                messagesSynthese.push(msgErrors)
-                            }
                         } else {
-                            numberUpdated += 1;
-                            res.write(`info - ${pxxLine[3]} (${pxxLine[4]}) - updated\n`);
+
+                            numberOfConsultants += 1;
+                            const resultConsultant = [];
+
+                            const firstMonth = {
+                                month: monthToUpdate[0],
+                                name: pxxLine[3],
+                                matricule: pxxLine[4].toString().padStart(9, 0),
+                                prod: Number(pxxLine[9]),
+                                notProd: Number(pxxLine[10]),
+                                holidays: Number(pxxLine[11]),
+                                available: Number(pxxLine[12]),
+                            }
+                            let result = await updatePxxLine(firstMonth, consultantProfil);
+                            console.log(result.message);
+                            resultConsultant.push(result);
+
+                            const secondMonth = {
+                                month: monthToUpdate[1],
+                                name: pxxLine[3],
+                                matricule: pxxLine[4].toString().padStart(9, 0),
+                                prod: Number(pxxLine[13]),
+                                notProd: Number(pxxLine[14]),
+                                holidays: Number(pxxLine[15]),
+                                available: Number(pxxLine[16]),
+                            }
+                            result = await updatePxxLine(secondMonth, consultantProfil);
+                            console.log(result.message);
+                            resultConsultant.push(result);
+
+                            const thirdMonth = {
+                                month: monthToUpdate[2],
+                                name: pxxLine[3],
+                                matricule: pxxLine[4].toString().padStart(9, 0),
+                                prod: Number(pxxLine[17]),
+                                notProd: Number(pxxLine[18]),
+                                holidays: Number(pxxLine[19]),
+                                available: Number(pxxLine[20]),
+                            }
+                            result = await updatePxxLine(thirdMonth, consultantProfil);
+                            console.log(result.message);
+                            resultConsultant.push(result);
+
+                            const fourthMonth = {
+                                month: monthToUpdate[3],
+                                name: pxxLine[3],
+                                matricule: pxxLine[4].toString().padStart(9, 0),
+                                prod: Number(pxxLine[21]),
+                                notProd: Number(pxxLine[22]),
+                                holidays: Number(pxxLine[23]),
+                                available: Number(pxxLine[24]),
+                            }
+                            result = await updatePxxLine(fourthMonth, consultantProfil);
+                            console.log(result.message);
+                            resultConsultant.push(result);
+
+                            const fifthMonth = {
+                                month: monthToUpdate[4],
+                                name: pxxLine[3],
+                                matricule: pxxLine[4].toString().padStart(9, 0),
+                                prod: Number(pxxLine[25]),
+                                notProd: Number(pxxLine[26]),
+                                holidays: Number(pxxLine[27]),
+                                available: Number(pxxLine[28]),
+                            }
+                            result = await updatePxxLine(fifthMonth, consultantProfil);
+                            console.log(result.message);
+                            resultConsultant.push(result);
+
+
+                            // Update comments in consultant profil
+                            /* const comments = {
+                                commentaires: pxxLine[33],
+                                dominante: pxxLine[30],
+                                expertise: pxxLine[31],
+                            } */
+                            const comments = `${pxxLine[33]}\n\nDominante :\n${pxxLine[30]}\n\nExpertises :\n${pxxLine[31]}`
+
+                            consultantProfil.comment = comments;
+                            const updatedProfil = await consultantProfil.save();
+                            if (!updatedProfil) {
+                                console.log(`Error updating comment for consultant: ${consultantProfil.name}`);
+                                res.write(`Error updating comment for consultant: ${consultantProfil.name}\n`)
+                            }
+
+                            //result = await updatePxxComment(pxxLine[4].toString().padStart(9, 0), comments);
+                            //console.log(result.message);
+                            //resultConsultant.push(result);
+
+
+                            if (resultConsultant.map(x => x.result).includes(false)) {
+                                numberErrors += 1;
+                                const lineWithErrors = resultConsultant.filter(x => x.result === false);
+                                res.write(`Error - Update Pxx Line - ${pxxLine[3]} (${pxxLine[4]})\n`);
+
+                                lineWithErrors.map(x => {
+                                    res.write(`\t${x.message}`);
+                                    console.log(`\t${x.message}`);
+                                });
+
+
+                            } else {
+                                numberUpdated += 1;
+                                //res.write(`info - ${pxxLine[3]} (${pxxLine[4]}) - updated\n`);
+                            }
+
+
+                            matriculeScanned.push(pxxLine[4].toString().padStart(9, 0));
+
+                            //res.write(`End ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)})\n\n`);
+
                         }
 
-                        
-                        matriculeScanned.push(pxxLine[4].toString().padStart(9, 0));
-                        
-                        res.write(`End ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)})\n\n`);
                     }
                 }
-                res.write(`End updating ${file}\n\n`);
+                //res.write(`End updating ${file}\n\n`);
             } else {
                 res.write(`Error - pxx format not matching with patern: ${file}\n\n`);
                 console.log(`Error - pxx format not matching with patern: ${file}\n\n`);
             }
         }
-        
-        // add fucntion to verify if missing Pxx //TO DO//
+
+        // add fucntion to verify if missing Pxx
 
         const userPractice = req.user.consultantProfil.practice;
         const startMonth = new Date(Date.now());
@@ -988,7 +1020,7 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
             ]
         }).select('matricule name');
 
-        for (let incrMatricule = 0; incrMatricule < allConsultantsActivesInDatabase.length ; incrMatricule++) {
+        for (let incrMatricule = 0; incrMatricule < allConsultantsActivesInDatabase.length; incrMatricule++) {
             let currentMatricule = allConsultantsActivesInDatabase[incrMatricule].matricule;
             let currentName = allConsultantsActivesInDatabase[incrMatricule].name;
 
@@ -1002,20 +1034,20 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
             }
         }
 
-        // suppression des données
+        // cleaning repository
         fs.readdir(directory, (err, files) => {
             if (err) {
                 return console.log('Unable to scan directory: ' + err);
             }
-            files.map( file => {
-                
-                    fs.unlink(directory + '/' + file, (err) => {
-                        if (err) {
-                            console.error('Error removing file ' + file + 'from ' + directory);
-                        } else {
-                            console.log(file + ' has been removed from: ' + directory);
-                        }
-                    });
+            files.map(file => {
+
+                fs.unlink(directory + '/' + file, (err) => {
+                    if (err) {
+                        console.error('Error removing file ' + file + 'from ' + directory);
+                    } else {
+                        console.log(file + ' has been removed from: ' + directory);
+                    }
+                });
             })
         })
 
@@ -1024,7 +1056,7 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
     }
 
     res.write(`------ SYNTHESE\n\n`);
-    res.write(messagesSynthese.join(''));
+    //res.write(messagesSynthese.join(''));
     res.write(`\n------ END UPDATE: ${numberOfConsultants} consultants updated from ${numberOfPxx} Pxx with ${numberErrors} errors and ${numberUpdated} success`);
     res.end();
 
