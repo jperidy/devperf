@@ -751,7 +751,7 @@ const updatePxxLine = async (pxxLine, consultantId) => {
     if (!monthId) {
         return {
             result: false,
-            message: `Error - Month not find for: ${pxxLine.month} if format is different from YYYY/MM please contact your admin\n`
+            message: `Error - Month not found for: ${pxxLine.month} if format is different from YYYY/MM please contact your admin\n`
         };
     }
     /* const consultantId = await Consultant.findOne({ matricule: pxxLine.matricule }).select('_id');
@@ -830,6 +830,9 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
         // stamps to avoid to proceed too much request
         const practice = req.user.consultantProfil.practice;
         const consultantsAllPractice = await Consultant.find({ practice: practice });
+
+        //console.log(practice);
+        //console.log(consultantsAllPractice);
 
         const files = fs.readdirSync(directory);
         numberOfPxx = files.length;
@@ -1055,7 +1058,7 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
         console.log('Unable to scan directory: ' + error);
     }
 
-    res.write(`------ SYNTHESE\n\n`);
+    //res.write(`------ SYNTHESE\n\n`);
     //res.write(messagesSynthese.join(''));
     res.write(`\n------ END UPDATE: ${numberOfConsultants} consultants updated from ${numberOfPxx} Pxx with ${numberErrors} errors and ${numberUpdated} success`);
     res.end();

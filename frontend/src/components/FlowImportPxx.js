@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Image from 'react-bootstrap/Image';
+//import Image from 'react-bootstrap/Image';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 //import { uploadConsultantWk, updateConsultantWk } from '../actions/consultantActions';
@@ -39,6 +39,7 @@ const FlowImportPxx = (props) => {
 
     const startImportData = () => {
         if(path) {
+            //dispatch(updatePxxFiles(path));
             dispatch(updatePxxFiles(path));
         }
     }
@@ -89,7 +90,7 @@ const FlowImportPxx = (props) => {
                     {step === 1 && (
                         <Row className='align-items-center'>
                             <Col className='text-center'>
-                                <h4>Upload you file here</h4>
+                                <h4>Upload your file here</h4>
                                 {loadingUpload ? <Loader /> : (
                                     <input 
                                         className='my-3' 
@@ -101,6 +102,7 @@ const FlowImportPxx = (props) => {
                                         multiple
                                     />
                                 )}
+                                {errorUpload && <Message variant='danger'>{errorUpload}</Message>}
                             </Col>
                         </Row>
                     )}
@@ -109,10 +111,13 @@ const FlowImportPxx = (props) => {
                             <Row>
                                 <Col className='text-center'>
                                     <h4>Do you want to update availabilities ?</h4>
-                                    <Button variant='primary' className='m-3' onClick={startImportData}>
-                                        {loadingUpdate ? <Loader /> : 'Update'}
-                                    </Button>
+                                    {loadingUpdate ? <Loader />  : (
+                                        <Button variant='primary' className='m-3' onClick={startImportData}>
+                                            Update
+                                        </Button>
+                                    )}
                                     <p>Process could take a few minute</p>
+                                    {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
                                 </Col>
                             </Row>
                         ) : (

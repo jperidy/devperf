@@ -649,24 +649,20 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
         const cdmMatricule = consultant.cdmMatricule ? consultant.cdmMatricule.toString().padStart(9, 0) : '';
         //const cdmId = await Consultant.findOne({ matricule: cdmMatricule }).select('_id');
         const cdmProfil = consultantsAllPractice.filter(x => x.matricule === cdmMatricule)[0];
-        let cdmId = null
+
+        let cdmId = null;
+
         if (cdmProfil) {
             cdmId = cdmProfil._id;            
         } else {
             numberOfWarning += 1;
-            const msgCdm = `Warning - CDM Profil not found for consultant ${consultant.name} and CDM Matricule ${consultant.cdmMatricule}. >> Please verify profil\n`;
+            const msgCdm = `Warning - CDM Profil not found for consultant ${consultant.name} and CDM ${consultant.cdmName} (${consultant.cdmMatricule}). >> Please verify profil`;
             console.log(msgCdm);
-            res.write(msgCdm);
+            res.write(msgCdm + '\n');
         }
 
 
-        //if (consultant.presence > 0) {
-        if (consultant.presence === 0 && !consultant.leave) {
-            const msg = `Warning - it seems consultant ${consultant.name} is in count in the workforce but is not in the charges this month. Please verify the situation (sick-leave ?).\n`
-            console.log(msg);
-            res.write(msg);
-
-        }
+        
 
         const consultantToUpdateOrCreate = {
             name: anonymise ? `Prénom NOM ${line + 1}` : consultant.name,
@@ -681,15 +677,26 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
             cdmId: cdmId ? cdmId._id : null,
         }
 
+        const startMonth = new Date(Date.now());
+        startMonth.setUTCDate(0);
+        //if (consultant.presence > 0) {
+        if (consultant.presence === 0 && consultant.partialTime > 0 && !consultant.leave && consultant.start < startMonth) {
+            const msg = `Warning - something wront with ${consultant.name}. Presence=0 but no partial time and no leaving date.`
+            console.log(msg);
+            res.write(msg + '\n');
+        }
+
         let result = '';
         let info = ''
         if (searchConsultant) {
 
             result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
             if (result) {
-                info = `Info - update - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`;
+                info = `Warning - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
                 if (consultant.partialTime < 1 && result.isPartialTime.value === false) {
-                    info += `\t>>Warning - you have to modify partial time - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`
+                    info += `\n\t>>Warning - you have to modify partial time - ${consultant.name} (${consultant.matricule}) - ${result._id} > set partial time to ${consultant.partialTime}`
+                    console.log(info);
+                    res.write(info + '\n');
                 }
                 message.push({
                     _id: result._id,
@@ -701,9 +708,9 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
                 });
                 resetAllPxx(result);
                 numberOfUpdate += 1;
-                //res.write(info);
+                
             } else {
-                info = `Error - update - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`
+                info = `Error - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`
                 message.push({
                     _id: 'unknown',
                     practice: consultant.practice.split('-')[1],
@@ -715,7 +722,8 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
                 });
 
                 numberOfErrors += 1;
-                res.write(info);
+                console.log(info);
+                res.write(info + '\n');
             }
         } else {
             result = await createAConsultant(consultantToUpdateOrCreate);
@@ -739,7 +747,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
                 numberOfCreate += 1;
                 //res.write(info)
             } else {
-                info = `Error - create - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`;
+                info = `Error - create - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
                 message.push({
                     _id: 'unknown',
                     practice: consultant.practice.split('-')[1],
@@ -751,7 +759,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
                 });
 
                 numberOfErrors += 1;
-                res.write(info);
+                res.write(info + '\n');
             }
         }
         //res.write(`End with: ${consultant.name}\n\n`);
@@ -780,7 +788,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
     const numberOfNotFound = consultantNotUpdated.length;
 
     for (let incr = 0; incr < consultantNotUpdated.length; incr++) {
-        info = `Warning - not found in import file - ${consultantNotUpdated[incr].name} (${consultantNotUpdated[incr].matricule}) - ${consultantNotUpdated[incr]._id}\n`
+        info = `Warning - not found in import file - ${consultantNotUpdated[incr].name} (${consultantNotUpdated[incr].matricule}) - ${consultantNotUpdated[incr]._id}`
         message.push({
             _id: consultantNotUpdated[incr]._id,
             practice: consultantNotUpdated[incr].practice,
@@ -791,7 +799,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
             data: consultantNotUpdated[incr]
         });
         console.log(info);
-        res.write(info);
+        res.write(info + '\n');
     }
 
     /* const messageToSend = {

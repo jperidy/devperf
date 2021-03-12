@@ -1,4 +1,7 @@
 import axios from 'axios';
+//import fetch from 'fetch';
+//import fs from 'fs';
+//import path from 'path';
 import {
     PXX_LIST_REQUEST,
     PXX_LIST_SUCCESS,
@@ -471,9 +474,7 @@ export const updatePxxFiles = (path) => async (dispatch, getState) => {
 
         const { data } = await axios.put(`/api/pxx/admin/line-import-wk`, path, config);
 
-
         dispatch({ type: PXX_UPDATE_PXX_SUCCESS, payload: data });
-
 
     } catch (error) {
         dispatch({
