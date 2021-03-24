@@ -363,12 +363,7 @@ const getProdChart = asyncHandler(async (req, res) => {
 
     const searchPractice = practice ? { practice: practice } : '';
 
-    const month = await Month.find({
-        firstDay: {
-            $gte: start,
-            $lte: end
-        }
-    });
+    const month = await Month.find({firstDay: {$gte: start, $lte: end}});
 
     const consultantId = await Consultant.find({ ...searchPractice, grade: { $not: { $regex: 'Intern', $options: 'i' } } }).select('_id');
 

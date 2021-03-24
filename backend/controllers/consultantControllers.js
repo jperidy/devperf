@@ -661,10 +661,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
             const msgCdm = `Warning - CDM Profil not found for consultant ${consultant.name} and CDM ${consultant.cdmName} (${consultant.cdmMatricule}). >> Please verify profil`;
             console.log(msgCdm);
             res.write(msgCdm + '\n');
-        }
-
-
-        
+        }  
 
         const consultantToUpdateOrCreate = {
             name: anonymise ? `Prénom NOM ${line + 1}` : consultant.name,

@@ -24,7 +24,7 @@ const Tace = ({ tace, practice }) => {
     const [missingFTEToTarget, setMissingFTEToTarget] = useState('');
 
     const createTace = useSelector(state => state.createTace);
-    const { success } = createTace;
+    //const { success } = createTace;
 
     useEffect(() => {
         if(update) {
@@ -44,8 +44,11 @@ const Tace = ({ tace, practice }) => {
         const totalProdDayToBid = Number(bid) / 100 * (Number(tace.totalProdDay) + Number(tace.totalNotProdDay) + Number(tace.totalAvailableDay));
         const totalProdDayToTarget = Number(target) / 100 * (Number(tace.totalProdDay) + Number(tace.totalNotProdDay) + Number(tace.totalAvailableDay));
     
-        const today = new Date(Date.now());
-        const lastMonthDay = new Date(Date.now());
+        //console.log('firstDay', tace.month.firstDay);
+        const today = new Date(Math.max(new Date(Date.now()), new Date(tace.month.firstDay)));
+        //console.log(today);
+        const lastMonthDay = new Date(Math.max(new Date(Date.now()), new Date(tace.month.firstDay)));
+        //console.log(lastMonthDay);
         lastMonthDay.setUTCMonth(lastMonthDay.getUTCMonth() + 1);
         lastMonthDay.setUTCDate(1);
 
