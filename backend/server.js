@@ -1,8 +1,8 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const https = require("https"); 
-const fs = require("fs");
+//const https = require("https"); 
+//const fs = require("fs");
 
 const http = require('http');
 const app = require('./app');

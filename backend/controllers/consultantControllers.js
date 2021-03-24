@@ -4,6 +4,7 @@ const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
 const { myAccessConsultants } = require('../utils/usersFunctions');
+const cryptoJS = require('crypto-js')
 
 const readXlsxFile = require('read-excel-file/node');
 const fs = require('fs');
@@ -639,8 +640,9 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
 
     for (let line = 0; line < rows.length; line++) {
         numberOfConsultant += 1;
-
+        
         const consultant = rows[line];
+        console.log('-----------------------> ' + line + ': ' + consultant.name);
 
         //res.write(`Start with: ${consultant.name}\n`);
 
@@ -666,7 +668,8 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
 
         const consultantToUpdateOrCreate = {
             name: anonymise ? `Prénom NOM ${line + 1}` : consultant.name,
-            email: `prenom-nom-${line + 1}@jprmail.com`,
+            //email: `prenom-nom-${line + 1}@jprmail.com`,
+            email: cryptoJS.MD5(consultant.name).toString(),
             grade: transformGrade(consultant.grade),
             practice: consultant.practice.split('-')[1],
             matricule: consultant.matricule,
