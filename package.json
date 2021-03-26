@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node backend/server",
     "server": "nodemon backend/server",
-    "client": "REACT_APP_PROXY=http://localhost:5000 npm start --prefix frontend",
+    "client": "REACT_APP_PROXY=http://localhost:5000 npm start --prefix frontend/react-app",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "data:import": "node backend/seeder",
     "data:destroy": "node backend/seeder -d",
@@ -14,7 +14,7 @@
     "data:updateprofil": "node backend/seeder -uprofil",
     "data:updateclient": "node backend/seeder -uclient",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend/react-app && npm run build --prefix frontend/react-app"
   },
   "repository": {
     "type": "git",

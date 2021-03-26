@@ -60,7 +60,7 @@ app.use('/api/emails', emailsRoutes);
 const __dir = path.resolve();
 //console.log(process)
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dir, '/frontend/build')));
+    app.use(express.static(path.join(__dir, '/frontend/react-app/build')));
     // default request for route for request not describe above
     app.get('*', (req, res) => res.sendFile(path.resolve(__dir, 'frontend', 'build', 'index.html')))
 } else {
