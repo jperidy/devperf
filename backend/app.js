@@ -1,6 +1,5 @@
 const express = require('express');
 const morgan = require('morgan');
-//const helmet = require('helmet');
 const path = require('path');
 const cron = require('node-cron');
 
@@ -55,14 +54,11 @@ app.use('/api/emails', emailsRoutes);
 
 // static route for developpement access to build repository
 const __dir = path.resolve();
-//console.log(process)
+
 if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dir, '/frontend/react-app/build')));
-    // default request for route for request not describe above
+    app.use(express.static(path.join(__dir, '/frontend/build')));
     app.get('*', (req, res) => res.sendFile(path.resolve(__dir, 'frontend', 'build', 'index.html')))
 } else {
-    //app.use(express.static(path.join(__dir, '/frontend/build')));
-    //app.get('*', (req, res) => res.sendFile(path.resolve(__dir, 'frontend', 'build', 'index.html')))
     app.get('/', (req, res) => res.send('API V7 is running...'));
 }
 
