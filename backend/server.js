@@ -1,27 +1,10 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-//const https = require("https"); 
-//const fs = require("fs");
-
 const http = require('http');
 const app = require('./app');
 
 const ENVIRONMENT = process.env.NODE_ENV;
-
-/*
-const options = {
-    key: fs.readFileSync("key.pem"),
-    cert: fs.readFileSync("cert.pem")
-};
-*/
-
-/*
-const options = {
-    key: process.env.KEY,
-    cert: process.env.CERT
-};
-*/
 
 const normalizePort = val => {
     const port = parseInt(val, 10);

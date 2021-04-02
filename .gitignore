@@ -12,12 +12,15 @@ node_modules/
 /coverage
 
 # production
-/frontend/react-app/build
+/frontend/build
 
 /backend/data
 /backend/data/pxx
 uploads/consultants/*
 uploads/pxx/*
+
+# frontendWithExpress
+/frontendWithExpress
 
 # dockers
 docker-compose.yml

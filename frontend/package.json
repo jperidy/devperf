@@ -1,24 +1,50 @@
 {
-  "name": "serve_frontend",
-  "version": "1.0.0",
-  "description": "express-server to serve react-app",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server",
-    "server": "nodemon server",
-    "client": "npm start --prefix frontend",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "jbperidy",
-  "license": "MIT",
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:5000",
   "dependencies": {
-    "concurrently": "^6.0.0",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "express-http-proxy": "^1.6.2",
-    "http": "^0.0.1-security",
-    "morgan": "^1.10.0",
-    "nodemon": "^2.0.7",
-    "path": "^0.12.7"
+    "@testing-library/jest-dom": "^5.11.6",
+    "@testing-library/react": "^11.1.2",
+    "@testing-library/user-event": "^12.2.2",
+    "axios": "^0.21.0",
+    "react": "^17.0.1",
+    "react-bootstrap": "^1.4.0",
+    "react-dom": "^17.0.1",
+    "react-export-excel": "^0.5.3",
+    "react-helmet": "^6.1.0",
+    "react-redux": "^7.2.3",
+    "react-router-bootstrap": "^0.25.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.0",
+    "react-select": "^4.1.0",
+    "redux": "^4.0.5",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.3.0",
+    "web-vitals": "^0.2.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

@@ -39,9 +39,6 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json({limit: '50mb', extended: true})); // to upload consequent files
 
-//const  multipart = require('connect-multiparty');
-//app.use(multipart());
-//app.use(helmet());
 
 app.use('/api/users', userRoutes);
 app.use('/api/monthdata', monthPxxRoutes);
@@ -66,7 +63,7 @@ if (process.env.NODE_ENV === 'production') {
 } else {
     //app.use(express.static(path.join(__dir, '/frontend/build')));
     //app.get('*', (req, res) => res.sendFile(path.resolve(__dir, 'frontend', 'build', 'index.html')))
-    app.get('/', (req, res) => res.send('API is running...'));
+    app.get('/', (req, res) => res.send('API V7 is running...'));
 }
 
 
