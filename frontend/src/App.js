@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, useHistory } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -20,7 +20,13 @@ import AccessEditScreen from './screens/AccessEditScreen';
 import ManageCompaniesScreen from './screens/ManageCompaniesScreen';
 import EnvoyerMailsScreen from './screens/EnvoyerMailsScreen';
 
+// MSAL imports
+import { MsalProvider } from "@azure/msal-react";
+import { CustomNavigationClient } from "./utils/NavigationClient";
+
+
 const App = () => {
+
   return (
     <Router>
       <Header />

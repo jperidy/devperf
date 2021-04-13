@@ -1,5 +1,7 @@
 const express = require('express');
 const { 
+    redirectAZ,
+    authUserAz,
     authUser, 
     registerUser,
     getUsers, 
@@ -7,15 +9,19 @@ const {
     getUserById, 
     updateUser
 } = require('../controllers/userController');
-const { protect, empowered } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware');
 
 
 const router = express.Router();
 
+
 router.route('/')
-    .get(protect, getUsers)
-    .post(registerUser);
+.get(protect, getUsers)
+.post(registerUser);
+
 router.post('/login', authUser);
+router.get('/redirectAz', redirectAZ);
+router.get('/loginAz', authUserAz);
 
 router.route('/:id')
     .delete(protect, deleteUser)

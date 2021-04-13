@@ -7,8 +7,6 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-//window.React1 = require('react');
-
 ReactDOM.render(
   <Provider store={store}>
     <App />

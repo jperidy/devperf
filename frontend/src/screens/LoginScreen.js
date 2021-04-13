@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+//import  { Redirect } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom';
 import { Form, Button, Row, Col, Container, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import FormContainer from '../components/FormContainer';
-import { login } from '../actions/userActions'
+import { login, getRedirectAz } from '../actions/userActions';
 
 const LoginScreen = ({ location, history }) => {
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState(null);
 
     const dispatch = useDispatch();
+
     const userLogin = useSelector(state => state.userLogin);
     const { loading, error, userInfo } = userLogin;
+
+    const userRedirectAz = useSelector(state => state.userRedirectAz);
+    const { redirectURL } = userRedirectAz;
 
     const redirect = location.search ? location.search.split('=')[1] : '/';
 
@@ -25,6 +31,23 @@ const LoginScreen = ({ location, history }) => {
         }
     });
 
+    // effect to redirect to AZ authentication
+    useEffect(() => {
+        if (redirectURL) {
+            window.location.href = redirectURL
+        }
+    },[redirectURL]);
+
+    useEffect(() => {
+        if (location.search && location.search.split('code=').length > 0) {
+            //console.log('authentication code find, add request to get token');
+            //console.log(location.search.split('code=')[1]);
+            dispatch(login('AZ', {code: location.search.split('code=')[1]}));
+            history.push('/');
+        }
+    })
+
+
     const submitHandler = (e) => {
         const form = e.currentTarget;
         // Verification of validity of data
@@ -33,13 +56,19 @@ const LoginScreen = ({ location, history }) => {
         } else {
             e.preventDefault(); // to avoid page to refresh
             // Dispatch Login
-            dispatch(login(email, password));
+            dispatch(login('LOCAL', {email:email, password:password}));
         }
     };
+
+    const azAuthentClick = () => {
+        dispatch(getRedirectAz());
+    }
+
 
     return (
         <>
             <FormContainer>
+
                 <h1>Sign In</h1>
                 {message && <Message variant='danger'>{message}</Message>}
                 {error && <Message variant='danger'>{error}</Message>}
@@ -64,9 +93,23 @@ const LoginScreen = ({ location, history }) => {
                         ></Form.Control>
                     </Form.Group>
 
-                    <Button type='submit' variant='primary'>
-                        Sign In
-                </Button>
+                    <Row>
+                        <Col>
+                            <Button type='submit' variant='primary' block>
+                                Sign In
+                            </Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col className='mt-3'>
+                            <Button 
+                                variant="success"
+                                onClick={azAuthentClick}
+                                block
+                            >-- AZ Connect --</Button>
+                        </Col>
+                    </Row>
+
 
                     <Row className='py-3'>
                         <Col>
@@ -135,6 +178,8 @@ const LoginScreen = ({ location, history }) => {
                     </Col>
                 </Row>
             </Container>
+
+            {/* </MsalAuthenticationTemplate> */}
         </>
     );
 };

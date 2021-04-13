@@ -1,31 +1,96 @@
 const jwt = require('jsonwebtoken');
+//const azureJWT = require('azure-jwt-verify');
+const jwt_decode = require('jwt-decode');
+
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const mongoose = require('mongoose');
 const Consultant = require('../models/consultantModel');
 const Deal = require('../models/dealModel');
 
+const verifyJWTLocal = (token) => {
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        return decoded;
+    } catch (error) {
+        return false;
+    }
+
+}
+
+const verifyJWTAz = (token) => {
+
+    try {
+        const decoded = jwt_decode(token);
+        return decoded;
+    } catch (error) {
+        //console.log('decoded_AZ_error', error)
+        return false;
+    }
+
+}
+
 const protect = asyncHandler (async (req, res, next) => {
-    //console.log('start protect middleware');
-    //console.log(req.files);
+
     let token;
+
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
-        
+
         try {
-            token = req.headers.authorization.split(' ')[1]; // delete of first keyword Bearer seperated with space with token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            //console.log('decode.id', decoded.id);
-            req.user = await User.findById(decoded.id)
-                .populate('profil')
-                .populate('consultantProfil')
-                .select('-password'); // we don't want to add password in the req
-            //console.log('req.user', req.user);
-            next();
+            token = req.headers.authorization.split(' ')[1];
+            const decoded_Local = verifyJWTLocal(token);
+            const decoded_AZ = await verifyJWTAz(token);
+
+            //console.log('decoded_Local', decoded_Local);
+            //console.log('decoded_AZ', decoded_AZ);
+
+
+            if (decoded_Local || decoded_AZ) {
+
+                if (decoded_Local) {
+                    req.user = await User.findById(decoded_local.id)
+                    .populate('profil')
+                    .populate('consultantProfil')
+                    .select('-password');
+                } else {
+                    req.user = await User.findOne({email: decoded_AZ.email})
+                    .populate('profil')
+                    .populate('consultantProfil')
+                    .select('-password');
+                    
+                    //console.log(req.user);
+                }
+                next();
+            } else {
+                console.error(error);
+                res.status(401);
+                throw new Error('Not authorized, token failed')
+            }
+
         } catch (error) {
             console.error(error);
             res.status(401);
             throw new Error('Not authorized, token failed')
         }
+
+        
+        // try {
+        //     token = req.headers.authorization.split(' ')[1]; // delete of first keyword Bearer seperated with space with token
+            
+        //     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        //     req.user = await User.findById(decoded.id)
+        //         .populate('profil')
+        //         .populate('consultantProfil')
+        //         .select('-password'); // we don't want to add password in the req
+
+        //     next();
+        // } catch (error) {
+        //     console.error(error);
+        //     res.status(401);
+        //     throw new Error('Not authorized, token failed')
+        // }
     }
 
     if(!token){

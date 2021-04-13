@@ -25,11 +25,15 @@ import {
     USER_UPDATE_REQUEST,
     USER_UPDATE_SUCCESS,
     USER_UPDATE_FAIL,
-    USER_REGISTER_RESET
+    USER_REGISTER_RESET,
+    USER_REDIRECT_AZ_REQUEST,
+    USER_REDIRECT_AZ_SUCCESS,
+    USER_REDIRECT_AZ_FAIL
 } from "../constants/userConstants";
 
 
-export const login = (email, password) => async(dispatch) => {
+//export const login = (email, password) => async(dispatch) => {
+export const login = (type, param) => async (dispatch) => {
     try {
         dispatch({
             type: USER_LOGIN_REQUEST,
@@ -41,19 +45,61 @@ export const login = (email, password) => async(dispatch) => {
             }
         };
 
-        // data contains all shared user informations
-        const { data } = await axios.post('/api/users/login', {email, password}, config);
+        let data = '';
+        if (type === 'LOCAL') {
+            // data contains all shared user informations
+            data  = await axios.post('/api/users/login', {email: param.email, password: param.password}, config);
+        }
+
+        if (type === 'AZ') {
+            data = await axios.get(`/api/users/loginAz?code=${param.code}`, config);
+        }
+
+        const userInfo = {
+            ...data.data,
+            accountType: type,
+        }
 
         dispatch({
             type: USER_LOGIN_SUCCESS,
-            payload: data
+            payload: userInfo
         });
 
-        localStorage.setItem('userInfo', JSON.stringify(data))
+        localStorage.setItem('userInfo', JSON.stringify(userInfo))
 
     } catch (error) {
         dispatch({
             type: USER_LOGIN_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const getRedirectAz = () => async(dispatch) => {
+    try {
+        dispatch({
+            type: USER_REDIRECT_AZ_REQUEST,
+        });
+
+        const config = {
+            headers:{
+                'Content-type': 'Application/json'
+            }
+        };
+
+        // Check if user is configured in app
+        const { data } = await axios.get('/api/users/redirectAz', config);
+
+        dispatch({
+            type: USER_REDIRECT_AZ_SUCCESS,
+            payload: data
+        });
+
+    } catch (error) {
+        dispatch({
+            type: USER_REDIRECT_AZ_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message
@@ -144,6 +190,7 @@ export const getUserDetails = (id) => async(dispatch, getState) => {
         });
     }
 };
+
 
 /*
 export const updateUserProfile = (user) => async(dispatch, getState) => {

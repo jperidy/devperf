@@ -2,13 +2,105 @@ const asyncHandler = require('express-async-handler');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/userModel.js');
 const Consultant = require('../models/consultantModel');
-//const Access = require('../models/accessModel');
 const { myAccessConsultants } = require('../utils/usersFunctions');
+const { cca } = require('../config/authConfig');
+
+// @desc    get url to redirect to connect on AZ
+// @route   GET /api/users/redirectAz
+// @access  Public
+const redirectAZ = asyncHandler(async (req, res) => {
+    const authCodeUrlParameters = {
+        scopes: ["user.read"],
+        //redirectUri: "http://localhost:5000/api/users/redirect",
+        redirectUri: "http://localhost:3000/login",
+    };
+
+    cca.getAuthCodeUrl(authCodeUrlParameters).then((response) => {
+        res.status(200).json({redirectURL: response});
+        //res.redirect(response);
+    }).catch((error) => console.log(JSON.stringify(error)));
+
+});
+
+// @desc    Auth user & get token
+// @route   GET /api/users/tokenAz
+// @access  Public
+const authUserAz = asyncHandler(async (req, res) => {
+    const tokenRequest = {
+        code: req.query.code,
+        scopes: ["user.read"],
+        redirectUri: "http://localhost:3000/login",
+    };
+
+    try {
+
+        const response = await cca.acquireTokenByCode(tokenRequest);
+
+        const email = response.idTokenClaims.preferred_username;
+
+        const user = await User.findOne({ email })
+        .populate({ path:'consultantProfil', select:'practice name' })
+        .populate('profil');
+
+        if (user && user.status === 'Validated') {
+            res.status(200).json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                profil: user.profil,
+                adminLevel: user.adminLevel,
+                consultantProfil: user.consultantProfil,
+                status: user.status,
+                token: response.idToken,
+            });
+        } else {
+            res.status(401).json({message: `You can not access account ${email}. Verify email or ask administrator to validate your account`});
+        }
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+
+    // cca.acquireTokenByCode(tokenRequest).then((response) => {
+    //     console.log("\nResponse: \n:", response);
+
+    //     const email = response.idTokenClaims.preferred_username;
+
+    //     const user = await User.findOne({ email })
+    //     .populate({ path:'consultantProfil', select:'practice name' })
+    //     .populate('profil');
+
+    //     if (user && user.status === 'Validated') {
+    //         res.status(200).json({
+    //             _id: user._id,
+    //             name: user.name,
+    //             email: user.email,
+    //             profil: user.profil,
+    //             adminLevel: user.adminLevel,
+    //             consultantProfil: user.consultantProfil,
+    //             status: user.status,
+    //             token: response.idToken,
+    //         });
+    //     } else {
+    //         res.status(401).json({message: `You can not access account ${email}. Verify email or ask administrator to validate your account`});
+    //     }
+
+    //     //res.status(200).json({token: response.idToken});
+
+    // }).catch((error) => {
+    //     console.log(error);
+    //     res.status(500).send(error);
+    // });
+});
+
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
 // @access  Public
 const authUser = asyncHandler(async(req,res) =>{
+
+    //console.log('req.query.code',req.query.code);
 
     const { email, password } = req.body;
 
@@ -189,6 +281,8 @@ const updateUser = asyncHandler(async(req,res) =>{
 });
 
 module.exports = { 
+    redirectAZ,
+    authUserAz,
     authUser, 
     registerUser, 
     getUsers, 

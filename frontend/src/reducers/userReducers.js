@@ -25,7 +25,11 @@ import { USER_LOGIN_FAIL,
     USER_UPDATE_REQUEST,
     USER_UPDATE_SUCCESS,
     USER_UPDATE_RESET,
-    USER_UPDATE_FAIL
+    USER_UPDATE_FAIL,
+    USER_REDIRECT_AZ_REQUEST,
+    USER_REDIRECT_AZ_SUCCESS,
+    USER_REDIRECT_AZ_FAIL,
+    USER_REDIRECT_AZ_RESET,
 } from "../constants/userConstants";
 
 export const userLoginReducer = (state = {}, action) => {
@@ -37,6 +41,21 @@ export const userLoginReducer = (state = {}, action) => {
         case USER_LOGIN_FAIL:
             return { loading: false, error: action.payload };
         case USER_LOGOUT:
+            return {};
+        default:
+            return state;
+    }
+};
+
+export const userRedirectAzReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_REDIRECT_AZ_REQUEST:
+            return { loading: true };
+        case USER_REDIRECT_AZ_SUCCESS:
+            return { loading: false, redirectURL: action.payload.redirectURL };
+        case USER_REDIRECT_AZ_FAIL:
+            return { loading: false, error: action.payload };
+        case USER_REDIRECT_AZ_RESET:
             return {};
         default:
             return state;

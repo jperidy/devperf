@@ -2,15 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: devpdc-backend
-  name: devpdc-backend
+    app: devpdc-main-app
+  name: devpdc-main-app
   namespace: default
 spec:
-  replicas: 1
+  replicas: 3
   minReadySeconds: 45
   selector:
     matchLabels:
-      app: devpdc-backend
+      app: devpdc-main-app
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -19,12 +19,12 @@ spec:
   template:
     metadata:
       labels:
-        app: devpdc-backend
+        app: devpdc-main-app
     spec:
       containers:
-      - image: jbperidy/devpdc-backend:0.0.7TEST
+      - image: jbperidy/devpdc-main-app:0.0.1-RELEASE
         imagePullPolicy: IfNotPresent
-        name: devpdc-backend
+        name: devpdc-main-app
         ports:
         - name: liveness-port
           containerPort: 5000
@@ -56,8 +56,8 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: devpdc-backend
-  name: devpdc-backend
+    app: devpdc-main-app
+  name: devpdc-main-app
   namespace: default
 spec:
   ports:
@@ -65,6 +65,6 @@ spec:
     protocol: TCP
     targetPort: 5000
   selector:
-    app: devpdc-backend
+    app: devpdc-main-app
   sessionAffinity: None
-  type: NodePort #LoadBalancer or NodePort
+  type: LoadBalancer #LoadBalancer or NodePort
