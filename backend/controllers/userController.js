@@ -35,6 +35,7 @@ const authUserAz = asyncHandler(async (req, res) => {
     try {
 
         const response = await cca.acquireTokenByCode(tokenRequest);
+        console.log(response);
 
         const email = response.idTokenClaims.preferred_username;
 

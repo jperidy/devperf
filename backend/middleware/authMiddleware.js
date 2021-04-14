@@ -39,22 +39,22 @@ const protect = asyncHandler (async (req, res, next) => {
 
         try {
             token = req.headers.authorization.split(' ')[1];
-            const decoded_Local = verifyJWTLocal(token);
+            const decoded_local = verifyJWTLocal(token);
             const decoded_AZ = await verifyJWTAz(token);
 
             //console.log('decoded_Local', decoded_Local);
             //console.log('decoded_AZ', decoded_AZ);
 
 
-            if (decoded_Local || decoded_AZ) {
+            if (decoded_local || decoded_AZ) {
 
-                if (decoded_Local) {
+                if (decoded_local) {
                     req.user = await User.findById(decoded_local.id)
                     .populate('profil')
                     .populate('consultantProfil')
                     .select('-password');
                 } else {
-                    req.user = await User.findOne({email: decoded_AZ.email})
+                    req.user = await User.findOne({email: decoded_AZ.preferred_username})
                     .populate('profil')
                     .populate('consultantProfil')
                     .select('-password');
