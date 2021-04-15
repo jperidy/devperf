@@ -22,7 +22,7 @@ spec:
         app: devpdc-main-app
     spec:
       containers:
-      - image: jbperidy/devpdc-main-app:0.0.1-RELEASE
+      - image: jbperidy/devpdc-main-app:0.0.2-RELEASE
         imagePullPolicy: IfNotPresent
         name: devpdc-main-app
         ports:

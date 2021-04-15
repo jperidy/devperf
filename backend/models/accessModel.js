@@ -8,7 +8,7 @@ const accessSchema = mongoose.Schema({
     level: {type: Number, required: true},
     frontAccess: [{
         category: {type: String, required: true},
-        id: {type: String, required: true, unique: true},
+        id: {type: String, required: true },
         label: {type: String, required: true},
         mode: {type: String, required:true, enum: ['no', 'yes', 'read', 'write']},
         data: {type: String, enum: ['my', 'team', 'department', 'domain', 'all']}

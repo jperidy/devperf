@@ -12,7 +12,7 @@ const redirectAZ = asyncHandler(async (req, res) => {
     const authCodeUrlParameters = {
         scopes: ["user.read"],
         //redirectUri: "http://localhost:5000/api/users/redirect",
-        redirectUri: "http://localhost:3000/login",
+        redirectUri: process.env.AZ_REDIRECT_URI,
     };
 
     cca.getAuthCodeUrl(authCodeUrlParameters).then((response) => {
@@ -29,7 +29,7 @@ const authUserAz = asyncHandler(async (req, res) => {
     const tokenRequest = {
         code: req.query.code,
         scopes: ["user.read"],
-        redirectUri: "http://localhost:3000/login",
+        redirectUri: process.env.AZ_REDIRECT_URI,
     };
 
     try {

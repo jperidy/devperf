@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
-    mongoose.connect(process.env.MONGO_URI, {
+
+    const uri = process.env.MONGO_TARGET === 'docker' ? process.env.MONGO_URI_LOCAL : process.env.MONGO_URI 
+    //mongoose.connect(process.env.MONGO_URI, {
+    //console.log('database loacation: ' + uri);
+    mongoose.connect(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,
