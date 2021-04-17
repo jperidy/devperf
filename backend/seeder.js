@@ -2,13 +2,29 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const Month = require('./models/monthModel');
 const User = require('./models/userModel');
-const Consultant = require('./models/consultantModel')
+const Consultant = require('./models/consultantModel');
 const Pxx = require('./models/pxxModel');
 const Skill = require('./models/skillModels');
 const Deal = require('./models/dealModel');
-const connectDB = require('./config/db');
+//const connectDB = require('./config/db');
 
-const {getConsultantData, getCDMData} = require('./data/consultantData');
+const connectDB = async () => {
+    
+    let uri = process.env.MONGO_URI.replace('@mongodb:27017', '@localhost:27017');
+    mongoose.connect(uri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+        useCreateIndex: true
+    })
+        .then((conn) => console.log(`MongoDB connected: ${conn.connection.host}`))
+        .catch((error) => {
+            console.log(`Error: ${error.message}`)
+            process.exit(1)
+        })
+}
+
+const {getConsultantData, getCDMData, getConsultantDataFromWk} = require('./data/consultantData');
 const { getUserData } = require('./data/userData');
 const { getSkills } = require('./data/skillData');
 const { getDeals } = require('./data/dealsData');
@@ -18,7 +34,8 @@ const { getAccessData } = require('./data/accessData');
 const { getClient } = require('./data/clientData');
 
 dotenv.config();
-connectDB();
+
+connectDB(process.env.MONGO_URI.replace('@mongodb:27017', '@localhost:27017'));
 
 const importData = async () => {
     
@@ -131,7 +148,7 @@ const destroyData = async () => {
         await Month.deleteMany();
         await Pxx.deleteMany();
         await Consultant.deleteMany();
-        await Skill.deleteMany
+        await Skill.deleteMany();
         
         console.log('Data deleted');
         process.exit();
@@ -199,6 +216,61 @@ const clientUpdate = async () => {
     }
 }
 
+const initDataBase = async () => {
+
+    try {
+
+        // Delete all created data
+        //await Month.deleteMany();
+        await Skill.deleteMany();
+        await Consultant.deleteMany();
+        await User.deleteMany();
+        await Pxx.deleteMany();
+
+        console.log('Data deleted')
+
+        // Populate skills
+        const skillsData = getSkills();
+        const skillsDataCreated = await Skill.insertMany(skillsData);
+        console.log('Skills created');
+
+        // Populate profils
+        const profilData = getAccessData();
+        const profilDataCreated = await Access.insertMany(profilData);
+        const adminId = profilDataCreated.filter( x => x.profil === 'admin')[0]._id;
+        const coordinatorId = profilDataCreated.filter( x => x.profil === 'coordinator')[0]._id;
+        const cdmId = profilDataCreated.filter( x => x.profil === 'cdm')[0]._id;
+
+        console.log(`Profil data created: 
+            - admin_id = ${adminId}
+            - coordinator_id = ${coordinatorId}
+            - cdm_id = ${cdmId}`);
+        
+        // Populate consultants
+        await getConsultantDataFromWk('hr.presence.xlsx', 'DET', cdmId);
+        console.log(`
+        #################################################
+        ########## SECOND ROUND #########################
+        #################################################
+        `)
+        const consultantDataImportResult = await getConsultantDataFromWk('hr.presence.xlsx', 'DET', cdmId);
+
+        console.log('Consultant data imported: ' + consultantDataImportResult.length);
+        console.log('User data imported');
+        await controleAndCreatePxx();
+
+        console.log('Data imported');
+        process.exit();
+        
+        
+    } catch (error) {
+        console.error(error);
+        process.exit(1);
+    }
+
+
+}
+
 if (process.argv[2] === '-d') {
     destroyData();
 } else if (process.argv[2] === '-iprofil') {
@@ -207,6 +279,8 @@ if (process.argv[2] === '-d') {
     profilUpdate();
 } else if (process.argv[2] === '-uclient') {
     clientUpdate();
+} else if (process.argv[2] === '-initDb') {
+    initDataBase();
 } else {
     importData();
 }

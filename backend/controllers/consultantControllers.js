@@ -4,7 +4,7 @@ const Deal = require('../models/dealModel');
 const asyncHandler = require('express-async-handler');
 const { resetPartialTimePxx, updatePartialTimePxx, resetAllPxx } = require('./pxxControllers');
 const { myAccessConsultants } = require('../utils/usersFunctions');
-const cryptoJS = require('crypto-js')
+const cryptoJS = require('crypto-js');
 
 const readXlsxFile = require('read-excel-file/node');
 const fs = require('fs');

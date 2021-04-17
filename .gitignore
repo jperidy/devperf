@@ -14,6 +14,9 @@ node_modules/
 # database
 database
 
+# seeder
+backend/seeder.js
+
 # production
 /frontend/build
 
@@ -26,7 +29,7 @@ uploads/pxx/*
 /frontendWithExpress
 
 # dockers
-docker-compose.yml
+#docker-compose.yml
 Dockerfile
 .dockerignore
 
