@@ -281,6 +281,56 @@ const updateUser = asyncHandler(async(req,res) =>{
     }
 });
 
+// @desc    get user profile
+// @route   GET /api/users/profile
+// @access  Private
+const getUserProfile = asyncHandler(async(req,res) =>{
+    
+    const user = await User.findById(req.user._id); // with protect middleware we had _id in the req
+    
+    if (user) {
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin,
+        })
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+});
+
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private
+const updateUserProfile = asyncHandler(async(req,res) =>{
+    
+    //console.log('req.user', req.user)
+    const user = await User.findById(req.user._id); // with protect middleware we had _id in the req
+    
+    if (user) {
+        user.name = req.body.name || user.name; // in the case if you do not change the name
+        user.email = req.body.email || user.email;
+        if (req.body.password) {
+            user.password = req.body.password;
+        }
+    const updateUser = await user.save();
+
+    res.json({
+        _id: updateUser._id,
+        name: updateUser.name,
+        email: updateUser.email,
+        isAdmin: updateUser.isAdmin,
+        token: generateToken(updateUser._id),
+    });
+
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+});
+
 module.exports = { 
     redirectAZ,
     authUserAz,
@@ -289,5 +339,7 @@ module.exports = {
     getUsers, 
     deleteUser, 
     getUserById, 
-    updateUser
+    updateUser,
+    getUserProfile,
+    updateUserProfile
 };

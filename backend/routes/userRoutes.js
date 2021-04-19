@@ -7,17 +7,19 @@ const {
     getUsers, 
     deleteUser, 
     getUserById, 
-    updateUser
+    updateUser,
+    getUserProfile,
+    updateUserProfile
 } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
 
 const router = express.Router();
 
+router.route('/profile')
+    .get(protect, getUserProfile)
+    .put(protect, updateUserProfile);
 
-router.route('/')
-.get(protect, getUsers)
-.post(registerUser);
 
 router.post('/login', authUser);
 router.get('/redirectAz', redirectAZ);
@@ -28,20 +30,22 @@ router.route('/:id')
     .get(protect, getUserById)
     .put(protect, updateUser);
 
-/*
+
 router.route('/')
-    .post(registerUser)
-    .get(protect, adminLevelZero, getUsers);
+    .get(protect, getUsers)
+    .post(registerUser);
 
-router.post('/login', authUser);
+// router.route('/')
+//     .post(registerUser)
+//     .get(protect, adminLevelZero, getUsers);
 
-router.route('/profile')
-    .get(protect, getUserProfile)
-    .put(protect, updateUserProfile);
-router.route('/:id')
-    .delete(protect, adminLevelOne, deleteUser)
-    .get(protect, adminLevelOne, getUserById)
-    .put(protect, adminLevelOne, updateUser);
-*/
+// router.post('/login', authUser);
+
+
+// router.route('/:id')
+//     .delete(protect, adminLevelOne, deleteUser)
+//     .get(protect, adminLevelOne, getUserById)
+//     .put(protect, adminLevelOne, updateUser);
+
 
 module.exports = router;

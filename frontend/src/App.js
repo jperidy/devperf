@@ -23,6 +23,7 @@ import EnvoyerMailsScreen from './screens/EnvoyerMailsScreen';
 // MSAL imports
 import { MsalProvider } from "@azure/msal-react";
 import { CustomNavigationClient } from "./utils/NavigationClient";
+import ProfileScreen from './screens/ProfileScreen';
 
 
 const App = () => {
@@ -34,6 +35,7 @@ const App = () => {
         <Container>
           <Route path='/login' component={LoginScreen} exact />
           <Route path='/register' component={RegisterScreen} exact />
+          <Route path='/profile' component={ProfileScreen} exact />
           <Route path='/staffing' component={StaffingEditScreen} exact />
           <Route path='/staffing/:id' component={StaffingEditScreen} exact />
           <Route path='/pxx' component={PxxEditScreen} exact />

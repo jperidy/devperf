@@ -1,0 +1,69 @@
+version: '3.7'
+services:
+  devpdc-main-app:
+    build: .
+    image: jbperidy/devpdc-main-app:0.0.${COMPOSE_VERSION}-RELEASE
+    container_name: devpdc_main_app
+    environment: 
+      - MONGO_URI=${MONGO_URI}
+    depends_on:
+      - mongodb
+    ports:
+      - "5000:5000"
+    restart: always
+    networks:
+      - devpdc-network
+
+  mongodb:
+    build: ./database/mongoDatabase/
+    image: jbperidy/devpdc-mongo-db:0.0.${COMPOSE_VERSION}-RELEASE
+    container_name: devpdc_mongo_db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - devpdc-network
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    
+  mongo-express:
+    build: ./database/mongoExpressReader/
+    image: jbperidy/devpdc-mongo-express:0.0.${COMPOSE_VERSION}-RELEASE
+    container_name: devpdc_mongo_express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=${ME_CONFIG_MONGODB_SERVER}
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=${ME_CONFIG_MONGODB_ENABLE_ADMIN}
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${ME_CONFIG_MONGODB_ADMINUSERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${ME_CONFIG_MONGODB_ADMINPASSWORD}
+      - ME_CONFIG_BASICAUTH_USERNAME=${ME_CONFIG_BASICAUTH_USERNAME}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${ME_CONFIG_BASICAUTH_PASSWORD}
+    depends_on:
+      - mongodb
+    networks:
+      - devpdc-network
+    ports:
+      - 8081:8081
+    healthcheck:
+      test:  wget --quiet --tries=3 --spider http://admin:${ME_CONFIG_BASICAUTH_PASSWORD}@localhost:8081 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+      
+volumes:
+  mongodb-data:
+    name: mongodb-data
+    
+networks:
+  devpdc-network:
+    name: devpdc-network
+

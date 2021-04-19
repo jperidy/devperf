@@ -19,9 +19,9 @@ import {
     USER_LOGIN_SUCCESS,
     USER_LOGIN_FAIL,
     USER_LOGOUT,
-    //USER_UPDATE_PROFILE_REQUEST,
-    //USER_UPDATE_PROFILE_SUCCESS,
-    //USER_UPDATE_PROFILE_FAIL,
+    USER_UPDATE_PROFILE_REQUEST,
+    USER_UPDATE_PROFILE_SUCCESS,
+    USER_UPDATE_PROFILE_FAIL,
     USER_UPDATE_REQUEST,
     USER_UPDATE_SUCCESS,
     USER_UPDATE_FAIL,
@@ -191,8 +191,6 @@ export const getUserDetails = (id) => async(dispatch, getState) => {
     }
 };
 
-
-/*
 export const updateUserProfile = (user) => async(dispatch, getState) => {
     try {
 
@@ -217,17 +215,17 @@ export const updateUserProfile = (user) => async(dispatch, getState) => {
             payload: data
         });
 
-        dispatch({
-            type: USER_LOGIN_SUCCESS,
-            payload: data,
-        });
+        // dispatch({
+        //     type: USER_LOGIN_SUCCESS,
+        //     payload: data,
+        // });
 
-        dispatch({
-            type: USER_DETAILS_SUCCESS,
-            payload: data,
-        });
+        // dispatch({
+        //     type: USER_DETAILS_SUCCESS,
+        //     payload: data,
+        // });
 
-        localStorage.setItem('userInfo', JSON.stringify(data));
+        //localStorage.setItem('userInfo', JSON.stringify(data));
 
     } catch (error) {
         dispatch({
@@ -238,7 +236,6 @@ export const updateUserProfile = (user) => async(dispatch, getState) => {
         });
     }
 };
-*/
 
 export const listUsers = (practice='', keyword='', pageNumber='', pageSize='15') => async(dispatch, getState) => {
     try {

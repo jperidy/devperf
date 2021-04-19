@@ -31,7 +31,8 @@ const { getDeals } = require('./data/dealsData');
 const { controleAndCreatePxx } = require('./controllers/cronJobsControllers');
 const Access = require('./models/accessModel');
 const { getAccessData } = require('./data/accessData');
-const { getClient } = require('./data/clientData');
+const { getClient, initClient } = require('./data/clientData');
+const Client = require('./models/clientModel');
 
 dotenv.config();
 
@@ -127,7 +128,7 @@ const importData = async () => {
         await getClient();
 
         console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running >>> start');
-        await controleAndCreatePxx();
+        await controleAndCreatePxx(0);
 
 
         console.log('Data imported');
@@ -220,19 +221,17 @@ const initDataBase = async () => {
 
     try {
 
-        // Delete all created data
-        //await Month.deleteMany();
         await Skill.deleteMany();
         await Consultant.deleteMany();
         await User.deleteMany();
         await Pxx.deleteMany();
-
+        await Client.deleteMany();
         console.log('Data deleted')
 
         // Populate skills
         const skillsData = getSkills();
         const skillsDataCreated = await Skill.insertMany(skillsData);
-        console.log('Skills created');
+        console.log('Skills created: ' + skillsDataCreated.length);
 
         // Populate profils
         const profilData = getAccessData();
@@ -247,28 +246,27 @@ const initDataBase = async () => {
             - cdm_id = ${cdmId}`);
         
         // Populate consultants
-        await getConsultantDataFromWk('hr.presence.xlsx', 'DET', cdmId);
-        console.log(`
-        #################################################
-        ########## SECOND ROUND #########################
-        #################################################
-        `)
-        const consultantDataImportResult = await getConsultantDataFromWk('hr.presence.xlsx', 'DET', cdmId);
+        const { message: messageConsultantsFirst } = await getConsultantDataFromWk('hr.presence.xlsx', 'DET', cdmId);
+        console.log(messageConsultantsFirst);
+        // Again to match consultant and CDM   
+        const { message: messageConsultantsSecond } = await getConsultantDataFromWk('hr.presence.xlsx', 'DET', cdmId);
+        console.log(messageConsultantsSecond);
 
-        console.log('Consultant data imported: ' + consultantDataImportResult.length);
-        console.log('User data imported');
-        await controleAndCreatePxx();
+        // Populate client
+        const { data, message:messageClient } = await initClient();
+        console.log(messageClient);
 
-        console.log('Data imported');
+        // Populate Pxx
+        console.log('Start creating Pxx');
+        await controleAndCreatePxx(0);
+        console.log('End creating Pxx');
+
         process.exit();
-        
         
     } catch (error) {
         console.error(error);
         process.exit(1);
     }
-
-
 }
 
 if (process.argv[2] === '-d') {

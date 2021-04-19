@@ -400,8 +400,12 @@ async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) 
         console.log(info);
     }
 
-    return 'All consultant data imported';
-
+    return { message: `Consultant data imported: ${numberOfConsultant}
+        - Created: ${numberOfCreate}
+        - Updated: ${numberOfUpdate}
+        - Errors: ${numberOfErrors}
+        - Warning: ${numberOfWarning}` 
+    };
 }
 
 module.exports = {getConsultantData, getCDMData, getConsultantDataFromWk};

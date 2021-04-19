@@ -1,5 +1,6 @@
 const Deal = require('../models/dealModel');
-const Client = require('../models/clientModel')
+const Client = require('../models/clientModel');
+const Mail = require('nodemailer/lib/mailer');
 
 const getClient = async () => {
 
@@ -19,4 +20,32 @@ const getClient = async () => {
     console.log('client data created')
 }
 
-module.exports = {getClient};
+const initClient = async () => {
+    const clientData = [
+        {
+            name: "TOTAL",
+            commercialTeam: [
+                { contactEmail: 'commercial_total@Mail.com', contactName: 'commercial_total'},
+                { contactEmail: 'nom_total@Mail.com', contactName: 'nom_total'},
+            ]
+
+        },{
+            name: "ENGIE",
+            commercialTeam: [
+                { contactEmail: 'commercial_engie@Mail.com', contactName: 'commercial_engie'},
+                { contactEmail: 'nom_engie@Mail.com', contactName: 'nom_engie'},
+            ]
+
+        }
+    ];
+
+    try {
+        const createdClient = await Client.insertMany(clientData);
+        return {data: createdClient, message: `Client created: ${createdClient.length}`}
+    } catch (error) {
+        console.log(error);
+        return {data: error, message: 'Error no client data imported'}
+    }
+}
+
+module.exports = {getClient, initClient};
