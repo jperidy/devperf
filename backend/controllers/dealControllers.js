@@ -140,6 +140,16 @@ const getAllDeals = asyncHandler(async (req, res) => {
         }
     }
 
+    // let searchOwnerId = {};
+    // if (req.query.filter === 'onlyMy') {
+    //     searchOwnerId = {
+    //         $or: [
+    //             { 'contacts.primary': req.user.consultantProfil._id },
+    //             { 'contacts.secondary': req.user.consultantProfil._id }
+    //         ]
+    //     }
+    // }
+
     let searchStaff = {};
     if(req.query.staff) {
         const staffId = await Consultant.find({name: {$regex: req.query.staff, $options: 'i'}})

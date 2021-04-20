@@ -55,6 +55,7 @@ const consultantSchema = mongoose.Schema({
         required: false,
         ref:'Consultant'
     },
+    cdmDelegation: [{ cdmId: {type: mongoose.Schema.Types.ObjectId }, name: {type: String} }],
     isCDM: {
         type: Boolean,
         required: true,
@@ -72,6 +73,12 @@ const consultantSchema = mongoose.Schema({
         ]
     },
     comment: {
+        type: String,
+    },
+    personalObjectives: {
+        type: String,
+    },
+    talentReviewObjectives: {
         type: String,
     }
 }, {

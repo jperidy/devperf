@@ -67,7 +67,7 @@ import {
     CONSULTANT_UPDATE_WK_FAIL
 } from '../constants/consultantConstants';
 
-export const getAllMyConsultants = () => async (dispatch, getState) => {
+export const getAllMyConsultants = (option = '') => async (dispatch, getState) => {
 
     try {
 
@@ -82,7 +82,7 @@ export const getAllMyConsultants = () => async (dispatch, getState) => {
             }
         };
 
-        const { data } = await axios.get('/api/consultants', config);        
+        const { data } = await axios.get(`/api/consultants?option=${option}`, config);        
 
         dispatch({ type: CONSULTANTS_MY_DETAILS_SUCCESS, payload: data });
 

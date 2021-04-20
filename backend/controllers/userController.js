@@ -40,7 +40,7 @@ const authUserAz = asyncHandler(async (req, res) => {
         const email = response.idTokenClaims.preferred_username;
 
         const user = await User.findOne({ email })
-        .populate({ path:'consultantProfil', select:'practice name' })
+        .populate({ path:'consultantProfil', select:'practice name isCDM' })
         .populate('profil');
 
         if (user && user.status === 'Validated') {
@@ -106,7 +106,7 @@ const authUser = asyncHandler(async(req,res) =>{
     const { email, password } = req.body;
 
     const user = await User.findOne({ email })
-        .populate({ path:'consultantProfil', select:'practice name' })
+        .populate({ path:'consultantProfil', select:'practice name isCDM' })
         .populate('profil');
     if(user && (await user.matchPassword(password))) {
         if(user.status === 'Validated') {

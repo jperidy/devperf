@@ -33,6 +33,17 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
         <ListGroup.Item>
 
             <Row>
+                <Col xs={4} className='text-center align-middle'>
+                    <Button
+                        className='btn btn-primary mt-3'
+                        variant='primary'
+                        size='sm'
+                        onClick={() => navigationMonthHandler(-1)}
+                        style={{width: '8em'}}
+                    ><i className="fas fa-caret-up"></i>  Previous</Button>
+                </Col>
+            </Row>
+            <Row>
                 <Col xs={4} className="text-center align-middle px-1 pb-2" style={{height: '2em'}}> {loadingUpdate && <Loader />}</Col>
                 <Col xs={2} className="text-center align-middle px-1 pb-2"><strong>Prd</strong></Col>
                 <Col xs={2} className="text-center align-middle px-1 pb-2"><strong>NPrd</strong></Col>
@@ -54,8 +65,16 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
             )}
             
             <Row>
-                <Col xs={0} md={6}></Col>
-                <Col xs={6} md={2} className="text-right">
+                <Col xs={4} className='text-center align-middle'>
+                    <Button
+                        className='btn btn-primary mt-3'
+                        variant='primary'
+                        size='sm'
+                        onClick={() => navigationMonthHandler(1)}
+                        style={{width: '8em'}}
+                    >Next  <i className="fas fa-caret-down"></i></Button>
+                </Col>
+                {/* <Col xs={6} md={2} className="text-right">
                     <Button
                         className='btn btn-primary mt-3'
                         variant='primary'
@@ -73,7 +92,7 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
                         block
                     >Next  <i className="fas fa-caret-right"></i></Button>
                 </Col>
-                <Col xs={0} md={2}></Col>
+                <Col xs={0} md={2}></Col> */}
             </Row>
 
         </ListGroup.Item>

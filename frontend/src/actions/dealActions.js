@@ -82,7 +82,7 @@ export const updateDeal = (dealId, deal) => async (dispatch, getState) => {
     }
 };
 
-export const getAllDeals = (keyword, pageNumber = 1, pageSize = 20, state = '') => async (dispatch, getState) => {
+export const getAllDeals = (keyword, pageNumber = 1, pageSize = 20, state = '', filter = '') => async (dispatch, getState) => {
 
     try {
 

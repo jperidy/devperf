@@ -89,6 +89,11 @@ const getMyConsultants = asyncHandler(async (req, res) => {
     const myConsultants = await Consultant.find({ cdmId: req.user.consultantProfil }).sort({ 'name': 1 });
     const myProfil = await Consultant.findById(req.user.consultantProfil._id);
     myConsultants.push(myProfil)
+    if (req.query.option === 'delegate') {
+        //console.log(req.user.consultantProfil);
+        const delegateConsultants = await Consultant.find({cdmId: {$in: req.user.consultantProfil.cdmDelegation.map(x => x.cdmId)}}).sort({'name': 1});
+        myConsultants.push(...delegateConsultants);
+    }
     //console.log(myConsultants)
 
     res.json(myConsultants);
@@ -160,6 +165,8 @@ const updateConsultant = asyncHandler(async (req, res) => {
         myConsultant.leaving = consultantToUpdate.leaving;
         myConsultant.isCDM = consultantToUpdate.isCDM;
         myConsultant.isPartialTime = consultantToUpdate.isPartialTime;
+        myConsultant.personalObjectives = consultantToUpdate.personalObjectives;
+        myConsultant.talentReviewObjectives = consultantToUpdate.talentReviewObjectives;
 
         if (arrivalChange || leavingChange) {
             try {

@@ -4,6 +4,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import { LinkContainer } from 'react-router-bootstrap';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import ListGroup from 'react-bootstrap/ListGroup';
 import PxxEditor from '../components/PxxEditor';
@@ -12,7 +13,7 @@ import ConsultantsTab from '../components/ConsultantsTab';
 import Message from '../components/Message';
 import Meta from '../components/Meta';
 import Loader from '../components/Loader';
-import { getAllMyConsultants, updateComment } from '../actions/consultantActions';
+import { getAllMyConsultants, updateComment, updateMyConsultant } from '../actions/consultantActions';
 import { Container, FormControl, InputGroup } from 'react-bootstrap';
 import { setConsultantFocus } from '../actions/consultantActions';
 import ViewStaffs from '../components/ViewStaffs';
@@ -25,12 +26,19 @@ const PxxEditScreen = ({ history }) => {
     const dispatch = useDispatch();
 
     const [commentText, setCommentText] = useState('');
+    const [trObjectives, setTrObjectives] = useState('');
+    const [myObjectives, setMyObjectives] = useState('');
+    const [delegateOption, setDelegationOption] = useState(false);
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const consultantsMyList = useSelector(state => state.consultantsMyList);
     const { loading: loadingConsultantsMyList, error: errorConsultantsMyList, consultantsMy, focus } = consultantsMyList;
+
+    // const consultantMyUpdate = useSelector(state => state.consultantMyUpdate);
+    // const { loading: loadingUpdate, success: successUpdate, error: errorUpdate } = consultantMyUpdate;
+
 
     const [searchDate, setSearchDate] = useState(new Date(Date.now()));
 
@@ -44,12 +52,16 @@ const PxxEditScreen = ({ history }) => {
 
     useEffect(() => {
         // Effect to start loading my consultants and then to update every time focus change
-        dispatch(getAllMyConsultants());
-    }, [dispatch, focus])
+        const option = delegateOption ? 'delegate' : '';
+        console.log('option', option);
+        dispatch(getAllMyConsultants(option));
+    }, [dispatch, focus, delegateOption])
 
     useEffect(() => {
         if (consultantsMy) {
             setCommentText(consultantsMy[focus].comment);
+            setMyObjectives(consultantsMy[focus].personalObjectives);
+            setTrObjectives(consultantsMy[focus].talentReviewObjectives);
         }
     }, [consultantsMy, focus]);
 
@@ -129,7 +141,7 @@ const PxxEditScreen = ({ history }) => {
                                                                 <InputGroup>
                                                                     <FormControl
                                                                         as='textarea'
-                                                                        rows={4}
+                                                                        rows={7}
                                                                         id='comment'
                                                                         value={commentText}
                                                                         placeholder='Please enter a comment'
@@ -155,6 +167,53 @@ const PxxEditScreen = ({ history }) => {
                                                 searchDate={searchDate}
                                                 navigationMonthHandler={navigationMonthHandler}
                                             />
+                                        </Col>
+                                    </Row>
+                                </div>
+
+                                <div className='border-bottom p-3'>
+                                    <Row>
+                                        <Col xs={12} md={6}>
+                                            <label htmlFor="personal-objectives"><strong>My objectives</strong></label>
+                                            <InputGroup>
+                                                <FormControl
+                                                    as='textarea'
+                                                    rows={3}
+                                                    id='personal-objectives'
+                                                    value={myObjectives}
+                                                    placeholder='Please enter a comment'
+                                                    onChange={(e) => {
+                                                        setMyObjectives(e.target.value);
+                                                        dispatch(updateMyConsultant({
+                                                            ...consultantsMy[focus], 
+                                                            personalObjectives: e.target.value,
+                                                            talentReviewObjectives: trObjectives
+                                                        }));
+                                                        //updateCommentHandler(consultantsMy[focus]._id, e.target.value)
+                                                    }}
+                                                ></FormControl>
+                                            </InputGroup>
+                                        </Col>
+                                        <Col xs={12} md={6}>
+                                        <label htmlFor="personal-objectives"><strong>Annual objectives</strong></label>
+                                            <InputGroup>
+                                                <FormControl
+                                                    as='textarea'
+                                                    rows={3}
+                                                    id='personal-objectives'
+                                                    value={trObjectives}
+                                                    placeholder='Please enter a comment'
+                                                    onChange={(e) => {
+                                                        setTrObjectives(e.target.value);
+                                                        dispatch(updateMyConsultant({
+                                                            ...consultantsMy[focus], 
+                                                            personalObjectives: myObjectives,
+                                                            talentReviewObjectives: e.target.value,
+                                                        }))
+                                                        //updateCommentHandler(consultantsMy[focus]._id, e.target.value)
+                                                    }}
+                                                ></FormControl>
+                                            </InputGroup>
                                         </Col>
                                     </Row>
                                 </div>
@@ -194,7 +253,16 @@ const PxxEditScreen = ({ history }) => {
                                 <Row>
                                     <Col>
                                         <DisplayChildren access='viewOthersConsultants'>
-                                            <DropDownTitleContainer title='Others consultants' close={true}>
+                                            <DropDownTitleContainer title='Others consultants' close={false}>
+                                                <Form.Group controlId='switch-only-available' className='mt-3'>
+                                                    <Form.Check
+                                                        type='switch'
+                                                        id='switch-delegation'
+                                                        label='View delegation'
+                                                        checked={delegateOption}
+                                                        onChange={(e) => { e.target.checked === true ? setDelegationOption(true) : setDelegationOption(false) }}
+                                                    ></Form.Check>
+                                                </Form.Group>
                                                 <ConsultantsTab
                                                     consultantsMy={consultantsMy}
                                                     history={history}
