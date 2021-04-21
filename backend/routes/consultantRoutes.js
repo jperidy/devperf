@@ -20,7 +20,8 @@ const {
     getAllLeaders,
     createOrUpdateConsultants,
     updateConsultantFromWavekeeper,
-    uploadConsultantFileWk
+    uploadConsultantFileWk,
+    updateCdmDelegation
 } = require('../controllers/consultantControllers');
 
 const router = express.Router();
@@ -74,6 +75,8 @@ router.get('/admin/consultants', protect, getAllConsultants);
 router.put('/admin/mass-import', protect, createOrUpdateConsultants);
 router.put('/admin/wk', protect, updateConsultantFromWavekeeper);
 router.post('/upload', protect, uploadConsultantFileWk);
+
+router.put('/delegate/:consultantId', protect, updateCdmDelegation);
 
 router.route('/:consultantId')
     .get(protect, authorizeActionOnConsultant, getConsultant)

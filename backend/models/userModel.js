@@ -26,8 +26,12 @@ const userSchema = mongoose.Schema({
     status: {
         type: String,
         required:true,
-        enum: ['Waiting approval', 'Validated', 'Refused'],
+        enum: ['Waiting approval', 'Validated', 'Refused', 'Blocked'],
         default: 'Waiting approval'
+    },
+    tryConnect: {
+        try: {type: Number},
+        lastTry: {type: Date}
     }
 }, {
     timestamps: true,

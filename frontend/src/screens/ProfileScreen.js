@@ -7,7 +7,7 @@ import { getUserDetails, updateUserProfile } from '../actions/userActions';
 import DisplayChildren from '../components/DisplayChildren';
 import { getAllDeals } from '../actions/dealActions';
 import SelectInput from '../components/SelectInput';
-import { getAllCDM } from '../actions/consultantActions';
+import { getAllCDM, updateDelegateConsultant } from '../actions/consultantActions';
 
 
 const ProfileScreen = ({ history }) => {
@@ -36,6 +36,9 @@ const ProfileScreen = ({ history }) => {
 
     const consultantCDMList = useSelector(state => state.consultantCDMList);
     const { cdmList } = consultantCDMList;
+
+    const consultantDelegateUpdate = useSelector(state => state.consultantDelegateUpdate);
+    const { loading: loadingDelegate } = consultantDelegateUpdate;
 
     useEffect(() => {
         if (!userInfo) {
@@ -87,7 +90,12 @@ const ProfileScreen = ({ history }) => {
         if(!cdmList) {
             dispatch(getAllCDM(userInfo.consultantProfil.practice))
         }
-    }, [dispatch, cdmList]);
+    }, [dispatch, cdmList, userInfo]);
+
+    const submitHandlerDelegation = () => {
+        const delegationToUpdate = delegation.map(x => ({cdmId: x.id, name: x.value}))
+        dispatch(updateDelegateConsultant(user.consultantProfil._id, delegationToUpdate))
+    }
 
     const submitHandler = (e) => {
         const form = e.currentTarget;
@@ -96,14 +104,35 @@ const ProfileScreen = ({ history }) => {
             setMessage('Please check your information');
         } else {
             e.preventDefault(); // to avoid page to refresh
-            // Dispatch Register
             setMessage(null); // to reinitialize the message before testing
             setMessageUpdate(null);
-            if (password !== confirmPassword) {
-                setMessage('Passwords do not match')
+
+            const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+            const lowRegex = new RegExp("([a-zA-Z0-9!@#\$%\^&\*]){1,}");
+            
+            const applyRegex = process.env.NODE_ENV === 'production' ? strongRegex : lowRegex;
+            //console.log(applyRegex);
+
+            if (!password || !confirmPassword) {
+                setMessage('Please enter a password');
+                return;
+            }
+            if (password.match(applyRegex)) {
+                if (!password || password !== confirmPassword) {
+                    setMessage('Passwords do not match');
+                    return;
+                } else {
+                    dispatch(updateUserProfile({ id: user._id, name, password }));
+                    return;
+                }
             } else {
-                dispatch(updateUserProfile({ id: user._id, name, password }));
-                //setMessageUpdate('Profile Updated');
+                setMessage(`Please enter strong password: \n
+                    - must be eight characters or longer \n
+                    - must contain at least 1 lowercase alphabetical character \n
+                    - must contain at least 1 uppercase alphabetical character \n
+                    - must contain at least 1 numeric character \n
+                    - must contain at least one special character (!@#$%^&*)`)
+                return;
             }
         }
     };
@@ -153,10 +182,16 @@ const ProfileScreen = ({ history }) => {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         ></Form.Control>
                     </Form.Group>
+                    <Button 
+                        type='submit' 
+                        className='my-3'
+                        variant='primary' 
+                        block
+                    >Update Password</Button>
                     
                     {userInfo && userInfo.consultantProfil.isCDM && (
                         <>
-                            <p>Delegate</p>
+                            <h3>Delegate </h3>
                             <SelectInput
                                 options={cdmList ? cdmList.map(cdm => ({ value: cdm._id, label: cdm.name })) : []}
                                 value={delegation ? delegation.map(x => ({ value: x.id, label: x.value })) : []}
@@ -164,15 +199,14 @@ const ProfileScreen = ({ history }) => {
                                 multi={true}
                             //disabled={!editRequest}
                             />
+                            <Button
+                                onClick={submitHandlerDelegation}
+                                className='my-3'
+                                variant='primary'
+                                block
+                            >{loadingDelegate ? <Loader /> : 'Update Delegations'}</Button>
                         </>
                     )}
-                    
-                    <Button 
-                        type='submit' 
-                        className='my-3'
-                        variant='primary' 
-                        block
-                    >Update</Button>
                 </Form>
             </Col>
 
@@ -217,7 +251,6 @@ const ProfileScreen = ({ history }) => {
                             ))}
                         </tbody>
                     </Table>
-
                     
                 </DisplayChildren>
             </Col>

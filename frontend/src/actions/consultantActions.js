@@ -64,7 +64,10 @@ import {
     CONSULTANT_UPLOAD_WK_FAIL,
     CONSULTANT_UPDATE_WK_REQUEST,
     CONSULTANT_UPDATE_WK_SUCCESS,
-    CONSULTANT_UPDATE_WK_FAIL
+    CONSULTANT_UPDATE_WK_FAIL,
+    CONSULTANT_DELEGATE_UPDATE_REQUEST,
+    CONSULTANT_DELEGATE_UPDATE_SUCCESS,
+    CONSULTANT_DELEGATE_UPDATE_FAIL
 } from '../constants/consultantConstants';
 
 export const getAllMyConsultants = (option = '') => async (dispatch, getState) => {
@@ -155,6 +158,38 @@ export const updateMyConsultant = (consultant) => async (dispatch, getState) => 
     } catch (error) {
         dispatch({
             type: CONSULTANT_MY_UPDATE_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const updateDelegateConsultant = (consultantId, delegation) => async (dispatch, getState) => {
+
+    try {
+
+        dispatch({ type: CONSULTANT_DELEGATE_UPDATE_REQUEST });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers: {
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.put(`/api/consultants/delegate/${consultantId}`, delegation, config);
+        if (!data) {
+            throw new Error('Error: your modification is not saved')
+        }
+
+        dispatch({ type: CONSULTANT_DELEGATE_UPDATE_SUCCESS });
+
+    } catch (error) {
+        dispatch({
+            type: CONSULTANT_DELEGATE_UPDATE_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

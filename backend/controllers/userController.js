@@ -99,33 +99,89 @@ const authUserAz = asyncHandler(async (req, res) => {
 // @desc    Auth user & get token
 // @route   POST /api/users/login
 // @access  Public
-const authUser = asyncHandler(async(req,res) =>{
+const authUser = asyncHandler(async (req, res) => {
 
     //console.log('req.query.code',req.query.code);
+    const maxTry = 3;
 
     const { email, password } = req.body;
 
     const user = await User.findOne({ email })
-        .populate({ path:'consultantProfil', select:'practice name isCDM' })
+        .populate({ path: 'consultantProfil', select: 'practice name isCDM' })
         .populate('profil');
-    if(user && (await user.matchPassword(password))) {
-        if(user.status === 'Validated') {
-            res.json({
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                profil: user.profil,
-                adminLevel: user.adminLevel,
-                consultantProfil: user.consultantProfil,
-                status: user.status,
-                token: generateToken(user._id),
-            });
+    if (user) {
+        if (await user.matchPassword(password)) {
+            if (user.status === 'Validated') {
+                user.tryConnect.try = 0;
+                user.tryConnect.lastTry = new Date(Date.now());
+                await user.save();
+                res.json({
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    profil: user.profil,
+                    adminLevel: user.adminLevel,
+                    consultantProfil: user.consultantProfil,
+                    status: user.status,
+                    token: generateToken(user._id),
+                });
+                return;
+            } else {
+                user.tryConnect.try = 0;
+                user.tryConnect.lastTry = new Date(Date.now());
+                await user.save();
+                res.status(401).json({ message: `Your account is not validated: ${user.status}.
+                Please contact your administrator.` });
+                return;
+            }
         } else {
-            res.status(401).json({message: 'your account is not validated yet'})
+            if (user.status === 'Validated') {
+                // for the first connection
+                if (!user.tryConnect || !user.tryConnect.try) {
+                    user.tryConnect.try = 0;
+                    user.tryConnect.lastTry = new Date(Date.now());
+                }
+    
+                //console.log( (Date.now() - (new Date(user.tryConnect.lastTry)).getTime()) / (1000 * 3600 * 24));
+    
+                if ((Date.now() - (new Date(user.tryConnect.lastTry)).getTime()) / (1000 * 3600 * 24) <= 1) {
+                    user.tryConnect.try = user.tryConnect.try += 1;
+                    user.tryConnect.lastTry = new Date(Date.now());
+    
+                    console.log(user.tryConnect.try)
+                    if(user.tryConnect.try >= maxTry) {
+                        user.tryConnect.try = 0;
+                        user.tryConnect.lastTry = new Date(Date.now());
+                        user.status = 'Blocked';
+                        await user.save();
+                        res.status(401).json({ message: `Sorry your account has been blocked. Please contact your administrator` });
+                        return
+                    }
+    
+                    await user.save();
+                    res.status(401).json({ message: `Invalid password. You can try x${maxTry - user.tryConnect.try}` });
+                    return;
+                } else {
+                    user.tryConnect.try = 1;
+                    user.tryConnect.lastTry = new Date(Date.now());
+                    await user.save();
+                    res.status(401).json({ message: `Invalid password. You can try x${maxTry - user.tryConnect.try}.` });
+    
+                }
+            } else {
+                res.status(401).json({ message: `Your account is not validated: ${user.status}.
+                Please contact your administrator.` });
+                return;
+            }
+
+            //res.status(401).json({ message: 'Invalid email or password' });
         }
+
     } else {
-        res.status(401).json({message: 'Invalid email or password'});
+        res.status(401).json({message: 'Email not found'});
     }
+
+
 });
 
 // @desc    Register a new user

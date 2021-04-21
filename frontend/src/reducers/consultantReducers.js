@@ -83,7 +83,11 @@ import {
     CONSULTANT_UPDATE_WK_REQUEST,
     CONSULTANT_UPDATE_WK_SUCCESS,
     CONSULTANT_UPDATE_WK_FAIL,
-    CONSULTANT_UPDATE_WK_RESET
+    CONSULTANT_UPDATE_WK_RESET,
+    CONSULTANT_DELEGATE_UPDATE_REQUEST,
+    CONSULTANT_DELEGATE_UPDATE_SUCCESS,
+    CONSULTANT_DELEGATE_UPDATE_FAIL,
+    CONSULTANT_DELEGATE_UPDATE_RESET
 } from '../constants/consultantConstants';
 
 export const consultantsMyListReducer = (state = {focus: 0}, action) => {
@@ -184,6 +188,21 @@ export const consultantMyUpdateReducer = (state = {}, action) => {
         case CONSULTANT_MY_UPDATE_FAIL:
             return { loading: false, error: action.payload };
         case CONSULTANT_MY_UPDATE_RESET:
+            return { }
+        default:
+            return state;
+    }
+};
+
+export const consultantDelegateUpdateReducer = (state = {}, action) => {
+    switch (action.type) {
+        case CONSULTANT_DELEGATE_UPDATE_REQUEST:
+            return { loading: true };
+        case CONSULTANT_DELEGATE_UPDATE_SUCCESS:
+            return { loading: false, success: true };
+        case CONSULTANT_DELEGATE_UPDATE_FAIL:
+            return { loading: false, error: action.payload };
+        case CONSULTANT_DELEGATE_UPDATE_RESET:
             return { }
         default:
             return state;

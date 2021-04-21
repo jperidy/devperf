@@ -133,6 +133,26 @@ const getConsultantSkills = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Update cdm delegation
+// @route   PUT /api/delegate/:consultantId
+// @access  Private
+const updateCdmDelegation = asyncHandler(async (req, res) => {
+
+    const newDelegation = req.body;
+    const consultantToUpdate = await Consultant.findById(req.params.consultantId);
+
+    //const access = req.user.profil.api.filter(x => x.name === 'getConsultantSkills')[0].data;
+    //const consultantsId = await myAccessConsultants(access, req);
+
+    if (consultantToUpdate) {
+        consultantToUpdate.cdmDelegation = newDelegation;
+        const consultantUpdated = await consultantToUpdate.save();
+        res.status(200).json(consultantToUpdate);
+    } else {
+        res.status(401).json({ message: `Consultant not found: ${req.params.consultantId}` });
+    }
+});
+
 // @desc    Update a consultant data by Id
 // @route   PUT /api/consultants/:consultantId
 // @access  Private, authorizeActionOnConsultant
@@ -853,6 +873,7 @@ module.exports = {
     getAllConsultants,
     createConsultant,
     deleteConsultant,
+    updateCdmDelegation,
     getAllCDMData,
     getAllPracticesData,
     updateConsultantComment,
