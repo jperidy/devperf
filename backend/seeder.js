@@ -246,10 +246,10 @@ const initDataBase = async () => {
             - cdm_id = ${cdmId}`);
         
         // Populate consultants
-        const { message: messageConsultantsFirst } = await getConsultantDataFromWk('hr.presence.xlsx', 'DET', cdmId);
+        const { message: messageConsultantsFirst } = await getConsultantDataFromWk('hr.presence-test-mail.xlsx', 'DET', cdmId);
         console.log(messageConsultantsFirst);
         // Again to match consultant and CDM   
-        const { message: messageConsultantsSecond } = await getConsultantDataFromWk('hr.presence.xlsx', 'DET', cdmId);
+        const { message: messageConsultantsSecond } = await getConsultantDataFromWk('hr.presence-test-mail.xlsx', 'DET', cdmId);
         console.log(messageConsultantsSecond);
 
         // Populate client

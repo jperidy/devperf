@@ -1,5 +1,5 @@
 const Deal = require('../models/dealModel');
-const Consultant = require('../models/consultantModel');
+const User = require('../models/userModel');
 const Client = require('../models/clientModel');
 const asyncHandler = require('express-async-handler');
 const MailService = require("../config/MailService");
@@ -98,8 +98,8 @@ function sleep(milliseconds) {
     } while (currentDate - date < milliseconds);
 }
 
-// @desc    Get a Deal 
-// @route   GET /api/emails
+// @desc    Send staffing decision email
+// @route   GET /api/emails/decision
 // @access  Private
 const sendStaffingDecisionEmail = asyncHandler(async (req, res) => { 
 
@@ -203,67 +203,56 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
                 //console.log(error);
                 //mailErrors.push({ mailInfo });    
             }
-
-
-        
-        //for (let incr=0 ; incr<contacts.length ; incr++){
-
-            //const myConsultantsId = (await Consultant.find({cdmId: contacts[incr]._id}).select('_id')).map(x => x._id.toString());
-
-            /*const myLeaderLeads = onTrackDeals.filter(x => (
-                x.contacts.primary && contacts[incr]._id && (x.contacts.primary._id.toString() === contacts[incr]._id.toString())
-                || x.contacts.secondary && x.contacts.secondary.map(x => x._id).includes(contacts[incr]._id)
-            ));*/
-
-            /*const myConsultantsLeads = myConsultantsId ? 
-                onTrackDeals.filter(x => myConsultantsId.includes(x.staffingDecision.staff.idConsultant ? x.staffingDecision.staff.idConsultant._id.toString() : '')) 
-                : [];
-
-            if(myConsultantsId.length > 0) {
-                console.log(myConsultantsId);
-                console.log(contacts[incr].name, myConsultantsLeads.length, myConsultantsId.length);
-            }*/
-
-            //const myOthersLeads = onTrackDeals.filter(x => x.othersContacts && x.othersContacts.split(',').includes(contacts[incr].email));
-            
-            /*const decisions = {
-                name: contacts[incr].name,
-                myRequests: myLeaderLeads,
-                myConsultants: myConsultantsLeads,
-                myOthers: myOthersLeads
-            };*/
-
-            /*
-            const mailInfo = {
-                to: "jprdevapp@gmail.com, jbperidy@gmail.com",
-                subject: "Staffing decisions for" + contacts[incr].name,
-                template: "staffingDecisions",
-                context: decisions
-            };
-
-            if(envoyer) {
-                
-                try {
-                    sleep(1000);
-                    await mailService.sendMail(mailInfo);
-                    console.log('email sent to :' + contacts[incr].email);
-                } catch (error) {
-                    console.log('error sending message to: ' + contacts[incr].email);
-                    //console.log(error);
-                    mailErrors.push({ mailInfo });    
-                }
-            }
-            */
-        //}
-
-        /*if(mailErrors.length > 0){
-            res.status(500).json({message: mailErrors})
-        } else {
-            res.status(200).send("email sent");
-        }
-    }*/
-
     }
 });
 
-module.exports = { sendStaffingDecisionEmail, collectContacts };
+// @desc    send email with credendial informations 
+// @route   PUT /api/emails/credential
+// @access  Private
+const sendLoginInformation = asyncHandler(async (req, res) => {
+    
+    const test = true;
+    const user = req.body;
+
+    // const lowerCase = 'abcdefghijklmnopqrlstuvwxyz';
+    // const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    // const number = '0123456789';
+    // const specialChar = '#*@&$%';
+
+    // const mdp = 
+    //     upperCase[Math.floor(Math.random() * upperCase.length)] +
+    //     number[Math.floor(Math.random() * number.length)] +
+    //     lowerCase[Math.floor(Math.random() * lowerCase.length)] +
+    //     number[Math.floor(Math.random() * number.length)] +
+    //     upperCase[Math.floor(Math.random() * upperCase.length)] +
+    //     number[Math.floor(Math.random() * number.length)] +
+    //     lowerCase[Math.floor(Math.random() * lowerCase.length)] +
+    //     specialChar[Math.floor(Math.random() * specialChar.length)]
+
+    const credential = {
+        name: user.name,
+        url: process.env.DOMAIN_NAME,
+        email: user.email,
+        mdp: user.password
+    };
+
+    const userToUpdate = User.findById(user._id);
+    if (userToUpdate) {
+        userToUpdate.password = mdp;
+        await userToUpdate.save();
+        const mailInfo = {
+            to: test ? "jprdevapp@gmail.com" : user.email, // to add others use ","
+            subject: `[Prévisionnel de charge] Tes informations de connexion`,
+            template: "userInscription",
+            context: credential
+        };
+        const mailService = new MailService();
+        await mailService.sendMail(mailInfo);
+        console.log('email sent to :' + user.email);
+        res.status(200).json({message: 'credential modified'});
+    } else {
+        res.status(401).json({message: 'consultant not found'});
+    }
+});
+
+module.exports = { sendStaffingDecisionEmail, collectContacts, sendLoginInformation };

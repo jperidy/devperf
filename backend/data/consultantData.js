@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const readXlsxFile = require('read-excel-file/node');
 const User = require('../models/userModel');
+const axios = require('axios');
 
 function getCDMData (nbCdm, skills, practice) {
     const grade = ['Intern', 'Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
@@ -171,6 +172,25 @@ async function updateAConsultant (id, consultant, cdmProfil) {
     return consultantUpdated;
 }
 
+function generatePassword () {
+    const lowerCase = 'abcdefghijklmnopqrlstuvwxyz';
+    const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const number = '0123456789';
+    const specialChar = '#*@&$%';
+
+    const mdp = 
+        upperCase[Math.floor(Math.random() * upperCase.length)] +
+        number[Math.floor(Math.random() * number.length)] +
+        lowerCase[Math.floor(Math.random() * lowerCase.length)] +
+        number[Math.floor(Math.random() * number.length)] +
+        upperCase[Math.floor(Math.random() * upperCase.length)] +
+        number[Math.floor(Math.random() * number.length)] +
+        lowerCase[Math.floor(Math.random() * lowerCase.length)] +
+        specialChar[Math.floor(Math.random() * specialChar.length)]
+
+    return mdp;
+}
+
 async function createAConsultant (consultant, cdmProfil) {
     const consultantToCreate = {
         ...consultant,
@@ -189,7 +209,7 @@ async function createAConsultant (consultant, cdmProfil) {
             const cdmUser = {
                 name: newConsultant.name,
                 email: newConsultant.email,
-                password : '123456',
+                password : generatePassword(), //'123456',
                 //password : bcrypt.hashSync('123456', 10),
                 consultantProfil: newConsultant._id,
                 isCDM: newConsultant.isCDM,
@@ -197,6 +217,15 @@ async function createAConsultant (consultant, cdmProfil) {
                 status: 'Waiting approval'
             }
             const newCdmUser = await User.create(cdmUser);
+
+            if (newCdmUser) {
+                try {
+                    const { data } = await axios.put(`/api/emails/credential`, cdmUser, config);
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+
             //console.log('new user created: ' + newCdmUser.name);
         }
         return newConsultant;
