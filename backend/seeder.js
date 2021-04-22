@@ -89,19 +89,31 @@ const importData = async () => {
     try {
         const skillsData = getSkills();
         const skillsDataCreated = await Skill.insertMany(skillsData);
+        console.log('skill created');
+
+        const profilData = getAccessData();
+        const profilDataCreated = await Access.insertMany(profilData);
+        console.log('Profil data imported');
+
+        const cdmProfil = profilDataCreated.filter(x => x.profil === 'cdm')[0]._id;
+        const adminProfil = profilDataCreated.filter(x => x.profil === 'admin')[0]._id;
+        const coordinatorProfil = profilDataCreated.filter(x => x.profil === 'coordinator')[0]._id;
+        console.log('cdmProfil', cdmProfil);
         
         let ptc = 'PTC1';
         let cdmData = getCDMData(nbCdm, skillsDataCreated, ptc);
         let cdmDataCreated = await Consultant.insertMany(cdmData);
+        console.log('consultant created');
 
         let cdmId = cdmDataCreated.map( x => x.practice === ptc && x._id);
         let consultantData = getConsultantData(nbConsultants, cdmId, skillsDataCreated, ptc);
         let consultantDataCreated = await Consultant.insertMany(consultantData);
 
         let allConsultants = await Consultant.find({practice: ptc});
-        let userData = getUserData(allConsultants);
+        
+        let userData = getUserData(allConsultants, {cdmProfil, adminProfil, coordinatorProfil});
         let userDataCreated = await User.insertMany(userData);
-
+        console.log('PTC1 created');
 
         ptc = 'PTC2';
         cdmData = getCDMData(nbCdm, skillsDataCreated, ptc);
@@ -112,8 +124,9 @@ const importData = async () => {
         consultantDataCreated = await Consultant.insertMany(consultantData);
 
         allConsultants = await Consultant.find({practice: ptc});
-        userData = getUserData(allConsultants);
+        userData = getUserData(allConsultants, {cdmProfil, adminProfil, coordinatorProfil});
         userDataCreated = await User.insertMany(userData);
+        console.log('PTC2 created');
 
         ptc = 'PTC3';
         cdmData = getCDMData(nbCdm, skillsDataCreated, ptc);
@@ -124,9 +137,9 @@ const importData = async () => {
         consultantDataCreated = await Consultant.insertMany(consultantData);
 
         allConsultants = await Consultant.find({practice: ptc});
-        userData = getUserData(allConsultants);
+        userData = getUserData(allConsultants, {cdmProfil, adminProfil, coordinatorProfil});
         userDataCreated = await User.insertMany(userData);
-
+        console.log('PTC3 created');
         
         ptc = 'PTC4';
         cdmData = getCDMData(nbCdm, skillsDataCreated, ptc);
@@ -137,8 +150,9 @@ const importData = async () => {
         consultantDataCreated = await Consultant.insertMany(consultantData);
         
         allConsultants = await Consultant.find({practice: ptc});
-        userData = getUserData(allConsultants);
+        userData = getUserData(allConsultants, {cdmProfil, adminProfil, coordinatorProfil});
         userDataCreated = await User.insertMany(userData);
+        console.log('PTC4 created');
 
         let allFinalConsultants = await Consultant.find();
         allFinalConsultants = allFinalConsultants.filter(x => ['Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'].includes(x.grade));
@@ -148,6 +162,7 @@ const importData = async () => {
         practices = [... new Set(practices)];
         dealsData = getDeals(nbDeals, allFinalConsultants, practices);
         dealsDataCreated = await Deal.insertMany(dealsData);
+        console.log('Deals created');
         
         await getClient();
 
