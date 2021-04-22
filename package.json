@@ -15,7 +15,7 @@
     "data:importprofil": "node backend/seeder -iprofil",
     "data:updateprofil": "node backend/seeder -uprofil",
     "data:updateclient": "node backend/seeder -uclient",
-    "data:initDb": "node backend/seeder -initDb",
+    "data:delNInitDb": "node backend/seeder -deleteAndInitDb",
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
   },
@@ -49,6 +49,7 @@
     "nodemailer": "^6.4.18",
     "nodemailer-express-handlebars": "^4.0.0",
     "npm": "^7.9.0",
+    "prompt-sync": "^4.2.0",
     "react-router-bootstrap": "^0.25.0",
     "read-excel-file": "^5.0.0",
     "redux": "^4.0.5",

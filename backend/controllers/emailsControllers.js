@@ -209,36 +209,35 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
 // @desc    send email with credendial informations 
 // @route   PUT /api/emails/credential
 // @access  Private
-const sendLoginInformation = asyncHandler(async (req, res) => {
+//const sendLoginInformation = asyncHandler(async (req, res) => {
+const sendLoginInformation = async (user) => {
     
     const test = true;
-    const user = req.body;
 
-    // const lowerCase = 'abcdefghijklmnopqrlstuvwxyz';
-    // const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    // const number = '0123456789';
-    // const specialChar = '#*@&$%';
-
-    // const mdp = 
-    //     upperCase[Math.floor(Math.random() * upperCase.length)] +
-    //     number[Math.floor(Math.random() * number.length)] +
-    //     lowerCase[Math.floor(Math.random() * lowerCase.length)] +
-    //     number[Math.floor(Math.random() * number.length)] +
-    //     upperCase[Math.floor(Math.random() * upperCase.length)] +
-    //     number[Math.floor(Math.random() * number.length)] +
-    //     lowerCase[Math.floor(Math.random() * lowerCase.length)] +
-    //     specialChar[Math.floor(Math.random() * specialChar.length)]
+    let url = '';
+    if (process.env.NODE_ENV === 'development') {
+        url = process.env.DOMAIN_NAME_DEV
+    } else if (['production'].includes(process.env.NODE_ENV)) {
+        url = process.env.DOMAIN_NAME_DEMO
+    } else if (process.env.NODE_ENV === 'docker') {
+        url = process.env.DOMAIN_NAME_DOCKER
+    } else if (process.env.NODE_ENV === 'poc') {
+        url = process.env.DOMAIN_NAME_POC
+    }
 
     const credential = {
         name: user.name,
-        url: process.env.DOMAIN_NAME,
+        url: url,
         email: user.email,
         mdp: user.password
     };
 
-    const userToUpdate = User.findById(user._id);
+    const userToUpdate = (await User.find({email: user.email}))[0];
+    //console.log('userToUpdate', userToUpdate);
+    
     if (userToUpdate) {
-        userToUpdate.password = mdp;
+        userToUpdate.password = user.password;
+        userToUpdate.status = 'Validated';
         await userToUpdate.save();
         const mailInfo = {
             to: test ? "jprdevapp@gmail.com" : user.email, // to add others use ","
@@ -249,10 +248,11 @@ const sendLoginInformation = asyncHandler(async (req, res) => {
         const mailService = new MailService();
         await mailService.sendMail(mailInfo);
         console.log('email sent to :' + user.email);
-        res.status(200).json({message: 'credential modified'});
+        //res.status(200).json({message: 'credential modified'});
     } else {
-        res.status(401).json({message: 'consultant not found'});
+        console.log('consultant not found');
+        //res.status(401).json({message: 'consultant not found'});
     }
-});
+};
 
 module.exports = { sendStaffingDecisionEmail, collectContacts, sendLoginInformation };

@@ -2,7 +2,16 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
     
-    let uri = process.env.MONGO_URI
+    let uri = '';
+    
+    if (['production', 'development'].includes(process.env.NODE_ENV)) {
+        uri = process.env.MONGO_URI_DEMO
+    } else if (process.env.NODE_ENV === 'docker') {
+        uri = process.env.MONGO_URI_DOCKER
+    } else if (process.env.NODE_ENV === 'poc') {
+        uri = process.env.MONGO_URI_POC
+    }
+
     mongoose.connect(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,

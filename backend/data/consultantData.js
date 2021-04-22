@@ -6,6 +6,7 @@ const path = require('path');
 const readXlsxFile = require('read-excel-file/node');
 const User = require('../models/userModel');
 const axios = require('axios');
+const { sendLoginInformation } = require('../controllers/emailsControllers');
 
 function getCDMData (nbCdm, skills, practice) {
     const grade = ['Intern', 'Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner'];
@@ -148,30 +149,6 @@ function transformGrade (gradeIn) {
     return gradeOut;
 }
 
-async function updateAConsultant (id, consultant, cdmProfil) {
-
-    const consultantUpdated = await Consultant.findOneAndUpdate({ _id: id }, consultant, { new: true });
-
-    if (consultantUpdated.isCDM) {
-        const userToUpdate = await User.findOne({consultantProfil: consultantUpdated._id});
-        if (!userToUpdate) {
-            const cdmUser = {
-                name: consultantUpdated.name,
-                email: consultantUpdated.email,
-                password : '123456',
-                //password : bcrypt.hashSync('123456', 10),
-                consultantProfil: consultantUpdated._id,
-                isCDM: consultantUpdated.isCDM,
-                profil: cdmProfil,
-                status: 'Waiting approval'
-            }
-            const newCdmUser = await User.create(cdmUser);
-        }
-    }
-
-    return consultantUpdated;
-}
-
 function generatePassword () {
     const lowerCase = 'abcdefghijklmnopqrlstuvwxyz';
     const upperCase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -188,10 +165,81 @@ function generatePassword () {
         lowerCase[Math.floor(Math.random() * lowerCase.length)] +
         specialChar[Math.floor(Math.random() * specialChar.length)]
 
+    //console.log('mdp', mdp)
     return mdp;
 }
 
-async function createAConsultant (consultant, cdmProfil) {
+async function createUser(consultant, option) {
+
+    let profilId = option.profilsId.consId;
+    if (consultant.isCDM) {
+        profilId = option.profilsId.cdmId
+    }
+
+    if (option.scope === 'all') {
+        const userToUpdate = await User.findOne({consultantProfil: consultant._id});
+        if (!userToUpdate) {
+            const user = {
+                name: consultant.name,
+                email: consultant.email,
+                password : generatePassword(),
+                consultantProfil: consultant._id,
+                isCDM: consultant.isCDM,
+                profil: profilId,
+                status: 'Validated'
+            }
+            const newUser = await User.create(user);
+
+            if (newUser && option.sendOption) {
+                try {
+                    await sendLoginInformation(user)
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
+    }
+
+    if (option.scope === 'cdm' && consultant.isCDM) {
+        const userToUpdate = await User.findOne({consultantProfil: consultant._id});
+        if (!userToUpdate) {
+            const cdmUser = {
+                name: consultant.name,
+                email: consultant.email,
+                password : generatePassword(),
+                consultantProfil: consultant._id,
+                isCDM: consultant.isCDM,
+                profil: profilId,
+                status: 'Validated'
+            }
+            const newCdmUser = await User.create(cdmUser);
+            if (newCdmUser && option.sendOption) {
+                try {
+                    await sendLoginInformation(cdmUser)
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
+    }
+}
+
+async function updateAConsultant (id, consultant, profilsId, userScope, sendOption) {
+
+    const consultantUpdated = await Consultant.findOneAndUpdate({ _id: id }, consultant, { new: true });
+    const newUser = await createUser(consultantUpdated, {
+        scope: userScope, 
+        profilsId: profilsId, 
+        sendOption: sendOption
+    });
+
+    return consultantUpdated;
+}
+
+
+
+async function createAConsultant (consultant, profilsId, userScope, sendOption) {
+
     const consultantToCreate = {
         ...consultant,
         isPartialTime: {
@@ -204,37 +252,21 @@ async function createAConsultant (consultant, cdmProfil) {
     const newConsultant = await Consultant.create(consultantToCreate);
 
     if (newConsultant) {
-
-        if (newConsultant.isCDM) {
-            const cdmUser = {
-                name: newConsultant.name,
-                email: newConsultant.email,
-                password : generatePassword(), //'123456',
-                //password : bcrypt.hashSync('123456', 10),
-                consultantProfil: newConsultant._id,
-                isCDM: newConsultant.isCDM,
-                profil: cdmProfil,
-                status: 'Waiting approval'
-            }
-            const newCdmUser = await User.create(cdmUser);
-
-            if (newCdmUser) {
-                try {
-                    const { data } = await axios.put(`/api/emails/credential`, cdmUser, config);
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-
-            //console.log('new user created: ' + newCdmUser.name);
-        }
+        console.log(`[create] consultant > ${newConsultant.name}`)
+        console.log(userScope, sendOption)
+        await createUser(newConsultant, {
+            scope: userScope, 
+            profilsId: profilsId, 
+            sendOption: sendOption
+        });
         return newConsultant;
+
     } else {
         return '';
     }
 }
 
-async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) {
+async function getConsultantDataFromWk(fileName, practiceName, profilsId, userScope, sendOption) {
 
     const anonymise = false;
 
@@ -246,7 +278,8 @@ async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) 
 
     //console.log(req.body);
     //const filePath = req.body.path;
-    const filePath = '/backend/data/' + fileName;
+    //const filePath = '/backend/data/' + fileName;
+    //const filePath = fileName;
 
     const schema = {
         'Collaborateur/Nom': { prop: 'name', type: String },
@@ -272,8 +305,7 @@ async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) 
         'Practice/Nom affiché': { prop: 'practice', type: String }
     }
 
-    const __dir = path.resolve();
-    const file = __dir + filePath // '/backend/data/hr.presence.xlsx';
+    const file = fileName
     const { rows, error } = await readXlsxFile(file, { schema });
 
 
@@ -295,14 +327,12 @@ async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) 
             cdmId = cdmProfil._id;            
         } else {
             numberOfWarning += 1;
-            const msgCdm = `Warning - CDM Profil not found for consultant ${consultant.name} (${consultant.matricule}) and CDM ${consultant.cdmName} (${consultant.cdmMatricule}). >> Please verify profil`;
+            const msgCdm = `[warning] CDM Profil not found for consultant ${consultant.name} (${consultant.matricule}) and CDM ${consultant.cdmName} (${consultant.cdmMatricule}). >> Please verify profil`;
             console.log(msgCdm);
         }  
 
         const consultantToUpdateOrCreate = {
             name: anonymise ? `Prénom NOM ${line + 1}` : consultant.name,
-            //email: `prenom-nom-${line + 1}@jprmail.com`,
-            //email: cryptoJS.MD5(consultant.name).toString(),
             email: consultant.name.replace(' ', '.').toLowerCase() + '@mail.com',
             grade: transformGrade(consultant.grade),
             practice: consultant.practice.split('-')[1],
@@ -327,12 +357,13 @@ async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) 
 
         if (searchConsultant) {
 
-            result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate, cdmProfilAccess);
+            result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate, profilsId, userScope, sendOption);
+            //console.log('update result', result);
             if (result) {
-                info = `Warning - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
+                console.log(`[update] consultant ${consultantToUpdateOrCreate.name}`);
+                //info = `Warning - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
                 if (consultant.partialTime < 1 && result.isPartialTime.value === false) {
-                    info += `\n\t>>Warning - you have to modify partial time - ${consultant.name} (${consultant.matricule}) - ${result._id} > set partial time to ${consultant.partialTime}`
-                    console.log(info);
+                    console.log(`[Warning] consultant : you have to modify partial time - ${consultant.name} (${consultant.matricule}) - ${result._id} > set partial time to ${consultant.partialTime}`);
                 }
                 message.push({
                     _id: result._id,
@@ -340,7 +371,7 @@ async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) 
                     matricule: consultant.matricule,
                     name: consultant.name,
                     result: 'updated',
-                    message: info
+                    //message: info
                 });
                 //resetAllPxx(result);
                 numberOfUpdate += 1;
@@ -353,7 +384,7 @@ async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) 
                     matricule: consultant.matricule,
                     name: consultant.name,
                     result: 'error',
-                    message: info,
+                    //message: info,
                     data: consultantToUpdateOrCreate
                 });
 
@@ -361,7 +392,7 @@ async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) 
                 console.log(info);
             }
         } else {
-            result = await createAConsultant(consultantToUpdateOrCreate, cdmProfilAccess);
+            result = await createAConsultant(consultantToUpdateOrCreate, profilsId, userScope, sendOption);
             if (result) {
                 info = `Info - create - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`;
                 if (consultant.partialTime < 1) {
@@ -386,7 +417,7 @@ async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) 
                     matricule: consultant.matricule,
                     name: consultant.name,
                     result: 'error',
-                    message: info,
+                    //message: info,
                     data: consultantToUpdateOrCreate
                 });
 
@@ -423,7 +454,7 @@ async function getConsultantDataFromWk(fileName, practiceName, cdmProfilAccess) 
             matricule: consultantNotUpdated[incr].matricule,
             name: consultantNotUpdated[incr].name,
             result: 'warning',
-            message: info,
+            //message: info,
             data: consultantNotUpdated[incr]
         });
         console.log(info);

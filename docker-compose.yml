@@ -5,6 +5,7 @@ services:
     image: jbperidy/devpdc-main-app:0.0.${COMPOSE_VERSION}-RELEASE
     container_name: devpdc_main_app
     environment: 
+      - NODE_ENV=${NODE_ENV}
       - MONGO_URI=${MONGO_URI}
     depends_on:
       - mongodb

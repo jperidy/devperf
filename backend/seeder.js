@@ -6,11 +6,24 @@ const Consultant = require('./models/consultantModel');
 const Pxx = require('./models/pxxModel');
 const Skill = require('./models/skillModels');
 const Deal = require('./models/dealModel');
+const prompt = require('prompt-sync')();
+const path = require('path');
+const fs = require('fs');
+
 //const connectDB = require('./config/db');
 
 const connectDB = async () => {
+
+    let uri = '';
     
-    let uri = process.env.MONGO_URI.replace('@mongodb:27017', '@localhost:27017');
+    if (['production', 'development'].includes(process.env.NODE_ENV)) {
+        uri = process.env.MONGO_URI_DEMO
+    } else if (process.env.NODE_ENV === 'docker') {
+        uri = process.env.MONGO_URI_DOCKER
+    } else if (process.env.NODE_ENV === 'poc') {
+        uri = process.env.MONGO_URI_POC
+    }
+    
     mongoose.connect(uri, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -36,7 +49,18 @@ const Client = require('./models/clientModel');
 
 dotenv.config();
 
-connectDB(process.env.MONGO_URI.replace('@mongodb:27017', '@localhost:27017'));
+let uri = '';
+
+if (['production', 'development'].includes(process.env.NODE_ENV)) {
+    uri = process.env.MONGO_URI_DEMO;
+} else if (process.env.NODE_ENV === 'poc') {
+    uri = process.env.MONGO_URI_POC;
+} else if (process.env.NODE_ENV === 'docker') {
+    uri = process.env.MONGO_URI_DOCKER;
+}
+
+//connectDB(process.env.MONGO_URI.replace('@mongodb:27017', '@localhost:27017'));
+connectDB();
 
 const importData = async () => {
     
@@ -190,9 +214,6 @@ const profilUpdate = async () => {
             const searchProfil = await Access.findOne({profil: profilData[incr].profil});
             if (searchProfil) {
                 searchProfil.level = profilData[incr].level;
-                //searchProfil.navbar = profilData[incr].navbar;
-                //searchProfil.dashboards = profilData[incr].dashboards;
-                //searchProfil.pxx = profilData[incr].pxx;
                 searchProfil.frontAccess = profilData[incr].frontAccess;
                 searchProfil.api = profilData[incr].api;
 
@@ -217,49 +238,135 @@ const clientUpdate = async () => {
     }
 }
 
-const initDataBase = async () => {
+const updateDb = async () => {
+
+    // Data to update
+    //let wkFileName = 'hr.presence-test-mail.xlsx';
+    //let practice = 'DET';
+
+    const __dir = path.resolve();
+    const wkDirectory = __dir + '/backend/data/'
+    const files = fs.readdirSync(wkDirectory);
+
+    files.map( x => {
+        if (x.match(/xls$|xlsx$/i)) {
+            console.log(x);
+        }
+    })
+    //console.log(files);
+
+    const wkFileName = prompt('Please enter Wavekeeper filename > ');
+    const practice = prompt('Please enter practice name > ');
+    const sendCredentialMessage = prompt('Do you want to send credentials to new created user ? (y/n) > ');
+    const userScope = prompt('Please select a scope to create user (all, cdm) > ');
+
+    // *********** Populate skills
+    const skillsData = getSkills();
+    let createdSkill = 0;
+    let updatedSkill = 0;
+    for (let incr = 0 ; incr < skillsData.length ; incr++) {
+        const skillToCreateOrUpdate = skillsData[incr];
+        const existeSkill = await Skill.findOne({category: skillToCreateOrUpdate.category, name: skillToCreateOrUpdate.name});
+        if (existeSkill) {
+            existeSkill.description = skillToCreateOrUpdate.description;
+            await existeSkill.save();
+            updatedSkill += 1;
+            console.log(`[update] skill > ${skillToCreateOrUpdate.name}`);
+        } else {
+            await Skill.create(skillToCreateOrUpdate);
+            createdSkill += 1;
+            console.log(`[create] skill > ${skillToCreateOrUpdate.name}`);
+        }
+    }
+    //const skillsDataCreated = await Skill.insertMany(skillsData);
+    console.log(`[result] created skills: ${createdSkill} - updated skills ${updatedSkill}`);
+
+    // *********** Populate profils
+    const profilsData = getAccessData();
+    let createdProfil = 0;
+    let updatedProfil = 0;
+    for (let incr = 0 ; incr < profilsData.length ; incr++) {
+        const profilToCreateOrUpdate = profilsData[incr];
+        const existeProfil = await Access.findOne({profil: profilToCreateOrUpdate.profil});
+        if (existeProfil) {
+            existeProfil.navbar = profilToCreateOrUpdate.navbar;
+            existeProfil.dashboards = profilToCreateOrUpdate.dashboards;
+            existeProfil.pxx = profilToCreateOrUpdate.pxx;
+            existeProfil.api = profilToCreateOrUpdate.api;
+            await existeProfil.save();
+            updatedProfil += 1;
+            console.log(`[update] profil > ${profilToCreateOrUpdate.profil}`);
+        } else {
+            await Access.create(profilToCreateOrUpdate);
+            createdProfil += 1;
+            console.log(`[create] profil > ${profilToCreateOrUpdate.profil}`);
+        }
+    }
+
+    const adminId = (await Access.findOne({profil: 'admin'}))._id;
+    const coordinatorId = (await Access.findOne({profil: 'coordinator'}))._id;
+    const cdmId = (await Access.findOne({profil: 'cdm'}))._id;
+    const consId = (await Access.findOne({profil: 'consultant'}))._id;
+
+    console.log(`Profil data created: 
+        - admin_id = ${adminId}
+        - coordinator_id = ${coordinatorId}
+        - cdm_id = ${cdmId}
+        - consultant_id =${consId} `);
+    
+    // *********** Populate consultants
+    let sendCredentialOption = false;
+    if (sendCredentialMessage.match(/^y|^yes/i)) {
+        sendCredentialOption = true;
+    }
+    const { message: messageConsultantsFirst } = await getConsultantDataFromWk(wkDirectory + wkFileName, practice, {cdmId, consId}, userScope, sendCredentialOption);
+    console.log(messageConsultantsFirst);
+    // Again to match consultant and CDM   
+    const { message: messageConsultantsSecond } = await getConsultantDataFromWk(wkDirectory + wkFileName, practice, {cdmId, consId}, userScope, false);
+    console.log(messageConsultantsSecond);
+
+    // Populate client
+
+    //const { data, message:messageClient } = await initClient();
+    const clientsData = initClient();
+    let createdClient = 0;
+    let updatedClient = 0;
+    for (let incr = 0 ; incr < clientsData.length ; incr++) {
+        const clientToCreateOrUpdate = clientsData[incr];
+        const existeClient = await Client.findOne({name: clientToCreateOrUpdate.name});
+        if (existeClient) {
+            existeClient.commercialTeam = clientToCreateOrUpdate.commercialTeam;
+            await existeClient.save();
+            updatedClient += 1;
+            console.log(`[update] client > ${clientToCreateOrUpdate.name}`);
+        } else {
+            await Client.create(clientToCreateOrUpdate);
+            createdClient += 1;
+            console.log(`[create] client > ${clientToCreateOrUpdate.name}`);
+        }
+    }
+
+    // *********** Populate Pxx
+    console.log('Start creating Pxx');
+    await controleAndCreatePxx(0);
+    console.log('End creating Pxx');
+
+}
+
+const deleteAndInitDataBase = async (option) => {
 
     try {
+        if (option.delete) {
+            await Skill.deleteMany();
+            await Access.deleteMany();
+            await Consultant.deleteMany();
+            await User.deleteMany();
+            await Pxx.deleteMany();
+            await Client.deleteMany();
+            console.log('Data deleted')
+        }
 
-        await Skill.deleteMany();
-        await Consultant.deleteMany();
-        await User.deleteMany();
-        await Pxx.deleteMany();
-        await Client.deleteMany();
-        console.log('Data deleted')
-
-        // Populate skills
-        const skillsData = getSkills();
-        const skillsDataCreated = await Skill.insertMany(skillsData);
-        console.log('Skills created: ' + skillsDataCreated.length);
-
-        // Populate profils
-        const profilData = getAccessData();
-        const profilDataCreated = await Access.insertMany(profilData);
-        const adminId = profilDataCreated.filter( x => x.profil === 'admin')[0]._id;
-        const coordinatorId = profilDataCreated.filter( x => x.profil === 'coordinator')[0]._id;
-        const cdmId = profilDataCreated.filter( x => x.profil === 'cdm')[0]._id;
-
-        console.log(`Profil data created: 
-            - admin_id = ${adminId}
-            - coordinator_id = ${coordinatorId}
-            - cdm_id = ${cdmId}`);
-        
-        // Populate consultants
-        const { message: messageConsultantsFirst } = await getConsultantDataFromWk('hr.presence-test-mail.xlsx', 'DET', cdmId);
-        console.log(messageConsultantsFirst);
-        // Again to match consultant and CDM   
-        const { message: messageConsultantsSecond } = await getConsultantDataFromWk('hr.presence-test-mail.xlsx', 'DET', cdmId);
-        console.log(messageConsultantsSecond);
-
-        // Populate client
-        const { data, message:messageClient } = await initClient();
-        console.log(messageClient);
-
-        // Populate Pxx
-        console.log('Start creating Pxx');
-        await controleAndCreatePxx(0);
-        console.log('End creating Pxx');
+        await updateDb();
 
         process.exit();
         
@@ -269,6 +376,7 @@ const initDataBase = async () => {
     }
 }
 
+
 if (process.argv[2] === '-d') {
     destroyData();
 } else if (process.argv[2] === '-iprofil') {
@@ -277,8 +385,13 @@ if (process.argv[2] === '-d') {
     profilUpdate();
 } else if (process.argv[2] === '-uclient') {
     clientUpdate();
-} else if (process.argv[2] === '-initDb') {
-    initDataBase();
+} else if (process.argv[2] === '-deleteAndInitDb') {
+    const deleteOption = wkFileName = prompt('Do you want to delete existing data ? (y/n) > ');
+    if (deleteOption.match(/^y|^yes/i)) {
+        deleteAndInitDataBase({delete: true});
+    } else {
+        deleteAndInitDataBase({delete: false});
+    }
 } else {
     importData();
 }

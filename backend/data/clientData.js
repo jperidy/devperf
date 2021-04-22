@@ -20,7 +20,7 @@ const getClient = async () => {
     console.log('client data created')
 }
 
-const initClient = async () => {
+const initClient = () => {
     const clientData = [
         {
             name: "TOTAL",
@@ -39,13 +39,15 @@ const initClient = async () => {
         }
     ];
 
-    try {
-        const createdClient = await Client.insertMany(clientData);
-        return {data: createdClient, message: `Client created: ${createdClient.length}`}
-    } catch (error) {
-        console.log(error);
-        return {data: error, message: 'Error no client data imported'}
-    }
+    return clientData;
+
+    // try {
+    //     const createdClient = await Client.insertMany(clientData);
+    //     return {data: createdClient, message: `Client created: ${createdClient.length}`}
+    // } catch (error) {
+    //     console.log(error);
+    //     return {data: error, message: 'Error no client data imported'}
+    // }
 }
 
 module.exports = {getClient, initClient};

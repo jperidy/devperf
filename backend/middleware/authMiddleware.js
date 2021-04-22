@@ -73,24 +73,6 @@ const protect = asyncHandler (async (req, res, next) => {
             res.status(401);
             throw new Error('Not authorized, token failed')
         }
-
-        
-        // try {
-        //     token = req.headers.authorization.split(' ')[1]; // delete of first keyword Bearer seperated with space with token
-            
-        //     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        //     req.user = await User.findById(decoded.id)
-        //         .populate('profil')
-        //         .populate('consultantProfil')
-        //         .select('-password'); // we don't want to add password in the req
-
-        //     next();
-        // } catch (error) {
-        //     console.error(error);
-        //     res.status(401);
-        //     throw new Error('Not authorized, token failed')
-        // }
     }
 
     if(!token){
