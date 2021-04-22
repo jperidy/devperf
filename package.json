@@ -1,6 +1,7 @@
 {
   "name": "devpdc",
   "version": "1.0.0",
+  "engines": {"node": "14.x"}, 
   "description": "application to manage ressources and staffings",
   "main": "server.js",
   "scripts": {
