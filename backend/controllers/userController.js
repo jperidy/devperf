@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/userModel.js');
 const Consultant = require('../models/consultantModel');
-const { myAccessConsultants } = require('../utils/usersFunctions');
+const { myAccessUsers } = require('../utils/usersFunctions');
 const { cca } = require('../config/authConfig');
 
 // @desc    get url to redirect to connect on AZ
@@ -243,11 +243,16 @@ const getUsers = asyncHandler(async(req,res) => {
     } : {};
     
     const access = req.user.profil.api.filter(x => x.name === 'getUsers')[0].data;
-    const consultantsId = await myAccessConsultants(access, req);
-
-    const count = await User.countDocuments({ ...keyword, consultantProfil: {$in: consultantsId} });
-    
-    const users = await User.find({ ...keyword, consultantProfil: {$in: consultantsId} })
+    // const consultantsId = await myAccessConsultants(access, req);
+    // const count = await User.countDocuments({ ...keyword, consultantProfil: {$in: consultantsId} });
+    // const users = await User.find({ ...keyword, consultantProfil: {$in: consultantsId} })
+    //     .populate('consultantProfil').select('-password')
+    //     .populate('profil')
+    //     .limit(pageSize).skip(pageSize * (page - 1));
+    const usersId = await myAccessUsers(access, req);
+    //console.log(usersId);
+    const count = await User.countDocuments({ ...keyword, _id: {$in: usersId} });
+    const users = await User.find({ ...keyword, _id: {$in: usersId} })
         .populate('consultantProfil').select('-password')
         .populate('profil')
         .limit(pageSize).skip(pageSize * (page - 1));
@@ -268,15 +273,24 @@ const deleteUser = asyncHandler(async(req,res) =>{
     
     const user = await User.findById(req.params.id);
     const access = req.user.profil.api.filter(x => x.name === 'deleteUser')[0].data;
-    const consultantsId = await myAccessConsultants(access, req);
+    // const consultantsId = await myAccessConsultants(access, req);
+    const usersId = await myAccessUsers(access, req);
 
     if (user) {
-        if (consultantsId.map(x => x._id.toString()).includes(user.consultantProfil._id.toString())) {
+
+        if (usersId.map(x => x._id.toString()).includes(user._id.toString())) {
             await user.remove();
             res.json({ message: 'User removed' })
         } else {
             res.status(400).json({message: 'you are not allowed to delete this user'});
         }
+
+        // if (consultantsId.map(x => x._id.toString()).includes(user.consultantProfil._id.toString())) {
+        //     await user.remove();
+        //     res.json({ message: 'User removed' })
+        // } else {
+        //     res.status(400).json({message: 'you are not allowed to delete this user'});
+        // }
     } else {
         res.status(404).json({message: 'User not found'});
     }
@@ -290,7 +304,9 @@ const deleteUser = asyncHandler(async(req,res) =>{
 const getUserById = asyncHandler(async(req,res) =>{
 
     const access = req.user.profil.api.filter(x => x.name === 'getUserById')[0].data;
-    const consultantsId = await myAccessConsultants(access, req);
+    console.log('access', access);
+    //const consultantsId = await myAccessConsultants(access, req);
+    const usersId = await myAccessUsers(access, req);
     
     const user = await User.findById(req.params.id)
         .populate('consultantProfil')
@@ -298,11 +314,17 @@ const getUserById = asyncHandler(async(req,res) =>{
         .select('-password');
 
     if(user) {
-        if (consultantsId.map(x => x._id.toString()).includes(user.consultantProfil._id.toString())) {
+        if (usersId.map(x => x._id.toString()).includes(user._id.toString())) {
             res.json(user);
         } else {
             res.status(404).json({message: 'you are not allowed to access this data'});
         }
+
+        // if (consultantsId.map(x => x._id.toString()).includes(user.consultantProfil._id.toString())) {
+        //     res.json(user);
+        // } else {
+        //     res.status(404).json({message: 'you are not allowed to access this data'});
+        // }
     } else {
         res.status(404).json({message: 'User not found'});
     }
@@ -317,10 +339,11 @@ const updateUser = asyncHandler(async(req,res) =>{
     const user = await User.findById(req.params.id);
 
     const access = req.user.profil.api.filter(x => x.name === 'updateUser')[0].data;
-    const consultantsId = await myAccessConsultants(access, req);
+    //const consultantsId = await myAccessConsultants(access, req);
+    const usersId = await myAccessUsers(access, req);
     
     if (user) {
-        if (consultantsId.map(x => x._id.toString()).includes(user.consultantProfil._id.toString())) {
+        if (usersId.map(x => x._id.toString()).includes(user._id.toString())) {
             user.name = req.body.name;
             user.email = req.body.email;
             user.profil = req.body.profil;

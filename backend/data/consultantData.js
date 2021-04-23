@@ -195,7 +195,7 @@ async function createUser(consultant, option) {
 
             if (newUser && option.sendOption) {
                 try {
-                    await sendLoginInformation(user)
+                    await sendLoginInformation(user, {test: option.sendTest})
                 } catch (error) {
                     console.log(error);
                 }
@@ -218,7 +218,7 @@ async function createUser(consultant, option) {
             const newCdmUser = await User.create(cdmUser);
             if (newCdmUser && option.sendOption) {
                 try {
-                    await sendLoginInformation(cdmUser)
+                    await sendLoginInformation(cdmUser, {test: option.sendTest})
                 } catch (error) {
                     console.log(error);
                 }
@@ -227,13 +227,14 @@ async function createUser(consultant, option) {
     }
 }
 
-async function updateAConsultant (id, consultant, profilsId, userScope, sendOption) {
+async function updateAConsultant (id, consultant, profilsId, userScope, sendOption, sendTest) {
 
     const consultantUpdated = await Consultant.findOneAndUpdate({ _id: id }, consultant, { new: true });
     const newUser = await createUser(consultantUpdated, {
         scope: userScope, 
         profilsId: profilsId, 
-        sendOption: sendOption
+        sendOption: sendOption,
+        sendTest: sendTest
     });
 
     return consultantUpdated;
@@ -241,7 +242,7 @@ async function updateAConsultant (id, consultant, profilsId, userScope, sendOpti
 
 
 
-async function createAConsultant (consultant, profilsId, userScope, sendOption) {
+async function createAConsultant (consultant, profilsId, userScope, sendOption, sendTest) {
 
     const consultantToCreate = {
         ...consultant,
@@ -259,7 +260,8 @@ async function createAConsultant (consultant, profilsId, userScope, sendOption) 
         await createUser(newConsultant, {
             scope: userScope, 
             profilsId: profilsId, 
-            sendOption: sendOption
+            sendOption: sendOption,
+            sendTest: sendTest
         });
         return newConsultant;
 
@@ -268,7 +270,7 @@ async function createAConsultant (consultant, profilsId, userScope, sendOption) 
     }
 }
 
-async function getConsultantDataFromWk(fileName, practiceName, profilsId, userScope, sendOption) {
+async function getConsultantDataFromWk(fileName, practiceName, profilsId, userScope, sendOption, sendTest) {
 
     const anonymise = false;
 
@@ -359,7 +361,7 @@ async function getConsultantDataFromWk(fileName, practiceName, profilsId, userSc
 
         if (searchConsultant) {
 
-            result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate, profilsId, userScope, sendOption);
+            result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate, profilsId, userScope, sendOption, sendTest);
             //console.log('update result', result);
             if (result) {
                 console.log(`[update] consultant ${consultantToUpdateOrCreate.name}`);
@@ -394,7 +396,7 @@ async function getConsultantDataFromWk(fileName, practiceName, profilsId, userSc
                 console.log(info);
             }
         } else {
-            result = await createAConsultant(consultantToUpdateOrCreate, profilsId, userScope, sendOption);
+            result = await createAConsultant(consultantToUpdateOrCreate, profilsId, userScope, sendOption, sendTest);
             if (result) {
                 info = `Info - create - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`;
                 if (consultant.partialTime < 1) {

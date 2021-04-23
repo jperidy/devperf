@@ -53,7 +53,7 @@ const PxxEditScreen = ({ history }) => {
     useEffect(() => {
         // Effect to start loading my consultants and then to update every time focus change
         const option = delegateOption ? 'delegate' : '';
-        console.log('option', option);
+        //console.log('option', option);
         dispatch(getAllMyConsultants(option));
     }, [dispatch, focus, delegateOption])
 

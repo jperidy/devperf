@@ -68,8 +68,8 @@ if (['demo', 'poc', 'docker'].includes(process.env.NODE_ENV)) {
 
 
 // Declaration of cron tasks
-cron.schedule('* * 2 1 * *', () => {
-    console.log(new Date(Date.now()).toISOString() + ': Running ControlAndCreateMonth job at 02:00 the 1fst day of month');
+cron.schedule('0 1 2 1 * *', () => {
+    console.log(new Date(Date.now()).toISOString() + ': Running ControlAndCreateMonth job at 02:01 the 1fst day of month');
     try {
         controlAndCreateMonth();
     } catch (error) {
@@ -77,8 +77,8 @@ cron.schedule('* * 2 1 * *', () => {
     }
 });
 
-cron.schedule('* 1 * * * *', () => {
-    console.log(new Date(Date.now()).toISOString() + ': Running ControleAndCreatePxx job at 01:00 >>> start');
+cron.schedule('0 1 1 * * *', () => {
+    console.log(new Date(Date.now()).toISOString() + ': Running ControleAndCreatePxx job at 01:01 >>> start');
     try {
         controleAndCreatePxx(0);
     } catch (error) {

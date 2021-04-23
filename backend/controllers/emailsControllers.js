@@ -210,9 +210,10 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
 // @route   PUT /api/emails/credential
 // @access  Private
 //const sendLoginInformation = asyncHandler(async (req, res) => {
-const sendLoginInformation = async (user) => {
+const sendLoginInformation = async (user, {test}) => {
     
-    const test = true;
+    console.log(test);
+    //const test = true;
 
     let url = '';
     if (process.env.NODE_ENV === 'development') {
@@ -239,15 +240,16 @@ const sendLoginInformation = async (user) => {
         userToUpdate.password = user.password;
         userToUpdate.status = 'Validated';
         await userToUpdate.save();
+        const emailToSend = test ? "jprdevapp@gmail.com" : user.email; // to add others use ","
         const mailInfo = {
-            to: test ? "jprdevapp@gmail.com" : user.email, // to add others use ","
+            to: emailToSend,
             subject: `[Prévisionnel de charge] Tes informations de connexion`,
             template: "userInscription",
             context: credential
         };
         const mailService = new MailService();
         await mailService.sendMail(mailInfo);
-        console.log('email sent to :' + user.email);
+        console.log('email sent to :' + emailToSend);
         //res.status(200).json({message: 'credential modified'});
     } else {
         console.log('consultant not found');

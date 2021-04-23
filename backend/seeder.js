@@ -259,11 +259,6 @@ const updateDb = async () => {
     //let wkFileName = 'hr.presence-test-mail.xlsx';
     //let practice = 'DET';
 
-    const confirm = prompt(`CURRENT ENV: ${process.env.NODE_ENV}\n\nDo you want to continue? (y/n)`);
-    if (confirm === 'n') {
-        process.exit(0);
-    }
-
     const __dir = path.resolve();
     const wkDirectory = __dir + '/backend/data/'
     const files = fs.readdirSync(wkDirectory);
@@ -279,6 +274,7 @@ const updateDb = async () => {
     //const practice = prompt('Please enter practice name > ');
     const practice = ''; // not used
     const sendCredentialMessage = prompt('Do you want to send credentials to new created user ? (y/n) > ');
+    const sendTestAdressMessage = prompt('Do you want to send credentials to test adress ? (y/n) > ');
     const userScope = prompt('Please select a scope to create user (all, cdm) > ');
 
     // *********** Populate skills
@@ -342,10 +338,18 @@ const updateDb = async () => {
     if (sendCredentialMessage.match(/^y|^yes/i)) {
         sendCredentialOption = true;
     }
-    const { message: messageConsultantsFirst } = await getConsultantDataFromWk(wkDirectory + wkFileName, practice, {cdmId, consId}, userScope, sendCredentialOption);
+    let sendTestAdress = true;
+    if (sendTestAdressMessage.match(/^y|^yes/i)) {
+        sendTestAdress = true;
+    }
+    if (sendTestAdressMessage.match(/^n|^no/i)) {
+        sendTestAdress = false;
+    }
+
+    const { message: messageConsultantsFirst } = await getConsultantDataFromWk(wkDirectory + wkFileName, practice, {cdmId, consId, adminId}, userScope, sendCredentialOption, sendTestAdress);
     console.log(messageConsultantsFirst);
     // Again to match consultant and CDM   
-    const { message: messageConsultantsSecond } = await getConsultantDataFromWk(wkDirectory + wkFileName, practice, {cdmId, consId}, userScope, false);
+    const { message: messageConsultantsSecond } = await getConsultantDataFromWk(wkDirectory + wkFileName, practice, {cdmId, consId, adminId}, userScope, false, sendTestAdress);
     console.log(messageConsultantsSecond);
 
     // Populate client
@@ -409,6 +413,11 @@ if (process.argv[2] === '-d') {
 } else if (process.argv[2] === '-uclient') {
     clientUpdate();
 } else if (process.argv[2] === '-deleteAndInitDb') {
+
+    const confirm = prompt(`CURRENT ENV: ${process.env.NODE_ENV}\n\nDo you want to continue? (y/n) >`);
+    if (confirm === 'n') {
+        process.exit(0);
+    }
     const deleteOption = wkFileName = prompt('Do you want to delete existing data ? (y/n) > ');
     if (deleteOption.match(/^y|^yes/i)) {
         deleteAndInitDataBase({delete: true});

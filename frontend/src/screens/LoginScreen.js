@@ -106,6 +106,7 @@ const LoginScreen = ({ location, history }) => {
                                 variant="success"
                                 onClick={azAuthentClick}
                                 block
+                                disabled={process.env.REACT_APP_ENV === 'poc'}
                             >-- AZ Connect --</Button>
                         </Col>
                     </Row>
