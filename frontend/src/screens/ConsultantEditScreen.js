@@ -35,7 +35,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     const [practice, setPractice] = useState('');
     const [grade, setGrade] = useState('Analyst');
 
-    const [cdm, setCdm] = useState('');
+    const [cdm, setCdm] = useState(null);
     const [arrival, setArrival] = useState('');
     const [valued, setValued] = useState('');
     const [leaving, setLeaving] = useState('');
@@ -626,7 +626,8 @@ const ConsultantEditScreen = ({ history, match }) => {
                                             type='submit'
                                             variant='primary'
                                             block
-                                            disabled={!name || !email || !matricule || !practice || !cdm || !valued || !arrival}
+                                            disabled={!name || !email || !matricule || !practice || !valued || !arrival}
+                                            //disabled={!name || !email || !matricule || !practice || !cdm || !valued || !arrival}
                                         >{(loadingUpdate || loadingCreate) ? <Loader /> : valueEditType === 'create' ? "Create" : "Update"}
                                         </Button>
                                     </Col>
