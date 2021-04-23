@@ -67,7 +67,7 @@ const ManageDealsScreen = ({ history }) => {
     const { error: errorDelete, success: successDelete } = dealDelete;
 
     const dealsImportMass = useSelector(state  => state.dealsImportMass);
-    const {loading: loadingImportMass, error: errorImportMass, success: successImportData, datas} = dealsImportMass;
+    const {loading: loadingImportMass, success: successImportData} = dealsImportMass;
 
     useEffect(() => {
 

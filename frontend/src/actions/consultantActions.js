@@ -1,5 +1,4 @@
 import axios from 'axios';
-import fs from 'fs';
 import {
     CONSULTANTS_ALL_ADMIN_DETAILS_FAIL,
     CONSULTANTS_ALL_ADMIN_DETAILS_REQUEST,

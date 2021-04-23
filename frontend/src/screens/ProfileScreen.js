@@ -32,7 +32,7 @@ const ProfileScreen = ({ history }) => {
     const { success: successUpdate, error: errorUpdate } = userUpdateProfil;
 
     const dealAllList = useSelector(state => state.dealAllList);
-    const { error: errorDealList, loading: loadingDealList, deals } = dealAllList;
+    const { deals } = dealAllList;
 
     const consultantCDMList = useSelector(state => state.consultantCDMList);
     const { cdmList } = consultantCDMList;
@@ -107,8 +107,10 @@ const ProfileScreen = ({ history }) => {
             setMessage(null); // to reinitialize the message before testing
             setMessageUpdate(null);
 
-            const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
-            const lowRegex = new RegExp("([a-zA-Z0-9!@#\$%\^&\*]){1,}");
+            //const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+            //const lowRegex = new RegExp("([a-zA-Z0-9!@#\$%\^&\*]){1,}");
+            const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})");
+            const lowRegex = new RegExp("([a-zA-Z0-9!@#$%^&*]){1,}");
             
             const applyRegex = ['demo', 'poc'].includes(process.env.REACT_APP_ENV) ? strongRegex : lowRegex;
             //console.log(applyRegex);

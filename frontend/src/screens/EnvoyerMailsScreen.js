@@ -23,8 +23,8 @@ const EnvoyerMailsScreen = ({history}) => {
     const [massSending, setMassSending] = useState(false);
     const [progress, setProgress] = useState(0);
 
-    const userLogin = useSelector(state => state.userLogin);
-    const { userInfo } = userLogin;
+    // const userLogin = useSelector(state => state.userLogin);
+    // const { userInfo } = userLogin;
 
     const contactsList = useSelector(state => state.contactsList);
     const { loading, contacts } = contactsList;
@@ -32,13 +32,13 @@ const EnvoyerMailsScreen = ({history}) => {
     const sendOneEmail = useSelector(state => state.sendOneEmail);
     const { success, error, email } = sendOneEmail;
 
-    const sleep = (milliseconds) => {
-        const date = Date.now();
-        let currentDate = null;
-        do {
-            currentDate = Date.now();
-        } while (currentDate - date < milliseconds);
-    }
+    // const sleep = (milliseconds) => {
+    //     const date = Date.now();
+    //     let currentDate = null;
+    //     do {
+    //         currentDate = Date.now();
+    //     } while (currentDate - date < milliseconds);
+    // }
 
     const handlerSendADecision = (email, name) => {
         const newContactsInfo = contactList.slice();
