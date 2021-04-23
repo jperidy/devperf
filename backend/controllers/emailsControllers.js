@@ -212,7 +212,7 @@ const sendStaffingDecisionEmail = asyncHandler(async (req, res) => {
 //const sendLoginInformation = asyncHandler(async (req, res) => {
 const sendLoginInformation = async (user, {test}) => {
     
-    console.log(test);
+    //console.log(test);
     //const test = true;
 
     let url = '';

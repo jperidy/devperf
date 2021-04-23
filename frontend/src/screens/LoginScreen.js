@@ -80,7 +80,7 @@ const LoginScreen = ({ location, history }) => {
                             type='email'
                             placeholder='Enter Email'
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => setEmail(e.target.value.toLocaleLowerCase())}
                         ></Form.Control>
                     </Form.Group>
                     <Form.Group controlId='password'>
