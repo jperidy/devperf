@@ -16,8 +16,7 @@
     "data:updateprofil": "node backend/seeder -uprofil",
     "data:updateclient": "node backend/seeder -uclient",
     "data:delNInitDb": "node backend/seeder -deleteAndInitDb",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false REACT_APP_ENV=poc npm install --prefix frontend && npm run build --prefix frontend"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
