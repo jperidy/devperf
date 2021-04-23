@@ -110,7 +110,7 @@ const ProfileScreen = ({ history }) => {
             const strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
             const lowRegex = new RegExp("([a-zA-Z0-9!@#\$%\^&\*]){1,}");
             
-            const applyRegex = ['production', 'poc'].includes(process.env.NODE_ENV) ? strongRegex : lowRegex;
+            const applyRegex = ['demo', 'poc'].includes(process.env.REACT_APP_ENV) ? strongRegex : lowRegex;
             //console.log(applyRegex);
 
             if (!password || !confirmPassword) {

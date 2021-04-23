@@ -8,15 +8,8 @@ import Container from 'react-bootstrap/Container';
 import { logout } from '../actions/userActions';
 import DisplayChildren from './DisplayChildren';
 
-// MSAL
-import { useMsal } from "@azure/msal-react";
-import { AuthenticatedTemplate, UnauthenticatedTemplate } from "@azure/msal-react";
-
 
 const Header = () => {
-
-    // MSAL
-    const { instance } = useMsal();
     
     const dispatch = useDispatch();
 
@@ -26,15 +19,6 @@ const Header = () => {
     const logoutHandler = () => {
         dispatch(logout());
     };
-
-    const logoutHandlerMSAL = (logoutType) => {
-
-        if (logoutType === "popup") {
-            instance.logoutPopup();
-        } else if (logoutType === "redirect") {
-            instance.logoutRedirect();
-        }
-    }
 
     return (
         <header>
@@ -84,16 +68,11 @@ const Header = () => {
                                     </DisplayChildren>
 
                                     <NavDropdown.Divider />
-                                    <UnauthenticatedTemplate>
-                                        <LinkContainer to='/login'>
-                                            <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
-                                        </LinkContainer>
-                                    </UnauthenticatedTemplate>
-                                    <AuthenticatedTemplate>
-                                        <LinkContainer to='/login'>
-                                            <NavDropdown.Item onClick={() => logoutHandlerMSAL('popup')}>Logout</NavDropdown.Item>
-                                        </LinkContainer>
-                                    </AuthenticatedTemplate>
+
+                                    <LinkContainer to='/login'>
+                                        <NavDropdown.Item onClick={logoutHandler}>Logout</NavDropdown.Item>
+                                    </LinkContainer>
+                                    
                                 </NavDropdown>
 
                             ) : (

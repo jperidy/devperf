@@ -23,7 +23,7 @@ const app = express();
 
 if (process.env.NODE_ENV === 'development' ) {
     app.use(morgan('dev'));
-} else if (process.env.NODE_ENV === 'production') {
+} else if (process.env.NODE_ENV === 'demo') {
     app.use(morgan('common'));
 } else if (process.env.NODE_ENV === 'docker') {
     app.use(morgan('common'));
@@ -59,7 +59,7 @@ app.use('/api/emails', emailsRoutes);
 // static route for developpement access to build repository
 const __dir = path.resolve();
 
-if (['production', 'poc', 'docker'].includes(process.env.NODE_ENV)) {
+if (['demo', 'poc', 'docker'].includes(process.env.NODE_ENV)) {
     app.use(express.static(path.join(__dir, '/frontend/build')));
     app.get('*', (req, res) => res.sendFile(path.resolve(__dir, 'frontend', 'build', 'index.html')))
 } else {
@@ -68,8 +68,8 @@ if (['production', 'poc', 'docker'].includes(process.env.NODE_ENV)) {
 
 
 // Declaration of cron tasks
-cron.schedule('*/60 * * * *', () => {
-    console.log(new Date(Date.now()).toISOString() + ': ControlAndCreateMonth running every 60 minutes');
+cron.schedule('* * 2 1 * *', () => {
+    console.log(new Date(Date.now()).toISOString() + ': Running ControlAndCreateMonth job at 02:00 the 1fst day of month');
     try {
         controlAndCreateMonth();
     } catch (error) {
@@ -77,8 +77,8 @@ cron.schedule('*/60 * * * *', () => {
     }
 });
 
-cron.schedule('*/30 * * * *', () => {
-    console.log(new Date(Date.now()).toISOString() + ': ControleAndCreatePxx running every 30 minutes >>> start');
+cron.schedule('* 1 * * * *', () => {
+    console.log(new Date(Date.now()).toISOString() + ': Running ControleAndCreatePxx job at 01:00 >>> start');
     try {
         controleAndCreatePxx(0);
     } catch (error) {
@@ -87,7 +87,7 @@ cron.schedule('*/30 * * * *', () => {
 });
 
 cron.schedule('*/60 * * * *', () => {
-    console.log(new Date(Date.now()).toISOString() + ': deleteOldFiles running every 60 minutes >>> start');
+    console.log(new Date(Date.now()).toISOString() + ': Running deleteOldFiles running every 60 minutes >>> start');
     try {
         deleteOldFiles();
     } catch (error) {

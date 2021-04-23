@@ -217,7 +217,7 @@ const sendLoginInformation = async (user) => {
     let url = '';
     if (process.env.NODE_ENV === 'development') {
         url = process.env.DOMAIN_NAME_DEV
-    } else if (['production'].includes(process.env.NODE_ENV)) {
+    } else if (['demo'].includes(process.env.NODE_ENV)) {
         url = process.env.DOMAIN_NAME_DEMO
     } else if (process.env.NODE_ENV === 'docker') {
         url = process.env.DOMAIN_NAME_DOCKER

@@ -20,9 +20,6 @@ import AccessEditScreen from './screens/AccessEditScreen';
 import ManageCompaniesScreen from './screens/ManageCompaniesScreen';
 import EnvoyerMailsScreen from './screens/EnvoyerMailsScreen';
 
-// MSAL imports
-// import { MsalProvider } from "@azure/msal-react";
-// import { CustomNavigationClient } from "./utils/NavigationClient";
 import ProfileScreen from './screens/ProfileScreen';
 
 

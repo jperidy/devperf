@@ -122,64 +122,73 @@ const LoginScreen = ({ location, history }) => {
 
             </FormContainer>
 
-            <Container>
-                <Row className='justify-content-md-center'>
-                    <Col xs={12} md={6} className='mt-5'>
-                        <h3>Disclaimer</h3>
-                        <p>Welcome on this demo! Please note that this is not an official Wavestone product.<br />
-                        On this online resource management application, you'll be able to:</p>
-                        <ul>
-                            <li>Login with different profiles (admin, coordinator, CDM, manager)</li>
-                            <li>Edit your Pxx</li>
-                            <li>Edit your consultants' profiles (position, expertise, partial time, etc.)</li>
-                            <li>Create, edit and keep track of your staffing requests</li>
-                            <li>Staff your available consultants on staffing requests</li>
-                            <li>Check where a consultant is staffed</li>
-                            <li>Create and manage a dataset of skills for your consultants</li>
-                            <li>Get access to latest KPIs and export the data on Excel</li>
-                        </ul>
-                        <h4>Test acounts logins:</h4>
-                        <Table hover striped>
-                            <thead>
-                                <tr className='table-secondary'>
-                                    <th className='align-middle text-light text-center'>Email</th>
-                                    <th className='align-middle text-light text-center'>Password</th>
-                                    <th className='align-middle text-light text-center'>Description</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td className='align-middle text-center'>cdmptc11000@mail.com</td>
-                                    <td className='align-middle text-center'>123456</td>
-                                    <td className='align-middle text-center'>Admin account with all accreditation on application</td>
-                                </tr>
-                                <tr>
-                                    <td className='align-middle text-center'>cdmptc11001@mail.com</td>
-                                    <td className='align-middle text-center'>123456</td>
-                                    <td className='align-middle text-center'>Coordinator of practice PTC1 account</td>
-                                </tr>
-                                <tr>
-                                    <td className='align-middle text-center'>cdmptc11004@mail.com</td>
-                                    <td className='align-middle text-center'>123456</td>
-                                    <td className='align-middle text-center'>CDM of practice PTC1 account</td>
-                                </tr>
-                                <tr>
-                                    <td className='align-middle text-center'>jessicamichelptc179@mail.com</td>
-                                    <td className='align-middle text-center'>123456</td>
-                                    <td className='align-middle text-center'>Manager of practice PTC1 account</td>
-                                </tr>
-                                <tr>
-                                    <td className='align-middle text-center'>arthurthomasptc112@mail.com</td>
-                                    <td className='align-middle text-center'>123456</td>
-                                    <td className='align-middle text-center'>Consultant of practice PTC1 account</td>
-                                </tr>
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row>
-            </Container>
+            {process.env.REACT_APP_ENV === 'demo' && (
+                <Container>
+                    <Row className='justify-content-md-center'>
+                        <Col xs={12} md={6} className='mt-5'>
+                            <h3>Disclaimer</h3>
+                            <p>Welcome on this demo! Please note that this is not an official Wavestone product.<br />
+                            On this online resource management application, you'll be able to:</p>
+                            <ul>
+                                <li>Login with different profiles (admin, coordinator, CDM, manager)</li>
+                                <li>Edit your Pxx</li>
+                                <li>Edit your consultants' profiles (position, expertise, partial time, etc.)</li>
+                                <li>Create, edit and keep track of your staffing requests</li>
+                                <li>Staff your available consultants on staffing requests</li>
+                                <li>Check where a consultant is staffed</li>
+                                <li>Create and manage a dataset of skills for your consultants</li>
+                                <li>Get access to latest KPIs and export the data on Excel</li>
+                            </ul>
+                            <h4>Test acounts logins:</h4>
+                            <Table hover striped>
+                                <thead>
+                                    <tr className='table-secondary'>
+                                        <th className='align-middle text-light text-center'>Email</th>
+                                        <th className='align-middle text-light text-center'>Password</th>
+                                        <th className='align-middle text-light text-center'>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td className='align-middle text-center'>cdmptc11000@mail.com</td>
+                                        <td className='align-middle text-center'>123456</td>
+                                        <td className='align-middle text-center'>Admin account with all accreditation on application</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='align-middle text-center'>cdmptc11001@mail.com</td>
+                                        <td className='align-middle text-center'>123456</td>
+                                        <td className='align-middle text-center'>Coordinator of practice PTC1 account</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='align-middle text-center'>cdmptc11004@mail.com</td>
+                                        <td className='align-middle text-center'>123456</td>
+                                        <td className='align-middle text-center'>CDM of practice PTC1 account</td>
+                                    </tr>
+                                </tbody>
+                            </Table>
+                        </Col>
+                    </Row>
+                </Container>
+            )}
 
-            {/* </MsalAuthenticationTemplate> */}
+
+            {process.env.REACT_APP_ENV === 'poc' && (
+                <Container>
+                    <Row className='justify-content-md-center'>
+                        <Col xs={12} md={6} className='mt-5'>
+                            <h3>Disclaimer</h3>
+                            <p>Welcome on this poc! Please note that this is not an official Wavestone product.<br />
+                        On this online resource management application, you'll be able to:</p>
+                            <ul>
+                                <li>Edit your activity forecast</li>
+                                <li>Share your personal and annual objectives</li>
+                            </ul>
+                            <p>Others functionalities will come soon!</p>
+                            <br />
+                        </Col>
+                    </Row>
+                </Container>
+            )}
         </>
     );
 };

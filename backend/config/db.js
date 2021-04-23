@@ -4,7 +4,7 @@ const connectDB = async () => {
     
     let uri = '';
     
-    if (['production', 'development'].includes(process.env.NODE_ENV)) {
+    if (['demo', 'development'].includes(process.env.NODE_ENV)) {
         uri = process.env.MONGO_URI_DEMO
     } else if (process.env.NODE_ENV === 'docker') {
         uri = process.env.MONGO_URI_DOCKER

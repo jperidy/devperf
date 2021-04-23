@@ -173,7 +173,10 @@ async function createUser(consultant, option) {
 
     let profilId = option.profilsId.consId;
     if (consultant.isCDM) {
-        profilId = option.profilsId.cdmId
+        profilId = option.profilsId.cdmId;
+    }
+    if (consultant.email.match(/jean-bernard.peridy/i)) {
+        profilId = option.profilsId.adminId;
     }
 
     if (option.scope === 'all') {
@@ -253,7 +256,6 @@ async function createAConsultant (consultant, profilsId, userScope, sendOption) 
 
     if (newConsultant) {
         console.log(`[create] consultant > ${newConsultant.name}`)
-        console.log(userScope, sendOption)
         await createUser(newConsultant, {
             scope: userScope, 
             profilsId: profilsId, 
@@ -311,14 +313,14 @@ async function getConsultantDataFromWk(fileName, practiceName, profilsId, userSc
 
     const message = [];
     // stamps to avoid to proceed too much request
-    const practice = practiceName;
-    const consultantsAllPractice = await Consultant.find({practice: practice});
+    //const practice = practiceName;
+    //const consultantsAllPractice = await Consultant.find({practice: practice});
+    const consultantsAllPractice = await Consultant.find();
 
     for (let line = 0; line < rows.length; line++) {
         numberOfConsultant += 1;
         const consultant = rows[line];
         console.log('-----------------------> ' + line + ': ' + consultant.name);
-
         const searchConsultant = consultantsAllPractice.filter(x => x.matricule === consultant.matricule)[0];
         const cdmMatricule = consultant.cdmMatricule ? consultant.cdmMatricule.toString().padStart(9, 0) : '';
         const cdmProfil = consultantsAllPractice.filter(x => x.matricule === cdmMatricule)[0];
@@ -333,7 +335,7 @@ async function getConsultantDataFromWk(fileName, practiceName, profilsId, userSc
 
         const consultantToUpdateOrCreate = {
             name: anonymise ? `Prénom NOM ${line + 1}` : consultant.name,
-            email: consultant.name.replace(' ', '.').toLowerCase() + '@mail.com',
+            email: consultant.name.replace(' ', '.').toLowerCase() + '@wavestone.com',
             grade: transformGrade(consultant.grade),
             practice: consultant.practice.split('-')[1],
             matricule: consultant.matricule,

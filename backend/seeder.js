@@ -259,6 +259,11 @@ const updateDb = async () => {
     //let wkFileName = 'hr.presence-test-mail.xlsx';
     //let practice = 'DET';
 
+    const confirm = prompt(`CURRENT ENV: ${process.env.NODE_ENV}\n\nDo you want to continue? (y/n)`);
+    if (confirm === 'n') {
+        process.exit(0);
+    }
+
     const __dir = path.resolve();
     const wkDirectory = __dir + '/backend/data/'
     const files = fs.readdirSync(wkDirectory);
@@ -271,7 +276,8 @@ const updateDb = async () => {
     //console.log(files);
 
     const wkFileName = prompt('Please enter Wavekeeper filename > ');
-    const practice = prompt('Please enter practice name > ');
+    //const practice = prompt('Please enter practice name > ');
+    const practice = ''; // not used
     const sendCredentialMessage = prompt('Do you want to send credentials to new created user ? (y/n) > ');
     const userScope = prompt('Please select a scope to create user (all, cdm) > ');
 
@@ -317,6 +323,8 @@ const updateDb = async () => {
             console.log(`[create] profil > ${profilToCreateOrUpdate.profil}`);
         }
     }
+    console.log(`[result] created profil: ${createdProfil} - updated skills ${updatedProfil}`);
+
 
     const adminId = (await Access.findOne({profil: 'admin'}))._id;
     const coordinatorId = (await Access.findOne({profil: 'coordinator'}))._id;

@@ -174,7 +174,7 @@ const PxxEditScreen = ({ history }) => {
                                 <div className='border-bottom p-3'>
                                     <Row>
                                         <Col xs={12} md={6}>
-                                            <label htmlFor="personal-objectives"><strong>My objectives</strong></label>
+                                            <label htmlFor="personal-objectives"><strong>My personal objectives</strong></label>
                                             <InputGroup>
                                                 <FormControl
                                                     as='textarea'
@@ -195,7 +195,7 @@ const PxxEditScreen = ({ history }) => {
                                             </InputGroup>
                                         </Col>
                                         <Col xs={12} md={6}>
-                                        <label htmlFor="personal-objectives"><strong>Annual objectives</strong></label>
+                                        <label htmlFor="personal-objectives"><strong>My annual objectives</strong></label>
                                             <InputGroup>
                                                 <FormControl
                                                     as='textarea'
