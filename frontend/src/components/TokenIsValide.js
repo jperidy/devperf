@@ -11,10 +11,17 @@ const TokenIsValide = ({ history, children }) => {
     const { userInfo } = userLogin;
 
     useEffect(() => {
-        if (!userInfo || !userInfo.lastConnexion) {
+        if (!userInfo) {
             history.push('/login');
         }
     }, [userInfo, history]);
+
+    // to avoid errors with migration
+    useEffect(() => {
+        if (!userInfo.lastConnexion) {
+            dispatch(logout());
+        }
+    });
 
     useEffect(() => {
         // get new Token if close to end of current token
