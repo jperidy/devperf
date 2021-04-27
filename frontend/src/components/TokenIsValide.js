@@ -18,7 +18,7 @@ const TokenIsValide = ({ history, children }) => {
 
     // to avoid errors with migration
     useEffect(() => {
-        if (!userInfo.lastConnexion) {
+        if (userInfo && !userInfo.lastConnexion) {
             dispatch(logout());
         }
     });
