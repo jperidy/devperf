@@ -21,36 +21,41 @@ import ManageCompaniesScreen from './screens/ManageCompaniesScreen';
 import EnvoyerMailsScreen from './screens/EnvoyerMailsScreen';
 
 import ProfileScreen from './screens/ProfileScreen';
+import TokenIsValide from './components/TokenIsValide';
 
+import history from './components/History';
 
 const App = () => {
 
   return (
-    <Router>
+    <Router history={history}>
       <Header />
       <main className='py-3'>
         <Container>
           <Route path='/login' component={LoginScreen} exact />
           <Route path='/register' component={RegisterScreen} exact />
-          <Route path='/profile' component={ProfileScreen} exact />
-          <Route path='/staffing' component={StaffingEditScreen} exact />
-          <Route path='/staffing/:id' component={StaffingEditScreen} exact />
-          <Route path='/pxx' component={PxxEditScreen} exact />
-          <Route path='/pxx/:id' component={PxxEditScreen} exact />
-          <Route path='/pxxdetails/:id' component={PxxDetailsScreen} exact />
-          <Route path='/editconsultant/:id' component={ConsultantEditScreen} exact />
-          <Route path='/admin/consultants' component={ManageConsultantScreen} exact />
-          <Route path='/admin/consultants/:keyword/page/:pageNumber' component={DashboardScreen} exact />
-          <Route path='/admin/users' component={ManageUsersScreen} exact />
-          <Route path='/admin/edituser/:id' component={UserEditScreen} exact />
-          <Route path='/admin/consultant/add' component={ConsultantEditScreen} exact />
-          <Route path='/admin/skills' component={ManageSkillsScreen} exact />
-          <Route path='/admin/deals' component={ManageDealsScreen} exact />
-          <Route path='/admin/deals/history' component={DealsHistoryScreen} exact />
-          <Route path='/admin/profils' component={AccessEditScreen} exact />
-          <Route path='/admin/companies' component={ManageCompaniesScreen} exact />
-          <Route path='/admin/send' component={EnvoyerMailsScreen} exact />
-          <Route path='/' component={DashboardScreen} exact />
+          
+          <TokenIsValide history={history}>
+            <Route path='/profile' component={ProfileScreen} exact />
+            <Route path='/staffing' component={StaffingEditScreen} exact />
+            <Route path='/staffing/:id' component={StaffingEditScreen} exact />
+            <Route path='/pxx' component={PxxEditScreen} exact />
+            <Route path='/pxx/:id' component={PxxEditScreen} exact />
+            <Route path='/pxxdetails/:id' component={PxxDetailsScreen} exact />
+            <Route path='/editconsultant/:id' component={ConsultantEditScreen} exact />
+            <Route path='/admin/consultants' component={ManageConsultantScreen} exact />
+            <Route path='/admin/consultants/:keyword/page/:pageNumber' component={DashboardScreen} exact />
+            <Route path='/admin/users' component={ManageUsersScreen} exact />
+            <Route path='/admin/edituser/:id' component={UserEditScreen} exact />
+            <Route path='/admin/consultant/add' component={ConsultantEditScreen} exact />
+            <Route path='/admin/skills' component={ManageSkillsScreen} exact />
+            <Route path='/admin/deals' component={ManageDealsScreen} exact />
+            <Route path='/admin/deals/history' component={DealsHistoryScreen} exact />
+            <Route path='/admin/profils' component={AccessEditScreen} exact />
+            <Route path='/admin/companies' component={ManageCompaniesScreen} exact />
+            <Route path='/admin/send' component={EnvoyerMailsScreen} exact />
+            <Route path='/' component={DashboardScreen} exact />
+          </TokenIsValide>
         </Container>
       </main>
       <Footer />

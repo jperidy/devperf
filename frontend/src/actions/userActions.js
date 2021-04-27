@@ -77,6 +77,51 @@ export const login = (type, param) => async (dispatch) => {
     }
 };
 
+export const getTransparentNewToken = (information, userInfo) => async (dispatch) => {
+    try {
+        dispatch({
+            type: USER_LOGIN_REQUEST,
+        });
+        
+        //console.log("information", information);
+        const type = 'LOCAL'
+        //const { userLogin: { userInfo } } = getState();
+
+        //console.log('userInfo', userInfo);
+
+        const config = {
+            headers:{
+                'Content-type': 'Application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data }  = await axios.post('/api/users/renewToken', information, config);
+
+        const userInfoUpdated = {
+            ...data,
+            accountType: type,
+        }
+
+        //console.log("userInfoUpdated", userInfoUpdated);
+
+        dispatch({
+            type: USER_LOGIN_SUCCESS,
+            payload: userInfoUpdated
+        });
+
+        localStorage.setItem('userInfo', JSON.stringify(userInfoUpdated));
+
+    } catch (error) {
+        dispatch({
+            type: USER_LOGIN_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
 export const getRedirectAz = () => async(dispatch) => {
     try {
         dispatch({

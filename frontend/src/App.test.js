@@ -6,6 +6,10 @@ import App from './App';
 
 Enzyme.configure({ adapter: new EnzymeAdapter() });
 
+test('renders withour errors', () => {
+  
+})
+
 test('renders non-empty component withour crashing', () => {
   const wrapper = shallow(<App />);
   // console.log(wrapper.debug()); // see html in the wrapper

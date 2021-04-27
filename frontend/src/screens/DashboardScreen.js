@@ -40,7 +40,6 @@ const DashboardScreen = ({ history }) => {
     const { loading: loadingTACE, error: errorTACE, tace } = pxxTACE;
 
     useEffect(() => {
-
         if (!userInfo) {
             history.push('/login');
         } 

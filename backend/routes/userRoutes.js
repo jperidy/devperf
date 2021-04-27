@@ -9,7 +9,8 @@ const {
     getUserById, 
     updateUser,
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    getTransparentNewToken
 } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -24,6 +25,8 @@ router.route('/profile')
 router.post('/login', authUser);
 router.get('/redirectAz', redirectAZ);
 router.get('/loginAz', authUserAz);
+
+router.post('/renewToken', protect, getTransparentNewToken);
 
 router.route('/:id')
     .delete(protect, deleteUser)

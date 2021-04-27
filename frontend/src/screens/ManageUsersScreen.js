@@ -47,7 +47,7 @@ const ManageUsersScreen = ({ history }) => {
     };
 
     const onClickDeleteHandler = (user) => {
-        console.log('delete user');
+        //console.log('delete user');
         if (window.confirm(`Are you sure to delete user: ${user.name} ?`)) {
             dispatch(deleteUser(user._id));
         }
@@ -107,6 +107,7 @@ const ManageUsersScreen = ({ history }) => {
                                 <th className='align-middle text-light'>Matricule</th>
                                 <th className='align-middle text-light text-center'>Practice</th>
                                 <th className='align-middle text-light text-center'>Created at</th>
+                                <th className='align-middle text-light text-center'>Last connection</th>
                                 <th className='align-middle text-light text-center'>Status</th>
                                 <th className='align-middle text-light text-center'>User Profil</th>
                                 <th className='align-middle text-light'></th>
@@ -121,6 +122,7 @@ const ManageUsersScreen = ({ history }) => {
                                     <td className='align-middle'>{user.consultantProfil && user.consultantProfil.matricule}</td>
                                     <td className='align-middle text-center'>{user.consultantProfil && user.consultantProfil.practice}</td>
                                     <td className='align-middle text-center'>{user.createdAt && user.createdAt.toString().substring(0, 10)}</td>
+                                    <td className='align-middle text-center'>{user.lastConnexion && user.lastConnexion.toString().substring(0, 10)}</td>
                                     <td className='align-middle text-center'>
                                         {
                                             user.status && user.status === 'Waiting approval' ?

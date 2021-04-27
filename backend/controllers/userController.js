@@ -44,6 +44,9 @@ const authUserAz = asyncHandler(async (req, res) => {
         .populate('profil');
 
         if (user && user.status === 'Validated') {
+
+            user.lastConnexion = new Date(Date.now());
+            await user.save();
             res.status(200).json({
                 _id: user._id,
                 name: user.name,
@@ -53,6 +56,7 @@ const authUserAz = asyncHandler(async (req, res) => {
                 consultantProfil: user.consultantProfil,
                 status: user.status,
                 token: response.idToken,
+                lastConnexion: user.lastConnexion
             });
         } else {
             res.status(401).json({message: `You can not access account ${email}. Verify email or ask administrator to validate your account`});
@@ -62,37 +66,6 @@ const authUserAz = asyncHandler(async (req, res) => {
         console.log(error);
         res.status(500).send(error);
     }
-
-    // cca.acquireTokenByCode(tokenRequest).then((response) => {
-    //     console.log("\nResponse: \n:", response);
-
-    //     const email = response.idTokenClaims.preferred_username;
-
-    //     const user = await User.findOne({ email })
-    //     .populate({ path:'consultantProfil', select:'practice name' })
-    //     .populate('profil');
-
-    //     if (user && user.status === 'Validated') {
-    //         res.status(200).json({
-    //             _id: user._id,
-    //             name: user.name,
-    //             email: user.email,
-    //             profil: user.profil,
-    //             adminLevel: user.adminLevel,
-    //             consultantProfil: user.consultantProfil,
-    //             status: user.status,
-    //             token: response.idToken,
-    //         });
-    //     } else {
-    //         res.status(401).json({message: `You can not access account ${email}. Verify email or ask administrator to validate your account`});
-    //     }
-
-    //     //res.status(200).json({token: response.idToken});
-
-    // }).catch((error) => {
-    //     console.log(error);
-    //     res.status(500).send(error);
-    // });
 });
 
 
@@ -114,6 +87,7 @@ const authUser = asyncHandler(async (req, res) => {
             if (user.status === 'Validated') {
                 user.tryConnect.try = 0;
                 user.tryConnect.lastTry = new Date(Date.now());
+                user.lastConnexion = new Date(Date.now());
                 await user.save();
                 res.json({
                     _id: user._id,
@@ -124,6 +98,8 @@ const authUser = asyncHandler(async (req, res) => {
                     consultantProfil: user.consultantProfil,
                     status: user.status,
                     token: generateToken(user._id),
+                    lastConnexion: user.lastConnexion
+                    //lastConnexion: "2021-04-26T17:20:50.298Z"
                 });
                 return;
             } else {
@@ -141,14 +117,12 @@ const authUser = asyncHandler(async (req, res) => {
                     user.tryConnect.try = 0;
                     user.tryConnect.lastTry = new Date(Date.now());
                 }
-    
-                //console.log( (Date.now() - (new Date(user.tryConnect.lastTry)).getTime()) / (1000 * 3600 * 24));
-    
+        
                 if ((Date.now() - (new Date(user.tryConnect.lastTry)).getTime()) / (1000 * 3600 * 24) <= 1) {
                     user.tryConnect.try = user.tryConnect.try += 1;
                     user.tryConnect.lastTry = new Date(Date.now());
     
-                    console.log(user.tryConnect.try)
+                    //console.log(user.tryConnect.try)
                     if(user.tryConnect.try >= maxTry) {
                         user.tryConnect.try = 0;
                         user.tryConnect.lastTry = new Date(Date.now());
@@ -165,7 +139,7 @@ const authUser = asyncHandler(async (req, res) => {
                     user.tryConnect.try = 1;
                     user.tryConnect.lastTry = new Date(Date.now());
                     await user.save();
-                    res.status(401).json({ message: `Invalid password. You can try x${maxTry - user.tryConnect.try}.` });
+                    res.status(401).json({ message: `Invalid password. You can try x${maxTry - user.tryConnect.try}x.` });
     
                 }
             } else {
@@ -182,6 +156,50 @@ const authUser = asyncHandler(async (req, res) => {
     }
 
 
+});
+
+// @desc    get new token for already auth user
+// @route   POST /api/users/renewToken
+// @access  Public
+const getTransparentNewToken = asyncHandler(async (req, res) => {
+    
+    const { email, delay } = req.body;
+
+    //console.log('delay', Number(delay));
+    
+    if (Number(delay) > 0.7 && Number(delay) < 1) {
+        
+        const user = await User.findOne({ email })
+            .populate({ path: 'consultantProfil', select: 'practice name isCDM' })
+            .populate('profil');
+
+        if (user && user.status === 'Validated') {
+            user.tryConnect.try = 0;
+            user.tryConnect.lastTry = new Date(Date.now());
+            user.lastConnexion = new Date(Date.now());
+            await user.save();
+            res.json({
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                profil: user.profil,
+                adminLevel: user.adminLevel,
+                consultantProfil: user.consultantProfil,
+                status: user.status,
+                token: generateToken(user._id),
+                lastConnexion: user.lastConnexion
+            });
+            return;
+        } else {
+            res.status(401).json({
+                message: `New token not granted to ${email}.` });
+            return;
+        }
+    } else {
+        res.status(401).json({
+            message: `Not allowed to ask new token ${email}` });
+        return;
+    }
 });
 
 // @desc    Register a new user
@@ -420,5 +438,6 @@ module.exports = {
     getUserById, 
     updateUser,
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    getTransparentNewToken
 };

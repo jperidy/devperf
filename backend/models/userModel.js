@@ -32,7 +32,8 @@ const userSchema = mongoose.Schema({
     tryConnect: {
         try: {type: Number},
         lastTry: {type: Date}
-    }
+    },
+    lastConnexion: { type: Date },
 }, {
     timestamps: true,
 });
