@@ -2,11 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-//import Message from '../components/Message';
-//import Button from 'react-bootstrap/Button';
-//import SearchInput from '../components/SearchInput';
 import { createAClient, getAllClients } from '../actions/clientActions';
-//import { CLIENT_CREATE_RESET } from '../constants/clientConstants';
 
 import CreatableSelect from 'react-select/creatable';
 

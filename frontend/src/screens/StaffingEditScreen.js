@@ -22,6 +22,10 @@ import { REQUEST_STATUS } from '../constants/dealConstants';
 import StaffAConsultant from '../components/StaffAConsultant';
 import DisplayChildren from '../components/DisplayChildren';
 import SelectInput from '../components/SelectInput';
+import DateComponent from '../components/DateComponent';
+import NumberComponent from '../components/NumberComponent';
+import TextComponent from '../components/TextComponent';
+import SelectComponent from '../components/SelectComponent';
 
 const StaffingEditScreen = ({ match, history }) => {
 
@@ -316,13 +320,6 @@ const StaffingEditScreen = ({ match, history }) => {
         }
     }
 
-    /*
-    const deleteCompanyHandler = () => {
-        setCompany('');
-        setDealChange(true);
-    }
-    */
-
     const submitHandler = (e) => {
         e.preventDefault();
         if (!company) {
@@ -377,6 +374,16 @@ const StaffingEditScreen = ({ match, history }) => {
             return outName.join(' ');
         }
     }
+
+    const updateStatusHandler = (value) => {
+        if (value === 'Won') {
+            setWonDate(new Date(Date.now()));
+        }
+        else {
+            setWonDate('');
+        }
+        setStatus(value);
+    };
 
     return (
         <>
@@ -441,7 +448,16 @@ const StaffingEditScreen = ({ match, history }) => {
                     <Col xs={12} md={4}>
 
                         <ListGroup.Item>
-                            <Form.Group controlId='title' className='mb-0'>
+                            <TextComponent 
+                                label='Title'
+                                placeholder='Staffing request object'
+                                value={title}
+                                onChange={setTitle}
+                                required={true}
+                                editRequest={editRequest}
+                                formInline={false}
+                            />
+                            {/* <Form.Group controlId='title' className='mb-0'>
                                 <Form.Label as='h5'>Title {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
@@ -459,7 +475,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                             readOnly
                                         ></Form.Control>
                                     )}
-                            </Form.Group>
+                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
@@ -478,7 +494,16 @@ const StaffingEditScreen = ({ match, history }) => {
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <Form.Group controlId='client' className='mb-0'>
+                            <TextComponent
+                                label='Client contact'
+                                placeholder='Client contact'
+                                value={client}
+                                onChange={setClient}
+                                required={false}
+                                editRequest={editRequest}
+                                formInline={false}
+                            />
+                            {/* <Form.Group controlId='client' className='mb-0'>
                                 <Form.Label as='h5'>Client</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
@@ -495,11 +520,29 @@ const StaffingEditScreen = ({ match, history }) => {
                                             value={client ? client : ''}
                                         ></Form.Control>
                                     )}
-                            </Form.Group>
+                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <Form.Group controlId='type' className='mb-0'>
+                            <SelectComponent
+                                editRequest={editRequest}
+                                label='Type of business'
+                                value={type}
+                                onChange={setType}
+                                required={true}
+                                options={
+                                    <>
+                                        <option value=''>--Select--</option>
+                                        {TYPE_BUSINESS.map(type => (
+                                            <option
+                                                key={type.name}
+                                                value={type.name}
+                                            >{type.name}</option>
+                                        ))}
+                                    </>
+                                }
+                            />
+                            {/* <Form.Group controlId='type' className='mb-0'>
                                 <Form.Label as='h5'>Type of business {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
@@ -524,11 +567,29 @@ const StaffingEditScreen = ({ match, history }) => {
                                             readOnly
                                         ></Form.Control>
                                     )}
-                            </Form.Group>
+                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <Form.Group controlId='status' className='mb-0'>
+                            <SelectComponent
+                                editRequest={editRequest}
+                                label='Status'
+                                value={status}
+                                onChange={updateStatusHandler}
+                                required={true}
+                                options={
+                                    <>
+                                        <option value=''>--Select--</option>
+                                        {DEAL_STATUS.map(status => (
+                                            <option
+                                                key={status.name}
+                                                value={status.name}
+                                            >{status.name}</option>
+                                        ))}
+                                    </>
+                                }
+                            />
+                            {/* <Form.Group controlId='status' className='mb-0'>
                                 <Form.Label as='h5'>Status {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
@@ -561,11 +622,29 @@ const StaffingEditScreen = ({ match, history }) => {
                                             value={status ? status : ''}
                                         ></Form.Control>
                                     )}
-                            </Form.Group>
+                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <Form.Group controlId='probability' className='mb-0'>
+                            <SelectComponent
+                                editRequest={editRequest}
+                                label='Probability (%)'
+                                value={probability}
+                                onChange={setProbability}
+                                required={true}
+                                options={
+                                    <>
+                                        <option value=''>--Select--</option>
+                                        {DEAL_PROBABILITY.map( prob => (
+                                            <option 
+                                                key={prob.name}
+                                                value={prob.name}
+                                            >{prob.name} %</option>
+                                        ))}
+                                    </>
+                                }
+                            />
+                            {/* <Form.Group controlId='probability' className='mb-0'>
                                 <Form.Label as='h5'>Probability {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
@@ -590,11 +669,20 @@ const StaffingEditScreen = ({ match, history }) => {
                                             readOnly
                                         ></Form.Control>
                                     )}
-                            </Form.Group>
+                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <Form.Group controlId='location' className='mb-0'>
+                            <TextComponent
+                                label='Location'
+                                placeholder='Location'
+                                value={location}
+                                onChange={setLocation}
+                                required={false}
+                                editRequest={editRequest}
+                                formInline={false}
+                            />
+                            {/* <Form.Group controlId='location' className='mb-0'>
                                 <Form.Label as='h5'>Location</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
@@ -611,11 +699,29 @@ const StaffingEditScreen = ({ match, history }) => {
                                             value={location ? location : ''}
                                         ></Form.Control>
                                     )}
-                            </Form.Group>
+                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <Form.Group controlId='main-practice' className='mb-0'>
+                            <SelectComponent
+                                editRequest={editRequest}
+                                label='Main practice'
+                                value={mainPractice}
+                                onChange={setMainPractice}
+                                required={true}
+                                options={
+                                    <>
+                                        <option value=''>--Select--</option>
+                                        {practiceList && practiceList.map((practice, val) => (
+                                            <option
+                                                value={practice}
+                                                key={val}
+                                            >{practice}</option>
+                                        ))}
+                                    </>
+                                }
+                            />
+                            {/* <Form.Group controlId='main-practice' className='mb-0'>
                                 <Form.Label as='h5'>Main Practice {editRequest && '*'}</Form.Label>
                                 {editRequest ? (
                                     <Form.Control
@@ -640,7 +746,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                             value={mainPractice ? mainPractice : ''}
                                         ></Form.Control>
                                     )}
-                            </Form.Group>
+                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
@@ -759,7 +865,15 @@ const StaffingEditScreen = ({ match, history }) => {
                             <h5>Sheduling</h5>
                             <Row className='align-items-end'>
                                 <Col>
-                                    <Form.Group controlId='proposal-date' className='mb-0'>
+                                    <DateComponent
+                                        label='Proposal'
+                                        placeholder='proposal date'
+                                        value={proposalDate}
+                                        onChange={setProposalDate}
+                                        required={true}
+                                        editMode={editRequest}
+                                    />
+                                    {/* <Form.Group controlId='proposal-date' className='mb-0'>
                                         <Form.Label>Proposal</Form.Label>
                                         {editRequest ? (
                                             <Form.Control
@@ -776,11 +890,19 @@ const StaffingEditScreen = ({ match, history }) => {
                                                     readOnly
                                                 ></Form.Control>
                                             )}
-                                    </Form.Group>
+                                    </Form.Group> */}
                                 </Col>
 
                                 <Col>
-                                    <Form.Group controlId='presentation-date' className='mb-0'>
+                                    <DateComponent
+                                        label='Presentation'
+                                        placeholder='presentation date'
+                                        value={presentationDate}
+                                        onChange={setPresentationDate}
+                                        required={true}
+                                        editMode={editRequest}
+                                    />
+                                    {/* <Form.Group controlId='presentation-date' className='mb-0'>
                                         <Form.Label>Presentation</Form.Label>
                                         {editRequest ? (
                                             <Form.Control
@@ -797,11 +919,19 @@ const StaffingEditScreen = ({ match, history }) => {
                                                     readOnly
                                                 ></Form.Control>
                                             )}
-                                    </Form.Group>
+                                    </Form.Group> */}
                                 </Col>
 
                                 <Col>
-                                    <Form.Group controlId='start-date' className='mb-0'>
+                                    <DateComponent
+                                        label='Start'
+                                        placeholder='start date'
+                                        value={startDate}
+                                        onChange={setStartDate}
+                                        required={true}
+                                        editMode={editRequest}
+                                    />
+                                    {/* <Form.Group controlId='start-date' className='mb-0'>
                                         <Form.Label>Start {editRequest && '*'}</Form.Label>
                                         {editRequest ? (
                                             <Form.Control
@@ -819,11 +949,21 @@ const StaffingEditScreen = ({ match, history }) => {
                                                     readOnly
                                                 ></Form.Control>
                                             )}
-                                    </Form.Group>
+                                    </Form.Group> */}
                                 </Col>
 
                                 <Col>
-                                    <Form.Group controlId='duration' className='mb-0'>
+                                    <NumberComponent 
+                                        label='duration (month)'
+                                        placeholder='duration'
+                                        min={0}
+                                        step={0.5}
+                                        value={duration}
+                                        onChange={setDuration}
+                                        required={true}
+                                        editRequest={editRequest}
+                                    />
+                                    {/* <Form.Group controlId='duration' className='mb-0'>
                                         <Form.Label>Duration (month) {editRequest && '*'}</Form.Label>
                                         {editRequest ? (
                                             <Form.Control
@@ -843,7 +983,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                                     readOnly
                                                 ></Form.Control>
                                             )}
-                                    </Form.Group>
+                                    </Form.Group> */}
                                 </Col>
                             </Row>
                         </ListGroup.Item>
