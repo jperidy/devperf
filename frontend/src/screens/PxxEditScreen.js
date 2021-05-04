@@ -27,7 +27,10 @@ const PxxEditScreen = ({ history }) => {
 
     const [commentText, setCommentText] = useState('');
     const [trObjectives, setTrObjectives] = useState('');
-    const [myObjectives, setMyObjectives] = useState('');
+    //const [myObjectives, setMyObjectives] = useState('');
+    const [availabilityComment, setAvailabilityComment] = useState('');
+    const [notProdComment, setNotProdComment] = useState('');
+
     const [delegateOption, setDelegationOption] = useState(false);
 
     const userLogin = useSelector(state => state.userLogin);
@@ -35,9 +38,6 @@ const PxxEditScreen = ({ history }) => {
 
     const consultantsMyList = useSelector(state => state.consultantsMyList);
     const { loading: loadingConsultantsMyList, error: errorConsultantsMyList, consultantsMy, focus } = consultantsMyList;
-
-    // const consultantMyUpdate = useSelector(state => state.consultantMyUpdate);
-    // const { loading: loadingUpdate, success: successUpdate, error: errorUpdate } = consultantMyUpdate;
 
 
     const [searchDate, setSearchDate] = useState(new Date(Date.now()));
@@ -60,8 +60,10 @@ const PxxEditScreen = ({ history }) => {
     useEffect(() => {
         if (consultantsMy) {
             setCommentText(consultantsMy[focus].comment);
-            setMyObjectives(consultantsMy[focus].personalObjectives);
+            //setMyObjectives(consultantsMy[focus].personalObjectives);
             setTrObjectives(consultantsMy[focus].talentReviewObjectives);
+            setNotProdComment(consultantsMy[focus].notProdComment);
+            setAvailabilityComment(consultantsMy[focus].availabilityComment);
         }
     }, [consultantsMy, focus]);
 
@@ -141,6 +143,7 @@ const PxxEditScreen = ({ history }) => {
                                                                 <InputGroup>
                                                                     <FormControl
                                                                         as='textarea'
+                                                                        size='sm'
                                                                         rows={7}
                                                                         id='comment'
                                                                         value={commentText}
@@ -173,43 +176,73 @@ const PxxEditScreen = ({ history }) => {
 
                                 <div className='border-bottom p-3'>
                                     <Row>
-                                        <Col xs={12} md={6}>
-                                            <label htmlFor="personal-objectives"><strong>My personal objectives</strong></label>
+                                    <Col xs={12} md={4}>
+                                        <label htmlFor="annual-objectives"><strong>Annual objectives</strong></label>
                                             <InputGroup>
                                                 <FormControl
                                                     as='textarea'
+                                                    size='sm'
                                                     rows={3}
-                                                    id='personal-objectives'
-                                                    value={myObjectives}
-                                                    placeholder='Please enter a comment'
+                                                    id='annual-objectives'
+                                                    value={trObjectives}
+                                                    placeholder='Please complete with your CDM'
                                                     onChange={(e) => {
-                                                        setMyObjectives(e.target.value);
+                                                        setTrObjectives(e.target.value);
                                                         dispatch(updateMyConsultant({
                                                             ...consultantsMy[focus], 
-                                                            personalObjectives: e.target.value,
-                                                            talentReviewObjectives: trObjectives
+                                                            //personalObjectives: myObjectives,
+                                                            talentReviewObjectives: e.target.value,
+                                                            notProdComment: notProdComment,
+                                                            availabilityComment: availabilityComment
+                                                        }))
+                                                        //updateCommentHandler(consultantsMy[focus]._id, e.target.value)
+                                                    }}
+                                                ></FormControl>
+                                            </InputGroup>
+                                        </Col>
+                                        <Col xs={12} md={4}>
+                                            <label htmlFor="not-prod-comment"><strong>Not production justification</strong></label>
+                                            <InputGroup>
+                                                <FormControl
+                                                    as='textarea'
+                                                    size='sm'
+                                                    rows={3}
+                                                    id='not-prod-comment'
+                                                    value={notProdComment}
+                                                    placeholder='Please justify not production time. For example:&#10;- 3d-june: inter-contrat&#10;- 1d/Week: business&#10;- etc.'
+                                                    onChange={(e) => {
+                                                        setNotProdComment(e.target.value);
+                                                        dispatch(updateMyConsultant({
+                                                            ...consultantsMy[focus], 
+                                                            //personalObjectives: e.target.value,
+                                                            talentReviewObjectives: trObjectives,
+                                                            notProdComment: e.target.value,
+                                                            availabilityComment: availabilityComment
                                                         }));
                                                         //updateCommentHandler(consultantsMy[focus]._id, e.target.value)
                                                     }}
                                                 ></FormControl>
                                             </InputGroup>
                                         </Col>
-                                        <Col xs={12} md={6}>
-                                        <label htmlFor="personal-objectives"><strong>My annual objectives</strong></label>
+                                        <Col xs={12} md={4}>
+                                            <label htmlFor="availability-comment"><strong>Availability comment</strong></label>
                                             <InputGroup>
                                                 <FormControl
                                                     as='textarea'
+                                                    size='sm'
                                                     rows={3}
-                                                    id='personal-objectives'
-                                                    value={trObjectives}
-                                                    placeholder='Please enter a comment'
+                                                    id='availability-comment'
+                                                    value={availabilityComment}
+                                                    placeholder='Please share any information on your availability. For example: end of mission the 23th of October > 2d/5 available'
                                                     onChange={(e) => {
-                                                        setTrObjectives(e.target.value);
+                                                        setAvailabilityComment(e.target.value);
                                                         dispatch(updateMyConsultant({
                                                             ...consultantsMy[focus], 
-                                                            personalObjectives: myObjectives,
-                                                            talentReviewObjectives: e.target.value,
-                                                        }))
+                                                            //personalObjectives: e.target.value,
+                                                            talentReviewObjectives: trObjectives,
+                                                            notProdComment: notProdComment,
+                                                            availabilityComment: e.target.value
+                                                        }));
                                                         //updateCommentHandler(consultantsMy[focus]._id, e.target.value)
                                                     }}
                                                 ></FormControl>

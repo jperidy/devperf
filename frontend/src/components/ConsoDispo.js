@@ -346,13 +346,12 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                             )}
                             <Col sm={10}>
 
-
                                 <OverlayTrigger
                                     overlay={
-                                        <Tooltip id="tooltip-disabled">
+                                        <Tooltip id="tooltip-disabled" html="true">
                                             <DisplayChildren access='viewComment'>
                                                 {userInfo && userInfo.consultantProfil._id !== consultantData._id ? (
-                                                    consultantData.comment ? consultantData.comment : 'No staffing comment'
+                                                    consultantData.comment ? consultantData.comment.split('\n').map((x,val) => (<p key={val} className='m-0 p-0 text-left'>{x}</p>)) : 'No staffing comment'
                                                 ) : 'No access to this data'}
                                             </DisplayChildren>
                                         </Tooltip>

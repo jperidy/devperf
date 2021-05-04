@@ -75,10 +75,16 @@ const consultantSchema = mongoose.Schema({
     comment: {
         type: String,
     },
-    personalObjectives: {
+    // personalObjectives: {
+    //     type: String,
+    // },
+    talentReviewObjectives: {
         type: String,
     },
-    talentReviewObjectives: {
+    availabilityComment: {
+        type: String,
+    },
+    notProdComment: {
         type: String,
     }
 }, {
