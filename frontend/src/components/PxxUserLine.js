@@ -88,7 +88,7 @@ const PxxUserLine = ({ data }) => {
                             className="align-middle text-center p-0"
                             value={notProdDayComponent && notProdDayComponent.toString()}
                             onChange={(e) => {
-                                if (!e.target.value.toString().match(/[0-9]*[,.]$/g)) {
+                                if (e.target.value.match(/^[0-9]{0,}[.,][05]{0,1}$|^[0-9]{0,}$/i)) {
                                     //setNotProdDayComponent(Number(e.target.value));
                                     setNotProdDayComponent(transformNumber(e.target.value));
                                     setHasChange(true);
@@ -109,9 +109,11 @@ const PxxUserLine = ({ data }) => {
                             className="align-middle text-center p-0"
                             value={leavingDayComponent && leavingDayComponent.toString()}
                             onChange={(e) => {
-                                //setLeavingDayComponent(Number(e.target.value));
-                                setLeavingDayComponent(transformNumber(e.target.value));
-                                setHasChange(true);
+                                if (e.target.value.match(/^[0-9]{0,}[.,][05]{0,1}$|^[0-9]{0,}$/i)) {
+                                    //setLeavingDayComponent(Number(e.target.value));
+                                    setLeavingDayComponent(transformNumber(e.target.value));
+                                    setHasChange(true);
+                                }
                             }}
                         ></Form.Control>
                     </InputGroup>

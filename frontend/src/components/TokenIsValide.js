@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { getTransparentNewToken, logout } from '../actions/userActions';
@@ -6,14 +6,16 @@ import { getTransparentNewToken, logout } from '../actions/userActions';
 const TokenIsValide = ({ history, children }) => {
 
     const dispatch = useDispatch();
-    let grantedAccess = true;
+    const [grantedAccess, setGrantedAccess] = useState(true);
+    //let grantedAccess = true;
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     useEffect(() => {
         if (!userInfo) {
-            grantedAccess = false;
+            //grantedAccess = false;
+            setGrantedAccess(false);
             history.push('/login');
         }
     }, [userInfo, history]);
@@ -21,10 +23,11 @@ const TokenIsValide = ({ history, children }) => {
     // to avoid errors with migration
     useEffect(() => {
         if (userInfo && !userInfo.lastConnexion) {
-            grantedAccess = false;
+            //grantedAccess = false;
+            setGrantedAccess(false);
             dispatch(logout());
         }
-    });
+    }, [userInfo, dispatch]);
 
     useEffect(() => {
         // get new Token if close to end of current token
@@ -32,7 +35,8 @@ const TokenIsValide = ({ history, children }) => {
             const currentTime = new Date(Date.now());
             const delay = (currentTime - new Date(userInfo.lastConnexion))/(1000 * 24 * 3600);
             if (delay > 0.7 && delay < 1) {
-                grantedAccess = false;
+                //grantedAccess = false;
+                setGrantedAccess(false);
                 dispatch(getTransparentNewToken({email: userInfo.email, delay: delay}, userInfo));
             }
         }
@@ -44,7 +48,8 @@ const TokenIsValide = ({ history, children }) => {
             const currentTime = new Date(Date.now());
             const delay = (currentTime - new Date(userInfo.lastConnexion))/(1000 * 24 * 3600);
             if (delay >= 1) {
-                grantedAccess = false;
+                //grantedAccess = false;
+                setGrantedAccess(false);
                 dispatch(logout());
             }
         }
