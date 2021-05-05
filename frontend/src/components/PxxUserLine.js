@@ -43,6 +43,14 @@ const PxxUserLine = ({ data }) => {
     // eslint-disable-next-line
     },[workingDay, prodDayComponent, notProdDayComponent, leavingDayComponent, data]);
 
+    const transformNumber = (value) => {
+        if(value.match(/[0-9]{0,}[.,]$/i)){
+            return Number(value + '0');
+        } else {
+            return Number(value);
+        }
+    }
+
     return (
         <>
             <Row className="py-1">
@@ -59,8 +67,11 @@ const PxxUserLine = ({ data }) => {
                             className="align-middle text-center p-0"
                             value={prodDayComponent && prodDayComponent.toString()}
                             onChange={(e) => {
-                                setProdDayComponent(Number(e.target.value));
-                                setHasChange(true);
+                                //setProdDayComponent(Number(e.target.value));
+                                if (e.target.value.match(/^[0-9]{0,}[.,][05]{0,1}$|^[0-9]{0,}$/i)) {
+                                    setProdDayComponent(transformNumber(e.target.value));
+                                    setHasChange(true);
+                                }
                             }}
                         ></Form.Control>
                     </InputGroup>
@@ -78,7 +89,8 @@ const PxxUserLine = ({ data }) => {
                             value={notProdDayComponent && notProdDayComponent.toString()}
                             onChange={(e) => {
                                 if (!e.target.value.toString().match(/[0-9]*[,.]$/g)) {
-                                    setNotProdDayComponent(Number(e.target.value));
+                                    //setNotProdDayComponent(Number(e.target.value));
+                                    setNotProdDayComponent(transformNumber(e.target.value));
                                     setHasChange(true);
                                 }
                             }}
@@ -97,7 +109,8 @@ const PxxUserLine = ({ data }) => {
                             className="align-middle text-center p-0"
                             value={leavingDayComponent && leavingDayComponent.toString()}
                             onChange={(e) => {
-                                setLeavingDayComponent(Number(e.target.value));
+                                //setLeavingDayComponent(Number(e.target.value));
+                                setLeavingDayComponent(transformNumber(e.target.value));
                                 setHasChange(true);
                             }}
                         ></Form.Control>
