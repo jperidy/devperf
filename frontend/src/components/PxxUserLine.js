@@ -11,9 +11,12 @@ const PxxUserLine = ({ data }) => {
 
     const dispatch = useDispatch();
 
-    const [prodDayComponent, setProdDayComponent] = useState(Number(data.prodDay) ? Number(data.prodDay) : 0);
-    const [notProdDayComponent, setNotProdDayComponent] = useState(Number(data.notProdDay) ? Number(data.notProdDay) : 0);
-    const [leavingDayComponent, setLeavingDayComponent] = useState(Number(data.leavingDay) ? Number(data.leavingDay) : 0);
+    // const [prodDayComponent, setProdDayComponent] = useState(Number(data.prodDay) ? Number(data.prodDay) : 0);
+    // const [notProdDayComponent, setNotProdDayComponent] = useState(Number(data.notProdDay) ? Number(data.notProdDay) : 0);
+    // const [leavingDayComponent, setLeavingDayComponent] = useState(Number(data.leavingDay) ? Number(data.leavingDay) : 0);
+    const [prodDayComponent, setProdDayComponent] = useState(data.prodDay ? data.prodDay : '0');
+    const [notProdDayComponent, setNotProdDayComponent] = useState(data.notProdDay ? data.notProdDay : '0');
+    const [leavingDayComponent, setLeavingDayComponent] = useState(data.leavingDay ? data.leavingDay : '0');
     const [availableDayComponent, setAvailableDayComponent] = useState(Number(data.availableDay) ? Number(data.availableDay) : 0);
     const [workingDay] = useState(Number(data.prodDay) + Number(data.notProdDay) + Number(data.leavingDay) + Number(data.availableDay));
 
@@ -27,24 +30,45 @@ const PxxUserLine = ({ data }) => {
     const editable = data.month ? (data.month.firstDay >= firstDayOfCurrentMonth) : false;
 
     useEffect(() => {
-        if (hasChange && workingDay >= (prodDayComponent + notProdDayComponent + leavingDayComponent)) {
-            setAvailableDayComponent(workingDay - (prodDayComponent + notProdDayComponent + leavingDayComponent))
+        const prd = transformNumber(prodDayComponent);
+        const nPrd = transformNumber(notProdDayComponent);
+        const lvg = transformNumber(leavingDayComponent);
+
+        if (hasChange && workingDay >= (prd + nPrd + lvg)) {
+            setAvailableDayComponent(workingDay - (prd + nPrd + lvg))
             dispatch(updatePxx({
                 _id: data._id,
                 name: data.name,
                 month: data.month._id,
-                prodDay: prodDayComponent,
-                notProdDay: notProdDayComponent,
-                leavingDay: leavingDayComponent,
-                availableDay: workingDay - (prodDayComponent + notProdDayComponent + leavingDayComponent)
+                prodDay: prd,
+                notProdDay: nPrd,
+                leavingDay: lvg,
+                availableDay: workingDay - (prd + nPrd + lvg)
             }));
             setHasChange(false);
         }
     // eslint-disable-next-line
     },[workingDay, prodDayComponent, notProdDayComponent, leavingDayComponent, data]);
 
+    // useEffect(() => {
+    //     if (hasChange && workingDay >= (prodDayComponent + notProdDayComponent + leavingDayComponent)) {
+    //         setAvailableDayComponent(workingDay - (prodDayComponent + notProdDayComponent + leavingDayComponent))
+    //         dispatch(updatePxx({
+    //             _id: data._id,
+    //             name: data.name,
+    //             month: data.month._id,
+    //             prodDay: prodDayComponent,
+    //             notProdDay: notProdDayComponent,
+    //             leavingDay: leavingDayComponent,
+    //             availableDay: workingDay - (prodDayComponent + notProdDayComponent + leavingDayComponent)
+    //         }));
+    //         setHasChange(false);
+    //     }
+    // // eslint-disable-next-line
+    // },[workingDay, prodDayComponent, notProdDayComponent, leavingDayComponent, data]);
+
     const transformNumber = (value) => {
-        if(value.match(/[0-9]{0,}[.,]$/i)){
+        if(value.toString().match(/^[0-9]{0,}[.,]$/i)){
             return Number(value + '0');
         } else {
             return Number(value);
@@ -69,7 +93,7 @@ const PxxUserLine = ({ data }) => {
                             onChange={(e) => {
                                 //setProdDayComponent(Number(e.target.value));
                                 if (e.target.value.match(/^[0-9]{0,}[.,][05]{0,1}$|^[0-9]{0,}$/i)) {
-                                    setProdDayComponent(transformNumber(e.target.value));
+                                    setProdDayComponent(e.target.value);
                                     setHasChange(true);
                                 }
                             }}
@@ -90,7 +114,7 @@ const PxxUserLine = ({ data }) => {
                             onChange={(e) => {
                                 if (e.target.value.match(/^[0-9]{0,}[.,][05]{0,1}$|^[0-9]{0,}$/i)) {
                                     //setNotProdDayComponent(Number(e.target.value));
-                                    setNotProdDayComponent(transformNumber(e.target.value));
+                                    setNotProdDayComponent(e.target.value);
                                     setHasChange(true);
                                 }
                             }}
@@ -111,7 +135,7 @@ const PxxUserLine = ({ data }) => {
                             onChange={(e) => {
                                 if (e.target.value.match(/^[0-9]{0,}[.,][05]{0,1}$|^[0-9]{0,}$/i)) {
                                     //setLeavingDayComponent(Number(e.target.value));
-                                    setLeavingDayComponent(transformNumber(e.target.value));
+                                    setLeavingDayComponent(e.target.value);
                                     setHasChange(true);
                                 }
                             }}

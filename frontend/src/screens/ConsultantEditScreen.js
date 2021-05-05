@@ -86,15 +86,7 @@ const ConsultantEditScreen = ({ history, match }) => {
         if (match.params.id) {
             if (!consultant) {
                 dispatch(getMyConsultant(match.params.id));
-                /*if (!loading) {
-                    //setUpdate(false);
-                }*/
-            } /*else {
-                if (consultant._id !== match.params.id) {
-                    dispatch(getMyConsultant(match.params.id));
-                    //setUpdate(false);
-                }
-            }*/
+            } 
         }
     }, [dispatch, match, consultant]);
 
@@ -103,7 +95,6 @@ const ConsultantEditScreen = ({ history, match }) => {
 
             if (consultant && consultant._id !== match.params.id) {
                 dispatch(getMyConsultant(match.params.id));
-                //setUpdate(false);
             }
 
         }
@@ -425,9 +416,9 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                         {!cdmList ? 'No cdm'
                                                             : errorCDM ? <Message variant='danger'>No CDM found, please verify Practice</Message>
                                                                 : cdmList.length && (
-                                                                    cdmList.map(x => (
+                                                                    cdmList.map((x,val) => (
                                                                         <option
-                                                                            key={x._id}
+                                                                            key={val}
                                                                             value={x._id}
                                                                         >{x.name}</option>
                                                                     ))
