@@ -1,14 +1,15 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 
-const DateComponent = ({ label, id, placeholder, value, onChange, required, editMode }) => {
+const TextAreaComponent = ({ label, id, editRequest, required, placeholder, value, onChange, rows}) => {
     return (
         <Form.Group controlId={id} className='mb-0'>
-            <Form.Label>{label} {editMode && required && '*'}</Form.Label>
-            {editMode ? (
+            <Form.Label as='h5'>{label} {editRequest && required && '*'}</Form.Label>
+            {editRequest ? (
                 <Form.Control
-                    className='border border-light border-top-0 border-right-0 border-left-0'
-                    type='date'
+                    as='textarea'
+                    rows={rows}
+                    className='custom-select border border-light border-top-0 border-right-0 border-left-0'
                     placeholder={placeholder}
                     value={value ? value : ''}
                     onChange={(e) => onChange(e.target.value)}
@@ -16,8 +17,9 @@ const DateComponent = ({ label, id, placeholder, value, onChange, required, edit
                 ></Form.Control>
             ) : (
                 <Form.Control
-                    className='border border-light border-top-0 border-right-0 border-left-0 bg-light text-secondary'
-                    type='date'
+                    as='textarea'
+                    className='pl-3 border border-light border-top-0 border-right-0 border-left-0 bg-light text-secondary'
+                    rows={rows}
                     value={value ? value : ''}
                     plaintext
                     readOnly
@@ -27,4 +29,4 @@ const DateComponent = ({ label, id, placeholder, value, onChange, required, edit
     )
 }
 
-export default DateComponent
+export default TextAreaComponent;

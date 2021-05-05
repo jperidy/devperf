@@ -16,7 +16,6 @@ import DropDownTitleContainer from '../components/DropDownTitleContainer';
 import ListGroup from 'react-bootstrap/ListGroup';
 import ConsoDispo from '../components/ConsoDispo';
 import ViewStaffs from '../components/ViewStaffs';
-//import SearchInput from '../components/SearchInput';
 import SelectCompany from '../components/SelectCompany';
 import { REQUEST_STATUS } from '../constants/dealConstants';
 import StaffAConsultant from '../components/StaffAConsultant';
@@ -26,6 +25,9 @@ import DateComponent from '../components/DateComponent';
 import NumberComponent from '../components/NumberComponent';
 import TextComponent from '../components/TextComponent';
 import SelectComponent from '../components/SelectComponent';
+import SelectMultipleComponent from '../components/SelectMultipleComponent';
+import TextAreaComponent from '../components/TextAreaComponent';
+import { Container } from 'react-bootstrap';
 
 const StaffingEditScreen = ({ match, history }) => {
 
@@ -68,29 +70,27 @@ const StaffingEditScreen = ({ match, history }) => {
     const [comments, setComments] = useState([]);
     const [duration, setDuration] = useState('');
     const [othersContacts, setOthersContacts] = useState('');
-    
+
     const [newComment, setNewComment] = useState('');
-    
+
     const [sdInstructions] = useState('');
     const [sdStatus, setSdStatus] = useState('');
     const [sdStaff, setSdStaff] = useState([]);
-    
+
     const [wonDate, setWonDate] = useState('');
-    
+
     const [modalWindowShow, setModalWindowShow] = useState(false);
     const [sdConsultant, setSdConsultant] = useState('');
     const [loadingSdConsultantData, setLoadingSdConsultantData] = useState({})
-    
+
     const [editRequest, setEditRequest] = useState(match.params.id ? false : true);
-    
+
     const [dealChange, setDealChange] = useState(false);
-    
-    //const [searchLeader, setSearchLeader] = useState('');
+
     const [leader, setLeader] = useState([]);
-    
-    //const [searchCoLeader, setSearchCoLeader] = useState('');
+
     const [coLeaders, setCoLeaders] = useState([]);
-    
+
 
     const [companyMessage, setCompanyMessage] = useState(null);
 
@@ -128,17 +128,10 @@ const StaffingEditScreen = ({ match, history }) => {
     }, [dispatch, match])
 
 
-    useEffect(() => { 
-        //dispatch(getAllLeaders(searchLeader));
+    useEffect(() => {
         dispatch(getAllLeaders());
-        
-    },[dispatch])
 
-    /* useEffect(() => {
-
-        dispatch(getAllLeaders(searchCoLeader));
-
-    }, [dispatch, searchCoLeader]) */
+    }, [dispatch]);
 
 
     useEffect(() => {
@@ -162,10 +155,10 @@ const StaffingEditScreen = ({ match, history }) => {
             setSdStatus(dealToEdit.staffingDecision.staffingStatus ? dealToEdit.staffingDecision.staffingStatus : '');
             setSdStatus(dealToEdit.staffingDecision.instructions ? dealToEdit.staffingDecision.instructions : '');
             setSdStaff(dealToEdit.staffingDecision.staff ? dealToEdit.staffingDecision.staff : []);
-            setLeader(dealToEdit.contacts.primary ? 
-                [{id: dealToEdit.contacts.primary._id, value: dealToEdit.contacts.primary.name}] : ['']);
+            setLeader(dealToEdit.contacts.primary ?
+                [{ id: dealToEdit.contacts.primary._id, value: dealToEdit.contacts.primary.name }] : ['']);
             setCoLeaders(dealToEdit.contacts.secondary ?
-                dealToEdit.contacts.secondary.map( coLeader => ({id: coLeader._id, value: coLeader.name})) : []);
+                dealToEdit.contacts.secondary.map(coLeader => ({ id: coLeader._id, value: coLeader.name })) : []);
             setComments(dealToEdit.comments ? dealToEdit.comments : []);
             setDuration(dealToEdit.duration ? dealToEdit.duration : '');
             setOthersContacts(dealToEdit.othersContacts ? dealToEdit.othersContacts : '');
@@ -196,7 +189,7 @@ const StaffingEditScreen = ({ match, history }) => {
                 status: status,
                 contacts: {
                     primary: leader.length ? leader[0].id : null,
-                    secondary: coLeaders.length ? coLeaders.map( x => x.id) : [],
+                    secondary: coLeaders.length ? coLeaders.map(x => x.id) : [],
                 },
                 probability: probability,
                 description: description,
@@ -236,17 +229,6 @@ const StaffingEditScreen = ({ match, history }) => {
         sdStatus, sdStaff, leader, coLeaders, comments, othersContacts
     ]);
 
-    const updateOthersPractices = () => {
-        const selectedList = [];
-        const selectBox = document.getElementById('others-practices');
-        for (let i = 0; i < selectBox.options.length; i++) {
-            if (selectBox.options[i].selected) {
-                selectedList.push(selectBox.options[i].value);
-            }
-        }
-        setOthersPractices(selectedList);
-    }
-
     const removeStaffHandler = (id) => {
         let tampon = new Array(...sdStaff);
         tampon = tampon.filter(consultant => consultant.idConsultant._id !== id);
@@ -255,12 +237,12 @@ const StaffingEditScreen = ({ match, history }) => {
     }
 
     const addStaffHandler = (consultant, responsability, priority, information) => {
-        
+
         let tampon = new Array(...sdStaff);
 
         // Rule if consultant already added in staff
-        if(sdStaff.map(x => x.idConsultant._id).includes(consultant._id)) {
-            tampon = tampon.filter(x => x.idConsultant._id !== consultant._id);            
+        if (sdStaff.map(x => x.idConsultant._id).includes(consultant._id)) {
+            tampon = tampon.filter(x => x.idConsultant._id !== consultant._id);
         }
 
         tampon.push({
@@ -286,7 +268,7 @@ const StaffingEditScreen = ({ match, history }) => {
             title: title,
             contacts: {
                 primary: leader.length ? leader[0].id : null,
-                secondary: coLeaders.length ? coLeaders.map( x => x.id) : [],
+                secondary: coLeaders.length ? coLeaders.map(x => x.id) : [],
             },
             type: type,
             status: status,
@@ -341,13 +323,13 @@ const StaffingEditScreen = ({ match, history }) => {
         const newComments = comments.slice();
         newComments.push({
             message: newComment,
-            sender:{
+            sender: {
                 _id: userInfo._id,
                 name: userInfo.name
             },
             date: new Date(Date.now()).toISOString()
         });
-        newComments.sort((a,b) => (Date.parse(b.date) - Date.parse(a.date)));
+        newComments.sort((a, b) => (Date.parse(b.date) - Date.parse(a.date)));
         setComments(newComments);
         setDealChange(true);
     };
@@ -385,6 +367,11 @@ const StaffingEditScreen = ({ match, history }) => {
         setStatus(value);
     };
 
+    const srStatusHandler = (value) => {
+        setSrStatus(value);
+        setDealChange(true);
+    };
+
     return (
         <>
             <Meta />
@@ -410,7 +397,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 variant='primary'
                                 onClick={() => {
                                     history.go(-1);
-                                    dispatch({type: DEAL_UPDATE_RESET})
+                                    dispatch({ type: DEAL_UPDATE_RESET })
                                 }}
                                 block
                             >Go Back</Button>
@@ -419,37 +406,36 @@ const StaffingEditScreen = ({ match, history }) => {
                     <Col xs={0} md={8}></Col>
                     <Col xs={6} md={2}>
                         {match.params.id && loadingUpdate && <Loader />}
+                        {match.params.id && !loadingUpdate && (
+                            <>
+                                <Button
+                                    onClick={() => {
+                                        setEditRequest(!editRequest);
+                                        editRequest && setDealChange(true);
+                                    }}
+                                    variant={editRequest ? 'warning' : 'light'}
+                                    block
+                                >{editRequest ? (
+                                    <><span>Save  </span><i className="far fa-check-circle"></i></>
+                                    ) : (
+                                    <><span>Edit  </span><i className="far fa-edit"></i></>
+                                )}
+                                </Button>
+                                {errorUpdate && (<Message variant='danger'>{errorUpdate}</Message>)}
+                            </>
+                        )}
                     </Col>
                 </Row>
-
                 {error && (<Row><Col><Message variant='danger'>{error}</Message></Col></Row>)}
-
-                {match.params.id && (
-                    <Row className='mt-3 align-items-center'>
-                        <Col md={1}>
-                            <Button
-                                onClick={() => {
-                                    setEditRequest(!editRequest);
-                                    editRequest && setDealChange(true);
-                                }}
-                                variant='light'
-                            >{editRequest ? (<i className="far fa-check-circle"></i>) : (<i className="far fa-edit"></i>)}
-                            </Button>
-                        </Col>
-                        <Col className='text-left align-middle'>
-                            {editRequest && (<p> Please click to update</p>)}
-                            {errorUpdate && (<Message variant='danger'>{errorUpdate}</Message>)}
-                        </Col>
-                    </Row>
-                )}
 
                 <Row className='mt-2'>
 
                     <Col xs={12} md={4}>
 
                         <ListGroup.Item>
-                            <TextComponent 
+                            <TextComponent
                                 label='Title'
+                                id="title"
                                 placeholder='Staffing request object'
                                 value={title}
                                 onChange={setTitle}
@@ -457,31 +443,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                 editRequest={editRequest}
                                 formInline={false}
                             />
-                            {/* <Form.Group controlId='title' className='mb-0'>
-                                <Form.Label as='h5'>Title {editRequest && '*'}</Form.Label>
-                                {editRequest ? (
-                                    <Form.Control
-                                        type='text'
-                                        placeholder='Staffing request object'
-                                        value={title ? title : ''}
-                                        onChange={(e) => setTitle(e.target.value)}
-                                        required
-                                    ></Form.Control>
-                                ) : (
-                                        <Form.Control
-                                            type='text'
-                                            plaintext
-                                            value={title ? title : ''}
-                                            readOnly
-                                        ></Form.Control>
-                                    )}
-                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
 
                             <Form.Group controlId='select-company' className='mb-0'>
-                                <Form.Label as='h5'>Company</Form.Label>
+                                <Form.Label as='h5'>Company *</Form.Label>
                                 <SelectCompany
                                     company={{ value: company, label: company }}
                                     setCompany={setCompany}
@@ -496,6 +463,7 @@ const StaffingEditScreen = ({ match, history }) => {
                         <ListGroup.Item>
                             <TextComponent
                                 label='Client contact'
+                                id="contact-client"
                                 placeholder='Client contact'
                                 value={client}
                                 onChange={setClient}
@@ -503,29 +471,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                 editRequest={editRequest}
                                 formInline={false}
                             />
-                            {/* <Form.Group controlId='client' className='mb-0'>
-                                <Form.Label as='h5'>Client</Form.Label>
-                                {editRequest ? (
-                                    <Form.Control
-                                        type='text'
-                                        placeholder='Client name'
-                                        value={client ? client : ''}
-                                        onChange={(e) => setClient(e.target.value)}
-                                    ></Form.Control>
-                                ) : (
-                                        <Form.Control
-                                            type='text'
-                                            plaintext
-                                            readOnly
-                                            value={client ? client : ''}
-                                        ></Form.Control>
-                                    )}
-                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
                             <SelectComponent
                                 editRequest={editRequest}
+                                id="business-type"
                                 label='Type of business'
                                 value={type}
                                 onChange={setType}
@@ -542,37 +493,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                     </>
                                 }
                             />
-                            {/* <Form.Group controlId='type' className='mb-0'>
-                                <Form.Label as='h5'>Type of business {editRequest && '*'}</Form.Label>
-                                {editRequest ? (
-                                    <Form.Control
-                                        as='select'
-                                        value={type ? type : ''}
-                                        onChange={(e) => { setType(e.target.value) }}
-                                        required
-                                    >
-                                        <option value=''>--Select--</option>
-                                        {TYPE_BUSINESS.map(type => (
-                                            <option
-                                                key={type.name}
-                                                value={type.name}
-                                            >{type.name}</option>
-                                        ))}
-                                    </Form.Control>
-                                ) : (
-                                        <Form.Control
-                                            type='text'
-                                            plaintext
-                                            value={type ? type : ''}
-                                            readOnly
-                                        ></Form.Control>
-                                    )}
-                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
                             <SelectComponent
                                 editRequest={editRequest}
+                                id="deal-status"
                                 label='Status'
                                 value={status}
                                 onChange={updateStatusHandler}
@@ -589,45 +515,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                     </>
                                 }
                             />
-                            {/* <Form.Group controlId='status' className='mb-0'>
-                                <Form.Label as='h5'>Status {editRequest && '*'}</Form.Label>
-                                {editRequest ? (
-                                    <Form.Control
-                                        as='select'
-                                        value={status ? status : ''}
-                                        onChange={(e) => {
-                                            if (e.target.value === 'Won') {
-                                                setWonDate(new Date(Date.now()));
-                                            }
-                                            else {
-                                                setWonDate('');
-                                            }
-                                            setStatus(e.target.value);
-                                        }}
-                                        required
-                                    >
-                                        <option value=''>--Select--</option>
-                                        {DEAL_STATUS.map( status => (
-                                            <option
-                                                key={status.name}
-                                                value={status.name}
-                                            >{status.name}</option>
-                                        ))}
-                                    </Form.Control>
-                                ) : (
-                                        <Form.Control
-                                            type='text'
-                                            plaintext
-                                            readOnly
-                                            value={status ? status : ''}
-                                        ></Form.Control>
-                                    )}
-                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
                             <SelectComponent
                                 editRequest={editRequest}
+                                id="probability"
                                 label='Probability (%)'
                                 value={probability}
                                 onChange={setProbability}
@@ -635,8 +528,8 @@ const StaffingEditScreen = ({ match, history }) => {
                                 options={
                                     <>
                                         <option value=''>--Select--</option>
-                                        {DEAL_PROBABILITY.map( prob => (
-                                            <option 
+                                        {DEAL_PROBABILITY.map(prob => (
+                                            <option
                                                 key={prob.name}
                                                 value={prob.name}
                                             >{prob.name} %</option>
@@ -644,37 +537,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                     </>
                                 }
                             />
-                            {/* <Form.Group controlId='probability' className='mb-0'>
-                                <Form.Label as='h5'>Probability {editRequest && '*'}</Form.Label>
-                                {editRequest ? (
-                                    <Form.Control
-                                        as='select'
-                                        value={probability ? probability : ''}
-                                        onChange={(e) => setProbability(e.target.value)}
-                                        required
-                                    >
-                                        <option value=''>--Select--</option>
-                                        {DEAL_PROBABILITY.map( prob => (
-                                            <option 
-                                                key={prob.name}
-                                                value={prob.name}
-                                            >{prob.name} %</option>
-                                        ))}
-                                    </Form.Control>
-                                ) : (
-                                        <Form.Control
-                                            type='text'
-                                            value={`${probability} %`}
-                                            plaintext
-                                            readOnly
-                                        ></Form.Control>
-                                    )}
-                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
                             <TextComponent
                                 label='Location'
+                                id="location"
                                 placeholder='Location'
                                 value={location}
                                 onChange={setLocation}
@@ -682,29 +550,12 @@ const StaffingEditScreen = ({ match, history }) => {
                                 editRequest={editRequest}
                                 formInline={false}
                             />
-                            {/* <Form.Group controlId='location' className='mb-0'>
-                                <Form.Label as='h5'>Location</Form.Label>
-                                {editRequest ? (
-                                    <Form.Control
-                                        type='text'
-                                        placeholder='Location'
-                                        value={location ? location : ''}
-                                        onChange={(e) => setLocation(e.target.value)}
-                                    ></Form.Control>
-                                ) : (
-                                        <Form.Control
-                                            type='text'
-                                            plaintext
-                                            readOnly
-                                            value={location ? location : ''}
-                                        ></Form.Control>
-                                    )}
-                            </Form.Group> */}
                         </ListGroup.Item>
 
                         <ListGroup.Item>
                             <SelectComponent
                                 editRequest={editRequest}
+                                id="main-practice"
                                 label='Main practice'
                                 value={mainPractice}
                                 onChange={setMainPractice}
@@ -721,62 +572,27 @@ const StaffingEditScreen = ({ match, history }) => {
                                     </>
                                 }
                             />
-                            {/* <Form.Group controlId='main-practice' className='mb-0'>
-                                <Form.Label as='h5'>Main Practice {editRequest && '*'}</Form.Label>
-                                {editRequest ? (
-                                    <Form.Control
-                                        as='select'
-                                        value={mainPractice ? mainPractice : ''}
-                                        onChange={(e) => setMainPractice(e.target.value)}
-                                        required
-                                    >
-                                        <option value=''>--Select--</option>
-                                        {practiceList && practiceList.map((practice, val) => (
+                        </ListGroup.Item>
+
+                        <ListGroup.Item>
+                            <SelectMultipleComponent
+                                label="Others Practices"
+                                id="'others-practices'"
+                                editRequest={editRequest}
+                                required={false}
+                                value={othersPractices}
+                                onChange={setOthersPractices}
+                                options={
+                                    practiceList && practiceList.map((practice, val) => (
+                                        (practice !== mainPractice) && (
                                             <option
                                                 value={practice}
                                                 key={val}
                                             >{practice}</option>
-                                        ))}
-                                    </Form.Control>
-                                ) : (
-                                        <Form.Control
-                                            type='text'
-                                            plaintext
-                                            readOnly
-                                            value={mainPractice ? mainPractice : ''}
-                                        ></Form.Control>
-                                    )}
-                            </Form.Group> */}
-                        </ListGroup.Item>
-
-                        <ListGroup.Item>
-                            <Form.Group controlId='others-practices' className='mb-0'>
-                                <Form.Label as='h5'>Others Practices</Form.Label>
-                                {editRequest ? (
-                                    <Form.Control
-                                        as='select'
-                                        multiple
-                                        value={othersPractices ? othersPractices : []}
-                                        onChange={(e) => updateOthersPractices()}
-                                    >
-                                        {practiceList && practiceList.map((practice, val) => (
-                                            (practice !== mainPractice) && (
-                                                <option
-                                                    value={practice}
-                                                    key={val}
-                                                >{practice}</option>
-                                            )
-                                        ))}
-                                    </Form.Control>
-                                ) : (
-                                        <Form.Control
-                                            type='text'
-                                            value={othersPractices ? othersPractices.join(', ') : ''}
-                                            plaintext
-                                            readOnly
-                                        ></Form.Control>
-                                    )}
-                            </Form.Group>
+                                        )
+                                    ))
+                                }
+                            />
                         </ListGroup.Item>
 
                     </Col>
@@ -797,11 +613,11 @@ const StaffingEditScreen = ({ match, history }) => {
                                             disabled={!editRequest}
                                         />
                                     </Form.Group>
-                                    
+
                                 </Col>
-                            
+
                                 <Col xs={12} md={4}>
-                                    
+
                                     <Form.Group controlId='others' className='mb-0'>
                                         <Form.Label as='h5'>Co-Leader(s)</Form.Label>
                                         <SelectInput
@@ -815,50 +631,33 @@ const StaffingEditScreen = ({ match, history }) => {
                                 </Col>
 
                                 <Col xs={12} md={4}>
-                                    <Form.Group controlId='others' className='mb-0'>
-                                        <Form.Label as='h5'>Others contacts</Form.Label>
-                                        {editRequest ? (
-                                            <Form.Control
-                                                type='text'
-                                                placeholder='email1@mail.com;email2@mail.com'
-                                                value={othersContacts ? othersContacts : ''}
-                                                onChange={(e) => setOthersContacts(e.target.value)}
-                                            ></Form.Control>
-                                        ) : (
-                                                <Form.Control
-                                                    type='text'
-                                                    value={othersContacts ? othersContacts : ''}
-                                                    plaintext
-                                                    readOnly
-                                                ></Form.Control>
-                                            )}
-                                    </Form.Group>
+
+                                    <TextComponent
+                                        label="Others contacts"
+                                        id="others-contacts"
+                                        placeholder="email1@mail.com;email2@mail.com"
+                                        value={othersContacts}
+                                        onChange={setOthersContacts}
+                                        required={false}
+                                        editRequest={editRequest}
+                                        formInline={false}
+                                    />
                                 </Col>
 
                             </Row>
                         </ListGroup.Item>
 
                         <ListGroup.Item>
-                            <Form.Group controlId='description' className='mb-0'>
-                                <Form.Label as='h5'>Description {editRequest && '*'}</Form.Label>
-                                {editRequest ? (
-                                    <Form.Control
-                                        as='textarea'
-                                        rows={3}
-                                        placeholder='Deal description'
-                                        value={description ? description : ''}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                        required
-                                    ></Form.Control>
-                                ) : (
-                                        <Form.Control
-                                            type='text'
-                                            value={description ? description : ''}
-                                            plaintext
-                                            readOnly
-                                        ></Form.Control>
-                                    )}
-                            </Form.Group>
+                            <TextAreaComponent
+                                label="Description"
+                                id='staffing-description'
+                                editRequest={editRequest}
+                                required={true}
+                                placeholder="Please describe the mission context"
+                                value={description}
+                                onChange={setDescription}
+                                rows={3}
+                            />
                         </ListGroup.Item>
 
                         <ListGroup.Item>
@@ -867,93 +666,41 @@ const StaffingEditScreen = ({ match, history }) => {
                                 <Col>
                                     <DateComponent
                                         label='Proposal'
+                                        id="proposal-date"
                                         placeholder='proposal date'
                                         value={proposalDate}
                                         onChange={setProposalDate}
                                         required={true}
                                         editMode={editRequest}
                                     />
-                                    {/* <Form.Group controlId='proposal-date' className='mb-0'>
-                                        <Form.Label>Proposal</Form.Label>
-                                        {editRequest ? (
-                                            <Form.Control
-                                                type='date'
-                                                placeholder='Deal date'
-                                                value={proposalDate ? proposalDate : ''}
-                                                onChange={(e) => setProposalDate(e.target.value)}
-                                            ></Form.Control>
-                                        ) : (
-                                                <Form.Control
-                                                    type='date'
-                                                    value={proposalDate ? proposalDate : ''}
-                                                    plaintext
-                                                    readOnly
-                                                ></Form.Control>
-                                            )}
-                                    </Form.Group> */}
                                 </Col>
 
                                 <Col>
                                     <DateComponent
                                         label='Presentation'
+                                        id="presentation-date"
                                         placeholder='presentation date'
                                         value={presentationDate}
                                         onChange={setPresentationDate}
                                         required={true}
                                         editMode={editRequest}
                                     />
-                                    {/* <Form.Group controlId='presentation-date' className='mb-0'>
-                                        <Form.Label>Presentation</Form.Label>
-                                        {editRequest ? (
-                                            <Form.Control
-                                                type='date'
-                                                placeholder='Presentation date'
-                                                value={presentationDate ? presentationDate : ''}
-                                                onChange={(e) => setPresentationDate(e.target.value)}
-                                            ></Form.Control>
-                                        ) : (
-                                                <Form.Control
-                                                    type='date'
-                                                    value={presentationDate ? presentationDate : ''}
-                                                    plaintext
-                                                    readOnly
-                                                ></Form.Control>
-                                            )}
-                                    </Form.Group> */}
                                 </Col>
 
                                 <Col>
                                     <DateComponent
                                         label='Start'
+                                        id="start-date"
                                         placeholder='start date'
                                         value={startDate}
                                         onChange={setStartDate}
                                         required={true}
                                         editMode={editRequest}
                                     />
-                                    {/* <Form.Group controlId='start-date' className='mb-0'>
-                                        <Form.Label>Start {editRequest && '*'}</Form.Label>
-                                        {editRequest ? (
-                                            <Form.Control
-                                                type='date'
-                                                placeholder='Start date'
-                                                value={startDate ? startDate : ''}
-                                                onChange={(e) => setStartDate(e.target.value)}
-                                                required
-                                            ></Form.Control>
-                                        ) : (
-                                                <Form.Control
-                                                    type='date'
-                                                    value={startDate ? startDate : ''}
-                                                    plaintext
-                                                    readOnly
-                                                ></Form.Control>
-                                            )}
-                                    </Form.Group> */}
                                 </Col>
 
                                 <Col>
-                                    <NumberComponent 
+                                    <NumberComponent
                                         label='duration (month)'
                                         placeholder='duration'
                                         min={0}
@@ -963,27 +710,6 @@ const StaffingEditScreen = ({ match, history }) => {
                                         required={true}
                                         editRequest={editRequest}
                                     />
-                                    {/* <Form.Group controlId='duration' className='mb-0'>
-                                        <Form.Label>Duration (month) {editRequest && '*'}</Form.Label>
-                                        {editRequest ? (
-                                            <Form.Control
-                                                type='number'
-                                                placeholder='Duration'
-                                                min={0}
-                                                step={0.5}
-                                                value={duration ? duration : 0}
-                                                onChange={(e) => setDuration(e.target.value)}
-                                                required
-                                            ></Form.Control>
-                                        ) : (
-                                                <Form.Control
-                                                    type='number'
-                                                    value={duration ? duration : 0}
-                                                    plaintext
-                                                    readOnly
-                                                ></Form.Control>
-                                            )}
-                                    </Form.Group> */}
                                 </Col>
                             </Row>
                         </ListGroup.Item>
@@ -991,50 +717,38 @@ const StaffingEditScreen = ({ match, history }) => {
                         <ListGroup.Item>
                             <Row>
                                 <Col xs={12} md={8}>
-                                    <Form.Group controlId='sr-instruction' className='mb-0'>
-                                        <Form.Label as='h5'>Staffing instruction {editRequest && '*'}</Form.Label>
-                                        {editRequest ? (
-                                            <Form.Control
-                                                as='textarea'
-                                                rows={3}
-                                                placeholder='Staffing instruction'
-                                                value={srInstruction ? srInstruction : ''}
-                                                onChange={(e) => setSrInstruction(e.target.value)}
-                                                required
-                                            ></Form.Control>
-                                        ) : (
-                                                <Form.Control
-                                                    type='text'
-                                                    value={srInstruction ? srInstruction : ''}
-                                                    plaintext
-                                                    readOnly
-                                                ></Form.Control>
-                                            )}
-                                    </Form.Group>
+                                    <TextAreaComponent
+                                        label="Staffing instructions"
+                                        id='staffing-instructions'
+                                        editRequest={editRequest}
+                                        required={true}
+                                        placeholder="Please describe your staffing request"
+                                        value={srInstruction}
+                                        onChange={setSrInstruction}
+                                        rows={3}
+                                    />
                                 </Col>
 
                                 <Col xs={12} md={4}>
-                                    <Form.Group controlId='sr-status' className='mb-0'>
-                                        <Form.Label as='h5'>Status {editRequest && '*'}</Form.Label>
-                                        <Form.Control
-                                            as='select'
-                                            value={srStatus ? srStatus : ''}
-                                            onChange={(e) => {
-                                                setSrStatus(e.target.value)
-                                                setDealChange(true);
-                                            }}
-                                            required
-                                        >
-                                            <option value=''>--Select--</option>
-                                            {REQUEST_STATUS.map(({name}) => (
-                                                <option
-                                                    key={name}
-                                                    value={name}
-                                                >{name}</option>
-                                            ))}
-
-                                        </Form.Control>
-                                    </Form.Group>
+                                    <SelectComponent
+                                        editRequest={true}
+                                        label="Status"
+                                        id="sr-status"
+                                        value={srStatus}
+                                        onChange={srStatusHandler}
+                                        required={true}
+                                        options={
+                                            <>
+                                                <option value=''>--Select--</option>
+                                                {REQUEST_STATUS.map(({ name }) => (
+                                                    <option
+                                                        key={name}
+                                                        value={name}
+                                                    >{name}</option>
+                                                ))}
+                                            </>
+                                        }
+                                    />
                                 </Col>
                             </Row>
                         </ListGroup.Item>
@@ -1056,8 +770,8 @@ const StaffingEditScreen = ({ match, history }) => {
                                                                 placement="top"
                                                                 trigger='click'
                                                                 overlay={
-                                                                    <Popover 
-                                                                        id='popover-others-staffs' 
+                                                                    <Popover
+                                                                        id='popover-others-staffs'
                                                                         style={{ 'maxWidth': '40%' }}
                                                                     >
                                                                         <Popover.Title id="contained-modal-title-vcenter">
@@ -1110,9 +824,9 @@ const StaffingEditScreen = ({ match, history }) => {
                                         </Row>
                                     </ListGroup.Item>
                                 ))}
-                            </ListGroup.Item>   
+                            </ListGroup.Item>
                         )}
-                        
+
                         {!match.params.id && (
                             <Row className='mt-3'>
                                 <Col className='text-right'>
@@ -1130,50 +844,53 @@ const StaffingEditScreen = ({ match, history }) => {
                                 <Row className='my-1'>
                                     <Col>
                                         <strong>Last update at: </strong>{dealToEdit.updatedAt.substring(0, 19).replace('T', ' ')}
-                                        
-                                            
-                                                    <Row className='align-items-center my-3'>
-                                                        <Col xs={11} >
-                                                            <Form.Group controlId='comment' className='mb-0'>
-                                                                <Form.Control
-                                                                    type='text'
-                                                                    placeholder='Add a comment'
-                                                                    value={newComment ? newComment : ''}
-                                                                    onChange={(e) => setNewComment(e.target.value)}
-                                                                    onKeyUp={(e) => (e.key === 'Enter') && addCommentHandler()}
-                                                                ></Form.Control>
-                                                            </Form.Group>
-                                                        </Col>
-                                                        <Col xs={1}>
-                                                            <Button
-                                                                variant='primary'
-                                                                onClick={() => addCommentHandler()}
-                                                                size='sm'
-                                                            ><i className="fas fa-plus"></i></Button>
-                                                        </Col>
-                                                    </Row>
-
-                                            <ListGroup className='my-3'>
-                                            {comments && comments.map( (comment, index) => (
+                                        <Row className='align-items-center my-3'>
+                                            <Col xs={11} >
+                                                <Form.Group controlId='comment' className='mb-0'>
+                                                    <Form.Control
+                                                        type='text'
+                                                        placeholder='Add a comment'
+                                                        value={newComment ? newComment : ''}
+                                                        onChange={(e) => setNewComment(e.target.value)}
+                                                        onKeyUp={(e) => (e.key === 'Enter') && addCommentHandler()}
+                                                    ></Form.Control>
+                                                </Form.Group>
+                                            </Col>
+                                            <Col xs={1}>
+                                                <Button
+                                                    variant='primary'
+                                                    onClick={() => addCommentHandler()}
+                                                    size='sm'
+                                                ><i className="fas fa-plus"></i></Button>
+                                            </Col>
+                                        </Row>
+                                        <ListGroup className='py-3'>
+                                            {comments && comments.map((comment, index) => (
                                                 <ListGroup.Item
                                                     key={index}
-                                                    className='mb-0'
+                                                    className='mb-0 py-2'
                                                 >
-                                                    
-                                                    <p>
-                                                        {comment.message}
-                                                    </p>
-                                                    <p style={{textAlign: 'right', marginBottom: '0'}}><i>By {comment.sender.name} the {comment.date.substring(0,19).replace('T', ' at ')}  {comment.sender._id === userInfo._id && (
-                                                            <Button
-                                                                size='sm'
-                                                                variant='ligth'
-                                                                style={{color:'red'}}
-                                                                onClick={() => deleteCommentHandler(comment.date)}
-                                                            >--delete--</Button>
+                                                    <Row>
+                                                        <Col>
+                                                            <Form.Control
+                                                                type="text"
+                                                                value={comment.message}
+                                                                readOnly
+                                                            />
+                                                            {/*comment.message*/}</Col>
+                                                    </Row>
+                                                    <p style={{ textAlign: 'right', marginBottom: '0' }}><i>By {comment.sender.name} the {comment.date.substring(0, 19).replace('T', ' at ')}  {comment.sender._id === userInfo._id && (
+                                                        <Button
+                                                            size='sm'
+                                                            variant='ligth'
+                                                            className='text-danger mx-0'
+                                                            //style={{ color: 'red' }}
+                                                            onClick={() => deleteCommentHandler(comment.date)}
+                                                        >--delete--</Button>
                                                     )}</i></p>
                                                 </ListGroup.Item>
                                             ))}
-                                            </ListGroup>
+                                        </ListGroup>
                                         <strong>Created at: </strong>{dealToEdit.createdAt.substring(0, 19).replace('T', ' ')} <br />
                                     </Col>
                                 </Row>

@@ -1,9 +1,9 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 
-const NumberComponent = ({ label, placeholder, min, max, step, value, onChange, required, editRequest  }) => {
+const NumberComponent = ({ label, placeholder, id, min, max, step, value, onChange, required, editRequest  }) => {
     return (
-        <Form.Group controlId='duration' className='mb-0'>
+        <Form.Group controlId={id} className='mb-0'>
             <Form.Label>{label} {editRequest && required && '*'}</Form.Label>
             {editRequest ? (
                 <Form.Control
@@ -19,7 +19,7 @@ const NumberComponent = ({ label, placeholder, min, max, step, value, onChange, 
             ) : (
                 <Form.Control
                     type='number'
-                    className='border border-light border-top-0 border-right-0 border-left-0 rounded bg-light'
+                    className='border border-light border-top-0 border-right-0 border-left-0 bg-light text-secondary'
                     value={value ? value : 0}
                     plaintext
                     readOnly
