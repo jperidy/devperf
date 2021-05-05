@@ -20,6 +20,13 @@ const TokenIsValide = ({ history, children }) => {
         }
     }, [userInfo, history]);
 
+    useEffect(() => {
+        if (userInfo && userInfo.lastConnexion && children) {
+            //grantedAccess = false;
+            setGrantedAccess(true);
+        }
+    }, [userInfo, dispatch, children]);
+
     // to avoid errors with migration
     useEffect(() => {
         if (userInfo && !userInfo.lastConnexion) {

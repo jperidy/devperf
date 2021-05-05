@@ -27,7 +27,6 @@ import TextComponent from '../components/TextComponent';
 import SelectComponent from '../components/SelectComponent';
 import SelectMultipleComponent from '../components/SelectMultipleComponent';
 import TextAreaComponent from '../components/TextAreaComponent';
-import { Container } from 'react-bootstrap';
 
 const StaffingEditScreen = ({ match, history }) => {
 
