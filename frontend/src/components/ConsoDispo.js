@@ -9,12 +9,12 @@ import Message from '../components/Message';
 import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-//import Popover from 'react-bootstrap/Popover';
 import Tooltip from 'react-bootstrap/Tooltip';
 import Tabs from 'react-bootstrap/Tabs';
 import Tab from 'react-bootstrap/Tab';
 import StaffAConsultant from './StaffAConsultant';
 import DisplayChildren from '../components/DisplayChildren';
+import SelectComponent from '../components/SelectComponent';
 
 import SelectInput from '../components/SelectInput';
 import { getAllSkills } from '../actions/skillActions';
@@ -26,7 +26,6 @@ const ConsoDispo = ({
     const dispatch = useDispatch();
 
     const [focus, setFocus] = useState('');
-    //const [searchSkills, setSearchSkills] = useState('');
     const [searchExperienceStart, setSearchExperienceStart] = useState('');
     const [searchExperienceEnd, setSearchExperienceEnd] = useState('');
     const [practice, setPractice] = useState('');
@@ -94,6 +93,19 @@ const ConsoDispo = ({
             )}
 
             <Row className='mt-5'>
+                <Col>
+                    <Form.Group controlId='switch-practices' className='my-0'>
+                        <Form.Check
+                            type='switch'
+                            id='switch-all-practices'
+                            label='All practices'
+                            checked={practice === 'all' ? true : false}
+                            onChange={(e) => { e.target.checked === true ? setPractice('all') : setPractice(userInfo.consultantProfil.practice) }}
+                        ></Form.Check>
+                    </Form.Group>
+                </Col>
+            </Row>
+            <Row className='mt-3'>
                 <Col md={12}>
                     <Form onSubmit={handlerSkillsSubmit}>
 
@@ -154,23 +166,28 @@ const ConsoDispo = ({
 
                             <Col md={2}>
                                 <Form.Group controlId='switch-only-available'  className='my-0'>
-                                    <Form.Check
+                                    <SelectComponent 
+                                        editRequest={true}
+                                        label=''
+                                        id='select-filter'
+                                        value={searchMode}
+                                        onChange={setSearchMode}
+                                        required={true}
+                                        options={
+                                            <>
+                                                <option value='filterAvailable'>Is available</option>
+                                                <option value='notAvailable'>Is not available</option>
+                                                <option value='notProd'>Has not prod</option>
+                                            </>
+                                        }
+                                    />
+                                    {/* <Form.Check
                                         type='switch'
                                         id='switch-only-available'
                                         label='Not available'
                                         checked={searchMode === 'filterAvailable' ? false : true}
                                         onChange={(e) => {e.target.checked === true ? setSearchMode('all') : setSearchMode('filterAvailable')}}
-                                    ></Form.Check>
-                                </Form.Group>
-
-                                <Form.Group controlId='switch-practices'  className='my-0'>
-                                    <Form.Check
-                                        type='switch'
-                                        id='switch-all-practices'
-                                        label='All practices'
-                                        checked={practice === 'all' ? true : false}
-                                        onChange={(e) => {e.target.checked === true ? setPractice('all') : setPractice(userInfo.consultantProfil.practice)}}
-                                    ></Form.Check>
+                                    ></Form.Check> */}
                                 </Form.Group>
 
                             </Col>
@@ -296,9 +313,6 @@ const ConsoDispo = ({
 
 const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) => {
 
-    //const userLogin = useSelector(state => state.userLogin);
-    //const { userInfo } = userLogin;
-
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
     
@@ -351,7 +365,13 @@ const ConsoDispoUnit = ({monthData, grades, mode, addStaff, focus, setFocus}) =>
                                         <Tooltip id="tooltip-disabled" html="true">
                                             <DisplayChildren access='viewComment'>
                                                 {userInfo && userInfo.consultantProfil._id !== consultantData._id ? (
-                                                    consultantData.comment ? consultantData.comment.split('\n').map((x,val) => (<p key={val} className='m-0 p-0 text-left'>{x}</p>)) : 'No staffing comment'
+                                                    (
+                                                        <div>
+                                                            <div><p className='m-0 p-0 text-left'><strong>Information</strong></p>{consultantData.comment && consultantData.comment.split('\n').map((x, val) => (<p key={val} className='m-0 p-0 text-left'>{x}</p>))}</div>
+                                                            <div><p className='m-0 mt-3 p-0 text-left'><strong>Availability comment</strong></p>{consultantData.availabilityComment && consultantData.availabilityComment.split('\n').map((x, val) => (<p key={val} className='m-0 p-0 text-left'>{x}</p>))}</div>
+                                                            <div><p className='m-0 mt-3 p-0 text-left'><strong>Not Prod comment</strong></p>{consultantData.notProdComment && consultantData.notProdComment.split('\n').map((x, val) => (<p key={val} className='m-0 p-0 text-left'>{x}</p>))}</div>
+                                                        </div>
+                                                    )
                                                 ) : 'No access to this data'}
                                             </DisplayChildren>
                                         </Tooltip>

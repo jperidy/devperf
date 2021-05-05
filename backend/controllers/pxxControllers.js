@@ -488,15 +488,21 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
     const month = await Month.find({ firstDay: { $gte: start, $lte: end } }).sort({ 'name': 1 }).select('_id name firstDay');
     const data = [];
 
-    const searchAvailableDay = req.query.filterMode === 'all' ? { $eq: 0 } : { $gt: 0 }
+    //const searchAvailableDay = req.query.filterMode === 'all' ? { $eq: 0 } : { $gt: 0 }
+    const searchAvailableDay = req.query.filterMode === 'notAvailable' ? 
+        { availableDay: { $eq: 0 } } 
+        : req.query.filterMode === 'notProd' ?
+        { notProdDay: { $gt: 0 } }
+        : { availableDay: { $gt: 0 } }
 
     const availablePxx = await Pxx.find({
         month: { $in: month.map(x => x._id) },
         name: { $in: consultantId.map(x => x._id) },
-        availableDay: searchAvailableDay
-    }).select('_id name email grade valued practice quality availableDay comment')
-        .populate('month name')
-        .sort({ availableDay: -1 });
+        ...searchAvailableDay
+        //availableDay: searchAvailableDay
+    }).populate('month name').sort({ availableDay: -1 });
+
+    //.select('_id name email grade valued practice quality availableDay comment')
 
     const allSkills = await Skill.find();
 
@@ -523,7 +529,9 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
                     practice: x.name.practice,
                     quality: qualities,
                     availableDay: x.availableDay,
-                    comment: x.name.comment
+                    comment: x.name.comment,
+                    availabilityComment: x.name.availabilityComment,
+                    notProdComment: x.name.notProdComment
                 }
             });
             const result = {

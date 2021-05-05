@@ -3,17 +3,18 @@ import { useDispatch } from 'react-redux';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 import InputGroup from 'react-bootstrap/InputGroup';
-import FormControl from 'react-bootstrap/FormControl';
+// import FormControl from 'react-bootstrap/FormControl';
+import Form from 'react-bootstrap/Form';
 import { updatePxx } from '../actions/pxxActions';
 
 const PxxUserLine = ({ data }) => {
 
     const dispatch = useDispatch();
 
-    const [prodDayComponent, setProdDayComponent] = useState(Number(data.prodDay) || 0);
-    const [notProdDayComponent, setNotProdDayComponent] = useState(Number(data.notProdDay) || 0);
-    const [leavingDayComponent, setLeavingDayComponent] = useState(Number(data.leavingDay) || 0);
-    const [availableDayComponent, setAvailableDayComponent] = useState(Number(data.availableDay) || 0);
+    const [prodDayComponent, setProdDayComponent] = useState(Number(data.prodDay) ? Number(data.prodDay) : 0);
+    const [notProdDayComponent, setNotProdDayComponent] = useState(Number(data.notProdDay) ? Number(data.notProdDay) : 0);
+    const [leavingDayComponent, setLeavingDayComponent] = useState(Number(data.leavingDay) ? Number(data.leavingDay) : 0);
+    const [availableDayComponent, setAvailableDayComponent] = useState(Number(data.availableDay) ? Number(data.availableDay) : 0);
     const [workingDay] = useState(Number(data.prodDay) + Number(data.notProdDay) + Number(data.leavingDay) + Number(data.availableDay));
 
     const [hasChange, setHasChange] = useState(false);
@@ -48,11 +49,12 @@ const PxxUserLine = ({ data }) => {
                 <Col xs={4} className="text-center align-middle"><b>{data.month ? data.month.name : 'Not created Yeat'}</b> <i>{workingDay ? `(${workingDay}d)` : null}</i></Col>
                 <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
-                        <FormControl
+                        <Form.Control
                             type="number"
                             min={0}
                             max={(workingDay - notProdDayComponent - leavingDayComponent) ? (workingDay - notProdDayComponent - leavingDayComponent) : '-'}
                             step={0.5}
+                            placeholder='-'
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
                             value={prodDayComponent && prodDayComponent.toString()}
@@ -60,16 +62,17 @@ const PxxUserLine = ({ data }) => {
                                 setProdDayComponent(Number(e.target.value));
                                 setHasChange(true);
                             }}
-                        />
+                        ></Form.Control>
                     </InputGroup>
                 </Col>
                 <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
-                        <FormControl
+                        <Form.Control
                             type="number"
                             min={0}
                             max={(workingDay - prodDayComponent - leavingDayComponent) ? (workingDay - prodDayComponent - leavingDayComponent) : '-'}
                             step={0.5}
+                            placeholder='-'
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
                             value={notProdDayComponent && notProdDayComponent.toString()}
@@ -79,16 +82,17 @@ const PxxUserLine = ({ data }) => {
                                     setHasChange(true);
                                 }
                             }}
-                        />
+                        ></Form.Control>
                     </InputGroup>
                 </Col>
                 <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
-                        <FormControl
+                        <Form.Control
                             type="number"
                             min={0}
                             max={(workingDay - prodDayComponent - notProdDayComponent) ? (workingDay - prodDayComponent - notProdDayComponent) : '-'}
                             step={0.5}
+                            placeholder='-'
                             disabled={!editable || !workingDay}
                             className="align-middle text-center p-0"
                             value={leavingDayComponent && leavingDayComponent.toString()}
@@ -96,20 +100,21 @@ const PxxUserLine = ({ data }) => {
                                 setLeavingDayComponent(Number(e.target.value));
                                 setHasChange(true);
                             }}
-                        />
+                        ></Form.Control>
                     </InputGroup>
                 </Col>
                 <Col xs={2} className="text-center align-middle px-1">
                     <InputGroup>
-                        <FormControl
-                            type="number"
-                            min={0}
-                            max={workingDay ? workingDay : '-'}
-                            step={0.5}
+                        <Form.Control
+                            type="text"
+                            //min={0}
+                            //max={workingDay ? workingDay : '-'}
+                            //step={0.5}
+                            placeholder='-'
                             className="align-middle text-center p-0"
                             value={availableDayComponent && availableDayComponent.toString()}
                             disabled
-                        />
+                        ></Form.Control>
                     </InputGroup>
                 </Col>
 

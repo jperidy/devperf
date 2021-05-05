@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 const SelectComponent = ({ editRequest, label, id, value, onChange, required, options }) => {
     return (
         <Form.Group controlId={id} className='mb-0'>
-            <Form.Label as='h5'>{label} {editRequest && required && '*'}</Form.Label>
+            {label && <Form.Label as='h5'>{label} {editRequest && required && '*'}</Form.Label>}
             {editRequest ? (
                 <Form.Control
                     as='select'
