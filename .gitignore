@@ -19,6 +19,7 @@ backend/seeder.js
 
 # production
 #/frontend/build
+/frontendWithExpress
 
 /backend/data
 /backend/data/pxx
