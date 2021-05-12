@@ -122,7 +122,7 @@ const LoginScreen = ({ location, history }) => {
 
             </FormContainer>
 
-            {process.env.REACT_APP_ENV === 'demo' && (
+            {['demo', 'dev'].includes(process.env.REACT_APP_ENV) && (
                 <Container>
                     <Row className='justify-content-md-center'>
                         <Col xs={12} md={6} className='mt-5'>
@@ -163,6 +163,16 @@ const LoginScreen = ({ location, history }) => {
                                         <td className='align-middle text-center'>cdmptc11004@mail.com</td>
                                         <td className='align-middle text-center'>123456</td>
                                         <td className='align-middle text-center'>CDM of practice PTC1 account</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='align-middle text-center'>detmanagerprofil@mail.com</td>
+                                        <td className='align-middle text-center'>123456</td>
+                                        <td className='align-middle text-center'>Manager of DET account</td>
+                                    </tr>
+                                    <tr>
+                                        <td className='align-middle text-center'>detconsultantprofil@mail.com</td>
+                                        <td className='align-middle text-center'>123456</td>
+                                        <td className='align-middle text-center'>Consultant of DET account</td>
                                     </tr>
                                 </tbody>
                             </Table>

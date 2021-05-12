@@ -8,6 +8,7 @@ const Tace = require('../models/taceModel');
 const path = require('path');
 const XLSX = require('xlsx');
 const fs = require('fs');
+const { set } = require('mongoose');
 //const readXlsxFile = require('read-excel-file/node');
 //const calculDayByType = require('../utils/calculDayByType');
 //const { createMonth } = require('./monthPxxController');
@@ -171,18 +172,14 @@ const recalculatePxx = ({ initialProdDay, initialNotProdDay, initialLeavingDay, 
 }
 
 const resetAllPxx = async (consultantInfo) => {
-    //console.log('resetAllPxx');
 
     const consultantId = consultantInfo._id;
     const pxxData = await Pxx.find({ name: consultantId });
-
-    //let availableDay = 0;
 
     for (let incrPxx = 0; incrPxx < pxxData.length; incrPxx++) {
         const pxx = pxxData[incrPxx];
         const idMonth = pxx.month;
         const monthInfo = await Month.findById(idMonth);
-        //const monthInfo = monthData.filter(x => x._id.toString() === idMonth.toString())[0];
 
         const initialAvailableDay = calculateAvailableDays(consultantInfo, monthInfo);
         const initialProdDay = Number(pxx.prodDay);
@@ -190,9 +187,6 @@ const resetAllPxx = async (consultantInfo) => {
         const initialLeavingDay = Number(pxx.leavingDay);
 
         const { prodDay, notProdDay, leavingDay, availableDay } = recalculatePxx({ initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay });
-
-        //console.log('init: ', initialProdDay, initialNotProdDay, initialLeavingDay, initialAvailableDay);
-        //console.log('calculate: ', prodDay, notProdDay, leavingDay, availableDay);
 
         pxxData[incrPxx].prodDay = prodDay;
         pxxData[incrPxx].notProdDay = notProdDay;
@@ -757,13 +751,7 @@ const updatePxxLine = async (pxxLine, consultantId) => {
             message: `Error - Month not found for: ${pxxLine.month} if format is different from YYYY/MM please contact your admin\n`
         };
     }
-    /* const consultantId = await Consultant.findOne({ matricule: pxxLine.matricule }).select('_id');
-    if (!consultantId) {
-        return {
-            result: false,
-            message: `Error - Consultant not find for: ${pxxLine.name} (${pxxLine.matricule}) please verify start and leave dates\n`
-        };
-    } */
+
     const pxxToUpdate = await Pxx.findOne({ name: consultantId._id, month: monthId._id });
     if (pxxToUpdate) {
         pxxToUpdate.prodDay = pxxLine.prod;
@@ -771,43 +759,22 @@ const updatePxxLine = async (pxxLine, consultantId) => {
         pxxToUpdate.leavingDay = pxxLine.holidays;
         pxxToUpdate.availableDay = pxxLine.available;
         pxxToUpdate.save();
-        //console.log(`PxxLine updated for: ${pxxLine.name} and ${pxxLine.month}`);
         return {
             result: true,
-            message: `Info - PxxLine updated for: ${pxxLine.name} and ${pxxLine.month}\n`
+            message: `[info] PxxLine updated for: ${pxxLine.name} and ${pxxLine.month}`
         };
-        //return `PxxLine updated for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id})`;
     } else {
         //console.log(`PxxLine not found for: ${pxxLine.name} and ${pxxLine.month}`);
         return {
             result: false,
-            message: `Error - PxxLine not found for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id}) please verify start and leave dates\n`
+            message: `[error] PxxLine not found for: ${pxxLine.name} and ${pxxLine.month} (${monthId._id}) please verify start and leave dates`
         }
     }
 }
-/* const updatePxxComment = async (matricule, pxxComments) => {
-
-    const consultant = await Consultant.findOne({ matricule: matricule });
-
-    if (consultant) {
-        const commentaireToUpdate = `${pxxComments.commentaires}\n\nDominante:\n${pxxComments.dominante}\n\nExpertise:\n${pxxComments.expertise}`;
-        consultant.comment = commentaireToUpdate;
-        await consultant.save();
-        return {
-            result: true,
-            message: `Consultant profil ${matricule} updated with new comment\n`
-        }
-    } else {
-        return {
-            result: false,
-            message: `Error - comment not updated for consultant with matricule: ${matricule}\n`
-        }
-    }
-} */
 
 
 // @desc    Mass import of pxx datas from Pxx directory
-// @route   PUT /api/pxx/admin/mass-import-pxx
+// @route   PUT /api/pxx/admin/line-import-wk
 // @access  Private
 const updatePxxFromPxx = asyncHandler(async (req, res) => {
 
@@ -831,8 +798,10 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
     try {
 
         // stamps to avoid to proceed too much request
-        const practice = req.user.consultantProfil.practice;
-        const consultantsAllPractice = await Consultant.find({ practice: practice });
+        // const practice = req.user.consultantProfil.practice;
+        // const consultantsAllPractice = await Consultant.find({ practice: practice });
+        const practices = [];
+        const consultantsAllPractice = await Consultant.find();
 
         //console.log(practice);
         //console.log(consultantsAllPractice);
@@ -846,7 +815,8 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
 
             if (file.match(regex)) {
 
-                res.write(`----- Start updating ${file} -----\n`);
+                res.write(`\n----------------> Start updating ${file} \n`);
+                console.log(`----------------> Start updating ${file}`);
 
                 wb = XLSX.readFile(directory + '/' + file);
                 const firstSheetName = wb.SheetNames[0];
@@ -867,27 +837,26 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                     transformMonth(readablePxx[5][21]),
                     transformMonth(readablePxx[5][25]),
                 ];
-
                 
-
                 for (let line = 8; line < Math.min(150, readablePxx.length); line++) {
-
 
                     const pxxLine = readablePxx[line];
                     if (Number(pxxLine[0]) > 0 && Number(pxxLine[0]) <= 1) {
 
-                        //res.write(`Start ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)})\n`);
-                        //const consultantId = await Consultant.findOne({ matricule: pxxLine[4].toString().padStart(9, 0) }).select('_id');
                         const consultantProfil = consultantsAllPractice.filter( x => x.matricule === pxxLine[4].toString().padStart(9, 0))[0];
                         
                         if (!consultantProfil) {
 
-                            const messageProfil = `Error - Consultant not found for: ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)}) please verify start and leave dates\n`;
+                            const messageProfil = `[error] Consultant not found for: ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)}) it could be due to:
+                            \t- wrong matricule reference
+                            \t- wrong start and leave dates`;
+                            numberErrors += 1;
                             console.error(messageProfil);
-                            res.write(messageProfil);
+                            res.write(messageProfil + '\n');
 
                         } else {
 
+                            practices.push(consultantProfil.practice);
                             numberOfConsultants += 1;
                             const resultConsultant = [];
 
@@ -956,62 +925,42 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                             console.log(result.message);
                             resultConsultant.push(result);
 
-
-                            // Update comments in consultant profil
-                            /* const comments = {
-                                commentaires: pxxLine[33],
-                                dominante: pxxLine[30],
-                                expertise: pxxLine[31],
-                            } */
                             const comments = `${pxxLine[33]}\n\nDominante :\n${pxxLine[30]}\n\nExpertises :\n${pxxLine[31]}`
 
                             consultantProfil.comment = comments;
                             const updatedProfil = await consultantProfil.save();
                             if (!updatedProfil) {
-                                console.log(`Error updating comment for consultant: ${consultantProfil.name}`);
-                                res.write(`Error updating comment for consultant: ${consultantProfil.name}\n`)
+                                console.log(`[error] updating comment for consultant: ${consultantProfil.name}`);
+                                res.write(`[error] updating comment for consultant: ${consultantProfil.name}\n`);
+                                numberErrors += 1;
                             }
 
-                            //result = await updatePxxComment(pxxLine[4].toString().padStart(9, 0), comments);
-                            //console.log(result.message);
-                            //resultConsultant.push(result);
-
-
                             if (resultConsultant.map(x => x.result).includes(false)) {
-                                numberErrors += 1;
                                 const lineWithErrors = resultConsultant.filter(x => x.result === false);
-                                res.write(`Error - Update Pxx Line - ${pxxLine[3]} (${pxxLine[4]})\n`);
+                                console.log(`[error] Updating Pxx Line - ${pxxLine[3]} (${pxxLine[4]})`);
+                                res.write(`[error] Updating Pxx Line - ${pxxLine[3]} (${pxxLine[4]})\n`);
+                                numberErrors += 1;
 
                                 lineWithErrors.map(x => {
-                                    res.write(`\t${x.message}`);
+                                    res.write(`\t${x.message}\n`);
                                     console.log(`\t${x.message}`);
                                 });
 
-
                             } else {
                                 numberUpdated += 1;
-                                //res.write(`info - ${pxxLine[3]} (${pxxLine[4]}) - updated\n`);
                             }
-
-
                             matriculeScanned.push(pxxLine[4].toString().padStart(9, 0));
-
-                            //res.write(`End ${pxxLine[3]} (${pxxLine[4].toString().padStart(9, 0)})\n\n`);
-
                         }
-
                     }
                 }
-                //res.write(`End updating ${file}\n\n`);
             } else {
-                res.write(`Error - pxx format not matching with patern: ${file}\n\n`);
-                console.log(`Error - pxx format not matching with patern: ${file}\n\n`);
+                res.write(`[error] pxx format not matching with patern: ${file}\n\n`);
+                console.log(`[error] pxx format not matching with patern: ${file}\n\n`);
             }
         }
 
         // add fucntion to verify if missing Pxx
-
-        const userPractice = req.user.consultantProfil.practice;
+        const usersPractices = Array(...new Set(practices));
         const startMonth = new Date(Date.now());
         startMonth.setUTCDate(1);
 
@@ -1021,8 +970,8 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
 
         const allConsultantsActivesInDatabase = await Consultant.find({
             $or: [
-                { practice: userPractice, arrival: { $lte: startMonth }, leaving: { $gte: endMonth } },
-                { practice: userPractice, arrival: { $lte: startMonth }, leaving: null }
+                { practice: {$in: usersPractices}, arrival: { $lte: startMonth }, leaving: { $gte: endMonth } },
+                { practice: {$in: usersPractices}, arrival: { $lte: startMonth }, leaving: null }
             ]
         }).select('matricule name');
 
@@ -1036,7 +985,6 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
                 \tsolution 2 : maybe it is not still filled in CDM Pxx > please add the line\n`
 
                 res.write(warningMsg);
-                //messagesSynthese.push(warningMsg);
             }
         }
 
@@ -1049,7 +997,7 @@ const updatePxxFromPxx = asyncHandler(async (req, res) => {
 
                 fs.unlink(directory + '/' + file, (err) => {
                     if (err) {
-                        console.error('Error removing file ' + file + 'from ' + directory);
+                        console.error('[error] removing file ' + file + 'from ' + directory);
                     } else {
                         console.log(file + ' has been removed from: ' + directory);
                     }

@@ -401,7 +401,6 @@ async function getConsultantDataFromWk(fileName, practiceName, profilsId, userSc
                 info = `Info - create - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`;
                 if (consultant.partialTime < 1) {
                     info += `\t>>Warning - add partial time - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`
-
                 }
                 message.push({
                     _id: result._id,
@@ -412,6 +411,7 @@ async function getConsultantDataFromWk(fileName, practiceName, profilsId, userSc
                     message: info
                 });
                 //resetAllPxx(result);
+                console.log(info);
                 numberOfCreate += 1;
             } else {
                 info = `Error - create - ${consultant.name} (${consultant.matricule}) - ${result._id}`;

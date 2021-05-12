@@ -4,10 +4,8 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-//import Image from 'react-bootstrap/Image';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-//import { uploadConsultantWk, updateConsultantWk } from '../actions/consultantActions';
 import Form from 'react-bootstrap/Form';
 import { pxxUploadFiles, updatePxxFiles } from '../actions/pxxActions';
 

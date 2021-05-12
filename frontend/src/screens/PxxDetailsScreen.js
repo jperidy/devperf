@@ -50,9 +50,6 @@ const PxxDetailsScreen = ({ history, match }) => {
     const pxxAllList = useSelector(state  => state.pxxAllList);
     const {loading, pxxs, pages, page, count} = pxxAllList;
 
-    /* const pxxImportMass = useSelector(state  => state.pxxImportMass);
-    const {loading: loadingImportMass, error: errorImportMass, success: successImportData, datas} = pxxImportMass; */
-
     const pxxImportLine = useSelector(state  => state.pxxImportLine);
     const {loading: loadingImportLine, error: errorImportLine, success: successImportLine, updatedLine} = pxxImportLine;
 
@@ -90,15 +87,10 @@ const PxxDetailsScreen = ({ history, match }) => {
     }, [pxxs, setExportExcel]);
 
 
-
-    // Effect to manage file import
-
     const handlerImportAllPxx = () => {
-        //dispatch({ type: EMAIL_SEND_DECISION_RESET });
-        //console.log(importData);
         setProgress(0);
         setMassImport(true);
-    }
+    };
     
     const handlerImportData = (lineToImport) => {
         const newImportData = importData.slice();
@@ -127,9 +119,6 @@ const PxxDetailsScreen = ({ history, match }) => {
 
     useEffect(() => {
         if(successImportLine) {
-            //console.log(progress);
-            //console.log(updatedLine);
-            //const successEmail = email;
             const newImportData = importData.slice();
             for (let incr = 0; incr < newImportData.length; incr++) {
                 if (newImportData[incr].MATRICULE === updatedLine.updatedMatricule) {
@@ -151,8 +140,6 @@ const PxxDetailsScreen = ({ history, match }) => {
 
     useEffect(() => {
         if(errorImportLine) {
-            //console.log('error', error);
-            //const errorEmail = error;
             const newImportData = importData.slice();
             for (let incr = 0; incr < newImportData.length; incr++) {
                 if (newImportData[incr].MATRICULE === errorImportLine.message.matricule) {
@@ -178,7 +165,6 @@ const PxxDetailsScreen = ({ history, match }) => {
     }, [errorImportLine]);
 
     useEffect(() => {
-        //console.log(importData)
         setMessagesImportSuccess(importData.filter(x => x.status === 'imported').length);
         setMessagesImportError(importData.filter(x => x.status === 'error').length);
         setTotalToImport(importData.length);

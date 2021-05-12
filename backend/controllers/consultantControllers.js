@@ -9,6 +9,7 @@ const cryptoJS = require('crypto-js');
 const readXlsxFile = require('read-excel-file/node');
 const fs = require('fs');
 const path = require('path');
+const { controleAndCreatePxx } = require('./cronJobsControllers');
 
 
 // @desc    Create a consultant data by Id
@@ -491,6 +492,7 @@ const updateAConsultant = async (id, consultant) => {
 }
 
 const createAConsultant = async (consultant) => {
+
     const consultantToCreate = {
         ...consultant,
         isPartialTime: {
@@ -501,6 +503,7 @@ const createAConsultant = async (consultant) => {
         }
     }
     const newConsultant = await Consultant.create(consultantToCreate);
+
     if (newConsultant) {
         return newConsultant;
     } else {
@@ -619,7 +622,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
     res.setHeader('Transfer-Encoding', 'chunked');
     res.write("Start...\n");
 
-    const anonymise = true;
+    const anonymise = ['poc', 'production'].includes(process.env.NODE_ENV) ? false : true;
 
     let numberOfConsultant = 0;
     let numberOfUpdate = 0;
@@ -665,37 +668,32 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
 
     // stamps to avoid to proceed too much request
     const practice = req.user.consultantProfil.practice;
-    const consultantsAllPractice = await Consultant.find({practice: practice});
+    //const consultantsAllPractice = await Consultant.find({practice: practice});
+    const consultantsAllPractice = await Consultant.find();
 
     for (let line = 0; line < rows.length; line++) {
         numberOfConsultant += 1;
         
         const consultant = rows[line];
+        res.write('-----------------------> ' + line + ': ' + consultant.name + '\n');
         console.log('-----------------------> ' + line + ': ' + consultant.name);
-
-        //res.write(`Start with: ${consultant.name}\n`);
-
-        //const searchConsultant = await Consultant.findOne({ matricule: consultant.matricule });
         const searchConsultant = consultantsAllPractice.filter(x => x.matricule === consultant.matricule)[0];
         const cdmMatricule = consultant.cdmMatricule ? consultant.cdmMatricule.toString().padStart(9, 0) : '';
-        //const cdmId = await Consultant.findOne({ matricule: cdmMatricule }).select('_id');
         const cdmProfil = consultantsAllPractice.filter(x => x.matricule === cdmMatricule)[0];
-
         let cdmId = null;
-
         if (cdmProfil) {
             cdmId = cdmProfil._id;            
         } else {
             numberOfWarning += 1;
-            const msgCdm = `Warning - CDM Profil not found for consultant ${consultant.name} and CDM ${consultant.cdmName} (${consultant.cdmMatricule}). >> Please verify profil`;
+            const msgCdm = `[Warning] CDM Profil is not found for consultant ${consultant.name} and CDM ${consultant.cdmName} (${consultant.cdmMatricule}). >> Please verify profil`;
             console.log(msgCdm);
             res.write(msgCdm + '\n');
         }  
 
         const consultantToUpdateOrCreate = {
             name: anonymise ? `Prénom NOM ${line + 1}` : consultant.name,
-            //email: `prenom-nom-${line + 1}@jprmail.com`,
-            email: cryptoJS.MD5(consultant.name).toString(),
+            email: anonymise ? (cryptoJS.MD5(consultant.name).toString()).toString() + '@mail.com' : (consultant.name.replace(' ', '.')).replace(' ', '-').toLowerCase() + '@wavestone.com',
+            //email: cryptoJS.MD5(consultant.name).toString(),
             grade: transformGrade(consultant.grade),
             practice: consultant.practice.split('-')[1],
             matricule: consultant.matricule,
@@ -708,22 +706,25 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
 
         const startMonth = new Date(Date.now());
         startMonth.setUTCDate(0);
-        //if (consultant.presence > 0) {
+
         if (consultant.presence === 0 && consultant.partialTime > 0 && !consultant.leave && consultant.start < startMonth) {
-            const msg = `Warning - something wront with ${consultant.name}. Presence=0 but no partial time and no leaving date.`
+            const msg = `[Warning] - something wrong with ${consultant.name}. Presence=0 but no partial time and no leaving date.`
             console.log(msg);
             res.write(msg + '\n');
         }
 
         let result = '';
-        let info = ''
+        let info = '';
+
         if (searchConsultant) {
 
             result = await updateAConsultant(searchConsultant._id, consultantToUpdateOrCreate);
             if (result) {
-                info = `Warning - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
+                info = `[update] consultant ${consultantToUpdateOrCreate.name}`;
+                console.log(info);
+                res.write(info + '\n');
                 if (consultant.partialTime < 1 && result.isPartialTime.value === false) {
-                    info += `\n\t>>Warning - you have to modify partial time - ${consultant.name} (${consultant.matricule}) - ${result._id} > set partial time to ${consultant.partialTime}`
+                    info = `[warning] consultant : you have to modify partial time - ${consultant.name} (${consultant.matricule}) - ${result._id} > set partial time to ${consultant.partialTime}`
                     console.log(info);
                     res.write(info + '\n');
                 }
@@ -739,7 +740,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
                 numberOfUpdate += 1;
                 
             } else {
-                info = `Error - update - ${consultant.name} (${consultant.matricule}) - ${result._id}`
+                info = `[error] update - ${consultant.name} (${consultant.matricule}) - ${result._id}`
                 message.push({
                     _id: 'unknown',
                     practice: consultant.practice.split('-')[1],
@@ -756,13 +757,12 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
             }
         } else {
             result = await createAConsultant(consultantToUpdateOrCreate);
+            consultantsAllPractice.push(result); // to add just created consultant to practice list
             if (result) {
-                info = `Info - create - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`;
+                info = `[info] create - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
                 if (consultant.partialTime < 1) {
-                    info += `\t>>Warning - add partial time - ${consultant.name} (${consultant.matricule}) - ${result._id}\n`
-                    //console.log(info);
-                    //res.write(info);
-                }
+                    info += `\n\t>> Warning - add partial time - ${consultant.name} (${consultant.matricule}) - ${result._id}`
+                 }
                 message.push({
                     _id: result._id,
                     practice: consultant.practice.split('-')[1],
@@ -772,11 +772,11 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
                     message: info
                 });
                 resetAllPxx(result);
-
+                console.log(info);
+                res.write(info + '\n');
                 numberOfCreate += 1;
-                //res.write(info)
             } else {
-                info = `Error - create - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
+                info = `[error] - create - ${consultant.name} (${consultant.matricule}) - ${result._id}`;
                 message.push({
                     _id: 'unknown',
                     practice: consultant.practice.split('-')[1],
@@ -791,13 +791,10 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
                 res.write(info + '\n');
             }
         }
-        //res.write(`End with: ${consultant.name}\n\n`);
-        //}
     }
 
     const practices = [... new Set(message.map(x => x.practice))];
     const updatedMatricules = [... new Set(message.map(x => x.matricule))];
-
 
     const startMonth = new Date(Date.now());
     startMonth.setUTCDate(1);
@@ -817,7 +814,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
     const numberOfNotFound = consultantNotUpdated.length;
 
     for (let incr = 0; incr < consultantNotUpdated.length; incr++) {
-        info = `Warning - not found in import file - ${consultantNotUpdated[incr].name} (${consultantNotUpdated[incr].matricule}) - ${consultantNotUpdated[incr]._id}`
+        info = `[warning] consultant not found in import file - ${consultantNotUpdated[incr].name} (${consultantNotUpdated[incr].matricule}) - ${consultantNotUpdated[incr]._id}`
         message.push({
             _id: consultantNotUpdated[incr]._id,
             practice: consultantNotUpdated[incr].practice,
@@ -829,20 +826,17 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
         });
         console.log(info);
         res.write(info + '\n');
-    }
+    }    
+    info = `Consultant data imported: ${numberOfConsultant}
+    - Created: ${numberOfCreate}
+    - Updated: ${numberOfUpdate}
+    - Errors: ${numberOfErrors}
+    - Warning: ${numberOfWarning}
+    - Not found: ${numberOfNotFound}`
+    console.log(info);
+    res.write(info + '\n');
 
-    /* const messageToSend = {
-        created: message.filter(x => x.result === 'created').length,
-        updated: message.filter(x => x.result === 'updated').length,
-        error: message.filter(x => x.result === 'error'),
-        warning: message.filter(x => x.result === 'warning'),
-        data: message.filter(x => x.result === 'error' || x.result === 'warning')
-    } */
-
-    //res.status(200).json(messageToSend);
-    
-
-    // suppression des données
+    // clear files data
 
     fs.unlink(fileName, (err) => {
         if (err) {
@@ -851,11 +845,9 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
             console.log(fileName + ' has been removed');
         }
     });
-
-    res.write(`------ END UPDATE: ${numberOfConsultant} consultants processed with: ${numberOfCreate} created, ${numberOfUpdate} updated, ${numberOfErrors} in error, ${numberOfWarning} in warning\n`);
-    res.write(`------ CONTROL: ${numberOfNotFound} consultants found in Pxx but not in Wavekeeper export. If > 0 please verify.`);
+    controleAndCreatePxx();
+    res.write(`------ END UPDATE`);
     res.end();
-
 });
 
 // @desc    Upload file from wk

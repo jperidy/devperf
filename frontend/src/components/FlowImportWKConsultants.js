@@ -24,21 +24,14 @@ const FlowImportWKConsultants = (props) => {
     const { loading: loadingUpdate, error: errorUpdate, message } = consultantUpdateWk;
 
     const onChangeHandler = (e) => {
-        //setSelectedFile(e.target.files[0]);
         const data = new FormData();
         data.append('file', e.target.files[0]);
         dispatch(uploadConsultantWk(data));
-    }
-    /* const onClickHandler = () => {
-        const data = new FormData();
-        data.append('file', selectedFile);
-        dispatch(uploadConsultantWk(data));
-    } */
+    };
+
     const startImportData = () => {
         if (path) {
             dispatch(updateConsultantWk(path));
-            //const data = updateConsultantWk(path, userInfo);
-            //setMessage(data);
         }
     }
 
@@ -48,7 +41,6 @@ const FlowImportWKConsultants = (props) => {
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
-        //style={{'minHeight': '80vh'}}
         >
             <Modal.Header closeButton>
                 <Row className='align-items-center'>

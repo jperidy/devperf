@@ -33,8 +33,9 @@ const TokenIsValide = ({ history, children }) => {
             //grantedAccess = false;
             setGrantedAccess(false);
             dispatch(logout());
+            history.push('/login');
         }
-    }, [userInfo, dispatch]);
+    }, [userInfo, dispatch, history]);
 
     useEffect(() => {
         // get new Token if close to end of current token
@@ -55,12 +56,12 @@ const TokenIsValide = ({ history, children }) => {
             const currentTime = new Date(Date.now());
             const delay = (currentTime - new Date(userInfo.lastConnexion))/(1000 * 24 * 3600);
             if (delay >= 1) {
-                //grantedAccess = false;
                 setGrantedAccess(false);
                 dispatch(logout());
+                history.push('/login');
             }
         }
-    }, [dispatch, userInfo]);
+    }, [dispatch, userInfo, history]);
     
     return (
         <span>
