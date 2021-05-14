@@ -14,6 +14,7 @@ function getAccessData() {
                 {category: 'Menu bar', id: 'manageDeals', label: 'Manage deals menu', mode:'yes', data: 'all'},
                 {category: 'Menu bar', id: 'adminMenu', label: 'Access to admin menu', mode:'yes', data: 'all'},
                 {category: 'Menu bar', id: 'manageCompanies', label: 'Manage companies menu', mode:'yes', data: 'all'},
+                {category: 'Menu bar', id: 'adminChangePractice', label: 'Change practice when admin', mode:'yes', data: 'all'},
                 {category: 'Dashboards screen', id: 'tace', label: 'View TACE', mode:'yes', data: 'all'},
                 {category: 'Dashboards screen', id: 'consoDispo', label: 'View conso-dispo', mode:'yes', data: 'all'},
                 {category: 'Tace component', id: 'editTace', label: 'Can edit target and bid tace', mode:'yes', data: 'all'},
@@ -30,7 +31,6 @@ function getAccessData() {
                 {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'yes', data: 'all'},
                 {category: 'PXX Details screen', id: 'updatePxxFromPxx', label: 'Update Pxx from Pxx', mode:'yes', data: 'all'},
                 {category: 'Profil screen', id: 'viewProfilDetails', label: 'View request and staffs', mode:'yes', data: 'all'},
-
             ],
             api:[
                 { name: 'getUsers', data: 'all' },
@@ -85,6 +85,7 @@ function getAccessData() {
                 {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'yes', data: 'department'},
                 {category: 'PXX Details screen', id: 'updatePxxFromPxx', label: 'Update Pxx from Pxx', mode:'yes', data: 'department'},
                 {category: 'Profil screen', id: 'viewProfilDetails', label: 'View request and staffs', mode:'yes', data: 'department'},
+                {category: 'Menu bar', id: 'adminChangePractice', label: 'Change practice when admin', mode:'no', data: 'department'},
             ],
             api:[
                 { name: 'getUsers', data: 'department' },
@@ -139,6 +140,7 @@ function getAccessData() {
                 {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'no', data: 'team'},
                 {category: 'PXX Details screen', id: 'updatePxxFromPxx', label: 'Update Pxx from Pxx', mode:'no', data: 'team'},
                 {category: 'Profil screen', id: 'viewProfilDetails', label: 'View request and staffs', mode:'yes', data: 'team'},
+                {category: 'Menu bar', id: 'adminChangePractice', label: 'Change practice when admin', mode:'no', data: 'team'},
             ],
             api:[
                 { name: 'getUsers', data: 'team' },
@@ -193,6 +195,7 @@ function getAccessData() {
                 {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'no', data: 'my'},
                 {category: 'PXX Details screen', id: 'updatePxxFromPxx', label: 'Update Pxx from Pxx', mode:'no', data: 'my'},
                 {category: 'Profil screen', id: 'viewProfilDetails', label: 'View request and staffs', mode:'yes', data: 'my'},
+                {category: 'Menu bar', id: 'adminChangePractice', label: 'Change practice when admin', mode:'no', data: 'my'},
             ],
             api:[
                 { name: 'getUsers', data: 'my' },
@@ -247,6 +250,7 @@ function getAccessData() {
                 {category: 'Manage Consultants Screen', id: 'updateConsultantsFromWK', label: 'Update consultants from WK', mode:'no', data: 'my'},
                 {category: 'PXX Details screen', id: 'updatePxxFromPxx', label: 'Update Pxx from Pxx', mode:'no', data: 'my'},
                 {category: 'Profil screen', id: 'viewProfilDetails', label: 'View request and staffs', mode:'no', data: 'my'},
+                {category: 'Menu bar', id: 'adminChangePractice', label: 'Change practice when admin', mode:'no', data: 'my'},
             ],
             api: [
                 { name: 'getUsers', data: 'my' },

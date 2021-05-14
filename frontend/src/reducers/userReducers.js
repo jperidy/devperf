@@ -2,6 +2,7 @@ import { USER_LOGIN_FAIL,
     USER_LOGIN_REQUEST, 
     USER_LOGIN_SUCCESS, 
     USER_LOGOUT, 
+    USER_ADMIN_CHANGE_PRACTICE,
     USER_REGISTER_REQUEST, 
     USER_REGISTER_SUCCESS,
     USER_REGISTER_FAIL,
@@ -30,6 +31,11 @@ import { USER_LOGIN_FAIL,
     USER_REDIRECT_AZ_SUCCESS,
     USER_REDIRECT_AZ_FAIL,
     USER_REDIRECT_AZ_RESET,
+    USER_ADMIN_CHANGE_PRACTICE_FAIL,
+    USER_TO_CREATE_REQUEST,
+    USER_TO_CREATE_SUCCESS,
+    USER_TO_CREATE_FAIL,
+    USER_TO_CREATE_RESET
 } from "../constants/userConstants";
 
 export const userLoginReducer = (state = {}, action) => {
@@ -42,6 +48,10 @@ export const userLoginReducer = (state = {}, action) => {
             return { loading: false, error: action.payload };
         case USER_LOGOUT:
             return {};
+        case USER_ADMIN_CHANGE_PRACTICE:
+            return { loading: false, userInfo: action.payload };
+        case USER_ADMIN_CHANGE_PRACTICE_FAIL:
+            return { loading: false, error: action.payload };
         default:
             return state;
     }
@@ -154,6 +164,27 @@ export const userUpdateReducer = (state = {}, action) => {
         case USER_UPDATE_FAIL:
             return { loading: false, error: action.payload };
         case USER_UPDATE_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const userToCreateReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_TO_CREATE_REQUEST:
+            return { loading: true };
+        case USER_TO_CREATE_SUCCESS:
+            return {
+                loading: false, 
+                usersListToCreate: action.payload.usersListToCreate,
+                pages: action.payload.pages,
+                page: action.payload.page,
+                count: action.payload.count
+            };
+        case USER_TO_CREATE_FAIL:
+            return { loading: false, error: action.payload };
+        case USER_TO_CREATE_RESET:
             return {}
         default:
             return state;

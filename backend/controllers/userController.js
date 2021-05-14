@@ -428,6 +428,40 @@ const updateUserProfile = asyncHandler(async(req,res) =>{
     }
 });
 
+// @desc    Get all users not already created
+// @route   GET /api/users/list-to-create?practice=${practice}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}
+// @access  Private
+const userListToCreate = asyncHandler(async(req,res) =>{
+    
+    const pageSize = Number(req.query.pageSize);
+    const page = Number(req.query.pageNumber) || 1; // by default on page 1
+    const keyword = req.query.keyword ? {
+        name: {
+            $regex: req.query.keyword,
+            $options: 'i'
+        }
+    } : {};
+
+    const allCreatedUsers = await User.find();
+    const consultantIdAssociatedToUser = allCreatedUsers.map(x => x.consultantProfil);
+
+    const filter = {
+        practice: req.query.practice,
+        _id: {$not: {$in: consultantIdAssociatedToUser}},
+        ...keyword
+    };
+
+    const count = await Consultant.countDocuments(filter);
+    const consultantsToCreate = await Consultant.find(filter)
+        .limit(pageSize).skip(pageSize * (page - 1));
+
+    if (consultantsToCreate) {
+        res.status(200).json({ usersListToCreate: consultantsToCreate, page, pages: Math.ceil(count / pageSize), count });
+    } else {
+        res.status(400).json({ message: `No consultant to create found found` });
+    }
+});
+
 module.exports = { 
     redirectAZ,
     authUserAz,
@@ -439,5 +473,6 @@ module.exports = {
     updateUser,
     getUserProfile,
     updateUserProfile,
-    getTransparentNewToken
+    getTransparentNewToken,
+    userListToCreate
 };

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CONSULTANTS_MY_DETAILS_RESET, CONSULTANT_MY_RESET } from '../constants/consultantConstants';
+import { CONSULTANTS_MY_DETAILS_RESET, CONSULTANT_MY_RESET, CONSULTANT_PRACTICE_LIST_RESET } from '../constants/consultantConstants';
 import { PXX_LIST_RESET, PXX_MY_TO_EDIT_RESET, PXX_UPDATE_RESET } from '../constants/pxxConstants';
 import { 
 
@@ -28,7 +28,12 @@ import {
     USER_REGISTER_RESET,
     USER_REDIRECT_AZ_REQUEST,
     USER_REDIRECT_AZ_SUCCESS,
-    USER_REDIRECT_AZ_FAIL
+    USER_REDIRECT_AZ_FAIL,
+    USER_ADMIN_CHANGE_PRACTICE_FAIL,
+    USER_ADMIN_CHANGE_PRACTICE,
+    USER_TO_CREATE_REQUEST,
+    USER_TO_CREATE_SUCCESS,
+    USER_TO_CREATE_FAIL
 } from "../constants/userConstants";
 
 
@@ -122,6 +127,29 @@ export const getTransparentNewToken = (information, userInfo) => async (dispatch
     }
 };
 
+export const changeAdminPractice = (userInfo, practice) => async (dispatch) => {
+    try {
+        
+        const newUserInfo = userInfo;
+        newUserInfo.consultantProfil.practice = practice
+
+        dispatch({
+            type: USER_ADMIN_CHANGE_PRACTICE,
+            payload: newUserInfo
+        });
+
+        localStorage.setItem('userInfo', JSON.stringify(newUserInfo));
+
+    } catch (error) {
+        dispatch({
+            type: USER_ADMIN_CHANGE_PRACTICE_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
 export const getRedirectAz = () => async(dispatch) => {
     try {
         dispatch({
@@ -162,6 +190,7 @@ export const logout = () => (dispatch) => {
     dispatch({type: PXX_LIST_RESET});
     dispatch({type: PXX_MY_TO_EDIT_RESET});
     dispatch({type: PXX_UPDATE_RESET});
+    dispatch({type: CONSULTANT_PRACTICE_LIST_RESET });
 };
 
 export const register = (name, email, password) => async(dispatch) => {
@@ -372,6 +401,36 @@ export const updateUser = (user) => async(dispatch, getState) => {
     } catch (error) {
         dispatch({
             type: USER_UPDATE_FAIL,
+            payload: error.response && error.response.data.message
+                ? error.response.data.message
+                : error.message
+        });
+    }
+};
+
+export const getUsersToCreate = ({practice, keyword, pageSize, pageNumber}) => async(dispatch, getState) => {
+    try {
+
+        dispatch({
+            type: USER_TO_CREATE_REQUEST,
+        });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers:{
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.get(`/api/users/list-to-create?practice=${practice}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);
+
+        dispatch({ type: USER_TO_CREATE_SUCCESS, payload: data });
+
+    } catch (error) {
+        dispatch({
+            type: USER_TO_CREATE_FAIL,
             payload: error.response && error.response.data.message
                 ? error.response.data.message
                 : error.message

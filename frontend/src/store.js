@@ -2,7 +2,7 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { pxxAvailabilitiesReducer, pxxListReducer, pxxAllListReducer, pxxTACEReducer, pxxUpdateReducer, pxxMyToEditReducer, pxxImportLineReducer, pxxUploadFileReducer, updatePxxReducer } from './reducers/pxxReducers';
-import { userLoginReducer, userListReducer, userDeleteReducer, userDetailsReducer, userUpdateReducer, userRegisterReducer, userRedirectAzReducer, userUpdateProfileReducer } from './reducers/userReducers';
+import { userLoginReducer, userListReducer, userDeleteReducer, userDetailsReducer, userUpdateReducer, userRegisterReducer, userRedirectAzReducer, userUpdateProfileReducer, userToCreateReducer } from './reducers/userReducers';
 import { 
     consultantMyReducer, 
     consultantsMyListReducer, 
@@ -43,6 +43,7 @@ export const reducer = combineReducers({
     userUpdate: userUpdateReducer,
     userDelete: userDeleteReducer,
     userUpdateProfil: userUpdateProfileReducer,
+    userToCreate: userToCreateReducer,
     consultantUpdateComment: consultantUpdateCommentReducer,
     consultantsMyAdminList: consultantsMyAdminListReducer,
     consultantsMyList: consultantsMyListReducer,

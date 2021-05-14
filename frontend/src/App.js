@@ -24,6 +24,7 @@ import ProfileScreen from './screens/ProfileScreen';
 import TokenIsValide from './components/TokenIsValide';
 
 import history from './components/History';
+import AddUsersScreen from './screens/AddUsersScreen';
 
 const App = () => {
 
@@ -46,6 +47,7 @@ const App = () => {
             <Route path='/admin/consultants' component={ManageConsultantScreen} exact />
             <Route path='/admin/consultants/:keyword/page/:pageNumber' component={DashboardScreen} exact />
             <Route path='/admin/users' component={ManageUsersScreen} exact />
+            <Route path='/admin/add-users' component={AddUsersScreen} exact />
             <Route path='/admin/edituser/:id' component={UserEditScreen} exact />
             <Route path='/admin/consultant/add' component={ConsultantEditScreen} exact />
             <Route path='/admin/skills' component={ManageSkillsScreen} exact />

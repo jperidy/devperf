@@ -50,7 +50,7 @@ const DashboardScreen = ({ history }) => {
             dispatch(getTace(userInfo.consultantProfil.practice, start, end));
         }
         // eslint-disable-next-line
-    }, [ dispatch, start, end ]);
+    }, [ dispatch, start, end, userInfo.consultantProfil.practice ]);
     
     const navigationMonthHandler = (val) => {
         const startDate = new Date(start);

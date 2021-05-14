@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const Client = require('./models/clientModel');
 const Month = require('./models/monthModel');
 const User = require('./models/userModel');
 const Consultant = require('./models/consultantModel');
 const Pxx = require('./models/pxxModel');
 const Skill = require('./models/skillModels');
 const Deal = require('./models/dealModel');
+const Access = require('./models/accessModel');
 const prompt = require('prompt-sync')();
 const path = require('path');
 const fs = require('fs');
@@ -16,7 +18,7 @@ const connectDB = async () => {
 
     let uri = '';
     
-    if (['production', 'development'].includes(process.env.NODE_ENV)) {
+    if (['production', 'development', 'demo'].includes(process.env.NODE_ENV)) {
         uri = process.env.MONGO_URI_DEMO
     } else if (process.env.NODE_ENV === 'docker') {
         uri = process.env.MONGO_URI_DOCKER
@@ -42,10 +44,8 @@ const { getUserData } = require('./data/userData');
 const { getSkills } = require('./data/skillData');
 const { getDeals } = require('./data/dealsData');
 const { controleAndCreatePxx } = require('./controllers/cronJobsControllers');
-const Access = require('./models/accessModel');
 const { getAccessData } = require('./data/accessData');
 const { getClient, initClient } = require('./data/clientData');
-const Client = require('./models/clientModel');
 
 dotenv.config();
 
@@ -69,6 +69,7 @@ const importData = async () => {
         
         await User.deleteMany();
         await Month.deleteMany();
+        await Access.deleteMany();
         await Pxx.deleteMany();
         await Consultant.deleteMany();
         await Skill.deleteMany();
@@ -231,7 +232,6 @@ const profilUpdate = async () => {
                 searchProfil.level = profilData[incr].level;
                 searchProfil.frontAccess = profilData[incr].frontAccess;
                 searchProfil.api = profilData[incr].api;
-
                 await searchProfil.save();
             }
         }

@@ -10,7 +10,8 @@ const {
     updateUser,
     getUserProfile,
     updateUserProfile,
-    getTransparentNewToken
+    getTransparentNewToken,
+    userListToCreate
 } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -28,11 +29,12 @@ router.get('/loginAz', authUserAz);
 
 router.post('/renewToken', protect, getTransparentNewToken);
 
+router.get('/list-to-create', protect, userListToCreate);
+
 router.route('/:id')
     .delete(protect, deleteUser)
     .get(protect, getUserById)
     .put(protect, updateUser);
-
 
 router.route('/')
     .get(protect, getUsers)

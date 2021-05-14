@@ -47,10 +47,10 @@ const ConsoDispo = ({
     const { skills } = skillList;
 
     useEffect(() => {
-        if(userInfo) {
+        if(userInfo.consultantProfil.practice) {
             setPractice(userInfo.consultantProfil.practice);
         }
-    }, [userInfo]);
+    }, [userInfo.consultantProfil.practice]);
 
     useEffect(() => {
         if (practice) {
