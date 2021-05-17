@@ -15,8 +15,8 @@ const TokenIsValide = ({ history, children }) => {
     useEffect(() => {
         if (!userInfo) {
             //grantedAccess = false;
-            setGrantedAccess(false);
             history.push('/login');
+            setGrantedAccess(false);
         }
     }, [userInfo, history]);
 
@@ -65,7 +65,7 @@ const TokenIsValide = ({ history, children }) => {
     
     return (
         <span>
-            {grantedAccess && children && children}
+            {grantedAccess && userInfo && children && children}
         </span>
     )
 }

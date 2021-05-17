@@ -452,8 +452,14 @@ const userListToCreate = asyncHandler(async(req,res) =>{
     };
 
     const count = await Consultant.countDocuments(filter);
-    const consultantsToCreate = await Consultant.find(filter)
-        .limit(pageSize).skip(pageSize * (page - 1));
+    
+    let consultantsToCreate;
+    if (pageSize === 'all') {
+        consultantsToCreate = await Consultant.find(filter);
+    } else {
+        consultantsToCreate = await Consultant.find(filter)
+            .limit(pageSize).skip(pageSize * (page - 1));
+    }
 
     if (consultantsToCreate) {
         res.status(200).json({ usersListToCreate: consultantsToCreate, page, pages: Math.ceil(count / pageSize), count });
