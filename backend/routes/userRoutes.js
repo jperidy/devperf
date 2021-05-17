@@ -11,7 +11,8 @@ const {
     getUserProfile,
     updateUserProfile,
     getTransparentNewToken,
-    userListToCreate
+    userListToCreate,
+    createUserFromIHM
 } = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -28,6 +29,8 @@ router.get('/redirectAz', redirectAZ);
 router.get('/loginAz', authUserAz);
 
 router.post('/renewToken', protect, getTransparentNewToken);
+
+router.post('/create-from-ihm', protect, createUserFromIHM);
 
 router.get('/list-to-create', protect, userListToCreate);
 

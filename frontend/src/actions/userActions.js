@@ -33,7 +33,10 @@ import {
     USER_ADMIN_CHANGE_PRACTICE,
     USER_TO_CREATE_REQUEST,
     USER_TO_CREATE_SUCCESS,
-    USER_TO_CREATE_FAIL
+    USER_TO_CREATE_FAIL,
+    USER_CREATE_REQUEST,
+    USER_CREATE_SUCCESS,
+    USER_CREATE_FAIL
 } from "../constants/userConstants";
 
 
@@ -435,5 +438,37 @@ export const getUsersToCreate = ({practice, keyword, pageSize, pageNumber}) => a
                 ? error.response.data.message
                 : error.message
         });
+    }
+};
+
+export const createUser = (user) => async(dispatch, getState) => {
+    try {
+
+        dispatch({
+            type: USER_CREATE_REQUEST,
+        });
+
+        const { userLogin: { userInfo } } = getState();
+
+        const config = {
+            headers:{
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        };
+
+        const { data } = await axios.post(`/api/users/create-from-ihm`, user, config);
+
+        dispatch({ type: USER_CREATE_SUCCESS, payload: data });
+
+    } catch (error) {
+        dispatch({
+            type: USER_CREATE_FAIL,
+            payload: error.response.data
+            // payload: error.response && error.response.data.message
+            //     ? error.response.data.message
+            //     : error.message
+        });
+        //console.log(error.response);
     }
 };

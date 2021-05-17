@@ -35,7 +35,11 @@ import { USER_LOGIN_FAIL,
     USER_TO_CREATE_REQUEST,
     USER_TO_CREATE_SUCCESS,
     USER_TO_CREATE_FAIL,
-    USER_TO_CREATE_RESET
+    USER_TO_CREATE_RESET,
+    USER_CREATE_REQUEST,
+    USER_CREATE_SUCCESS,
+    USER_CREATE_FAIL,
+    USER_CREATE_RESET
 } from "../constants/userConstants";
 
 export const userLoginReducer = (state = {}, action) => {
@@ -185,6 +189,21 @@ export const userToCreateReducer = (state = {}, action) => {
         case USER_TO_CREATE_FAIL:
             return { loading: false, error: action.payload };
         case USER_TO_CREATE_RESET:
+            return {}
+        default:
+            return state;
+    }
+};
+
+export const userCreateReducer = (state = {}, action) => {
+    switch (action.type) {
+        case USER_CREATE_REQUEST:
+            return { loading: true };
+        case USER_CREATE_SUCCESS:
+            return {loading: false, success: true, consultantId: action.payload.consultantId};
+        case USER_CREATE_FAIL:
+            return { loading: false, error: action.payload.message, consultantId: action.payload.consultantId };
+        case USER_CREATE_RESET:
             return {}
         default:
             return state;

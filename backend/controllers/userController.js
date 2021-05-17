@@ -2,8 +2,11 @@ const asyncHandler = require('express-async-handler');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/userModel.js');
 const Consultant = require('../models/consultantModel');
+const Access = require('../models/accessModel');
 const { myAccessUsers } = require('../utils/usersFunctions');
 const { cca } = require('../config/authConfig');
+const { generatePassword } = require('../utils/generatePassword');
+const { sendLoginInformation } = require('./emailsControllers');
 
 // @desc    get url to redirect to connect on AZ
 // @route   GET /api/users/redirectAz
@@ -468,6 +471,77 @@ const userListToCreate = asyncHandler(async(req,res) =>{
     }
 });
 
+const matchProfil = async (grade, isCDM) => {
+
+    let profilId;
+    if (isCDM) {
+        profilId = await Access.findOne({profil: 'cdm'}).select('_id');
+    } else {
+        switch (grade) {
+            case 'Intern':
+                profilId = await Access.findOne({profil: 'consultant'}).select('_id');
+            case 'Analyst':
+                profilId = await Access.findOne({profil: 'consultant'}).select('_id');
+            case 'Consultant':
+                profilId = await Access.findOne({profil: 'consultant'}).select('_id');
+            case 'Senior consultant':
+                profilId = await Access.findOne({profil: 'consultant'}).select('_id');
+            case 'Manager':
+                profilId = await Access.findOne({profil: 'manager'}).select('_id');
+            case 'Senior manager':
+                profilId = await Access.findOne({profil: 'manager'}).select('_id');
+            case 'Director':
+                profilId = await Access.findOne({profil: 'manager'}).select('_id');
+            case 'Partner':
+                profilId = await Access.findOne({profil: 'manager'}).select('_id');
+            case 'Unknown':
+                profilId = await Access.findOne({profil: 'consultant'}).select('_id');
+            case 'Commercial':
+                profilId = await Access.findOne({profil: 'consultant'}).select('_id');
+            case 'Research':
+                profilId = await Access.findOne({profil: 'consultant'}).select('_id');
+            default:
+                profilId = await Access.findOne({profil: 'consultant'}).select('_id');
+        }
+    }
+    return profilId;
+};
+
+// @desc    Create an user from IHM
+// @route   POST /api/users/create-from-ihm
+// @access  Private
+const createUserFromIHM = asyncHandler(async(req,res) =>{
+
+    const consultant = req.body;
+    const alreadyExist = await User.find({email: consultant.email});
+    //console.log(alreadyExist);
+    if (!alreadyExist.length) {
+        const user = {
+            name: consultant.name,
+            email: consultant.email,
+            password : generatePassword(),
+            consultantProfil: consultant._id,
+            isCDM: consultant.isCDM,
+            profil: await matchProfil(consultant.grade, consultant.isCDM),
+            status: 'Validated'
+        }
+        const newUser = await User.create(user);
+        if (newUser) {
+            try {
+                await sendLoginInformation(user, {test: false});
+                res.status(200).json({message: `Success user ${consultant.email} created`, consultantId: consultant._id});
+            } catch (error) {
+                res.status(400).json({message: error, consultantId: consultant._id});
+            }
+        } else {
+            res.status(400).json({message: `Error creating user: ${consultant.email}`, consultantId: consultant._id});
+        }
+    } else {
+        res.status(400).json({message: `Error user ${consultant.email} already exist`, consultantId: consultant._id});
+    }
+
+});
+
 module.exports = { 
     redirectAZ,
     authUserAz,
@@ -480,5 +554,6 @@ module.exports = {
     getUserProfile,
     updateUserProfile,
     getTransparentNewToken,
-    userListToCreate
+    userListToCreate,
+    createUserFromIHM
 };

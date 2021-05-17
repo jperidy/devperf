@@ -9,7 +9,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Table from 'react-bootstrap/Table';
 import { useDispatch, useSelector } from 'react-redux';
 import DropDownTitleContainer from '../components/DropDownTitleContainer';
-import { getUsersToCreate } from '../actions/userActions';
+import { createUser, getUsersToCreate } from '../actions/userActions';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import PageSize from '../components/PageSize';
@@ -27,11 +27,18 @@ const AddUsersScreen = () => {
 
     const [consultantToCreateList, setConsultantToCreateList] = useState([]);
 
+    const [sendProcess, setSendProcess] = useState(false);
+    const [countSend, setCountSend] = useState(0);
+    const [waitSend, setWaitSend] = useState(true);
+
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
 
     const userToCreate = useSelector(state => state.userToCreate);
     const { usersListToCreate, pages, page, count, loading, error } = userToCreate;
+
+    const userCreate = useSelector(state => state.userCreate);
+    const { loading:loadingCreate, error:errorCreate, success:successCreate, consultantId } = userCreate;
 
     useEffect(() => {
         dispatch(getUsersToCreate({
@@ -48,7 +55,7 @@ const AddUsersScreen = () => {
             const checkIfAlreadyInList = consultantToCreateList.filter(x => x._id === consultant._id);
             if (!checkIfAlreadyInList.length) {
                 let newList = consultantToCreateList.slice();
-                newList.push(consultant);
+                newList.push({...consultant, send:'no'});
                 setConsultantToCreateList(newList);
             }
         }
@@ -71,10 +78,94 @@ const AddUsersScreen = () => {
         // eslint-disable-next-line
     }, [allCheck, usersListToCreate]);
 
-    useEffect(() => {
-        console.log('consultantToCreate', consultantToCreateList);
-    }, [consultantToCreateList]);
+    // useEffect(() => {
+    //     console.log('consultantToCreate', consultantToCreateList);
+    // }, [consultantToCreateList]);
 
+
+    useEffect(() => {
+        if(sendProcess && !waitSend) {
+            //console.log('countSend', countSend);
+            if (countSend < consultantToCreateList.length) {
+                const userToCreate = consultantToCreateList[countSend];
+                dispatch(createUser(userToCreate));
+                setWaitSend(true);
+            } else {
+                setSendProcess(false);
+                setCountSend(0);
+                setWaitSend(true);
+            }
+        }
+    }, [dispatch, sendProcess, countSend, waitSend, consultantToCreateList]);
+
+    useEffect(() => {
+        if(successCreate && waitSend) {
+            //console.log('successCreate');
+            let newList = consultantToCreateList.slice();
+            //console.log('consultantId', consultantId);
+            //console.log('allIds', newList.map(x => x._id));
+            for (let incr = 0 ; incr < newList.length ; incr++) {
+                if (newList[incr]._id === consultantId) {
+                    newList[incr].send = 'yes'
+                }
+            }
+            //console.log('send status', newList.map(x => x.send));
+            setConsultantToCreateList(newList);
+            setCountSend(countSend+1);
+            setWaitSend(false);
+        }
+    // eslint-disable-next-line
+    }, [successCreate]);
+
+    useEffect(() => {
+        if (errorCreate && waitSend) {
+            //console.log('error', errorCreate)
+            //console.log('ok', consultantId);
+            let newList = consultantToCreateList.slice();
+            for (let incr = 0 ; incr < newList.length ; incr++) {
+                if (newList[incr]._id === consultantId) {
+                    newList[incr].send = 'error'
+                }
+            }
+            setConsultantToCreateList(newList);
+            setCountSend(countSend+1);
+            setWaitSend(false);
+        }
+    // eslint-disable-next-line
+    }, [errorCreate]);
+
+    const verifyStatus = (consultant) => {
+        if (consultantToCreateList.map(x => x._id).includes(consultant._id)) {
+            if(consultantToCreateList.filter( x => x._id === consultant._id)[0].send === 'no') {
+                return (
+                    <i className="fas fa-circle text-warning"></i>
+                );
+            }
+            if (consultantToCreateList.filter( x => x._id === consultant._id)[0].send === 'yes') {
+                return (
+                    <i className="fas fa-circle text-success"></i>
+                );
+            }
+            if (consultantToCreateList.filter( x => x._id === consultant._id)[0].send === 'error') {
+                return (
+                    <i className="fas fa-circle text-danger"></i>
+                );
+            }
+        } else {
+            return (<i className="fas fa-circle text-secondary"></i>);
+        }
+    }
+
+    const onCreateUserHandler = () => {
+
+        setCountSend(0);
+        setSendProcess(true);
+        setWaitSend(false);
+        // for (let incr = 0 ; incr < consultantToCreateList.length; incr++) {
+        //     const userToCreate = consultantToCreateList[incr];
+        //     dispatch(createUser(userToCreate));
+        // }
+    }
 
     return (
         <div>
@@ -109,7 +200,12 @@ const AddUsersScreen = () => {
                             <thead>
                                 <tr className='table-primary'>
                                     <th className='align-middle text-light'>
-                                        {<Form.Check type="checkbox" checked={allCheck} onChange={() => setAllCheck(!allCheck)} />}
+                                        {<Form.Check 
+                                            type="checkbox" 
+                                            checked={allCheck} 
+                                            onChange={() => setAllCheck(!allCheck)} 
+                                            disabled={sendProcess}
+                                        />}
                                     </th>
                                     <th className='align-middle text-light'>Consultant name</th>
                                     <th className='align-middle text-light'>Matricule</th>
@@ -118,13 +214,19 @@ const AddUsersScreen = () => {
                                     <th className='align-middle text-light text-center'>Arrival</th>
                                     <th className='align-middle text-light text-center'>Leaving</th>
                                     <th className='align-middle text-light text-center'>is CDM?</th>
+                                    <th className='align-middle text-light text-center'>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {usersListToCreate && usersListToCreate.map((consultant, val) => (
                                     <tr key={val}>
                                         <td className='align-middle'>
-                                            <CheckComponent consultant={consultant} allCheck={allCheck} setStatus={onChangeHandler} />
+                                            <CheckComponent 
+                                                consultant={consultant} 
+                                                allCheck={allCheck} 
+                                                setStatus={onChangeHandler} 
+                                                sendProcess={sendProcess}
+                                            />
                                         </td>
                                         <td className='align-middle'>{consultant.name}</td>
                                         <td className='align-middle'>{consultant.matricule}</td>
@@ -133,6 +235,7 @@ const AddUsersScreen = () => {
                                         <td className='align-middle text-center'>{consultant.arrival && consultant.arrival.substring(0, 10)}</td>
                                         <td className='align-middle text-center'>{consultant.leaving && consultant.leaving.substring(0, 10)}</td>
                                         <td className='align-middle text-center'>{consultant.isCDM ? <i className="fas fa-circle"></i> : <i className="far fa-circle"></i>}</td>
+                                        <td className='align-middle text-center'>{verifyStatus(consultant)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -152,9 +255,11 @@ const AddUsersScreen = () => {
                             />
                         </Col>
                         <Col xs={4} className='text-right'>
-                            <Button
-                                onClick={() => console.log('create')}
-                            ><i className="far fa-user-circle"></i>  Create account</Button>
+                            {loadingCreate ? <Loader /> : (
+                                <Button
+                                    onClick={() => onCreateUserHandler()}
+                                ><i className="far fa-user-circle"></i>  Create account</Button>
+                            )}
                         </Col>
                     </Row>
 
@@ -165,7 +270,7 @@ const AddUsersScreen = () => {
     )
 };
 
-const CheckComponent = ({ consultant, allCheck, setStatus }) => {
+const CheckComponent = ({ consultant, allCheck, setStatus, sendProcess }) => {
 
     const [checked, setChecked] = useState(allCheck);
 
@@ -182,6 +287,7 @@ const CheckComponent = ({ consultant, allCheck, setStatus }) => {
             type="checkbox"
             checked={checked}
             onChange={() => setChecked(!checked)}
+            disabled={sendProcess}
         //onClick={(e) => console.log(e.target.checked)}
         />
     );
