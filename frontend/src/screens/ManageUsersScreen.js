@@ -57,6 +57,10 @@ const ManageUsersScreen = ({ history }) => {
         <>
             {error && (<Message variant='danger'>{error}</Message>)}
 
+            <Row><Col className='text-right'>
+                <Button onClick={() => history.push('/admin/add-users')}><i className="far fa-user"></i>  Create users</Button>
+            </Col></Row>
+
             <DropDownTitleContainer title='Manage users' close={false}>
                 <ListGroup.Item>
                     <Row>

@@ -427,7 +427,7 @@ export const getUsersToCreate = ({practice, keyword, pageSize, pageNumber}) => a
             }
         };
 
-        const { data } = await axios.get(`/api/users/list-to-create?practice=${practice}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);
+        const { data } = await axios.get(`/api/users/list-to-create?practice=${practice}&consultantName=${keyword.consultantName}&cdmName=${keyword.cdmName}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);
 
         dispatch({ type: USER_TO_CREATE_SUCCESS, payload: data });
 

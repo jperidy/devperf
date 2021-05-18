@@ -6,7 +6,7 @@ import FormControl from 'react-bootstrap/FormControl';
 const PageSize = ({ pageSize, setPageSize }) => {
     return (
 
-        <Col xs={6} md={3}>
+        <Col>
             <InputGroup>
                 <FormControl
                     as='select'

@@ -436,39 +436,59 @@ const updateUserProfile = asyncHandler(async(req,res) =>{
 // @access  Private
 const userListToCreate = asyncHandler(async(req,res) =>{
     
-    const pageSize = Number(req.query.pageSize);
-    const page = Number(req.query.pageNumber) || 1; // by default on page 1
-    const keyword = req.query.keyword ? {
-        name: {
-            $regex: req.query.keyword,
-            $options: 'i'
-        }
-    } : {};
+    const access = req.user.profil.api.filter(x => x.name === 'userListToCreate')[0].data;
 
-    const allCreatedUsers = await User.find();
-    const consultantIdAssociatedToUser = allCreatedUsers.map(x => x.consultantProfil);
-
-    const filter = {
-        practice: req.query.practice,
-        _id: {$not: {$in: consultantIdAssociatedToUser}},
-        ...keyword
-    };
-
-    const count = await Consultant.countDocuments(filter);
+    if (access === 'yes') {
+        const pageSize = Number(req.query.pageSize);
+        const page = Number(req.query.pageNumber) || 1; // by default on page 1
+        const consultantName = req.query.consultantName ? {
+            name: {
+                $regex: req.query.consultantName,
+                $options: 'i'
+            }
+        } : {};
     
-    let consultantsToCreate;
-    if (pageSize === 'all') {
-        consultantsToCreate = await Consultant.find(filter);
+        const cdmName = req.query.cdmName
+        
+        let searchCdm = {};
+        if (cdmName) {
+            let cdmIds = await Consultant.find({name:{$regex: cdmName, $options:'i'}, isCDM: true, practice: req.query.practice}).select('_id');
+            cdmIds = cdmIds.map(x => x._id);
+            //console.log(cdmIds);
+            searchCdm = {cdmId: {$in: cdmIds}};
+        }
+    
+        const allCreatedUsers = await User.find();
+        const consultantIdAssociatedToUser = allCreatedUsers.map(x => x.consultantProfil);
+    
+        const filter = {
+            practice: req.query.practice,
+            _id: {$not: {$in: consultantIdAssociatedToUser}},
+            ...consultantName,
+            ...searchCdm
+        };
+        //console.log(filter);
+    
+        const count = await Consultant.countDocuments(filter);
+        
+        let consultantsToCreate;
+        if (pageSize === 'all') {
+            consultantsToCreate = await Consultant.find(filter).populate('cdmId');
+        } else {
+            consultantsToCreate = await Consultant.find(filter)
+                .populate('cdmId')
+                .limit(pageSize).skip(pageSize * (page - 1));
+        }
+    
+        if (consultantsToCreate) {
+            res.status(200).json({ usersListToCreate: consultantsToCreate, page, pages: Math.ceil(count / pageSize), count });
+        } else {
+            res.status(400).json({ message: `No consultant to create found found` });
+        }
     } else {
-        consultantsToCreate = await Consultant.find(filter)
-            .limit(pageSize).skip(pageSize * (page - 1));
+        res.status(403).json({message: 'not allowed to access this resource'});
     }
 
-    if (consultantsToCreate) {
-        res.status(200).json({ usersListToCreate: consultantsToCreate, page, pages: Math.ceil(count / pageSize), count });
-    } else {
-        res.status(400).json({ message: `No consultant to create found found` });
-    }
 });
 
 const matchProfil = async (grade, isCDM) => {
@@ -512,32 +532,37 @@ const matchProfil = async (grade, isCDM) => {
 // @access  Private
 const createUserFromIHM = asyncHandler(async(req,res) =>{
 
-    const consultant = req.body;
-    const alreadyExist = await User.find({email: consultant.email});
-    //console.log(alreadyExist);
-    if (!alreadyExist.length) {
-        const user = {
-            name: consultant.name,
-            email: consultant.email,
-            password : generatePassword(),
-            consultantProfil: consultant._id,
-            isCDM: consultant.isCDM,
-            profil: await matchProfil(consultant.grade, consultant.isCDM),
-            status: 'Validated'
-        }
-        const newUser = await User.create(user);
-        if (newUser) {
-            try {
-                await sendLoginInformation(user, {test: false});
-                res.status(200).json({message: `Success user ${consultant.email} created`, consultantId: consultant._id});
-            } catch (error) {
-                res.status(400).json({message: error, consultantId: consultant._id});
+    const access = req.user.profil.api.filter(x => x.name === 'createUserFromIHM')[0].data;
+
+    if (access === 'yes') {
+        const consultant = req.body;
+        const alreadyExist = await User.find({email: consultant.email});
+        if (!alreadyExist.length) {
+            const user = {
+                name: consultant.name,
+                email: consultant.email,
+                password : generatePassword(),
+                consultantProfil: consultant._id,
+                isCDM: consultant.isCDM,
+                profil: await matchProfil(consultant.grade, consultant.isCDM),
+                status: 'Validated'
+            }
+            const newUser = await User.create(user);
+            if (newUser) {
+                try {
+                    await sendLoginInformation(user, {test: false});
+                    res.status(200).json({message: `Success user ${consultant.email} created`, consultantId: consultant._id});
+                } catch (error) {
+                    res.status(400).json({message: error, consultantId: consultant._id});
+                }
+            } else {
+                res.status(400).json({message: `Error creating user: ${consultant.email}`, consultantId: consultant._id});
             }
         } else {
-            res.status(400).json({message: `Error creating user: ${consultant.email}`, consultantId: consultant._id});
+            res.status(400).json({message: `Error user ${consultant.email} already exist`, consultantId: consultant._id});
         }
     } else {
-        res.status(400).json({message: `Error user ${consultant.email} already exist`, consultantId: consultant._id});
+        res.status(403).json({message: 'not allowed to access this resource'});
     }
 
 });

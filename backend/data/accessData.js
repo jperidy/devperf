@@ -54,6 +54,8 @@ function getAccessData() {
                 { name: 'massImportConsultants', data: 'yes'},
                 { name: 'massImportPxx', data: 'yes'},
                 { name: 'massImportDeals', data: 'yes'},
+                { name: 'userListToCreate', data: 'yes'},
+                { name: 'createUserFromIHM', data: 'yes'},
             ]
         },
         {
@@ -109,6 +111,8 @@ function getAccessData() {
                 { name: 'massImportConsultants', data: 'yes'},
                 { name: 'massImportPxx', data: 'yes'},
                 { name: 'massImportDeals', data: 'yes'},
+                { name: 'userListToCreate', data: 'no'},
+                { name: 'createUserFromIHM', data: 'no'},
             ]
         },
         {
@@ -164,6 +168,8 @@ function getAccessData() {
                 { name: 'massImportConsultants', data: 'no'},
                 { name: 'massImportPxx', data: 'no'},
                 { name: 'massImportDeals', data: 'no'},
+                { name: 'userListToCreate', data: 'no'},
+                { name: 'createUserFromIHM', data: 'no'},
             ]
         },
         {
@@ -219,6 +225,8 @@ function getAccessData() {
                 { name: 'massImportConsultants', data: 'no'},
                 { name: 'massImportPxx', data: 'no'},
                 { name: 'massImportDeals', data: 'no'},
+                { name: 'userListToCreate', data: 'no'},
+                { name: 'createUserFromIHM', data: 'no'},
             ]
         },
         {
@@ -274,6 +282,8 @@ function getAccessData() {
                 { name: 'massImportConsultants', data: 'no'},
                 { name: 'massImportPxx', data: 'no'},
                 { name: 'massImportDeals', data: 'no'},
+                { name: 'userListToCreate', data: 'no'},
+                { name: 'createUserFromIHM', data: 'no'},
             ]
         }
     ];
