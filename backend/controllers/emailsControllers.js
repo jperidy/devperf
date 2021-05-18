@@ -215,6 +215,10 @@ const sendLoginInformation = async (user, {test}) => {
     //console.log(test);
     //const test = true;
 
+    if (['demo'].includes(process.env.NODE_ENV)) {
+        test = true;
+    }
+
     let url = '';
     if (process.env.NODE_ENV === 'development') {
         url = process.env.DOMAIN_NAME_DEV
