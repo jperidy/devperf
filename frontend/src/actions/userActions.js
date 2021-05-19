@@ -314,7 +314,7 @@ export const updateUserProfile = (user) => async(dispatch, getState) => {
     }
 };
 
-export const listUsers = (practice='', keyword='', pageNumber='', pageSize='15') => async(dispatch, getState) => {
+export const listUsers = (practice='', keyword={}, pageNumber='', pageSize='15') => async(dispatch, getState) => {
     try {
 
         dispatch({
@@ -331,7 +331,7 @@ export const listUsers = (practice='', keyword='', pageNumber='', pageSize='15')
         };
 
         //const { data } = await axios.get(`/api/users`, config);
-        const { data } = await axios.get(`/api/users?practice=${practice}&keyword=${keyword}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);
+        const { data } = await axios.get(`/api/users?practice=${practice}&searchName=${keyword.searchName}&searchStatus=${keyword.searchStatus}&pageNumber=${pageNumber}&pageSize=${pageSize}`, config);
 
         dispatch({
             type: USER_LIST_SUCCESS,

@@ -256,9 +256,16 @@ const getUsers = asyncHandler(async(req,res) => {
 
     const pageSize = Number(req.query.pageSize);
     const page = Number(req.query.pageNumber) || 1; // by default on page 1
-    const keyword = req.query.keyword ? {
+
+    const searchName = req.query.searchName ? {
         name: {
-            $regex: req.query.keyword,
+            $regex: req.query.searchName,
+            $options: 'i'
+        }
+    } : {};
+    const searchStatus = req.query.searchStatus ? {
+        status: {
+            $regex: req.query.searchStatus,
             $options: 'i'
         }
     } : {};
@@ -272,8 +279,8 @@ const getUsers = asyncHandler(async(req,res) => {
     //     .limit(pageSize).skip(pageSize * (page - 1));
     const usersId = await myAccessUsers(access, req);
     //console.log(usersId);
-    const count = await User.countDocuments({ ...keyword, _id: {$in: usersId} });
-    const users = await User.find({ ...keyword, _id: {$in: usersId} })
+    const count = await User.countDocuments({ ...searchName, ...searchStatus, _id: {$in: usersId} });
+    const users = await User.find({ ...searchName, ...searchStatus, _id: {$in: usersId} })
         .populate('consultantProfil').select('-password')
         .populate('profil')
         .limit(pageSize).skip(pageSize * (page - 1));

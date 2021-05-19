@@ -51,4 +51,4 @@ export const USER_CREATE_SUCCESS = 'USER_CREATE_SUCCESS';
 export const USER_CREATE_FAIL = 'USER_CREATE_FAIL';
 export const USER_CREATE_RESET = 'USER_CREATE_RESET';
 
-export const USER_STATUS = ['Waiting approval', 'Validated', 'Refused'];
+export const USER_STATUS = ['Waiting approval', 'Validated', 'Refused', 'Blocked', 'Left'];

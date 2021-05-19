@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const { createMonth } = require('./monthPxxController');
 const { createPxx } = require('./pxxControllers');
+const User = require('../models/userModel');
 
 const controlAndCreateMonth = async () => {
     
@@ -126,4 +127,18 @@ const deleteOldFiles = async () => {
     }
 }
 
-module.exports = { controlAndCreateMonth, controleAndCreatePxx, deleteOldFiles };
+const blockUserAccount = async () => {
+    const allActiveUsers = await User.find({status: 'Validated'}).populate('consultantProfil');
+    for (let incr = 0 ; incr < allActiveUsers.length ; incr++) {
+        const user = allActiveUsers[incr];
+        const leavingDate = new Date(user.consultantProfil.leaving);
+        const currentDate = new Date(Date.now());
+        if (leavingDate < currentDate) {
+            user.status = 'Left'
+            await user.save();
+            console.log(`account closed for ${user.name}`);
+        }
+    }
+}
+
+module.exports = { controlAndCreateMonth, controleAndCreatePxx, deleteOldFiles, blockUserAccount };

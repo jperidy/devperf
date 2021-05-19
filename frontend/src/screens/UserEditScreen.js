@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup'
-//import Alert from 'react-bootstrap/Alert';
 import Message from '../components/Message';
 import FormContainer from '../components/FormContainer';
 import { getUserDetails, updateUser } from '../actions/userActions';
@@ -22,9 +21,7 @@ const UserEditScreen = ({ match, history }) => {
     const [linkConsultant, setLinkConsultant] = useState('');
     const [profil, setProfil] = useState('');
     const [status, setStatus] = useState('');
-    
-    //const [message, setMessage] = useState('');
-    
+        
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
     
@@ -66,30 +63,9 @@ const UserEditScreen = ({ match, history }) => {
             } else {
                 setLinkConsultant('');
             }
-            //console.log(user.profil);
         }
 
     }, [user]);
-
-    /*
-    useEffect(() => {
-
-        if (error) {
-            setMessage({ message: error, type: 'danger' });
-        }
-        if (errorMyAdmin) {
-            setMessage({ message: errorMyAdmin, type: 'danger' });
-        }
-        if (errorUpdate) {
-            setMessage({ message: errorUpdate, type: 'danger' });
-        }
-        if (successUpdate) {
-            setMessage({ message: 'User profil updated', type: 'success' });
-            dispatch({type: USER_UPDATE_RESET});
-        }
-
-    }, [dispatch, error, errorMyAdmin, errorUpdate, successUpdate]);
-    */
 
     useEffect(() => {
 
@@ -103,13 +79,11 @@ const UserEditScreen = ({ match, history }) => {
         if (!access) {
             dispatch(getAllAccess());
         }
-        //console.log(access)
     },[dispatch, access]);
 
     const updateProfilHandler = (profil) => {
         const newProfil = access.filter(x => x.profil === profil)[0];
         setProfil(newProfil);
-        //console.log('updateProfil');
     }
 
     const goBackHandler = () => {
@@ -187,7 +161,7 @@ const UserEditScreen = ({ match, history }) => {
                                 )}
                             </Form.Control>
                             <InputGroup.Append>
-                                <Button onClick={() => history.push(`/editconsultant/${linkConsultant}`)}>Edit user</Button>
+                                <Button onClick={() => history.push(`/editconsultant/${linkConsultant}`)}>Edit consultant</Button>
                             </InputGroup.Append>
                         </InputGroup>
 
