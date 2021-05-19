@@ -525,7 +525,8 @@ const getAvailabilityChart = asyncHandler(async (req, res) => {
                     availableDay: x.availableDay,
                     comment: x.name.comment,
                     availabilityComment: x.name.availabilityComment,
-                    notProdComment: x.name.notProdComment
+                    notProdComment: x.name.notProdComment,
+                    linkedCV: x.name.linkedCV
                 }
             });
             const result = {

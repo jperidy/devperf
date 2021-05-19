@@ -24,7 +24,6 @@ const Tace = ({ tace, practice }) => {
     const [missingFTEToTarget, setMissingFTEToTarget] = useState('');
 
     const createTace = useSelector(state => state.createTace);
-    //const { success } = createTace;
 
     useEffect(() => {
         if(update) {

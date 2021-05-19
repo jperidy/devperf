@@ -66,7 +66,6 @@ const ConsoDispo = ({
         setSearchSkillsList([]);
         setSearchExperienceStart('');
         setSearchExperienceEnd('');
-        //dispatch(getAvailabilities(practice, start, end, '', '', '', searchMode));
     };
 
     const handlerSkillsSubmit = (e) => {

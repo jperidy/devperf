@@ -21,8 +21,6 @@ const StaffAConsultant = ({ history, onHide, show, consultant, loadingData={}, m
     const [sdResponsability, setSdResponsability] = useState(loadingData.responsability ? loadingData.responsability : '');
     const [sdPriority, setSdPriority] = useState(loadingData.priority ? loadingData.priority : '');
     const [sdInformation, setSdInformation] = useState(loadingData.information ? loadingData.information : '');
-    //console.log('consultant', consultant)
-
 
     const consultantGetCdm = useSelector(state => state.consultantGetCdm);
     const { cdm } = consultantGetCdm;
@@ -44,7 +42,14 @@ const StaffAConsultant = ({ history, onHide, show, consultant, loadingData={}, m
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    {consultant.name ? consultant.name + ' - ' + consultant.grade + (cdm ? ' (' + cdm.name + ')' : '') : ''}
+                    {consultant.name ? (
+                        <div>
+                            <a href={consultant.linkedCV} target="_blank" rel="noreferrer">{consultant.name}</a>{` - ${consultant.grade} (${cdm ? cdm.name : ''})`}
+                        </div>
+                        ) : (
+                            ''
+                        )
+                    }
                 </Modal.Title>
             </Modal.Header>
 

@@ -21,6 +21,7 @@ const consultantSchema = mongoose.Schema({
         enum: ['Intern', 'Analyst', 'Consultant', 'Senior consultant', 'Manager', 'Senior manager', 'Director', 'Partner', 'Unknown', 'Commercial', 'Research'],
         default: 'Analyst'
     },
+    linkedCV: { type: String },
     quality: [
         {
             skill: {

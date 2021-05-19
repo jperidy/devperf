@@ -27,9 +27,11 @@ const PxxEditScreen = ({ history }) => {
 
     const [commentText, setCommentText] = useState('');
     const [trObjectives, setTrObjectives] = useState('');
-    //const [myObjectives, setMyObjectives] = useState('');
     const [availabilityComment, setAvailabilityComment] = useState('');
     const [notProdComment, setNotProdComment] = useState('');
+    const [cvLink, setCvLink] = useState('');
+
+    const [editCv, setEditCv] = useState(false);
 
     const [delegateOption, setDelegationOption] = useState(false);
 
@@ -53,17 +55,16 @@ const PxxEditScreen = ({ history }) => {
     useEffect(() => {
         // Effect to start loading my consultants and then to update every time focus change
         const option = delegateOption ? 'delegate' : '';
-        //console.log('option', option);
         dispatch(getAllMyConsultants(option));
     }, [dispatch, focus, delegateOption])
 
     useEffect(() => {
         if (consultantsMy) {
             setCommentText(consultantsMy[focus].comment);
-            //setMyObjectives(consultantsMy[focus].personalObjectives);
             setTrObjectives(consultantsMy[focus].talentReviewObjectives);
             setNotProdComment(consultantsMy[focus].notProdComment);
             setAvailabilityComment(consultantsMy[focus].availabilityComment);
+            setCvLink(consultantsMy[focus].linkedCV);
         }
     }, [consultantsMy, focus]);
 
@@ -190,10 +191,10 @@ const PxxEditScreen = ({ history }) => {
                                                         setTrObjectives(e.target.value);
                                                         dispatch(updateMyConsultant({
                                                             ...consultantsMy[focus], 
-                                                            //personalObjectives: myObjectives,
                                                             talentReviewObjectives: e.target.value,
                                                             notProdComment: notProdComment,
-                                                            availabilityComment: availabilityComment
+                                                            availabilityComment: availabilityComment,
+                                                            linkedCV: cvLink
                                                         }))
                                                         //updateCommentHandler(consultantsMy[focus]._id, e.target.value)
                                                     }}
@@ -214,10 +215,10 @@ const PxxEditScreen = ({ history }) => {
                                                         setNotProdComment(e.target.value);
                                                         dispatch(updateMyConsultant({
                                                             ...consultantsMy[focus], 
-                                                            //personalObjectives: e.target.value,
                                                             talentReviewObjectives: trObjectives,
                                                             notProdComment: e.target.value,
-                                                            availabilityComment: availabilityComment
+                                                            availabilityComment: availabilityComment,
+                                                            linkedCV: cvLink
                                                         }));
                                                         //updateCommentHandler(consultantsMy[focus]._id, e.target.value)
                                                     }}
@@ -238,15 +239,56 @@ const PxxEditScreen = ({ history }) => {
                                                         setAvailabilityComment(e.target.value);
                                                         dispatch(updateMyConsultant({
                                                             ...consultantsMy[focus], 
-                                                            //personalObjectives: e.target.value,
                                                             talentReviewObjectives: trObjectives,
                                                             notProdComment: notProdComment,
-                                                            availabilityComment: e.target.value
+                                                            availabilityComment: e.target.value,
+                                                            linkedCV: cvLink
                                                         }));
-                                                        //updateCommentHandler(consultantsMy[focus]._id, e.target.value)
                                                     }}
                                                 ></FormControl>
                                             </InputGroup>
+                                        </Col>
+                                    </Row>
+                                </div>
+
+                                <div className='border-bottom p-3'>
+                                    <Row className='align-items-end'>
+                                        <Col xs={10}>
+                                            {editCv ? (
+                                                <div>
+                                                <label htmlFor="cv-link"><strong>CV from Waveplace</strong></label>
+                                                <InputGroup>
+                                                    <FormControl
+                                                        type='text'
+                                                        id='cv-link'
+                                                        value={cvLink && cvLink}
+                                                        onChange={(e) => setCvLink(e.target.value)}
+                                                    ></FormControl>
+                                                </InputGroup>
+                                                </div>
+                                            ) : (
+                                                    <div>
+                                                        <label><strong>CV from Waveplace</strong></label><br />
+                                                        {cvLink ? <a href={cvLink} target="_blank" rel="noreferrer">{cvLink}</a> : <p>Please add the url to Waveplace</p>}
+                                                    </div>
+                                            )}
+                                        </Col>
+                                        <Col xs={2}>
+                                            <Button block
+                                                onClick={() => {
+                                                    if (!editCv === false) {
+                                                        dispatch(updateMyConsultant({
+                                                            ...consultantsMy[focus], 
+                                                            talentReviewObjectives: trObjectives,
+                                                            notProdComment: notProdComment,
+                                                            availabilityComment: availabilityComment,
+                                                            linkedCV: cvLink
+                                                        }));
+                                                    }
+                                                    setEditCv(!editCv);
+
+                                                } }
+                                            >{editCv ? 'Save' : 'Edit'}</Button>
                                         </Col>
                                     </Row>
                                 </div>

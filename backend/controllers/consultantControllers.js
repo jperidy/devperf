@@ -186,10 +186,10 @@ const updateConsultant = asyncHandler(async (req, res) => {
         myConsultant.leaving = consultantToUpdate.leaving;
         myConsultant.isCDM = consultantToUpdate.isCDM;
         myConsultant.isPartialTime = consultantToUpdate.isPartialTime;
-        //myConsultant.personalObjectives = consultantToUpdate.personalObjectives;
         myConsultant.talentReviewObjectives = consultantToUpdate.talentReviewObjectives;
         myConsultant.notProdComment = consultantToUpdate.notProdComment;
         myConsultant.availabilityComment = consultantToUpdate.availabilityComment;
+        myConsultant.linkedCV = consultantToUpdate.linkedCV;
 
         if (arrivalChange || leavingChange) {
             try {
