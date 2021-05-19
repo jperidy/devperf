@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import NavDropdown from 'react-bootstrap/esm/NavDropdown';
+import NavDropdown from 'react-bootstrap/NavDropdown';
 import { changeAdminPractice } from '../actions/userActions';
 import DisplayChildren from './DisplayChildren';
 import { getAllPractice } from '../actions/consultantActions';
