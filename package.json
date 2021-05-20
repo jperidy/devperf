@@ -9,6 +9,7 @@
     "client": "npm start --prefix frontend",
     "clientWithExpress": "REACT_APP_PROXY=http://localhost:5000 npm start --prefix frontend/react-app",
     "dev": "REACT_APP_ENV=demo concurrently \"npm run server\" \"npm run client\"",
+    "build": "REACT_APP_ENV=poc npm build --prefix frontend/",
     "devWithExpress": "concurrently \"npm run server\" \"npm run clientWithExpress\"",
     "data:import": "node backend/seeder",
     "data:destroy": "node backend/seeder -d",
