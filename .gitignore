@@ -31,7 +31,7 @@ uploads/pxx/*
 
 # dockers
 #docker-compose.yml
-Dockerfile
+#Dockerfile
 .dockerignore
 
 # terraform
