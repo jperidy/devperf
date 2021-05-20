@@ -8,7 +8,7 @@ WORKDIR /frontend
 COPY package*.json /frontend/
 RUN npm install
 COPY /frontend/ /frontend/
-RUN npm run build
+RUN REACT_APP_ENV=demo npm run build
 
 WORKDIR /
 EXPOSE 5000
