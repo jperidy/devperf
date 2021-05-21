@@ -1,4 +1,4 @@
-node_modules/
+/node_modules
 .git
 .env
 .gitignore
@@ -11,14 +11,14 @@ loadAndStartDockerCompose.bash
 loadAndStartDockerFile.bash
 start-dockerImage.sh
 start-jenkins.sh
-uploads/
-_data_test/
-backend/data/
-database/
-documentation/
-frontend/build/
-frontend/node_modules/
-frontendWithExpress/
+/uploads
+/_data_test
+/backend/data
+/database
+/documentation
+/frontend/build
+/frontend/node_modules
+/frontendWithExpress
 /.pnp
 .pnp.js
 
