@@ -33,6 +33,9 @@ start-jenkins.sh
 loadAndStartDockerCompose.bash
 loadAndStartDockerFile.bash
 
+# kubernetes
+deployment.yaml
+
 # terraform
 terraform
 

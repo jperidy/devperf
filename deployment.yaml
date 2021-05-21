@@ -2,15 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: devpdc-main-app
-  name: devpdc-main-app
+    app: ressource-management-app-demo
+  name: ressource-management-app-demo
   namespace: default
 spec:
   replicas: 3
   minReadySeconds: 45
   selector:
     matchLabels:
-      app: devpdc-main-app
+      app: ressource-management-app-demo
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -19,12 +19,12 @@ spec:
   template:
     metadata:
       labels:
-        app: devpdc-main-app
+        app: ressource-management-app-demo
     spec:
       containers:
-      - image: jbperidy/devpdc-main-app:0.0.2-RELEASE
+      - image: jbperidy/ressource-management-app-demo:latest
         imagePullPolicy: IfNotPresent
-        name: devpdc-main-app
+        name: ressource-management-app-demo
         ports:
         - name: liveness-port
           containerPort: 5000
@@ -49,6 +49,31 @@ spec:
           failureThreshold: 5
           periodSeconds: 10
           initialDelaySeconds: 60
+        env:
+        - name: NODE_ENV
+          value: demo
+        - name: PORT
+          value: '5000'
+        - name: JWT_SECRET
+          value: ADIR7#19$WNU
+        - name: GMAIL_HOST
+          value: smtp.gmail.com
+        - name: GMAIL_PORT
+          value: '587'
+        - name: GMAIL_USER
+          value: jprdevapp@gmail.com
+        - name: GMAIL_PASS
+          value: kstsfvueuvzichao
+        - name: AZ_APPLICATION_ID
+          value: 11d59dd4-922e-4342-8196-fe7af766b2aa
+        - name: AZ_LOCATAIRE_ID
+          value: 1f04c538-953c-4b4e-9714-900768921f2c
+        - name: AZ_SECRET
+          value: am4H96Cx-zwaA90V1X3XaMRjl~__xf3YB-
+        - name: AZ_REDIRECT_URI
+          value: http://localhost:5000/login
+        - name: MONGO_URI_DEMO
+          value: mongodb+srv://jbperidy:Jaybee123@devperf.221vg.mongodb.net/devperf?retryWrites=true&w=majority
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
 ---
@@ -56,15 +81,15 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: devpdc-main-app
-  name: devpdc-main-app
+    app: ressource-management-app-demo
+  name: ressource-management-app-demo
   namespace: default
-spec:
+spec:        
   ports:
   - port: 5000
     protocol: TCP
     targetPort: 5000
   selector:
-    app: devpdc-main-app
+    app: ressource-management-app-demo
   sessionAffinity: None
   type: LoadBalancer #LoadBalancer or NodePort

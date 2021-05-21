@@ -80,7 +80,7 @@ router.put('/delegate/:consultantId', protect, updateCdmDelegation);
 
 router.route('/:consultantId')
     .get(protect, authorizeActionOnConsultant, getConsultant)
-    .put(protect, authorizeActionOnConsultant, updateConsultant)
+    .put(protect, updateConsultant)
     .delete(protect, authorizeActionOnConsultant, deleteConsultant);
 
 router.put('/comment/:consultantId', protect, authorizeActionOnConsultant, updateConsultantComment);
