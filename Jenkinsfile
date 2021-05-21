@@ -3,7 +3,7 @@ pipeline {
 	environment {
 		dockerHome = tool 'myDocker'
 		nodeHome = tool 'myNodeJS'
-		PATH = "$dockerHome/bin:$nodeHome/bin:$PATH" // add dockerHome/bin and mavenHome/bin to the PATH
+		PATH = "$dockerHome/bin:$nodeHome/bin:$PATH"
 		CI = 'true'
 	}
 	stages {
@@ -34,9 +34,8 @@ pipeline {
 		}
 		stage('Build Docker Image') {
 			steps {
-				//"docker build -t jbperidy/ressource-management-app-demo:$env.BUILD_NUMBER"
 				script {
-					dockerImage = docker.build("jbperidy/currency-exchange-devops:RELEASE-0.0.${env.BUILD_NUMBER}")
+					dockerImage = docker.build("jbperidy/ressource-management-app-demo:RELEASE-0.0.${env.BUILD_NUMBER}")
 				}
 			}
 		}
