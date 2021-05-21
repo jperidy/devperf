@@ -2,7 +2,7 @@ pipeline {
 	agent any
 	environment {
 		dockerHome = tool 'myDocker'
-		nodeHome = tool 'myNodeJs'
+		nodeHome = tool 'myNodeJS'
 		PATH = "$dockerHome/bin:$nodeHome/bin:$PATH" // add dockerHome/bin and mavenHome/bin to the PATH
 	}
 	stages {
