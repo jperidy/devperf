@@ -4,10 +4,9 @@ COPY package*.json /
 RUN npm install
 COPY /backend/ /backend/
 
-WORKDIR /frontend
-COPY package*.json /frontend/
-RUN npm install
 COPY /frontend/ /frontend/
+WORKDIR /frontend
+RUN npm install
 RUN REACT_APP_ENV=demo npm run build
 
 WORKDIR /
