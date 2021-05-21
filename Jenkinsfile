@@ -4,6 +4,7 @@ pipeline {
 		dockerHome = tool 'myDocker'
 		nodeHome = tool 'myNodeJS'
 		PATH = "$dockerHome/bin:$nodeHome/bin:$PATH" // add dockerHome/bin and mavenHome/bin to the PATH
+		CI = 'true'
 	}
 	stages {
 		stage('Checkout') {
