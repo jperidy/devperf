@@ -22,8 +22,8 @@ pipeline {
 		}
 		stage('Install npm packages') {
 			steps {
-				sh "npm run install"
-				sh "npm run install --prefix frontend/"
+				sh "npm install"
+				sh "npm install --prefix frontend/"
 			}
 		}
 		stage('Test') {
