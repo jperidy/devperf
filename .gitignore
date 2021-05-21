@@ -28,7 +28,6 @@ uploads/pxx/*
 frontendWithExpress
 
 # dockers
-.dockerignore
 start-dockerImage.sh
 start-jenkins.sh
 loadAndStartDockerCompose.bash
