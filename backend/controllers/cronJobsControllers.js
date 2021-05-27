@@ -133,7 +133,7 @@ const blockUserAccount = async () => {
         const user = allActiveUsers[incr];
         const leavingDate = new Date(user.consultantProfil.leaving);
         const currentDate = new Date(Date.now());
-        if (leavingDate < currentDate) {
+        if (leavingDate && leavingDate < currentDate) {
             user.status = 'Left'
             await user.save();
             console.log(`account closed for ${user.name}`);

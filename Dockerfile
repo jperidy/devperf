@@ -7,7 +7,7 @@ COPY /backend/ /backend/
 COPY /frontend/ /frontend/
 WORKDIR /frontend
 RUN npm install
-RUN REACT_APP_ENV=demo npm run build
+RUN REACT_APP_ENV=poc npm run build
 
 WORKDIR /
 EXPOSE 5000

@@ -1,32 +1,42 @@
 version: '3.7'
 services:
-  devpdc-main-app:
-    build: .
-    image: jbperidy/devpdc-main-app:0.0.${COMPOSE_VERSION}-RELEASE
-    container_name: devpdc_main_app
+  ressource-management-main-app:
+    image: jbperidy/ressource-management-app-poc:latest
+    container_name: ressource-management-main-app
     environment: 
-      - NODE_ENV=${NODE_ENV}
-      - MONGO_URI=${MONGO_URI}
+      - NODE_ENV=docker
+      - MONGO_URI_DOCKER=${MONGO_URI_DOCKER}
+      - PORT=${PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - GMAIL_HOST=${GMAIL_HOST}
+      - GMAIL_PORT=${GMAIL_PORT}
+      - GMAIL_USER=${GMAIL_USER}
+      - GMAIL_PASS=${GMAIL_PASS}
+      - AZ_APPLICATION_ID=${AZ_APPLICATION_ID}
+      - AZ_LOCATAIRE_ID=${AZ_LOCATAIRE_ID}
+      - AZ_SECRET=${AZ_SECRET}
+      - AZ_REDIRECT_URI=${AZ_REDIRECT_URI}
+      - DOMAIN_NAME_DOCKER=${DOMAIN_NAME_DOCKER}
     depends_on:
-      - mongodb
+      - ressource-management-mongo-db
     ports:
       - "5000:5000"
     restart: always
     networks:
-      - devpdc-network
+      - ressource-management-network
 
-  mongodb:
+  ressource-management-mongo-db:
     build: ./database/mongoDatabase/
-    image: jbperidy/devpdc-mongo-db:0.0.${COMPOSE_VERSION}-RELEASE
-    container_name: devpdc_mongo_db
+    image: jbperidy/ressource-management-mongo-db:latest
+    container_name: ressource-management-mongo-db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
       - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
     volumes:
-      - mongodb-data:/data/db
+      - ressource-management-mongo-db-data:/data/db
     networks:
-      - devpdc-network
+      - ressource-management-network
     ports:
       - 27017:27017
     healthcheck:
@@ -36,10 +46,10 @@ services:
       retries: 3
     restart: unless-stopped
     
-  mongo-express:
+  ressource-management-mongo-express:
     build: ./database/mongoExpressReader/
-    image: jbperidy/devpdc-mongo-express:0.0.${COMPOSE_VERSION}-RELEASE
-    container_name: devpdc_mongo_express
+    image: jbperidy/ressource-management-mongo-express:latest
+    container_name: ressource-management-mongo-express
     environment:
       - ME_CONFIG_MONGODB_SERVER=${ME_CONFIG_MONGODB_SERVER}
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=${ME_CONFIG_MONGODB_ENABLE_ADMIN}
@@ -48,9 +58,9 @@ services:
       - ME_CONFIG_BASICAUTH_USERNAME=${ME_CONFIG_BASICAUTH_USERNAME}
       - ME_CONFIG_BASICAUTH_PASSWORD=${ME_CONFIG_BASICAUTH_PASSWORD}
     depends_on:
-      - mongodb
+      - ressource-management-mongo-db
     networks:
-      - devpdc-network
+      - ressource-management-network
     ports:
       - 8081:8081
     healthcheck:
@@ -61,10 +71,9 @@ services:
     restart: unless-stopped
       
 volumes:
-  mongodb-data:
-    name: mongodb-data
+  ressource-management-mongo-db-data:
+    name: ressource-management-mongo-db-data
     
 networks:
-  devpdc-network:
-    name: devpdc-network
-
+  ressource-management-network:
+    name: ressource-management-network

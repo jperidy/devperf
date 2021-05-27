@@ -30,8 +30,6 @@ frontendWithExpress
 # dockers
 start-dockerImage.sh
 start-jenkins.sh
-loadAndStartDockerCompose.bash
-loadAndStartDockerFile.bash
 
 # kubernetes
 deployment.yaml

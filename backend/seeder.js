@@ -19,11 +19,11 @@ const connectDB = async () => {
     let uri = '';
     
     if (['production', 'development', 'demo'].includes(process.env.NODE_ENV)) {
-        uri = process.env.MONGO_URI_DEMO
+        uri = process.env.MONGO_URI_DEMO;
     } else if (process.env.NODE_ENV === 'docker') {
-        uri = process.env.MONGO_URI_DOCKER
+        uri = process.env.MONGO_URI_DOCKER.replace('@ressource-management-mongo-db:27017', '@localhost:27017');
     } else if (process.env.NODE_ENV === 'poc') {
-        uri = process.env.MONGO_URI_POC
+        uri = process.env.MONGO_URI_POC;
     }
     
     mongoose.connect(uri, {
@@ -49,17 +49,18 @@ const { getClient, initClient } = require('./data/clientData');
 
 dotenv.config();
 
-let uri = '';
+//let uri = '';
 
-if (['production', 'development'].includes(process.env.NODE_ENV)) {
-    uri = process.env.MONGO_URI_DEMO;
-} else if (process.env.NODE_ENV === 'poc') {
-    uri = process.env.MONGO_URI_POC;
-} else if (process.env.NODE_ENV === 'docker') {
-    uri = process.env.MONGO_URI_DOCKER;
-}
+// if (['production', 'development'].includes(process.env.NODE_ENV)) {
+//     uri = process.env.MONGO_URI_DEMO;
+// } else if (process.env.NODE_ENV === 'poc') {
+//     uri = process.env.MONGO_URI_POC;
+//     connectDB();
+// } else if (process.env.NODE_ENV === 'docker') {
+//     uri = process.env.MONGO_URI_DOCKER;
+//     connectDB(process.env.MONGO_URI_DOCKER.replace('@ressource-management-mongo-db:27017', '@localhost:27017'));
+// }
 
-//connectDB(process.env.MONGO_URI.replace('@mongodb:27017', '@localhost:27017'));
 connectDB();
 
 const importData = async () => {
