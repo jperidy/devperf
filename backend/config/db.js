@@ -10,6 +10,8 @@ const connectDB = async () => {
         uri = process.env.MONGO_URI_DOCKER
     } else if (process.env.NODE_ENV === 'poc') {
         uri = process.env.MONGO_URI_POC
+    } else if (process.env.NODE_ENV === 'poc-ovh') {
+        uri = process.env.MONGO_URI_POC_OVH
     }
 
     mongoose.connect(uri, {
@@ -20,8 +22,8 @@ const connectDB = async () => {
     })
         .then((conn) => console.log(`MongoDB connected: ${conn.connection.host}`))
         .catch((error) => {
-            console.log(`Error: ${error.message}`)
-            process.exit(1)
+            console.log(`Error: ${error.message} \nNODE_ENV:${process.env.NODE_ENV}\nuri: ${uri}`);
+            process.exit(1);
         })
 }
 

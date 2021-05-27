@@ -622,7 +622,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
     res.setHeader('Transfer-Encoding', 'chunked');
     res.write("Start...\n");
 
-    const anonymise = ['poc', 'production'].includes(process.env.NODE_ENV) ? false : true;
+    const anonymise = ['poc', 'poc-ovh', 'production'].includes(process.env.NODE_ENV) ? false : true;
 
     let numberOfConsultant = 0;
     let numberOfUpdate = 0;

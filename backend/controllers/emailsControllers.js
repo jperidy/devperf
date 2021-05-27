@@ -228,6 +228,8 @@ const sendLoginInformation = async (user, {test}) => {
         url = process.env.DOMAIN_NAME_DOCKER
     } else if (process.env.NODE_ENV === 'poc') {
         url = process.env.DOMAIN_NAME_POC
+    } else if (process.env.NODE_ENV === 'poc-ovh') {
+        url = process.env.DOMAIN_NAME_POC_OVH
     }
 
     const credential = {
