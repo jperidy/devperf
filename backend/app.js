@@ -29,6 +29,8 @@ if (process.env.NODE_ENV === 'development' ) {
     app.use(morgan('common'));
 } else if (process.env.NODE_ENV === 'poc') {
     app.use(morgan('common'));
+} else if (process.env.NODE_ENV === 'poc-ovh') {
+    app.use(morgan('common'));
 }
 
 connectDB();
@@ -59,7 +61,7 @@ app.use('/api/emails', emailsRoutes);
 // static route for developpement access to build repository
 const __dir = path.resolve();
 
-if (['demo', 'poc', 'docker'].includes(process.env.NODE_ENV)) {
+if (['demo', 'poc', 'docker', 'poc-ovh'].includes(process.env.NODE_ENV)) {
     app.use(express.static(path.join(__dir, '/frontend/build')));
     app.get('*', (req, res) => res.sendFile(path.resolve(__dir, 'frontend', 'build', 'index.html')))
 } else {
