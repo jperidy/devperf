@@ -25,6 +25,7 @@ const LoginScreen = ({ location, history }) => {
     const redirect = location.search ? location.search.split('=')[1] : '/';
 
     useEffect(() => {
+        // console.log(window.location.href);
         if (userInfo && userInfo.status === 'Validated') {
             history.push(redirect);
             // If user is authenticate, there is no search and user is redirect to home page
@@ -105,7 +106,7 @@ const LoginScreen = ({ location, history }) => {
                                 variant="success"
                                 onClick={azAuthentClick}
                                 block
-                                disabled={process.env.REACT_APP_ENV === 'poc'}
+                                disabled={window.location.href.match(/poc/i)}
                             >-- AZ Connect --</Button>
                         </Col>
                     </Row>
@@ -122,7 +123,7 @@ const LoginScreen = ({ location, history }) => {
 
             </FormContainer>
 
-            {['demo', 'dev'].includes(process.env.REACT_APP_ENV) && (
+            {window.location.href.match(/demo|localhost/i) && (
                 <Container>
                     <Row className='justify-content-md-center'>
                         <Col xs={12} md={6} className='mt-5'>
@@ -181,8 +182,7 @@ const LoginScreen = ({ location, history }) => {
                 </Container>
             )}
 
-
-            {process.env.REACT_APP_ENV === 'poc' && (
+            {window.location.href.match(/poc/i) && (
                 <Container>
                     <Row className='justify-content-md-center'>
                         <Col xs={12} md={6} className='mt-5'>

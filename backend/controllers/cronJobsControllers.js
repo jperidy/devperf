@@ -131,10 +131,10 @@ const blockUserAccount = async () => {
     const allActiveUsers = await User.find({status: 'Validated'}).populate('consultantProfil');
     for (let incr = 0 ; incr < allActiveUsers.length ; incr++) {
         const user = allActiveUsers[incr];
-        const leavingDate = new Date(user.consultantProfil.leaving);
+        const leavingDate = user.consultantProfil.leaving ? new Date(user.consultantProfil.leaving) : null;
         const currentDate = new Date(Date.now());
         if (leavingDate && leavingDate < currentDate) {
-            user.status = 'Left'
+            user.status = 'Left';
             await user.save();
             console.log(`account closed for ${user.name}`);
         }
