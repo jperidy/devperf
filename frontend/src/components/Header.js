@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Container from 'react-bootstrap/Container';
-import { changeAdminPractice, logout } from '../actions/userActions';
+import { logout } from '../actions/userActions';
 import DisplayChildren from './DisplayChildren';
-import { getAllPractice } from '../actions/consultantActions';
 import ChangeAdminPractice from './ChangeAdminPractice';
 
 
@@ -17,15 +16,6 @@ const Header = () => {
 
     const userLogin = useSelector(state => state.userLogin);
     const { userInfo } = userLogin;
-
-    // const consultantPracticeList = useSelector(state => state.consultantPracticeList);
-    // const { practiceList } = consultantPracticeList;
-
-    // useEffect(() => {
-    //     if (!practiceList) {
-    //         dispatch(getAllPractice());
-    //     }
-    // }, [dispatch, practiceList]);
 
     const logoutHandler = () => {
         dispatch(logout());
