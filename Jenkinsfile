@@ -32,14 +32,31 @@ pipeline {
 				sh "npm run test --prefix frontend/"
 			}
 		}
-		stage('Build Docker Image') {
+		stage('Build Docker Image DEMO') {
 			steps {
 				script {
 					dockerImage = docker.build("jbperidy/ressource-management-app-demo:RELEASE-0.0.${env.BUILD_NUMBER}")
 				}
 			}
 		}
-		stage('Push Docker Image') {
+		stage('Push Docker Image DEMO') {
+			steps {
+				script {
+					docker.withRegistry('', 'dockerhub') {
+						dockerImage.push();
+						dockerImage.push('latest');
+					}
+				}
+			}
+		}
+		stage('Build Docker Image POC OVH') {
+			steps {
+				script {
+					dockerImage = docker.build("jbperidy/ressource-management-app-poc-ovh:RELEASE-0.0.${env.BUILD_NUMBER}")
+				}
+			}
+		}
+		stage('Push Docker Image POC OVH') {
 			steps {
 				script {
 					docker.withRegistry('', 'dockerhub') {
