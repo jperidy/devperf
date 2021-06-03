@@ -42,6 +42,12 @@ import { USER_LOGIN_FAIL,
     USER_CREATE_RESET
 } from "../constants/userConstants";
 
+/**
+ * @function userLoginReducer
+ * @param {object} state - {loading, userInfo, error} 
+ * @param {object} action - action to be reduced 
+ * @returns {objetct} - new user login state {loading, userInfo, error}
+ */
 export const userLoginReducer = (state = {}, action) => {
     switch (action.type) {
         case USER_LOGIN_REQUEST:

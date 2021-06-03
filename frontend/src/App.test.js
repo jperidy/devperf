@@ -15,8 +15,5 @@ test('renders non-empty component withour crashing', () => {
   // console.log(wrapper.debug()); // see html in the wrapper
 
   expect(wrapper.exists()).toBe(true);
-
-  // render(<App />);
-  // const linkElement = screen.getByText(/learn react/i);
-  // expect(linkElement).toBeInTheDocument();
+  
 });

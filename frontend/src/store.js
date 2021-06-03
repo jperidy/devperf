@@ -105,7 +105,7 @@ const initialState = {
     userLogin: {userInfo: userItemsFromStorage}
 };
 
-const middleware = [thunk];
+export const middleware = [thunk];
 
 const store = createStore(reducer, initialState, composeWithDevTools(applyMiddleware(...middleware)));
 

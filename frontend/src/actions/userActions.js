@@ -39,8 +39,12 @@ import {
     USER_CREATE_FAIL
 } from "../constants/userConstants";
 
-
-//export const login = (email, password) => async(dispatch) => {
+/**
+ * 
+ * @function login
+ * @param {String} type - type of login (LOCAL or AZ) 
+ * @param {Object} param - parameters to proceed login action ({email, password, code}) 
+ */
 export const login = (type, param) => async (dispatch) => {
     try {
         dispatch({
