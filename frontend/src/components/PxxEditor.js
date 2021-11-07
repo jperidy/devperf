@@ -31,7 +31,6 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
 
     return (
         <ListGroup.Item>
-
             <Row>
                 <Col xs={4} className='text-center align-middle'>
                     <Button
@@ -74,25 +73,6 @@ const PxxEditor = ({ consultantsMy, consultantFocus, searchDate, navigationMonth
                         style={{width: '8em'}}
                     >Next  <i className="fas fa-caret-down"></i></Button>
                 </Col>
-                {/* <Col xs={6} md={2} className="text-right">
-                    <Button
-                        className='btn btn-primary mt-3'
-                        variant='primary'
-                        size='sm'
-                        onClick={() => navigationMonthHandler(-1)}
-                        block
-                    ><i className="fas fa-caret-left"></i>  Previous</Button>
-                </Col>
-                <Col xs={6} md={2} className="text-left">
-                    <Button
-                        className='btn btn-primary mt-3'
-                        variant='primary'
-                        size='sm'
-                        onClick={() => navigationMonthHandler(1)}
-                        block
-                    >Next  <i className="fas fa-caret-right"></i></Button>
-                </Col>
-                <Col xs={0} md={2}></Col> */}
             </Row>
 
         </ListGroup.Item>

@@ -240,7 +240,7 @@ const ManageDealsScreen = ({ history }) => {
     }, [dispatch, successDelete]);
 
     return (
-        <>
+        <div>
             <Meta />
 
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
@@ -389,7 +389,7 @@ const ManageDealsScreen = ({ history }) => {
                     </Tabs>
                 </ListGroup.Item>
             </DropDownTitleContainer>
-        </>
+        </div>
     )
 }
 

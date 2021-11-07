@@ -67,7 +67,7 @@ const LoginScreen = ({ location, history }) => {
 
 
     return (
-        <>
+        <div>
             <FormContainer>
                 <h1>Sign In</h1>
                 {message && <Message variant='danger'>{message}</Message>}
@@ -128,7 +128,7 @@ const LoginScreen = ({ location, history }) => {
                     <Row className='justify-content-md-center'>
                         <Col xs={12} md={6} className='mt-5'>
                             <h3>Disclaimer</h3>
-                            <p>Welcome on this demo! Please note that this is not an official Wavestone product.<br />
+                            <p>Welcome on this demo! Please note that this is not an official product.<br />
                             On this online resource management application, you'll be able to:</p>
                             <ul>
                                 <li>Login with different profiles (admin, coordinator, CDM, manager)</li>
@@ -187,7 +187,7 @@ const LoginScreen = ({ location, history }) => {
                     <Row className='justify-content-md-center'>
                         <Col xs={12} md={6} className='mt-5'>
                             <h3>Disclaimer</h3>
-                            <p>Welcome on this poc! Please note that this is not an official Wavestone product.<br />
+                            <p>Welcome on this poc! Please note that this is not an official product.<br />
                         On this online resource management application, you'll be able to:</p>
                             <ul>
                                 <li>Edit your activity forecast</li>
@@ -199,7 +199,7 @@ const LoginScreen = ({ location, history }) => {
                     </Row>
                 </Container>
             )}
-        </>
+        </div>
     );
 };
 

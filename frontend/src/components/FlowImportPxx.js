@@ -37,7 +37,6 @@ const FlowImportPxx = (props) => {
 
     const startImportData = () => {
         if(path) {
-            //dispatch(updatePxxFiles(path));
             dispatch(updatePxxFiles(path));
         }
     }

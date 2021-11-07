@@ -107,7 +107,7 @@ const UserEditScreen = ({ match, history }) => {
     };
 
     return (
-        <>
+        <div>
             {error && <Message variant='danger'>{error}</Message>}
             {errorMyAdmin && <Message variant='danger'>{errorMyAdmin}</Message>}
             {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
@@ -212,7 +212,7 @@ const UserEditScreen = ({ match, history }) => {
                 </Form>
             </FormContainer>
 
-        </>
+        </div>
     )
 };
 

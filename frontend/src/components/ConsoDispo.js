@@ -79,7 +79,7 @@ const ConsoDispo = ({
     };
 
     return (
-        <>
+        <div>
             {modalWindowShow && (
                 <StaffAConsultant
                     show={modalWindowShow}
@@ -173,11 +173,11 @@ const ConsoDispo = ({
                                         onChange={setSearchMode}
                                         required={true}
                                         options={
-                                            <>
+                                            <div>
                                                 <option value='filterAvailable'>Is available</option>
                                                 <option value='notAvailable'>Is not available</option>
                                                 <option value='notProd'>Has not prod</option>
-                                            </>
+                                            </div>
                                         }
                                     />
                                     {/* <Form.Check
@@ -305,7 +305,7 @@ const ConsoDispo = ({
                     </Row>
                 </Tab>
             </Tabs>
-        </>
+        </div>
     )
 }
 

@@ -192,7 +192,7 @@ const ProfileScreen = ({ history }) => {
                     >Update Password</Button>
                     
                     {userInfo && userInfo.consultantProfil.isCDM && (
-                        <>
+                        <div>
                             <h3>Delegate </h3>
                             <SelectInput
                                 options={cdmList ? cdmList.map(cdm => ({ value: cdm._id, label: cdm.name })) : []}
@@ -207,7 +207,7 @@ const ProfileScreen = ({ history }) => {
                                 variant='primary'
                                 block
                             >{loadingDelegate ? <Loader /> : 'Update Delegations'}</Button>
-                        </>
+                        </div>
                     )}
                 </Form>
             </Col>

@@ -372,7 +372,7 @@ const StaffingEditScreen = ({ match, history }) => {
     };
 
     return (
-        <>
+        <div>
             <Meta />
             {modalWindowShow && (
                 <StaffAConsultant
@@ -406,7 +406,7 @@ const StaffingEditScreen = ({ match, history }) => {
                     <Col xs={6} md={2}>
                         {match.params.id && loadingUpdate && <Loader />}
                         {match.params.id && !loadingUpdate && (
-                            <>
+                            <div>
                                 <Button
                                     onClick={() => {
                                         setEditRequest(!editRequest);
@@ -415,13 +415,13 @@ const StaffingEditScreen = ({ match, history }) => {
                                     variant={editRequest ? 'warning' : 'light'}
                                     block
                                 >{editRequest ? (
-                                    <><span>Save  </span><i className="far fa-check-circle"></i></>
+                                    <div><span>Save  </span><i className="far fa-check-circle"></i></div>
                                     ) : (
-                                    <><span>Edit  </span><i className="far fa-edit"></i></>
+                                    <div><span>Edit  </span><i className="far fa-edit"></i></div>
                                 )}
                                 </Button>
                                 {errorUpdate && (<Message variant='danger'>{errorUpdate}</Message>)}
-                            </>
+                            </div>
                         )}
                     </Col>
                 </Row>
@@ -481,7 +481,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 onChange={setType}
                                 required={true}
                                 options={
-                                    <>
+                                    <div>
                                         <option value=''>--Select--</option>
                                         {TYPE_BUSINESS.map(type => (
                                             <option
@@ -489,7 +489,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 value={type.name}
                                             >{type.name}</option>
                                         ))}
-                                    </>
+                                    </div>
                                 }
                             />
                         </ListGroup.Item>
@@ -503,7 +503,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 onChange={updateStatusHandler}
                                 required={true}
                                 options={
-                                    <>
+                                    <div>
                                         <option value=''>--Select--</option>
                                         {DEAL_STATUS.map(status => (
                                             <option
@@ -511,7 +511,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 value={status.name}
                                             >{status.name}</option>
                                         ))}
-                                    </>
+                                    </div>
                                 }
                             />
                         </ListGroup.Item>
@@ -525,7 +525,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 onChange={setProbability}
                                 required={true}
                                 options={
-                                    <>
+                                    <div>
                                         <option value=''>--Select--</option>
                                         {DEAL_PROBABILITY.map(prob => (
                                             <option
@@ -533,7 +533,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 value={prob.name}
                                             >{prob.name} %</option>
                                         ))}
-                                    </>
+                                    </div>
                                 }
                             />
                         </ListGroup.Item>
@@ -560,7 +560,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                 onChange={setMainPractice}
                                 required={true}
                                 options={
-                                    <>
+                                    <div>
                                         <option value=''>--Select--</option>
                                         {practiceList && practiceList.map((practice, val) => (
                                             <option
@@ -568,7 +568,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                                 key={val}
                                             >{practice}</option>
                                         ))}
-                                    </>
+                                    </div>
                                 }
                             />
                         </ListGroup.Item>
@@ -737,7 +737,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                         onChange={srStatusHandler}
                                         required={true}
                                         options={
-                                            <>
+                                            <div>
                                                 <option value=''>--Select--</option>
                                                 {REQUEST_STATUS.map(({ name }) => (
                                                     <option
@@ -745,7 +745,7 @@ const StaffingEditScreen = ({ match, history }) => {
                                                         value={name}
                                                     >{name}</option>
                                                 ))}
-                                            </>
+                                            </div>
                                         }
                                     />
                                 </Col>
@@ -911,7 +911,7 @@ const StaffingEditScreen = ({ match, history }) => {
                     />
                 </DropDownTitleContainer>
             )}
-        </>
+        </div>
     )
 }
 

@@ -48,15 +48,6 @@ const checkAndCreateConsultantsFolder = asyncHandler(async (req, res, next) => {
         next();
     } else {
 
-        /* fs.mkdir(pathConsultant, { recursive: true }, (err) => {
-            if(err) {
-                console.error('Error creating folder to upload consultants: ' + pathConsultant);
-                res.status(500).json({message: 'Error creating folder to upload consultants: ' + pathConsultant});
-            }
-            console.log('Directory created successfully: ' + pathConsultant);
-            next();
-        }); */
-
         try {
             fs.mkdirSync(pathConsultant, { recursive: true })
             console.log('Directory created successfully: ' + pathConsultant);

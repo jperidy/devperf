@@ -171,7 +171,7 @@ const PxxDetailsScreen = ({ history, match }) => {
     },[importData, errorImportLine, successImportLine]);
     
     return (
-        <>
+        <div>
             <Meta />
 
             <FlowImportPxx 
@@ -363,7 +363,7 @@ const PxxDetailsScreen = ({ history, match }) => {
                 />
             </Pagination>
 
-        </>
+        </div>
     )
 }
 

@@ -152,7 +152,7 @@ const DealsHistoryScreen = ({history}) => {
     }, [dispatch, successDelete])
 
     return (
-        <>
+        <div>
             <Meta />
 
             {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
@@ -224,7 +224,7 @@ const DealsHistoryScreen = ({history}) => {
                     </Tabs>
                 </ListGroup.Item>
             </DropDownTitleContainer>
-        </>
+        </div>
     )
 }
 

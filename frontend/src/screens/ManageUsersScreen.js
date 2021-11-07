@@ -73,7 +73,7 @@ const ManageUsersScreen = ({ history }) => {
     };
 
     return (
-        <>
+        <div>
             {error && (<Message variant='danger'>{error}</Message>)}
 
             <Row><Col className='text-right'>
@@ -110,12 +110,12 @@ const ManageUsersScreen = ({ history }) => {
                                 onChange={(val) => setKeyword({...keyword, searchStatus:val})}
                                 required={false}
                                 options={
-                                    <>
+                                    <div>
                                         <option value=''>--All status--</option>
                                         {['Waiting approval', 'Validated', 'Refused', 'Blocked', 'Left'].map((x, val) => (
                                             <option key={val} value={x}>{x}</option>
                                         ))}
-                                    </>
+                                    </div>
                                 }
                             />
                         </Col>
@@ -220,7 +220,7 @@ const ManageUsersScreen = ({ history }) => {
                     </Pagination>
                 </ListGroup.Item>
             </DropDownTitleContainer>
-        </>
+        </div>
     )
 }
 

@@ -284,7 +284,7 @@ const SkillDisplayLine = ({
 
 
     return (
-        <>
+        <div>
             {/*errorConsultantUpdateSkill && <Message variant='danger'>{errorConsultantUpdateSkill}</Message>*/}
             <Form.Row key={val}>
                 <Col xs={3}>
@@ -319,7 +319,7 @@ const SkillDisplayLine = ({
                     )}
                 </Col>
             </Form.Row>
-        </>
+        </div>
     )
 }
 

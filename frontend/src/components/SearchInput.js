@@ -31,7 +31,7 @@ const SearchInput = ({ title, searchValue, setSearchValue, possibilities, update
         <Form.Group controlId='search-box' className='mb-0'>
             <Form.Label as='h5'>{title}</Form.Label>
             {editMode && (
-                <>
+                <div>
                     <Form.Control
                         type='text'
                         placeholder='Search box...'
@@ -48,7 +48,7 @@ const SearchInput = ({ title, searchValue, setSearchValue, possibilities, update
                             >{value}</ListGroup.Item>
                         ))}
                     </ListGroup>
-                </>
+                </div>
             )}
         </Form.Group>
     )

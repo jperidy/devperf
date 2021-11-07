@@ -16,9 +16,9 @@ const DropDownTitleContainer = ({children, title, close}) => {
                     className='text-left'
                     block
                 > <h3>{hide ? (
-                    <><i className="fas fa-caret-down"></i> {title}</>
+                    <div><i className="fas fa-caret-down"></i> {title}</div>
                 ) : (
-                        <><i className="fas fa-caret-up"></i> {title}</>
+                        <div><i className="fas fa-caret-up"></i> {title}</div>
                     )}</h3></Button>
 
                 {!hide && children}

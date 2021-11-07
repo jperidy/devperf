@@ -76,7 +76,7 @@ const PxxUserLine = ({ data }) => {
     }
 
     return (
-        <>
+        <div>
             <Row className="py-1">
                 <Col xs={4} className="text-center align-middle"><b>{data.month ? data.month.name : 'Not created Yeat'}</b> <i>{workingDay ? `(${workingDay}d)` : null}</i></Col>
                 <Col xs={2} className="text-center align-middle px-1">
@@ -158,7 +158,7 @@ const PxxUserLine = ({ data }) => {
                 </Col>
 
             </Row>
-        </>
+        </div>
     )
 }
 

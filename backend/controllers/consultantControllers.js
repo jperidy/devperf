@@ -692,7 +692,7 @@ const updateConsultantFromWavekeeper = asyncHandler(async (req, res) => {
 
         const consultantToUpdateOrCreate = {
             name: anonymise ? `Prénom NOM ${line + 1}` : consultant.name,
-            email: anonymise ? (cryptoJS.MD5(consultant.name).toString()).toString() + '@mail.com' : (consultant.name.replace(' ', '.')).replace(' ', '-').toLowerCase() + '@wavestone.com',
+            email: anonymise ? (cryptoJS.MD5(consultant.name).toString()).toString() + '@mail.com' : (consultant.name.replace(' ', '.')).replace(' ', '-').toLowerCase() + '@entreprise.com',
             //email: cryptoJS.MD5(consultant.name).toString(),
             grade: transformGrade(consultant.grade),
             practice: consultant.practice.split('-')[1],

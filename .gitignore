@@ -27,6 +27,9 @@ uploads/pxx/*
 # frontendWithExpress
 frontendWithExpress
 
+# frontend
+frontend/build
+
 # dockers
 start-dockerImage.sh
 start-jenkins.sh

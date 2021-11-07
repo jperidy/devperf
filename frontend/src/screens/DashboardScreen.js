@@ -63,7 +63,7 @@ const DashboardScreen = ({ history }) => {
     }
 
     return (
-        <>
+        <div>
             <Meta />
 
             <Row>
@@ -146,7 +146,7 @@ const DashboardScreen = ({ history }) => {
                     </Row>
                 </DropDownTitleContainer>
             </DisplayChildren>
-        </>
+        </div>
     )
 }
 

@@ -36,9 +36,6 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     const [importData, setImportData] = useState([]);
 
-    //const [selectedFile, setSelectedFile] = useState(null);
-    //const [message, setMessage] = useState('');
-
     const [showImportConsultant, setShowImportConsultant] = useState(false);
 
     const userLogin = useSelector(state => state.userLogin);
@@ -52,12 +49,6 @@ const ManageConsultantScreen = ({ history, match }) => {
 
     const consultantsMassImport = useSelector(state => state.consultantsMassImport);
     const { loading:loadingMassImport, error:errorMassImport, success:successMassImport } = consultantsMassImport;
-
-    /* const consultantUploadWk = useSelector(state => state.consultantUploadWk);
-    const { loading:loadingUpload, error:errorUpload, path } = consultantUploadWk;
-
-    const consultantUpdateWk = useSelector(state => state.consultantUpdateWk);
-    const { loading:loadingUpdate, error:errorUpdate, message } = consultantUpdateWk; */
 
 
     useEffect(() => {
@@ -121,7 +112,7 @@ const ManageConsultantScreen = ({ history, match }) => {
     }
 
     return (
-        <>
+        <div>
             <Meta />
             {errorMassImport && <Message variant='danger'>{errorMassImport}</Message>}
 
@@ -297,7 +288,7 @@ const ManageConsultantScreen = ({ history, match }) => {
                     </Pagination>
                 </ListGroup.Item>
             </DropDownTitleContainer>
-        </>
+        </div>
     )
 }
 

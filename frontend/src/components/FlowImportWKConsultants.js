@@ -15,7 +15,6 @@ const FlowImportWKConsultants = (props) => {
     const dispatch = useDispatch();
 
     const [step, setStep] = useState(0);
-    //const [selectedFile, setSelectedFile] = useState(null);
 
     const consultantUploadWk = useSelector(state => state.consultantUploadWk);
     const { loading: loadingUpload, error: errorUpload, path } = consultantUploadWk;
@@ -66,7 +65,8 @@ const FlowImportWKConsultants = (props) => {
                         {step === 0 && (
                             <Row>
                                 <Col>
-                                    <h4>Process to export from Wavekeeper <a href="https://wavekeeper.wavestone-app.com/web#action=534&model=hr.presence&view_type=list&cids=1&menu_id=92" target="_blank" rel="noopener noreferrer">(link)</a></h4>
+                                    {/* Need url to connect to wavekeeper */}
+                                    <h4>Process to export from Wavekeeper <a href="" target="_blank" rel="noopener noreferrer">(link)</a></h4>
                                     <p>Please connect to Wavekeeper</p>
                                     <ul>
                                         <li>Step 1: Go to collaborators</li>

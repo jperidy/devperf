@@ -263,7 +263,7 @@ const ConsultantEditScreen = ({ history, match }) => {
     }
 
     return (
-        <>
+        <div>
             {error && <Message variant='danger'>{error}</Message>}
             {errorMessage && <Message variant='danger'>{errorMessage.message}</Message>}
 
@@ -486,7 +486,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                     </Form.Group>
                                                 </Col>
                                                 {partialTime && (
-                                                    <>
+                                                    <div>
                                                         <Col>
                                                             <Form.Group controlId='startpartialtime'>
                                                                 <Form.Label>Start</Form.Label>
@@ -518,7 +518,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                                                                 ></Form.Control>
                                                             </Form.Group>
                                                         </Col>
-                                                    </>
+                                                    </div>
                                                 )}
                                             </Form.Row>
 
@@ -636,7 +636,7 @@ const ConsultantEditScreen = ({ history, match }) => {
                     </Row>
                 </Container>
             </DisplayChildren>
-        </>
+        </div>
     )
 }
 

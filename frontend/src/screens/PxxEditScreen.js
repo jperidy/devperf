@@ -20,6 +20,7 @@ import ViewStaffs from '../components/ViewStaffs';
 import ViewOldStaffs from '../components/ViewOldStaffs';
 import SkillsDetails from '../components/SkillsDetails';
 import DisplayChildren from '../components/DisplayChildren';
+import XLSX from 'xlsx';
 
 const PxxEditScreen = ({ history }) => {
 
@@ -85,6 +86,102 @@ const PxxEditScreen = ({ history }) => {
         dispatch(updateComment(consultantId, value));
     }
 
+    const handleUploadClick = () => {
+        document.getElementById('fileToUpload').click();
+    }
+
+    const onSelectFileToUploadHandler = async (e) => {
+
+        const getCell = (worksheet, row, col) => {
+            return worksheet[XLSX.utils.encode_cell({r: row, c: col})];
+        };
+
+        const setCell = (worksheet, row, col, value) => {
+            XLSX.utils.sheet_add_aoa(worksheet, [[value]], {origin: {r: row, c: col}});
+        }
+
+        const fileName = e.target.files[0].name;
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            const data = e.target.result;
+            const workbook = XLSX.read(data, { type: 'binary' }); 
+            const firstSheetName = workbook.SheetNames[0];
+            const firstWorkSheet = workbook.Sheets[firstSheetName];
+            
+            const firstMonthCell = getCell(firstWorkSheet, 5, 9);
+            const secondMonthCell = getCell(firstWorkSheet, 5, 13);
+            const thirdMonthCell = getCell(firstWorkSheet, 5, 17);
+            const fourthMonthCell = getCell(firstWorkSheet, 5, 21);
+            const fifthMonthCell = getCell(firstWorkSheet, 5, 25);
+
+            console.log(firstMonthCell);
+            console.log(secondMonthCell);
+
+            for (let line = 8 ; line < 100 ; line++) {
+                const matriculeCell = getCell(firstWorkSheet, line, 4);
+                if (matriculeCell && matriculeCell.v.toString().match(/[0-9]{2,6}/i)) {
+                    
+                    console.log(`line ${line} - matricule ${matriculeCell.v}`);
+                    
+                    // FirstMonth
+                    const prodFirstMonth = 'to do';
+                    const notProdFirstMonth = 'to do';
+                    const holidaysFirstMonth = 'to do';
+                    setCell(firstWorkSheet, line, 9, prodFirstMonth);
+                    setCell(firstWorkSheet, line, 10, notProdFirstMonth);
+                    setCell(firstWorkSheet, line, 11, holidaysFirstMonth);
+
+                    // SecondMonth
+                    const prodSecondMonth = 'to do';
+                    const notProdSecondMonth = 'to do';
+                    const holidaysSecondMonth = 'to do';
+                    setCell(firstWorkSheet, line, 13, prodSecondMonth);
+                    setCell(firstWorkSheet, line, 14, notProdSecondMonth);
+                    setCell(firstWorkSheet, line, 15, holidaysSecondMonth);
+
+                    // ThirdMonth
+                    const prodThirdMonth = 'to do';
+                    const notProdThirdMonth = 'to do';
+                    const holidaysThirdMonth = 'to do';
+                    setCell(firstWorkSheet, line, 17, prodThirdMonth);
+                    setCell(firstWorkSheet, line, 18, notProdThirdMonth);
+                    setCell(firstWorkSheet, line, 19, holidaysThirdMonth);
+
+                    // FourthMonth
+                    const prodFourthMonth = 'to do';
+                    const notProdFourthMonth = 'to do';
+                    const holidaysFourthMonth = 'to do';
+                    setCell(firstWorkSheet, line, 21, prodFourthMonth);
+                    setCell(firstWorkSheet, line, 22, notProdFourthMonth);
+                    setCell(firstWorkSheet, line, 23, holidaysFourthMonth);
+
+                    // FifthMonth
+                    const prodFifthMonth = 'to do';
+                    const notProdFifthMonth = 'to do';
+                    const holidaysFifthMonth = 'to do';
+                    setCell(firstWorkSheet, line, 25, prodFifthMonth);
+                    setCell(firstWorkSheet, line, 26, notProdFifthMonth);
+                    setCell(firstWorkSheet, line, 27, holidaysFifthMonth);
+
+                    // Commentaire
+                    const comment = 'to do'
+                    setCell(firstWorkSheet, line, 33, comment);
+                }
+            }
+
+            const wopts = { bookType: 'xlsb', bookSST: true, type: 'binary' };
+            XLSX.writeFile(workbook, fileName, wopts);       
+            //XLSX.writeFile(workbook, 'testImport.xlsb');       
+        }
+        reader.onerror = (ex) => {
+            console.log(ex);
+        };
+        reader.readAsBinaryString(e.target.files[0]);
+
+        //console.log(e.target.files);
+    }
+
     return (
 
         <Container>
@@ -93,7 +190,7 @@ const PxxEditScreen = ({ history }) => {
                 errorConsultantsMyList ? <Message variant='danger'>{errorConsultantsMyList}</Message>
                     : !consultantsMy || consultantsMy.length === 0 ?
                         <Message variant='info'>You don't have consultant to edit yet</Message> : (
-                            <>
+                            <div>
                                 <div className='border-bottom p-3'>
                                     <Row>
                                         <Col className="text-center" xs={2}>
@@ -139,7 +236,7 @@ const PxxEditScreen = ({ history }) => {
                                                 <Row className="my-3">
                                                     <Col>
                                                         {!(consultantsMy[focus]._id === userInfo.consultantProfil._id) && (
-                                                            <>
+                                                            <div>
                                                                 <label htmlFor="comment"><strong>Staffing comment</strong></label>
                                                                 <InputGroup>
                                                                     <FormControl
@@ -155,7 +252,7 @@ const PxxEditScreen = ({ history }) => {
                                                                         }}
                                                                     ></FormControl>
                                                                 </InputGroup>
-                                                            </>
+                                                            </div>
                                                         )}
 
                                                     </Col>
@@ -329,15 +426,32 @@ const PxxEditScreen = ({ history }) => {
                                     <Col>
                                         <DisplayChildren access='viewOthersConsultants'>
                                             <DropDownTitleContainer title='Others consultants' close={false}>
-                                                <Form.Group controlId='switch-only-available' className='mt-3'>
-                                                    <Form.Check
-                                                        type='switch'
-                                                        id='switch-delegation'
-                                                        label='View delegation'
-                                                        checked={delegateOption}
-                                                        onChange={(e) => { e.target.checked === true ? setDelegationOption(true) : setDelegationOption(false) }}
-                                                    ></Form.Check>
-                                                </Form.Group>
+                                                <Row>
+                                                    <Col>
+                                                        <Form.Group controlId='switch-only-available' className='mt-3'>
+                                                            <Form.Check
+                                                                type='switch'
+                                                                id='switch-delegation'
+                                                                label='View delegation'
+                                                                checked={delegateOption}
+                                                                onChange={(e) => { e.target.checked === true ? setDelegationOption(true) : setDelegationOption(false) }}
+                                                            ></Form.Check>
+                                                        </Form.Group>
+                                                    </Col>
+                                                    <Col className='text-right'>
+                                                        <input
+                                                            type='file'
+                                                            id='fileToUpload'
+                                                            onChange={(e) => onSelectFileToUploadHandler(e)}
+                                                            style={{ display: 'none' }}
+                                                        />
+                                                        <Button
+                                                            className='btn btn-secondary mt-3'
+                                                            size='sm'
+                                                            onClick={() => handleUploadClick()}
+                                                        ><i className="fas fa-file-download"></i>  Update Pxx</Button>
+                                                    </Col>
+                                                </Row>
                                                 <ConsultantsTab
                                                     consultantsMy={consultantsMy}
                                                     history={history}
@@ -347,7 +461,7 @@ const PxxEditScreen = ({ history }) => {
                                         </DisplayChildren>
                                     </Col>
                                 </Row>
-                            </>
+                            </div>
                         )}
         </Container>
     )

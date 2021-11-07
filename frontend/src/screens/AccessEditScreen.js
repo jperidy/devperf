@@ -96,7 +96,7 @@ const CategoryAccess = ({ accessRules, category, categories, profilId }) => {
     }
 
     return (
-        <>
+        <div>
             <h4>{category && category}</h4>
             <ListGroup variant='flush'>
                 <ListGroup.Item>
@@ -120,7 +120,7 @@ const CategoryAccess = ({ accessRules, category, categories, profilId }) => {
                     </ListGroup.Item>
                 </ListGroup>
             ))}
-        </>
+        </div>
     )
 }
 

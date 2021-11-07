@@ -99,7 +99,7 @@ const ManageSkillsScreen = ({ history }) => {
     }
 
     return (
-        <>
+        <div>
             <DropDownTitleContainer title='Create Skills' close={true}>
                 <ListGroup.Item>
                 <Row className='mt-3'>
@@ -272,7 +272,7 @@ const ManageSkillsScreen = ({ history }) => {
                 </Pagination>
                 </ListGroup.Item>
             </DropDownTitleContainer>
-        </>
+        </div>
     )
 }
 

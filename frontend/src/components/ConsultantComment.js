@@ -25,7 +25,7 @@ const ConsultantComment = ({ comment, consultantId, setCommentUpdated }) => {
     };
 
     return (
-        <>
+        <div>
             {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : (
                 <Form onSubmit={submitHandler}>
                     <Form.Group controlId='textarea'>
@@ -44,7 +44,7 @@ const ConsultantComment = ({ comment, consultantId, setCommentUpdated }) => {
                 </Form>
             )
             }
-        </>
+        </div>
 
 
     )
