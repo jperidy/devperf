@@ -337,7 +337,7 @@ async function getConsultantDataFromWk(fileName, practiceName, profilsId, userSc
 
         const consultantToUpdateOrCreate = {
             name: anonymise ? `Prénom NOM ${line + 1}` : consultant.name,
-            email: (consultant.name.replace(' ', '.')).replace(' ', '-').toLowerCase() + '@wavestone.com',
+            email: (consultant.name.replace(' ', '.')).replace(' ', '-').toLowerCase() + '@entreprise.com',
             grade: transformGrade(consultant.grade),
             practice: consultant.practice.split('-')[1],
             matricule: consultant.matricule,
